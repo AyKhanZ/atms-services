@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ATMS.Shared.Exceptions\ATMS.Shared.Exceptions.csproj" />
+    <ProjectReference Include="..\ATMS.Data.Mongo\ATMS.Data.Mongo.csproj" />
+  </ItemGroup>
+
+</Project>
