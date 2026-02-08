@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  atms.admin.db:
+    image: postgres:16
+    container_name: atms.admin.db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: p@ssw0rd!
+      POSTGRES_DB: atms
+    ports:
+      - "5432:5432"
+    volumes:
+      - atms.admin.db.data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+
+  atms.project.db:
+    image: postgres:16
+    container_name: atms.project.db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: p@ssw0rd!
+      POSTGRES_DB: atms
+    ports:
+      - "5433:5432"
+    volumes:
+      - atms.project.db.data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+
+  atms.mongo.db:
+    image: mongo:7
+    container_name: atms.mongo.db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: p@ssw0rd!
+      MONGO_INITDB_DATABASE: atms.admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - atms.mongo.db.data:/var/lib/mongo/data
+    restart: unless-stopped
+
+
+volumes:
+  atms.admin.db.data:
+  atms.project.db.data:
+  atms.mongo.db.data:
