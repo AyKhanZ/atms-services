@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ATMS.Shared.Exceptions\ATMS.Shared.Exceptions.csproj" />
     <ProjectReference Include="..\ATMS.Data.Mongo\ATMS.Data.Mongo.csproj" />
   </ItemGroup>
 

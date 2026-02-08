@@ -11,4 +11,8 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
 		<PackageReference Include="MongoDB.Driver" Version="3.6.0" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ATMS.Data\ATMS.Data.csproj" />
+	</ItemGroup>
 </Project>

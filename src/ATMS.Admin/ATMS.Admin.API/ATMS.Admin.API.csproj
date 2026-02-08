@@ -18,8 +18,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\ATMS.Shared.Exceptions\ATMS.Shared.Exceptions.csproj" />
       <ProjectReference Include="..\..\..\docker\ATMS.Aspire.ServiceDefaults\ATMS.Aspire.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Exceptions\ATMS.Exceptions.csproj" />
       <ProjectReference Include="..\ATMS.Admin.Service\ATMS.Admin.Service.csproj" />
     </ItemGroup>
 

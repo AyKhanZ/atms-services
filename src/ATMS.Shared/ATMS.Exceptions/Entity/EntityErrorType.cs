@@ -1,4 +1,4 @@
-﻿namespace ATMS.Shared.Exceptions.Entity;
+﻿namespace ATMS.Exceptions.Entity;
 
 public enum EntityErrorType
 {

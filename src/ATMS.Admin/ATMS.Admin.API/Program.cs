@@ -1,5 +1,4 @@
 using ATMS.Admin.API.Middleware;
-using ATMS.Admin.Data.DbContexts;
 using ATMS.Admin.Service.Modules;
 using Microsoft.EntityFrameworkCore;
 

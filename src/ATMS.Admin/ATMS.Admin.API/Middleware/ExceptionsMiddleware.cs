@@ -1,6 +1,6 @@
 ﻿using ATMS.Admin.API.Middleware.Exceptions.Auth;
 using ATMS.Admin.Service.Behaviors.Models;
-using ATMS.Shared.Exceptions.Entity;
+using ATMS.Exceptions.Entity;
 using Newtonsoft.Json;
 using System.Net;
 
