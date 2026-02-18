@@ -20,6 +20,7 @@ public static class DataAccessModule
 
         services.AddScoped<IMigrationRunner, MigrationRunner<AdminDbContext>>();
         services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }

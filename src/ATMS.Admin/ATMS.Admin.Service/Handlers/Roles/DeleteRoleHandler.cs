@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Commands;
+﻿using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Data.Interfaces;
 using MediatR;
 

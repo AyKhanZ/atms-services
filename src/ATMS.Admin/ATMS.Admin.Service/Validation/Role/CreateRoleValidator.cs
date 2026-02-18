@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Commands;
+﻿using ATMS.Admin.Contracts.Commands.Role;
 using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Role;

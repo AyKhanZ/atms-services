@@ -1,4 +1,5 @@
-﻿using ATMS.Admin.Contracts.Commands;
+﻿using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Data.Entities;
 using AutoMapper;
 
@@ -10,5 +11,7 @@ public class CommandToEntityProfile : Profile
     {
         CreateMap<CreateRoleCommand, Role>();
         CreateMap<UpdateRoleCommand, Role>();
+
+        CreateMap<RegisterCommand, User>();
     }
 }

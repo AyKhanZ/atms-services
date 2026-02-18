@@ -1,4 +1,4 @@
-﻿namespace ATMS.Admin.Contracts.Commands;
+﻿namespace ATMS.Admin.Contracts.Commands.Role;
 
 public class RoleCommand
 {

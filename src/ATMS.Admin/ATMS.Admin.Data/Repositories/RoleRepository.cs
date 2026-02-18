@@ -20,23 +20,25 @@ public class RoleRepository(AdminDbContext context) : IRoleRepository
             .ExecuteDeleteAsync(cancellationToken);
     }
 
-    public Task<Role?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Role?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return context.Roles
+        return await context.Roles
             .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public Task<List<Role>> GetAsync(Guid userId, CancellationToken cancellationToken)
+    public Task<List<Role>> GetAsync(CancellationToken cancellationToken)
     {
         return context.Roles
             .AsNoTracking()
-            .Where(r => r.UserRoles.Any(ur => ur.UserId == userId))
             .ToListAsync(cancellationToken);
     }
 
     public Task<bool> IsExistAsync(string name, CancellationToken cancellationToken)
         => context.Roles.AnyAsync(r => r.Name == name, cancellationToken);
+
+    public Task<bool> IsExistAsync(Guid id, CancellationToken cancellationToken)
+        => context.Roles.AnyAsync(r => r.Id == id, cancellationToken);
 
     public Task UpdateAsync(Role entity, CancellationToken cancellationToken)
     {

@@ -12,7 +12,7 @@ public class GetRolesHandler(
 {
     public async Task<RoleModel[]> Handle(GetRolesRequest request, CancellationToken cancellationToken)
     {
-        var roles = await roleRepository.GetAsync(request.UserId, cancellationToken);
+        var roles = await roleRepository.GetAsync(cancellationToken);
 
         return mapper.Map<RoleModel[]>(roles);
     }

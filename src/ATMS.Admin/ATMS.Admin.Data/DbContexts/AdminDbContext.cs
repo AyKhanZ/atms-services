@@ -32,6 +32,8 @@ public class AdminDbContext: DbContext
         {
             entity.HasIndex(e => e.Email).IsUnique();
             entity.Property(e => e.Email).IsRequired();
+
+            entity.Property(e => e.AvatarPath).HasDefaultValue("test.png");
         });
 
         modelBuilder.Entity<Role>(entity =>

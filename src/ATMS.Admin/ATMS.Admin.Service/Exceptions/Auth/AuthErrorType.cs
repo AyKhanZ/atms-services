@@ -1,4 +1,4 @@
-﻿namespace ATMS.Admin.API.Middleware.Exceptions.Auth;
+﻿namespace ATMS.Admin.Service.Exceptions.Auth;
 
 public enum AuthErrorType
 {

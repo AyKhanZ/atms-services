@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20260207174753_InsertDataToPermissionsTable")]
-    partial class InsertDataToPermissionsTable
+    [Migration("20260218194127_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,15 +27,31 @@ namespace ATMS.Admin.Data.Migrations
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Permission", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Module")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.ToTable("Permissions");
                 });
@@ -61,13 +77,15 @@ namespace ATMS.Admin.Data.Migrations
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.RolePermission", b =>
                 {
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid");
 
                     b.HasKey("PermissionId", "RoleId");
+
+                    b.HasIndex("PermissionId");
 
                     b.HasIndex("RoleId");
 
@@ -87,10 +105,11 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("BusinessPhoneNumber")
+                    b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -102,14 +121,18 @@ namespace ATMS.Admin.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Patronymic")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PersonalEmail")
                         .HasColumnType("text");
 
+                    b.Property<string>("PersonalPhoneNumber")
+                        .HasColumnType("text");
+
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Position")
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
@@ -144,6 +167,8 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
                 });

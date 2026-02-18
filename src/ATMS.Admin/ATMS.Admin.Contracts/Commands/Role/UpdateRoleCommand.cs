@@ -1,7 +1,7 @@
 ﻿using ATMS.Admin.Contracts.Models;
 using MediatR;
 
-namespace ATMS.Admin.Contracts.Commands;
+namespace ATMS.Admin.Contracts.Commands.Role;
 
 public class UpdateRoleCommand : RoleCommand, IRequest<RoleModel>
 {

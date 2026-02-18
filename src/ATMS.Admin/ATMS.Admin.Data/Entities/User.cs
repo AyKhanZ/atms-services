@@ -10,7 +10,7 @@ public class User : UserBase
     public string? PersonalPhoneNumber { get; set; }
 
     public DateTime BirthDate { get; set; }
-    public string Gender { get; set; }
+    public string? Gender { get; set; }
 
     public string AvatarPath { get; set; }
     public string? Position { get; set; }

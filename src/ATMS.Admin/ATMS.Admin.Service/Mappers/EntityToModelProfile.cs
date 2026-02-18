@@ -9,5 +9,6 @@ public class EntityToModelProfile : Profile
     public EntityToModelProfile()
     {
         CreateMap<Role, RoleModel>();
+        CreateMap<User, UserModel>();
     }
 }

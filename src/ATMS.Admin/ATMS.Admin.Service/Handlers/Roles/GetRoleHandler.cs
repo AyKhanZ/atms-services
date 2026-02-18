@@ -1,6 +1,7 @@
 ﻿using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Contracts.Requests.Roles;
 using ATMS.Admin.Data.Interfaces;
+using ATMS.Exceptions.Entity;
 using AutoMapper;
 using MediatR;
 
@@ -13,6 +14,11 @@ public class GetRoleHandler(
     public async Task<RoleModel> Handle(GetRoleRequest request, CancellationToken cancellationToken)
     {
         var role = await roleRepository.GetByIdAsync(request.Id, cancellationToken);
+
+        if (role is null)
+        {
+            throw new EntityException(EntityErrorType.EntityNotFound, "Role not found");
+        }
 
         return mapper.Map<RoleModel>(role);
     }

@@ -10,6 +10,7 @@ public static class AdminServicesModule
     {
         services.AddValidationServices();
         services.AddAdminData(sqlConnection, mongoConnection);
+        services.AddSecurityServices();
         services.AddHandlerServices();
         services.AddMapperServices();
 
