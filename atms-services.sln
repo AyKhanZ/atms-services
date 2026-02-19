@@ -13,6 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{B6EBED
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ATMS.Admin", "ATMS.Admin", "{3A890F8C-4C41-4C1A-B662-386E05CB5080}"
+	ProjectSection(SolutionItems) = preProject
+		src\ATMS.Admin\README.md = src\ATMS.Admin\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ATMS.Shared", "ATMS.Shared", "{B2419456-E7DF-4F6E-80D8-BCEFAF5F2797}"
 EndProject
