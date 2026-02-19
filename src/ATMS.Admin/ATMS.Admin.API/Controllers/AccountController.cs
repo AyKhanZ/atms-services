@@ -50,29 +50,29 @@ public class AccountController(IMediator mediator) : ControllerBase
 
 
 
-    [HttpPut("change-password")]
-    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordCommand command, CancellationToken cancellationToken)
-    {
-        var result = await mediator.Send(command, cancellationToken);
+    //[HttpPut("change-password")]
+    //public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordCommand command, CancellationToken cancellationToken)
+    //{
+    //    var result = await mediator.Send(command, cancellationToken);
 
-        return Ok(result);
-    }
-
-
-    [HttpPost("forgot-password")]
-    public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command, CancellationToken cancellationToken)
-    {
-        var result = await mediator.Send(command, cancellationToken);
-
-        return Ok(result);
-    }
+    //    return Ok(result);
+    //}
 
 
-    [HttpPost("reset-password")]
-    public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordCommand command, CancellationToken cancellationToken)
-    {
-        var result = await mediator.Send(command, cancellationToken);
+    //[HttpPost("forgot-password")]
+    //public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command, CancellationToken cancellationToken)
+    //{
+    //    var result = await mediator.Send(command, cancellationToken);
 
-        return Ok(result);
-    }
+    //    return Ok(result);
+    //}
+
+
+    //[HttpPost("reset-password")]
+    //public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordCommand command, CancellationToken cancellationToken)
+    //{
+    //    var result = await mediator.Send(command, cancellationToken);
+
+    //    return Ok(result);
+    //}
 }

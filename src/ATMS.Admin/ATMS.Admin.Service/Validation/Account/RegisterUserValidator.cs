@@ -2,7 +2,7 @@
 using ATMS.Admin.Data.Interfaces;
 using FluentValidation;
 
-namespace ATMS.Admin.Service.Validation.Users;
+namespace ATMS.Admin.Service.Validation.Account;
 
 public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 {

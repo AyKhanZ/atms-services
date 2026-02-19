@@ -6,9 +6,9 @@ using ATMS.Exceptions.Entity;
 using AutoMapper;
 using MediatR;
 
-namespace ATMS.Admin.Service.Handlers.Users;
+namespace ATMS.Admin.Service.Handlers.Account;
 
-public class CreateUserHandler(
+public class RegisterHandler(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IMapper mapper)
