@@ -6,11 +6,10 @@ namespace ATMS.Admin.Service.Handlers.Roles;
 
 public class DeleteRoleHandler (
     IRoleRepository roleRepository
-    ) : IRequestHandler<DeleteRoleCommand, Guid>
+    ) : IRequestHandler<DeleteRoleCommand>
 {
-    public async Task<Guid> Handle(DeleteRoleCommand command, CancellationToken cancellationToken)
+    public async Task Handle(DeleteRoleCommand command, CancellationToken cancellationToken)
     {
         await roleRepository.DeleteAsync(command.Id, cancellationToken);
-        return command.Id;
     }
 }

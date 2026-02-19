@@ -28,20 +28,25 @@ public class RolesController(IMediator mediator) : ControllerBase
     public async Task<ActionResult<RoleModel>> Create([FromBody] CreateRoleCommand command, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken);
-        return Ok(result);
+
+        return CreatedAtAction(
+            actionName: nameof(Get),
+            controllerName: "Roles",
+            routeValues: new { id = result.Id },
+            value: result);
     }
 
     [HttpPut]
-    public async Task<ActionResult<RoleModel>> Update([FromBody] UpdateRoleCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult> Update([FromBody] UpdateRoleCommand command, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(command, cancellationToken);
-        return Ok(result);
+        await mediator.Send(command, cancellationToken);
+        return NoContent();
     }
 
     [HttpDelete]
-    public async Task<ActionResult<Guid>> Delete([FromQuery] DeleteRoleCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult> Delete([FromQuery] DeleteRoleCommand command, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(command, cancellationToken);
-        return Ok(result);
+        await mediator.Send(command, cancellationToken);
+        return NoContent();
     }
 }

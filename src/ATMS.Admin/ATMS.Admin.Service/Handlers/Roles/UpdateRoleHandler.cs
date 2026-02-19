@@ -1,5 +1,4 @@
 ﻿using ATMS.Admin.Contracts.Commands.Role;
-using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Interfaces;
 using AutoMapper;
@@ -9,14 +8,12 @@ namespace ATMS.Admin.Service.Handlers.Roles;
 
 public class UpdateRoleHandler(
     IRoleRepository roleRepository,
-    IMapper mapper) : IRequestHandler<UpdateRoleCommand, RoleModel>
+    IMapper mapper) : IRequestHandler<UpdateRoleCommand>
 {
-    public async Task<RoleModel> Handle(UpdateRoleCommand command, CancellationToken cancellationToken)
+    public async Task Handle(UpdateRoleCommand command, CancellationToken cancellationToken)
     {
         var entity = mapper.Map<Role>(command);
 
         await roleRepository.UpdateAsync(entity, cancellationToken);
-
-        return mapper.Map<RoleModel>(entity);
     }
 }
