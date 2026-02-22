@@ -31,7 +31,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddJwtSecurityServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddJwtSecurityServices(this IServiceCollection services)
     {
         services
             .AddAuthentication(options =>
@@ -41,6 +41,10 @@ public static class DependencyInjection
             })
             .AddJwtBearer(options =>
             {
+                //var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>() 
+                //    ?? throw new ConfigurationException(ConfigurationErrorType.JWT_SectionNotFound,
+                //    $"Configuration for section '{nameof(AdminOptions)}' is not found or could not be loaded.");
+                var jwtOptions = services.BuildServiceProvider().GetRequiredService<JwtOptions>();
                 options.RequireHttpsMetadata = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -48,9 +52,9 @@ public static class DependencyInjection
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtOptions:Key"]!)),
-                    ValidIssuer = configuration["JwtOptions:Issuer"]!,
-                    ValidAudience = configuration["JwtOptions:Audience"]!,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
                     ClockSkew = TimeSpan.Zero
                 };
             });
@@ -98,12 +102,12 @@ public static class DependencyInjection
                 Description = "Enter jwt token without 'Bearer'. Example: eyJhbGciOiJIUzI1NiIsInR...",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
+                Scheme = "Bearer",
                 BearerFormat = "JWT",
             });
             options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                [new OpenApiSecuritySchemeReference("bearer", document)] = []
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
             });
         });
 

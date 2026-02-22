@@ -12,7 +12,7 @@ builder.Services
     .AddApiServices()
     .AddCustomMiddlewares()
     .AddAdminServices()
-    .AddJwtSecurityServices(builder.Configuration)
+    .AddJwtSecurityServices()
     .AddAuthorizationPolicies()
     .AddSwaggerDocumentation();
 
