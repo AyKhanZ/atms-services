@@ -2,7 +2,7 @@
 
 public class EntityException : Exception
 {
-    public EntityErrorType EntityErrorType { get; }
-    public EntityException(EntityErrorType entityErrorType, string message)
-        : base(message) => EntityErrorType = entityErrorType;
+    public EntityErrorType ErrorType { get; }
+    public EntityException(EntityErrorType errorType, string message)
+        : base(message) => ErrorType = errorType;
 }

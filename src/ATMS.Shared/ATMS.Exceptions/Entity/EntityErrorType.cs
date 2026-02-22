@@ -2,5 +2,5 @@
 
 public enum EntityErrorType
 {
-    EntityNotFound,
+    NotFound,
 }
