@@ -9,14 +9,21 @@ public class User : UserBase
     public string? PersonalEmail { get; set; }
     public string? PersonalPhoneNumber { get; set; }
 
-    public DateTime BirthDate { get; set; }
-    public string? Gender { get; set; }
+    public DateTime? BirthDate { get; set; }
+    public int GenderId { get; set; }
+    public Gender Gender { get; set; }
 
     public string AvatarPath { get; set; }
     public string? Position { get; set; }
 
 
     public bool HasCompletedSurvey { get; set; }
+    public bool EmailConfirmed { get; set; }
+    public uint FailedLoginCount { get; set; }
+    public DateTime? LockoutEnd { get; set; }
+
+    public int UserStatusId { get; set; }
+    public UserStatus UserStatus { get; set; }
 
 
     public string? RefreshToken { get; set; }

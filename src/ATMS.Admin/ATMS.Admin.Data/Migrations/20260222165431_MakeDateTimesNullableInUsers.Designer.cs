@@ -3,6 +3,7 @@ using System;
 using ATMS.Admin.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    partial class AdminDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260222165431_MakeDateTimesNullableInUsers")]
+    partial class MakeDateTimesNullableInUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,32 +24,6 @@ namespace ATMS.Admin.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Gender", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("Genders");
-                });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Permission", b =>
                 {
@@ -140,10 +117,8 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<long>("FailedLoginCount")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("GenderId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                    b.Property<string>("Gender")
+                        .HasColumnType("text");
 
                     b.Property<bool>("HasCompletedSurvey")
                         .HasColumnType("boolean");
@@ -192,8 +167,6 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
-
-                    b.HasIndex("GenderId");
 
                     b.HasIndex("UserStatusId");
 
@@ -264,19 +237,11 @@ namespace ATMS.Admin.Data.Migrations
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>
                 {
-                    b.HasOne("ATMS.Admin.Data.Entities.Gender", "Gender")
-                        .WithMany("Users")
-                        .HasForeignKey("GenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ATMS.Admin.Data.Entities.UserStatus", "UserStatus")
                         .WithMany("Users")
                         .HasForeignKey("UserStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Gender");
 
                     b.Navigation("UserStatus");
                 });
@@ -298,11 +263,6 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Gender", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Permission", b =>

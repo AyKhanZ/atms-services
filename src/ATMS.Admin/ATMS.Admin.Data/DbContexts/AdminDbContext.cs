@@ -11,6 +11,8 @@ public class AdminDbContext: DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
+    public DbSet<Gender> Genders { get; set; }
+    public DbSet<UserStatus> UserStatuses { get; set; }
     public DbSet<Permission> Permissions { get; set; }
 
     public DbSet<UserRole> UserRoles { get; set; }
@@ -34,6 +36,14 @@ public class AdminDbContext: DbContext
             entity.Property(e => e.Email).IsRequired();
 
             entity.Property(e => e.AvatarPath).HasDefaultValue("test.png");
+
+            entity.Property(u => u.UserStatusId)
+                    .HasDefaultValue(1)
+                    .IsRequired();
+
+            entity.Property(u => u.GenderId)
+                    .HasDefaultValue(1)
+                    .IsRequired();
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -54,6 +64,32 @@ public class AdminDbContext: DbContext
                 .IsRequired();
 
             entity.Property(e => e.Module)
+                .HasMaxLength(50)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity<UserStatus>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity<Gender>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(e => e.Code)
                 .HasMaxLength(50)
                 .IsRequired();
         });

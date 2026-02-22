@@ -20,5 +20,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Data.Mongo\ATMS.Data.Mongo.csproj" />
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Data.Repositories\ATMS.Data.Repositories.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Infrastructure\ATMS.Infrastructure.csproj" />
     </ItemGroup>
 </Project>

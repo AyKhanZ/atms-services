@@ -61,9 +61,9 @@ public class ExceptionsMiddleware : IMiddleware
     {
         var code = HttpStatusCode.InternalServerError;
 
-        switch (exception.EntityErrorType)
+        switch (exception.ErrorType)
         {
-            case EntityErrorType.EntityNotFound:
+            case EntityErrorType.NotFound:
                 code = HttpStatusCode.NotFound;
                 break;
         }

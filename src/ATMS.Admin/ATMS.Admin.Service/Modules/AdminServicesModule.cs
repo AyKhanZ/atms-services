@@ -6,10 +6,10 @@ namespace ATMS.Admin.Service.Modules;
 public static class AdminServicesModule
 {
     public static IServiceCollection AddAdminServices(
-        this IServiceCollection services,string sqlConnection, string mongoConnection)
+        this IServiceCollection services)
     {
         services.AddValidationServices();
-        services.AddAdminData(sqlConnection, mongoConnection);
+        services.AddAdminData();
         services.AddSecurityServices();
         services.AddHandlerServices();
         services.AddMapperServices();
