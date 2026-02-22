@@ -22,7 +22,7 @@ public class RegisterHandler(
         var role = await roleRepository.GetByIdAsync(command.RoleId, cancellationToken);
         if (role is null)
         {
-            throw new EntityException(EntityErrorType.EntityNotFound, "Role not found");
+            throw new EntityException(EntityErrorType.NotFound, "Role not found");
         }
 
         var userRole = new UserRole

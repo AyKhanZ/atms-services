@@ -1,6 +1,6 @@
 ﻿namespace ATMS.Admin.Service.Security.Interfaces;
 
-internal interface IPasswordService
+public interface IPasswordService
 {
-
+    string GenerateRandomPassword();
 }

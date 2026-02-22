@@ -13,6 +13,13 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    public Task<User?> FindByEmail(string email, CancellationToken cancellationToken)
+    {
+        return context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+    }
+
     public Task<List<User>> GetAsync()
     {
         return context.Users.ToListAsync();
@@ -23,6 +30,15 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         return await context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public Task<List<Role>> GetRolesAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return context.UserRoles
+            .Where(ur => ur.UserId == userId)
+            .Select(ur => ur.Role)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
     public Task<bool> IsExistAsync(string email, CancellationToken cancellationToken)
