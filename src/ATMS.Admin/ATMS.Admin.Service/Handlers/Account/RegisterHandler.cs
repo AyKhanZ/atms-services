@@ -2,7 +2,6 @@
 using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Interfaces;
-using ATMS.Exceptions.Entity;
 using AutoMapper;
 using MediatR;
 
@@ -20,10 +19,6 @@ public class RegisterHandler(
         entity.Id = Guid.NewGuid();
 
         var role = await roleRepository.GetByIdAsync(command.RoleId, cancellationToken);
-        if (role is null)
-        {
-            throw new EntityException(EntityErrorType.NotFound, "Role not found");
-        }
 
         var userRole = new UserRole
         {

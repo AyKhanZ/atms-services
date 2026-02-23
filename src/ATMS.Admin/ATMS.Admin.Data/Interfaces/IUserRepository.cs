@@ -14,4 +14,6 @@ public interface IUserRepository
     Task<List<Role>> GetRolesAsync(Guid userId, CancellationToken cancellationToken);
 
     Task<bool> IsExistAsync(string email, CancellationToken cancellationToken);
+
+    Task SaveAsync(CancellationToken cancellationToken);
 }

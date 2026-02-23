@@ -1,8 +1,11 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
+using ATMS.Admin.Service.Security.Models;
+using ATMS.Exceptions.Configuration;
 using ATMS.Infrastructure.Options;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -13,19 +16,31 @@ namespace ATMS.Admin.Service.Security;
 
 public class TokenService(
     IUserRepository userRepository,
-    JwtOptions jwtOptions
+    IConfiguration configuration
     ) : ITokenService
 {
+    private readonly JwtOptions _jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
+                                             ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
+                                                 $"Configuration for section '{nameof(JwtOptions)}' is not found or could not be loaded.");
+
     private static string GenerateSecureToken(int size = 32) =>
         WebEncoders.Base64UrlEncode(
             RandomNumberGenerator.GetBytes(size));
-    public string GenerateRefreshToken() => GenerateSecureToken();
 
-    public string GenerateResetPasswordToken() => GenerateSecureToken();
-
-    public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken)
+    public string GenerateRefreshToken(User user)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key));
+        user.RefreshToken = GenerateSecureToken();
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
+        user.RefreshTokenCreatedAt = DateTime.UtcNow;
+
+        return GenerateSecureToken();
+    }
+
+    public string GenerateResetPasswordToken(User user) => GenerateSecureToken();
+
+    public async Task<TokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)
+    {
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var roles = await userRepository.GetRolesAsync(user.Id, cancellationToken);
@@ -45,16 +60,17 @@ public class TokenService(
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(jwtOptions.TokenExpirationInMinutes),
+            Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.TokenExpirationInMinutes),
             SigningCredentials = credentials,
-            Issuer = jwtOptions.Issuer,
-            Audience = jwtOptions.Audience
+            Issuer = _jwtOptions.Issuer,
+            Audience = _jwtOptions.Audience
         };
 
         var handler = new JsonWebTokenHandler();
 
         var token = handler.CreateToken(tokenDescriptor);
+        var tokenValidity = DateTime.UtcNow.AddMinutes(_jwtOptions.TokenExpirationInMinutes);
 
-        return token;
+        return new TokenResult(token, tokenValidity);
     }
 }

@@ -16,7 +16,6 @@ public class UserRepository(AdminDbContext context) : IUserRepository
     public Task<User?> FindByEmail(string email, CancellationToken cancellationToken)
     {
         return context.Users
-            .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 
@@ -44,5 +43,10 @@ public class UserRepository(AdminDbContext context) : IUserRepository
     public Task<bool> IsExistAsync(string email, CancellationToken cancellationToken)
     {
         return context.Users.AnyAsync(u => u.Email == email, cancellationToken);
+    }
+
+    public Task SaveAsync(CancellationToken cancellationToken)
+    {
+        return context.SaveChangesAsync(cancellationToken);
     }
 }
