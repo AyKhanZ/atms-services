@@ -7,12 +7,11 @@ namespace ATMS.Data.Mongo.Modules;
 public static class MongoDbModule
 {
     public static IServiceCollection AddMongoDbModule(
-        this IServiceCollection services, Func<IServiceProvider, string> databaseNameFactory)
+        this IServiceCollection services, string databaseName)
     {
         services.AddScoped<IMongoContext>(sp =>
         {
             var client = sp.GetRequiredService<IMongoClient>();
-            var databaseName = databaseNameFactory(sp);
             return new MongoContext(client, databaseName);
         });
 

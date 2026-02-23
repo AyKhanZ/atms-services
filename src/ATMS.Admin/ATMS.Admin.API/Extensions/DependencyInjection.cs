@@ -1,11 +1,11 @@
 ﻿using ATMS.Admin.API.Middleware;
 using ATMS.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Reflection;
 using System.Text;
+using ATMS.Exceptions.Configuration;
 
 namespace ATMS.Admin.API.Extensions;
 
@@ -31,7 +31,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddJwtSecurityServices(this IServiceCollection services)
+    public static IServiceCollection AddJwtSecurityServices(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddAuthentication(options =>
@@ -41,10 +41,10 @@ public static class DependencyInjection
             })
             .AddJwtBearer(options =>
             {
-                //var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>() 
-                //    ?? throw new ConfigurationException(ConfigurationErrorType.JWT_SectionNotFound,
-                //    $"Configuration for section '{nameof(AdminOptions)}' is not found or could not be loaded.");
-                var jwtOptions = services.BuildServiceProvider().GetRequiredService<JwtOptions>();
+                var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
+                    ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
+                    $"Configuration for section '{nameof(JwtOptions)}' is not found or could not be loaded.");
+                
                 options.RequireHttpsMetadata = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {

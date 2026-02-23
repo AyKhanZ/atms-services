@@ -3,10 +3,12 @@ using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Exceptions.Entity;
 using Newtonsoft.Json;
 using System.Net;
+using ATMS.Exceptions.Configuration;
+using FluentValidation;
 
 namespace ATMS.Admin.API.Middleware;
 
-public class ExceptionsMiddleware : IMiddleware
+public class ExceptionsMiddleware(ILogger logger) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -22,7 +24,11 @@ public class ExceptionsMiddleware : IMiddleware
         {
             await HandleExceptionAsync(context, ex);
         }
-        catch (FluentValidation.ValidationException ex)
+        catch (ConfigurationException ex)
+        {
+            await HandleExceptionAsync(context, ex);
+        }
+        catch (ValidationException ex)
         {
             await HandleExceptionAsync(context, ex);
         }
@@ -34,6 +40,8 @@ public class ExceptionsMiddleware : IMiddleware
 
     private Task HandleExceptionAsync(HttpContext context, AuthException exception)
     {
+        logger.LogWarning(exception, "Authentication error: {Message}", exception.Message);
+
         var code = HttpStatusCode.InternalServerError;
 
         switch (exception.AuthErrorType)
@@ -59,6 +67,8 @@ public class ExceptionsMiddleware : IMiddleware
 
     private Task HandleExceptionAsync(HttpContext context, EntityException exception)
     {
+        logger.LogWarning(exception, "Entity error: {Message}", exception.Message);
+
         var code = HttpStatusCode.InternalServerError;
 
         switch (exception.ErrorType)
@@ -75,20 +85,39 @@ public class ExceptionsMiddleware : IMiddleware
         return context.Response.WriteAsync(result);
     }
 
-    private Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private Task HandleExceptionAsync(HttpContext context, ConfigurationException exception)
     {
-        var code = HttpStatusCode.InternalServerError;
+        logger.LogError(exception, "Configuration error on {Path} {Method}: {Message}",
+            context.Request.Path, context.Request.Method, exception.Message);
 
         var result = JsonConvert.SerializeObject(new { error = exception.Message });
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)code;
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
         return context.Response.WriteAsync(result);
     }
 
-    private Task HandleExceptionAsync(HttpContext context, FluentValidation.ValidationException exception)
+    private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        var code = HttpStatusCode.BadRequest;
+        logger.LogCritical(exception, "Unexpected exception: {Message}", exception.Message);
+
+        var result = JsonConvert.SerializeObject(new { error = "Internal server error" });
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+        return context.Response.WriteAsync(result);
+    }
+
+    private Task HandleExceptionAsync(HttpContext context, ValidationException exception)
+    {
+        logger.LogWarning(exception,
+            "Validation error. Count: {Count}. Errors: {@Errors}",
+            exception.Errors.Count(),
+            exception.Errors.Select(f => new
+            {
+                f.PropertyName,
+                f.ErrorMessage
+            }));
 
         var response = new ValidationErrorResponse
         {
@@ -100,7 +129,7 @@ public class ExceptionsMiddleware : IMiddleware
         };
         var result = JsonConvert.SerializeObject(response);
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)code;
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
         return context.Response.WriteAsync(result);
     }
