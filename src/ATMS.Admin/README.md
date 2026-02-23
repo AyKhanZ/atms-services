@@ -5,3 +5,25 @@
 # CLI
 - dotnet ef migrations add name --project src\ATMS.Admin\ATMS.Admin.Data --startup-project src\ATMS.Admin\ATMS.Admin.API
 - dotnet ef database update --project src\ATMS.Admin\ATMS.Admin.Data --startup-project src\ATMS.Admin\ATMS.Admin.API
+
+```aiignore
+        var adminOptions = configuration.GetSection(nameof(AdminOptions)).Get<AdminOptions>() 
+            ?? throw new ConfigurationException(ConfigurationErrorType.AdminSectionNotFound,
+            $"Configuration for section '{nameof(AdminOptions)}' is not found or could not be loaded.");
+
+        var emailOptions = configuration.GetSection(nameof(EmailOptions)).Get<EmailOptions>()
+            ?? throw new ConfigurationException(ConfigurationErrorType.EmailSectionNotFound,
+            $"Configuration for section '{nameof(EmailOptions)}' is not found or could not be loaded.");
+
+        var imagesOptions = configuration.GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()
+            ?? throw new ConfigurationException(ConfigurationErrorType.ImagesSectionNotFound,
+            $"Configuration for section '{nameof(ImagesOptions)}' is not found or could not be loaded.");
+            
+        var queueOptions = configuration.GetSection(nameof(QueueOptions)).Get<QueueOptions>()
+            ?? throw new ConfigurationException(ConfigurationErrorType.QueueSectionNotFound,
+            $"Configuration for section '{nameof(QueueOptions)}' is not found or could not be loaded.");
+
+        var redirectUrlOptions = configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
+            ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
+            $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
+```
