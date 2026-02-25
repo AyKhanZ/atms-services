@@ -14,7 +14,7 @@ public class GetUserHandler(
 {
     public async Task<UserModel> Handle(GetUserRequest request, CancellationToken cancellationToken)
     {
-        var result = await userRepository.GetByIdAsync(request.Id, cancellationToken);
+        var result = await userRepository.GetAsync(request.Id, cancellationToken);
 
         if (result is null)
         {

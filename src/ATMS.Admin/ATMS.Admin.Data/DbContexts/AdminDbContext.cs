@@ -35,6 +35,8 @@ public class AdminDbContext: DbContext
             entity.HasIndex(e => e.Email).IsUnique();
             entity.Property(e => e.Email).IsRequired();
 
+            entity.HasIndex(e => e.RefreshToken).IsUnique();
+
             entity.Property(e => e.AvatarPath).HasDefaultValue("test.png");
 
             entity.Property(u => u.UserStatusId)

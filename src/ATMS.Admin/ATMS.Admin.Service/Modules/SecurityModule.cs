@@ -9,8 +9,10 @@ public static class SecurityModule
     public static IServiceCollection AddSecurityServices(
         this IServiceCollection services)
     {
-        services.AddScoped<IPasswordService, PasswordService>();
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddSingleton<IPasswordService, PasswordService>();
+        services.AddSingleton<ITokenService, TokenService>();
+
+        services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
         return services;
     }

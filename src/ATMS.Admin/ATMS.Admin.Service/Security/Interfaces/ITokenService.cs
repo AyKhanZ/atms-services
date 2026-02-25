@@ -5,9 +5,9 @@ namespace ATMS.Admin.Service.Security.Interfaces;
 
 public interface ITokenService
 {
-    string GenerateRefreshToken(User user);
+    Task<string> GenerateRefreshToken(User user, CancellationToken cancellationToken);
     string GenerateResetPasswordToken(User user);
-    Task<TokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken);
+    Task<AccessTokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken);
 
     //string GenerateEmailConfirmationToken(User user);
     

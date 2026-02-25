@@ -2,6 +2,7 @@
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ATMS.Admin.Data.Repositories;
 
@@ -13,10 +14,10 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<User?> FindByEmail(string email, CancellationToken cancellationToken)
+    public Task<User?> FindAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken)
     {
         return context.Users
-            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+            .FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
     public Task<List<User>> GetAsync()
@@ -24,9 +25,9 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         return context.Users.ToListAsync();
     }
 
-    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public Task<User?> GetAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await context.Users
+        return context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
@@ -40,9 +41,11 @@ public class UserRepository(AdminDbContext context) : IUserRepository
             .ToListAsync(cancellationToken);
     }
 
-    public Task<bool> IsExistAsync(string email, CancellationToken cancellationToken)
+    public Task<bool> IsExistAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken)
     {
-        return context.Users.AnyAsync(u => u.Email == email, cancellationToken);
+        return context.Users
+            .AsNoTracking()
+            .AnyAsync(predicate, cancellationToken);
     }
 
     public Task SaveAsync(CancellationToken cancellationToken)

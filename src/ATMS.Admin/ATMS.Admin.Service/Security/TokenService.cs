@@ -1,5 +1,6 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Exceptions.Configuration;
@@ -27,18 +28,37 @@ public class TokenService(
         WebEncoders.Base64UrlEncode(
             RandomNumberGenerator.GetBytes(size));
 
-    public string GenerateRefreshToken(User user)
+    private async Task<string> GenerateUniqueTokenAsync(Func<string, Task<bool>> isTokenExistAsync, int maxAttempts = 5)
     {
-        user.RefreshToken = GenerateSecureToken();
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            var token = GenerateSecureToken();
+            if (!await isTokenExistAsync(token))
+            {
+                return token;
+            }
+        }
+
+        throw new AuthException(AuthErrorType.InvalidRefreshToken,
+            "Failed to generate a unique token after several attempts.");
+    }
+
+    public async Task<string> GenerateRefreshToken(User user, CancellationToken cancellationToken)
+    {
+        var refreshToken = await GenerateUniqueTokenAsync(
+            async token => await userRepository.IsExistAsync(u => u.RefreshToken == token, cancellationToken)
+        );
+
+        user.RefreshToken = refreshToken;
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
         user.RefreshTokenCreatedAt = DateTime.UtcNow;
 
-        return GenerateSecureToken();
+        return refreshToken;
     }
 
     public string GenerateResetPasswordToken(User user) => GenerateSecureToken();
 
-    public async Task<TokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)
+    public async Task<AccessTokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -71,6 +91,6 @@ public class TokenService(
         var token = handler.CreateToken(tokenDescriptor);
         var tokenValidity = DateTime.UtcNow.AddMinutes(_jwtOptions.TokenExpirationInMinutes);
 
-        return new TokenResult(token, tokenValidity);
+        return new AccessTokenResult(token, tokenValidity);
     }
 }

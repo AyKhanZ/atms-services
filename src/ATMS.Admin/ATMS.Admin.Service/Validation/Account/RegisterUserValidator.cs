@@ -39,7 +39,7 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 
     private async Task<bool> IsEmailUnique(string email, CancellationToken cancellationToken)
     {
-        return !await userRepository.IsExistAsync(email, cancellationToken);
+        return !await userRepository.IsExistAsync(u => u.Email == email, cancellationToken);
     }
 
     private async Task<bool> IsRoleExist(Guid roleId, CancellationToken cancellationToken)

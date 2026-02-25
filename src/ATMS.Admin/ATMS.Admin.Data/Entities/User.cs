@@ -17,10 +17,11 @@ public class User : UserBase
     public string? Position { get; set; }
 
 
+    public string PasswordHash { get; set; }
     public bool HasCompletedSurvey { get; set; }
     public bool EmailConfirmed { get; set; }
     public uint FailedLoginCount { get; set; }
-    public DateTime? LockoutEnd { get; set; }
+    public DateTime LockoutEnd { get; set; }
 
     public int UserStatusId { get; set; }
     public UserStatus UserStatus { get; set; }

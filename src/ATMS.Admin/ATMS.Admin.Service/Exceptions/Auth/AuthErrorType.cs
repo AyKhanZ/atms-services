@@ -7,5 +7,8 @@ public enum AuthErrorType
     InvalidCredentials,
     PasswordMismatch,
     EmailNotConfirmed,
-    EmailAlreadyConfirmed
+    EmailAlreadyConfirmed,
+    TokenGenerationFailed,
+
+    UserStatusLocked
 }

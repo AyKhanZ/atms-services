@@ -2,6 +2,7 @@
 using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Service.Security.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -10,7 +11,9 @@ namespace ATMS.Admin.Service.Handlers.Account;
 public class RegisterHandler(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
-    IMapper mapper)
+    IMapper mapper,
+    IPasswordService passwordService,
+    IPasswordHasherService passwordHasherService)
     : IRequestHandler<RegisterCommand, UserModel>
 {
     public async Task<UserModel> Handle(RegisterCommand command, CancellationToken cancellationToken)
@@ -26,6 +29,9 @@ public class RegisterHandler(
             RoleId = role.Id
         };
         entity.UserRoles = [userRole];
+
+        var rndPassword = passwordService.GenerateRandomPassword();
+        entity.PasswordHash = passwordHasherService.Hash(rndPassword);
 
         await userRepository.CreateAsync(entity, cancellationToken);
 

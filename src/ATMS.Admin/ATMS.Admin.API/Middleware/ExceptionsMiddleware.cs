@@ -56,6 +56,9 @@ public class ExceptionsMiddleware(ILogger logger) : IMiddleware
             case AuthErrorType.EmailAlreadyConfirmed:
                 code = HttpStatusCode.NoContent;
                 break;
+            case AuthErrorType.TokenGenerationFailed:
+                logger.LogError(exception, "Authentication error: {Message}", exception.Message);
+                break;
         }
 
         var result = JsonConvert.SerializeObject(new { error = exception.Message });
