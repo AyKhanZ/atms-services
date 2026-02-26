@@ -2,7 +2,7 @@
 
 public enum UserStatusEnum
 {
-    Active,
-    Locked,
-    Deleted
+    Active = 1,
+    Inactive,
+    Locked
 }

@@ -22,7 +22,7 @@ namespace ATMS.Admin.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Gender", b =>
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.Gender", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,7 +48,33 @@ namespace ATMS.Admin.Data.Migrations
                     b.ToTable("Genders");
                 });
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Permission", b =>
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("MaritalStatuses");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.Permission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -79,6 +105,32 @@ namespace ATMS.Admin.Data.Migrations
                     b.ToTable("Permissions");
                 });
 
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("UserStatuses");
+                });
+
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -94,6 +146,9 @@ namespace ATMS.Admin.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Roles");
                 });
@@ -148,10 +203,19 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<bool>("HasCompletedSurvey")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LockoutEnd")
+                    b.Property<DateTime>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("MaritalStatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -195,6 +259,11 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.HasIndex("GenderId");
 
+                    b.HasIndex("MaritalStatusId");
+
+                    b.HasIndex("RefreshToken")
+                        .IsUnique();
+
                     b.HasIndex("UserStatusId");
 
                     b.ToTable("Users");
@@ -217,35 +286,9 @@ namespace ATMS.Admin.Data.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("UserStatuses");
-                });
-
             modelBuilder.Entity("ATMS.Admin.Data.Entities.RolePermission", b =>
                 {
-                    b.HasOne("ATMS.Admin.Data.Entities.Permission", "Permission")
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Permission", "Permission")
                         .WithMany("RolePermissions")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -264,19 +307,27 @@ namespace ATMS.Admin.Data.Migrations
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>
                 {
-                    b.HasOne("ATMS.Admin.Data.Entities.Gender", "Gender")
-                        .WithMany("Users")
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Gender", "Gender")
+                        .WithMany()
                         .HasForeignKey("GenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ATMS.Admin.Data.Entities.UserStatus", "UserStatus")
-                        .WithMany("Users")
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", "MaritalStatus")
+                        .WithMany()
+                        .HasForeignKey("MaritalStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.UserStatus", "UserStatus")
+                        .WithMany()
                         .HasForeignKey("UserStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Gender");
+
+                    b.Navigation("MaritalStatus");
 
                     b.Navigation("UserStatus");
                 });
@@ -300,12 +351,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Gender", b =>
-                {
-                    b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Permission", b =>
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
                 });
@@ -320,11 +366,6 @@ namespace ATMS.Admin.Data.Migrations
             modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserStatus", b =>
-                {
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

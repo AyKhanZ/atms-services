@@ -1,4 +1,4 @@
-﻿namespace ATMS.Admin.Data.Entities;
+﻿namespace ATMS.Admin.Data.Entities.Dictionaries;
 
 public class DictionaryEntity<TKey> : BaseEntity<TKey>
 {

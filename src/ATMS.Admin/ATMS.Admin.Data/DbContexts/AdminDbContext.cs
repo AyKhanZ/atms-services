@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.DbContexts;
@@ -11,9 +12,13 @@ public class AdminDbContext: DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
+
+    #region Dictionaries
     public DbSet<Gender> Genders { get; set; }
+    public DbSet<MaritalStatus> MaritalStatuses { get; set; }
     public DbSet<UserStatus> UserStatuses { get; set; }
     public DbSet<Permission> Permissions { get; set; }
+    #endregion
 
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
@@ -39,6 +44,10 @@ public class AdminDbContext: DbContext
 
             entity.Property(e => e.AvatarPath).HasDefaultValue("test.png");
 
+            entity.Property(u => u.MaritalStatusId)
+                    .HasDefaultValue(1)
+                    .IsRequired();
+
             entity.Property(u => u.UserStatusId)
                     .HasDefaultValue(1)
                     .IsRequired();
@@ -50,9 +59,11 @@ public class AdminDbContext: DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
+            entity.HasIndex(e => e.Name).IsUnique();
             entity.Property(e => e.Name).IsRequired();
         });
 
+        #region Dictionaries
         modelBuilder.Entity<Permission>(entity =>
         {
             entity.HasIndex(p => p.Code).IsUnique();
@@ -83,6 +94,19 @@ public class AdminDbContext: DbContext
                 .IsRequired();
         });
 
+        modelBuilder.Entity<MaritalStatus>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
+                .IsRequired();
+        });
+
         modelBuilder.Entity<Gender>(entity =>
         {
             entity.HasIndex(p => p.Code).IsUnique();
@@ -95,6 +119,7 @@ public class AdminDbContext: DbContext
                 .HasMaxLength(50)
                 .IsRequired();
         });
+        #endregion
 
         modelBuilder.Entity<UserRole>(entity =>
         {

@@ -2,7 +2,7 @@
 
 public enum MaritalStatus
 {
-    NotSpecified,
+    NotSpecified = 1,
     Single,
     Married
 }

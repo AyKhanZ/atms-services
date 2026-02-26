@@ -2,8 +2,8 @@
 
 public enum Gender
 {
-    NotSpecified,
-    Man,
-    Woman,
+    NotSpecified = 1,
+    Male,
+    Female,
     Other
 }

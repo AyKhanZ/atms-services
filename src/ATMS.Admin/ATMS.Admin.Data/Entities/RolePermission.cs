@@ -1,4 +1,6 @@
-﻿namespace ATMS.Admin.Data.Entities;
+﻿using ATMS.Admin.Data.Entities.Dictionaries;
+
+namespace ATMS.Admin.Data.Entities;
 
 public class RolePermission
 {

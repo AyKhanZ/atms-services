@@ -76,6 +76,6 @@ public class LoginValidator : AbstractValidator<LoginCommand>
         var user = await userRepository
             .FindAsync(u => u.Email == command.Email, cancellationToken);
 
-        return user?.UserStatusId == (int)UserStatusEnum.Deleted;
+        return user?.UserStatusId == (int)UserStatusEnum.Inactive;
     }
 }

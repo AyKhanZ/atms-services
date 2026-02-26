@@ -8,7 +8,7 @@ using FluentValidation;
 
 namespace ATMS.Admin.API.Middleware;
 
-public class ExceptionsMiddleware(ILogger logger) : IMiddleware
+public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {

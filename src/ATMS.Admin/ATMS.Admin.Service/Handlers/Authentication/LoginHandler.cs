@@ -4,7 +4,6 @@ using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Interfaces;
 using ATMS.Admin.Service.Exceptions.Auth;
-using ATMS.Admin.Service.Security;
 using ATMS.Admin.Service.Security.Interfaces;
 using MediatR;
 
@@ -13,7 +12,7 @@ namespace ATMS.Admin.Service.Handlers.Authentication;
 public class LoginHandler(
     IUserRepository userRepository,
     ITokenService tokenService,
-    PasswordHasherService passwordHasherService) : IRequestHandler<LoginCommand, AccessInfoModel>
+    IPasswordHasherService passwordHasherService) : IRequestHandler<LoginCommand, AccessInfoModel>
 {
     public async Task<AccessInfoModel> Handle(LoginCommand command, CancellationToken cancellationToken)
     {

@@ -17,9 +17,9 @@ public static class DataAccessModule
     public static IServiceCollection AddAdminData(
         this IServiceCollection services, IConfiguration configuration)
     {
-        var dbOptions = configuration.GetSection(nameof(DatabaseOptions)).Get<DatabaseOptions>() 
+        var dbOptions = configuration.GetSection(nameof(AdminDatabaseOptions)).Get<AdminDatabaseOptions>() 
                         ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
-                            $"Configuration for section '{nameof(DatabaseOptions)}' is not found or could not be loaded.");
+                            $"Configuration for section '{nameof(AdminDatabaseOptions)}' is not found or could not be loaded.");
         
         services.AddDbContext<AdminDbContext>(options => options.UseNpgsql(dbOptions.SqlConnection));
 
@@ -28,6 +28,7 @@ public static class DataAccessModule
         services.AddMongoDbModule(dbOptions.MongoDatabase);
 
         services.AddScoped<IMigrationRunner, MigrationRunner<AdminDbContext>>();
+
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
 
