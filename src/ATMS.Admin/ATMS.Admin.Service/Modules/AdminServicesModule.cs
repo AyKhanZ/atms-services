@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Data.Modules;
+using ATMS.Email.Services.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class AdminServicesModule
     {
         services.AddValidationServices();
         services.AddAdminData(configuration);
+        services.AddEmailServices(configuration);
         services.AddSecurityServices();
         services.AddHandlerServices();
         services.AddMapperServices();
