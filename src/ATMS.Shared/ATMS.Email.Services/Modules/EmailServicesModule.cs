@@ -1,0 +1,35 @@
+﻿using System.Net;
+using System.Net.Mail;
+using ATMS.Email.Services.Services;
+using ATMS.Email.Services.Services.Interfaces;
+using ATMS.Exceptions.Configuration;
+using ATMS.Infrastructure.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace ATMS.Email.Services.Modules;
+
+public static class EmailServicesModule
+{
+    public static IServiceCollection AddEmailServices(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var emailOptions = configuration.GetSection(nameof(EmailOptions)).Get<EmailOptions>()
+                           ?? throw new ConfigurationException(ConfigurationErrorType.EmailSectionNotFound,
+                               $"Configuration for section '{nameof(EmailOptions)}' is not found or could not be loaded.");
+
+        var smtp = new SmtpClient(emailOptions.SmtpServer, emailOptions.Port)
+        {
+            EnableSsl = emailOptions.EnableSsl,
+            Credentials = new NetworkCredential(emailOptions.From, emailOptions.Password)
+        };
+
+        services.AddFluentEmail(emailOptions.From, emailOptions.UserName)
+            .AddRazorRenderer()
+            .AddSmtpSender(smtp);
+
+        services.AddScoped<IEmailSender, EmailSender>();
+
+        return services;
+    }
+}
