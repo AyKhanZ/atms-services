@@ -7,10 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ATMS.Admin.API.Controllers;
 
-[Authorize]
 [Route("api/roles")]
-[ApiController]
-public class RolesController(IMediator mediator) : ControllerBase
+public class RolesController(IMediator mediator) : AdminControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<RoleModel[]>> Index([FromQuery] GetRolesRequest request, CancellationToken cancellationToken)
