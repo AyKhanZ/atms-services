@@ -1,4 +1,4 @@
-﻿namespace ATMS.Admin.Service.Behaviors.Models;
+﻿namespace ATMS.Application.Models;
 
 public class FieldError
 {

@@ -1,8 +1,8 @@
-﻿using ATMS.Admin.Service.Behaviors.Models;
-using ATMS.Admin.Service.Exceptions.Auth;
+﻿using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Exceptions.Entity;
 using Newtonsoft.Json;
 using System.Net;
+using ATMS.Application.Models;
 using ATMS.Exceptions.Configuration;
 using FluentValidation;
 
@@ -122,7 +122,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
                 f.ErrorMessage
             }));
 
-        var response = new ValidationErrorResponse
+        var response = new ValidationErrorModel
         {
             Errors = exception.Errors.Select(f => new FieldError
             {
