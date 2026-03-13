@@ -1,6 +1,6 @@
 ﻿using ATMS.Admin.Data.DbContexts;
 using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Repositories;

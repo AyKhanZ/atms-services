@@ -1,7 +1,7 @@
 ﻿using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using AutoMapper;
 using MediatR;
 

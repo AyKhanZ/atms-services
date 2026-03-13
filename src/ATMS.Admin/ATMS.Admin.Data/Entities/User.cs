@@ -36,7 +36,8 @@ public class User : UserBase
 
     public DateTime RefreshTokenCreatedAt { get; set; }
 
-
+    
+    #region Dictionaries
     public int UserStatusId { get; set; }
 
     public UserStatus UserStatus { get; set; }
@@ -48,6 +49,7 @@ public class User : UserBase
     public int GenderId { get; set; }
 
     public Gender Gender { get; set; }
+    #endregion
 
 
     public List<UserRole> UserRoles { get; set; }

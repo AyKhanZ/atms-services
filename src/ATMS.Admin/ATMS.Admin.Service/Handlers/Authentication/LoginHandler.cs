@@ -2,7 +2,7 @@
 using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Security.Interfaces;
 using MediatR;
@@ -11,7 +11,8 @@ namespace ATMS.Admin.Service.Handlers.Authentication;
 
 public class LoginHandler(
     IUserRepository userRepository,
-    ITokenService tokenService,
+    IAccessTokenService accessTokenService,
+    IRefreshTokenService refreshTokenService,
     IPasswordHasherService passwordHasherService) : IRequestHandler<LoginCommand, AccessInfoModel>
 {
     public async Task<AccessInfoModel> Handle(LoginCommand command, CancellationToken cancellationToken)
@@ -20,8 +21,8 @@ public class LoginHandler(
 
         await VerifyPasswordsAsync(user, command, cancellationToken);
 
-        var accessTokenResult = await tokenService.GenerateTokenAsync(user, cancellationToken);
-        var refreshToken = await tokenService.GenerateRefreshToken(user, cancellationToken);
+        var accessTokenResult = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
+        var refreshToken = await refreshTokenService.GenerateTokenAsync(user, cancellationToken);
 
         await userRepository.SaveAsync(cancellationToken);
 

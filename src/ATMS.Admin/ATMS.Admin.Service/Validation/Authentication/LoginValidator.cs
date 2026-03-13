@@ -1,6 +1,6 @@
 ﻿using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Contracts.Enums;
-using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Authentication;
@@ -32,7 +32,7 @@ public class LoginValidator : AbstractValidator<LoginCommand>
             .WithMessage("Email is required .")
             .MustAsync(IsEmailExistAsync)
             .WithMessage("User with such email doesn't exist .")
-            .MustAsync(IsEmailConfitmedAsync)
+            .MustAsync(IsEmailConfirmedAsync)
             .WithMessage("Email not confirmed .");
 
         RuleFor(x => x.Password).Cascade(CascadeMode.Stop)
@@ -47,7 +47,7 @@ public class LoginValidator : AbstractValidator<LoginCommand>
         return userRepository.IsExistAsync(u => u.Email == email, cancellationToken);
     }
 
-    private async Task<bool> IsEmailConfitmedAsync(string email, CancellationToken cancellationToken)
+    private async Task<bool> IsEmailConfirmedAsync(string email, CancellationToken cancellationToken)
     {
         var user = await userRepository.FindAsync(u => u.Email == email, cancellationToken);
 

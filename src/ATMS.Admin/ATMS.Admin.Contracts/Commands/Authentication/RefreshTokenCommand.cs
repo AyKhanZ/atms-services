@@ -5,5 +5,5 @@ namespace ATMS.Admin.Contracts.Commands.Authentication;
 
 public class RefreshTokenCommand : IRequest<AccessInfoModel>
 {
-    public string RefreshToken { get; init; }
+    public required string RefreshToken { get; init; }
 }

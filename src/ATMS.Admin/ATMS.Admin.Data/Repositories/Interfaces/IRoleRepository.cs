@@ -1,6 +1,6 @@
 ﻿using ATMS.Admin.Data.Entities;
 
-namespace ATMS.Admin.Data.Interfaces;
+namespace ATMS.Admin.Data.Repositories.Interfaces;
 
 public interface IRoleRepository
 {

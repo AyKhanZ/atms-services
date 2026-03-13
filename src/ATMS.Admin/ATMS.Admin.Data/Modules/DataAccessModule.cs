@@ -1,7 +1,7 @@
 ﻿using ATMS.Admin.Data.DbContexts;
 using ATMS.Admin.Data.Infrastructure.Migrations;
-using ATMS.Admin.Data.Interfaces;
 using ATMS.Admin.Data.Repositories;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Data.Mongo.Modules;
 using ATMS.Exceptions.Configuration;
 using ATMS.Infrastructure.Options;

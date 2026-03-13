@@ -1,6 +1,6 @@
 ﻿using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Contracts.Requests.Users;
-using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Exceptions.Entity;
 using AutoMapper;
 using MediatR;

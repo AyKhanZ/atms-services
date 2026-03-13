@@ -1,5 +1,6 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
+using ATMS.Admin.Data.Entities.Tokens;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.DbContexts;
@@ -22,6 +23,7 @@ public class AdminDbContext: DbContext
 
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
+    public DbSet<RevokedToken> RevokedTokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -151,6 +153,12 @@ public class AdminDbContext: DbContext
             entity.HasOne(x => x.Role)
                   .WithMany(x => x.RolePermissions)
                   .HasForeignKey(x => x.RoleId);
+        });
+        
+        modelBuilder.Entity<RevokedToken>(entity =>
+        {
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.RefreshToken).IsUnique();
         });
     }
 }

@@ -1,7 +1,7 @@
-﻿using ATMS.Admin.Data.Entities;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
+using ATMS.Admin.Data.Entities;
 
-namespace ATMS.Admin.Data.Interfaces;
+namespace ATMS.Admin.Data.Repositories.Interfaces;
 
 public interface IUserRepository
 {

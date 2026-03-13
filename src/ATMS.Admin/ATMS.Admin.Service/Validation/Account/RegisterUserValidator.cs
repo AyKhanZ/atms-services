@@ -1,5 +1,5 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
-using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Account;

@@ -10,7 +10,9 @@ public static class SecurityModule
         this IServiceCollection services)
     {
         services.AddScoped<IPasswordService, PasswordService>();
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IAccessTokenService, AccessTokenService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<IBlackListService, BlackListService>();
 
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
