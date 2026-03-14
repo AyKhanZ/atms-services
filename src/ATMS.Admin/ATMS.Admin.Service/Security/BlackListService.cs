@@ -9,11 +9,11 @@ public class BlackListService(IRefreshTokenRepository refreshTokenRepository) : 
 {
     public Task AddToListAsync(User user, CancellationToken cancellationToken)
     {
-        var revokedToken = new RevokedToken
+        var revokedToken = new RefreshRevokedToken
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
-            RefreshToken = user.RefreshToken,
+            Token = user.RefreshToken,
             ExpiresAt = user.RefreshTokenExpiryTime
         };
         return refreshTokenRepository

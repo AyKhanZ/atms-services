@@ -8,22 +8,22 @@ namespace ATMS.Admin.Data.Repositories;
 
 public class RefreshTokenRepository(AdminDbContext context) : IRefreshTokenRepository
 {
-    public Task ClearListAsync(Expression<Func<RevokedToken, bool>> predicate,
+    public Task ClearListAsync(Expression<Func<RefreshRevokedToken, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        return context.RevokedTokens
+        return context.RefreshRevokedTokens
             .Where(predicate)
             .ExecuteDeleteAsync(cancellationToken);
     }
 
-    public async Task AddToListAsync(RevokedToken revokedToken, CancellationToken cancellationToken = default)
+    public async Task AddToListAsync(RefreshRevokedToken refreshRevokedToken, CancellationToken cancellationToken = default)
     {
-        await context.RevokedTokens.AddAsync(revokedToken, cancellationToken);
+        await context.RefreshRevokedTokens.AddAsync(refreshRevokedToken, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
     }
 
     public Task<bool> IsExistAsync(string refreshToken, CancellationToken cancellationToken = default)
     {
-        return context.RevokedTokens.AnyAsync(t => t.RefreshToken  == refreshToken, cancellationToken);
+        return context.RefreshRevokedTokens.AnyAsync(t => t.Token  == refreshToken, cancellationToken);
     }
 }

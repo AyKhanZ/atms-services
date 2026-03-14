@@ -11,10 +11,6 @@
             ?? throw new ConfigurationException(ConfigurationErrorType.AdminSectionNotFound,
             $"Configuration for section '{nameof(AdminOptions)}' is not found or could not be loaded.");
 
-        var emailOptions = configuration.GetSection(nameof(EmailOptions)).Get<EmailOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.EmailSectionNotFound,
-            $"Configuration for section '{nameof(EmailOptions)}' is not found or could not be loaded.");
-
         var imagesOptions = configuration.GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.ImagesSectionNotFound,
             $"Configuration for section '{nameof(ImagesOptions)}' is not found or could not be loaded.");

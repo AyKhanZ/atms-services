@@ -23,7 +23,7 @@ public class AdminDbContext: DbContext
 
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
-    public DbSet<RevokedToken> RevokedTokens { get; set; }
+    public DbSet<RefreshRevokedToken> RefreshRevokedTokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -155,10 +155,10 @@ public class AdminDbContext: DbContext
                   .HasForeignKey(x => x.RoleId);
         });
         
-        modelBuilder.Entity<RevokedToken>(entity =>
+        modelBuilder.Entity<RefreshRevokedToken>(entity =>
         {
             entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => e.RefreshToken).IsUnique();
+            entity.HasIndex(e => e.Token).IsUnique();
         });
     }
 }
