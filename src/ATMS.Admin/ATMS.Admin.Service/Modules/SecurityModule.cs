@@ -11,7 +11,10 @@ public static class SecurityModule
     {
         services.AddScoped<IPasswordService, PasswordService>();
         services.AddScoped<IAccessTokenService, AccessTokenService>();
+        services.AddScoped<IUniqueTokenService, UniqueTokenService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<IResetPasswordTokenService, ResetPasswordTokenService>();
+        services.AddScoped<IEmailConfirmationTokenService, EmailConfirmationTokenService>();
         services.AddScoped<IBlackListService, BlackListService>();
 
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();

@@ -17,7 +17,7 @@ public class RefreshTokenHandler(
     {
         if (await blackListService.IsRefreshTokenRevokedAsync(command.RefreshToken, cancellationToken))
         {
-            throw new AuthException(AuthErrorType.InvalidRefreshToken, "Refresh token is revoked.");
+            throw new AuthException(AuthErrorType.InvalidToken, "Refresh token is revoked.");
         }
         
         var user = await userRepository.FindAsync(u => u.RefreshToken == command.RefreshToken, cancellationToken);

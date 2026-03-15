@@ -6,8 +6,8 @@ namespace ATMS.Admin.Service.Validation.Account;
 
 public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 {
-    private readonly IUserRepository userRepository;
-    private readonly IRoleRepository roleRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
 
     public RegisterUserValidator(IUserRepository userRepository, IRoleRepository roleRepository)
     {
@@ -33,17 +33,17 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
             .MustAsync(IsEmailUnique)
             .WithMessage("User with this email already exist .");
 
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        _userRepository = userRepository;
+        _roleRepository = roleRepository;
     }
 
     private async Task<bool> IsEmailUnique(string email, CancellationToken cancellationToken)
     {
-        return !await userRepository.IsExistAsync(u => u.Email == email, cancellationToken);
+        return !await _userRepository.IsExistAsync(u => u.Email == email, cancellationToken);
     }
 
     private async Task<bool> IsRoleExist(Guid roleId, CancellationToken cancellationToken)
     {
-        return await roleRepository.IsExistAsync(roleId, cancellationToken);
+        return await _roleRepository.IsExistAsync(roleId, cancellationToken);
     }
 }

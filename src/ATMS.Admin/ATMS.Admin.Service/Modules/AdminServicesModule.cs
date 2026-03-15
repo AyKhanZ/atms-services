@@ -1,5 +1,5 @@
 ﻿using ATMS.Admin.Data.Modules;
-using ATMS.Email.Services.Modules;
+using ATMS.Email.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

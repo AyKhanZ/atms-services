@@ -1,4 +1,4 @@
-﻿namespace ATMS.Email.Services.Models;
+﻿namespace ATMS.Email.Models;
 
 public class InviteModel
 {

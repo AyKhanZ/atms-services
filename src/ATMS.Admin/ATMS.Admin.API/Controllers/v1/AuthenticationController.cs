@@ -5,9 +5,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ATMS.Admin.API.Controllers;
+namespace ATMS.Admin.API.Controllers.v1;
 
-[Route("api/auth")]
+[Route("v1/api/auth")]
 public class AuthenticationController(IMediator mediator) : AdminControllerBase
 {
     

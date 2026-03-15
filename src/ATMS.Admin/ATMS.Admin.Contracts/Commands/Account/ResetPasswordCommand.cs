@@ -1,8 +1,10 @@
-﻿namespace ATMS.Admin.Contracts.Commands.Account;
+﻿using MediatR;
 
-public class ResetPasswordCommand
+namespace ATMS.Admin.Contracts.Commands.Account;
+
+public class ResetPasswordCommand : IRequest
 {
-    public string Password { get; set; }
-    public string ConfirmPassword { get; set; }
-    public string Token { get; set; }
+    public required string Password { get; set; }
+    public required string ConfirmPassword { get; set; }
+    public required string Token { get; set; }
 }

@@ -1,8 +1,10 @@
-﻿namespace ATMS.Admin.Contracts.Commands.Account;
+﻿using MediatR;
 
-public class ChangePasswordCommand
+namespace ATMS.Admin.Contracts.Commands.Account;
+
+public class ChangePasswordCommand : IRequest
 {
-    public string Email { get; set; }
-    public string OldPassword { get; set; }
-    public string NewPassword { get; set; }
+    public required string Email { get; set; }
+    public required string OldPassword { get; set; }
+    public required string NewPassword { get; set; }
 }

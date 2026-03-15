@@ -5,10 +5,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ATMS.Admin.API.Controllers;
+namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
-[Route("api/migrations")]
+[Route("v1/api/migrations")]
 public class MigrationController(IMediator mediator) : AdminControllerBase
 {
     

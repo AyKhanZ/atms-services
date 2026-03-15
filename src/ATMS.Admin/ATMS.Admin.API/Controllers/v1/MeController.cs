@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ATMS.Admin.API.Controllers;
+namespace ATMS.Admin.API.Controllers.v1;
 
-[Route("api/me")]
+[Route("v1/api/me")]
 public class MeController(IMediator mediator) : AdminControllerBase
 {
 }

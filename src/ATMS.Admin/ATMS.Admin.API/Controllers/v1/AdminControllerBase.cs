@@ -2,10 +2,10 @@
 using ATMS.Admin.Service.Exceptions.Auth;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ATMS.Admin.API.Controllers;
+namespace ATMS.Admin.API.Controllers.v1;
 
 [ApiController]
-public class AdminControllerBase : ControllerBase
+public abstract class AdminControllerBase : ControllerBase
 {
     protected Guid GetUserId()
     {

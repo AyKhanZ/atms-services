@@ -47,7 +47,6 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         switch (exception.AuthErrorType)
         {
             case AuthErrorType.InvalidToken:
-            case AuthErrorType.InvalidRefreshToken:
             case AuthErrorType.InvalidCredentials:
             case AuthErrorType.EmailNotConfirmed:
             case AuthErrorType.PasswordMismatch:

@@ -24,6 +24,7 @@ public class AdminDbContext: DbContext
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
     public DbSet<RefreshRevokedToken> RefreshRevokedTokens { get; set; }
+    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -156,6 +157,12 @@ public class AdminDbContext: DbContext
         });
         
         modelBuilder.Entity<RefreshRevokedToken>(entity =>
+        {
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.Token).IsUnique();
+        });
+        
+        modelBuilder.Entity<PasswordResetToken>(entity =>
         {
             entity.HasIndex(e => e.UserId);
             entity.HasIndex(e => e.Token).IsUnique();

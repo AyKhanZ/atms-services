@@ -3,7 +3,6 @@
 public enum AuthErrorType
 {
     InvalidToken,
-    InvalidRefreshToken,
     InvalidCredentials,
     PasswordMismatch,
     EmailNotConfirmed,

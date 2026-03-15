@@ -1,13 +1,13 @@
 ﻿using System.Net;
 using System.Net.Mail;
-using ATMS.Email.Services.Services;
-using ATMS.Email.Services.Services.Interfaces;
+using ATMS.Email.Services;
+using ATMS.Email.Services.Interfaces;
 using ATMS.Exceptions.Configuration;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ATMS.Email.Services.Modules;
+namespace ATMS.Email.Modules;
 
 public static class EmailServicesModule
 {

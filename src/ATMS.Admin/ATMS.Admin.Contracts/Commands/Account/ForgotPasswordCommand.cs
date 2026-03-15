@@ -1,6 +1,8 @@
-﻿namespace ATMS.Admin.Contracts.Commands.Account;
+﻿using MediatR;
 
-public class ForgotPasswordCommand
+namespace ATMS.Admin.Contracts.Commands.Account;
+
+public class ForgotPasswordCommand : IRequest
 {
-    public string Email { get; set; }
+    public required string Email { get; set; }
 }

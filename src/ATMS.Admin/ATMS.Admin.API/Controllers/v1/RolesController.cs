@@ -2,18 +2,19 @@
 using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Contracts.Requests.Roles;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ATMS.Admin.API.Controllers;
+namespace ATMS.Admin.API.Controllers.v1;
 
-[Route("api/roles")]
+[Route("v1/api/roles")]
 public class RolesController(IMediator mediator) : AdminControllerBase
 {
+
     [HttpGet]
     public async Task<ActionResult<RoleModel[]>> Index([FromQuery] GetRolesRequest request, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(request, cancellationToken);
+
         return Ok(result);
     }
 
@@ -21,6 +22,7 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     public async Task<ActionResult<RoleModel>> Get([FromQuery] GetRoleRequest request, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(request, cancellationToken);
+
         return Ok(result);
     }
 
@@ -40,6 +42,7 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     public async Task<ActionResult> Update([FromBody] UpdateRoleCommand command, CancellationToken cancellationToken)
     {
         await mediator.Send(command, cancellationToken);
+
         return NoContent();
     }
 
@@ -47,6 +50,7 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     public async Task<ActionResult> Delete([FromQuery] DeleteRoleCommand command, CancellationToken cancellationToken)
     {
         await mediator.Send(command, cancellationToken);
+
         return NoContent();
     }
 }
