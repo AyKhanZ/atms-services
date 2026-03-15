@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ATMS.Admin.Contracts.Models;
+﻿namespace ATMS.Admin.Contracts.Models;
 
 public class RoleModel
 {
