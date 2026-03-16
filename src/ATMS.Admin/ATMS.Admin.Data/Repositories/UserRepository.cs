@@ -2,6 +2,7 @@
 using ATMS.Admin.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Repositories.Interfaces;
 
 namespace ATMS.Admin.Data.Repositories;
@@ -37,6 +38,17 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         return context.UserRoles
             .Where(ur => ur.UserId == userId)
             .Select(ur => ur.Role)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<Permission>> GetPermissionsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return context.UserRoles
+            .Where(ur => ur.UserId == userId)
+            .SelectMany(ur => ur.Role.RolePermissions)
+            .Select(rp => rp.Permission)
+            .Distinct()
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }

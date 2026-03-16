@@ -1,4 +1,5 @@
-﻿using ATMS.Admin.Data.DbContexts;
+﻿using System.Linq.Expressions;
+using ATMS.Admin.Data.DbContexts;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +21,11 @@ public class RoleRepository(AdminDbContext context) : IRoleRepository
             .ExecuteDeleteAsync(cancellationToken);
     }
 
-    public async Task<Role?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Role?> GetAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
     {
         return await context.Roles
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
     public Task<List<Role>> GetAsync(CancellationToken cancellationToken)
@@ -34,11 +35,8 @@ public class RoleRepository(AdminDbContext context) : IRoleRepository
             .ToListAsync(cancellationToken);
     }
 
-    public Task<bool> IsExistAsync(string name, CancellationToken cancellationToken)
-        => context.Roles.AnyAsync(r => r.Name == name, cancellationToken);
-
-    public Task<bool> IsExistAsync(Guid id, CancellationToken cancellationToken)
-        => context.Roles.AnyAsync(r => r.Id == id, cancellationToken);
+    public Task<bool> IsExistAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
+        => context.Roles.AnyAsync(predicate, cancellationToken);
 
     public Task UpdateAsync(Role entity, CancellationToken cancellationToken)
     {

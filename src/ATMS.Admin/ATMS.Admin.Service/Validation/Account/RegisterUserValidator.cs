@@ -44,6 +44,6 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 
     private async Task<bool> IsRoleExist(Guid roleId, CancellationToken cancellationToken)
     {
-        return await _roleRepository.IsExistAsync(roleId, cancellationToken);
+        return await _roleRepository.IsExistAsync(r => r.Id == roleId, cancellationToken);
     }
 }

@@ -1,13 +1,26 @@
 ﻿using ATMS.Admin.Contracts.Requests.Me;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Models;
+using ATMS.Exceptions.Entity;
+using AutoMapper;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Me;
 
-public class GetCurrentRolesHandler : IRequestHandler<GetCurrentRolesRequest, DictionaryModel<Guid>[]>
+public class GetCurrentRolesHandler(
+    IUserRepository userRepository,
+    IMapper mapper) : IRequestHandler<GetCurrentRolesRequest, DictionaryModel<Guid>[]>
 {
-    public Task<DictionaryModel<Guid>[]> Handle(GetCurrentRolesRequest request, CancellationToken cancellationToken)
+    public async Task<DictionaryModel<Guid>[]> Handle(GetCurrentRolesRequest request, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var isExist = await userRepository.IsExistAsync(r => r.Id == request.UserId, cancellationToken);
+        if (!isExist)
+        {
+            throw new EntityException(EntityErrorType.NotFound, "User Not Found .");
+        }
+        
+        var roles = await userRepository.GetRolesAsync(request.UserId, cancellationToken);
+        
+        return mapper.Map<DictionaryModel<Guid>[]>(roles);
     }
 }

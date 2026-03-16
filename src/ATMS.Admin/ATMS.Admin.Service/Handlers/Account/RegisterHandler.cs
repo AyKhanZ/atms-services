@@ -6,6 +6,7 @@ using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Exceptions.Configuration;
+using ATMS.Exceptions.Entity;
 using ATMS.Infrastructure.Options;
 using AutoMapper;
 using MediatR;
@@ -34,8 +35,11 @@ public class RegisterHandler(
         var entity = mapper.Map<User>(command);
         entity.Id = Guid.NewGuid();
 
-        var role = await roleRepository.GetByIdAsync(command.RoleId, cancellationToken);
-
+        var role = await roleRepository.GetAsync(r => r.Id == command.RoleId, cancellationToken);
+        if (role is null)
+        {
+            throw new EntityException(EntityErrorType.NotFound, "Role not found");
+        }
         var userRole = new UserRole
         {
             UserId = entity.Id,

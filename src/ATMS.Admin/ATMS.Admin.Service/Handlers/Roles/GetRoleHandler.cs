@@ -13,7 +13,7 @@ public class GetRoleHandler(
 {
     public async Task<RoleModel> Handle(GetRoleRequest request, CancellationToken cancellationToken)
     {
-        var role = await roleRepository.GetByIdAsync(request.Id, cancellationToken);
+        var role = await roleRepository.GetAsync(r => r.Id == request.Id, cancellationToken);
 
         if (role is null)
         {
