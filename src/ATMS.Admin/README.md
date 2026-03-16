@@ -5,6 +5,23 @@
 # CLI
 - dotnet ef migrations add name --project src\ATMS.Admin\ATMS.Admin.Data --startup-project src\ATMS.Admin\ATMS.Admin.API
 - dotnet ef database update --project src\ATMS.Admin\ATMS.Admin.Data --startup-project src\ATMS.Admin\ATMS.Admin.API
+- dotnet ef migrations remove --project src\ATMS.Admin\ATMS.Admin.Data --startup-project src\ATMS.Admin\ATMS.Admin.API
+
+---
+#### If Error(1):
+```aiignore
+    Build started...
+    Build succeeded.
+    The Entity Framework tools version '9.0.4' is older than that of the runtime '10.0.3'.
+    Update the tools for the latest features and bug fixes. See https://aka.ms/AAc1fbw for more information.
+```
+#### Then:
+```aiignore
+    PS C:\Projects\Learning\.Net> dotnet tool update --global dotnet-ef
+    Tool 'dotnet-ef' was successfully updated from version '9.0.4' to version '10.0.5'.
+```
+
+---
 
 ```aiignore
         var adminOptions = configuration.GetSection(nameof(AdminOptions)).Get<AdminOptions>() 
@@ -18,8 +35,4 @@
         var queueOptions = configuration.GetSection(nameof(QueueOptions)).Get<QueueOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.QueueSectionNotFound,
             $"Configuration for section '{nameof(QueueOptions)}' is not found or could not be loaded.");
-
-        var redirectUrlOptions = configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-            $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
 ```
