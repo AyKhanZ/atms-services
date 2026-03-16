@@ -1,6 +1,70 @@
-﻿namespace Admin.API.Tests;
+﻿using ATMS.Admin.API.Controllers.v1;
+using ATMS.Admin.Contracts.Models;
+using ATMS.Admin.Contracts.Requests.Users;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+
+namespace Admin.API.Tests;
 
 public class UsersControllerTest
 {
+    private readonly Mock<IMediator> _mediatorMock;
+    private readonly UsersController _controllerMock;
+
+    public UsersControllerTest()
+    {
+        _mediatorMock = new Mock<IMediator>();
+        _controllerMock = new UsersController(_mediatorMock.Object);
+    }
     
+    [Fact]
+    public async Task Index_ReturnsOkWithUsers()
+    {
+        // Arrange
+        var users = new[]
+        {
+            new UserModel { Id = Guid.NewGuid(), Name = "User test1" },
+            new UserModel { Id = Guid.NewGuid(), Name = "User test2" },
+            new UserModel { Id = Guid.NewGuid(), Name = "User test3" },
+            new UserModel { Id = Guid.NewGuid(), Name = "User test4" },
+        };
+        
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetUsersRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(users);
+
+        var request = new GetUsersRequest();
+
+        // Act
+        var result = await _controllerMock.Index(request, CancellationToken.None);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        Assert.Equal(users, okResult.Value);
+    }
+    
+    [Fact]
+    public async Task Get_ReturnsOkWithUser()
+    {
+        // Arrange
+        var users = new[]
+        {
+            new UserModel { Id = Guid.NewGuid(), Name = "User test1" },
+            new UserModel { Id = Guid.NewGuid(), Name = "User test2" },
+            new UserModel { Id = Guid.NewGuid(), Name = "User test3" },
+            new UserModel { Id = Guid.NewGuid(), Name = "User test4" },
+        };
+        
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetUserRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(users[0]);
+
+        // Act
+        var result = await _controllerMock.Get(users[0].Id, CancellationToken.None);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        Assert.Equal(users[0], okResult.Value);
+    }
 }
