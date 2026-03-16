@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Models\ATMS.Application.Models.csproj" />
       <ProjectReference Include="..\ATMS.Admin.Data\ATMS.Admin.Data.csproj" />
     </ItemGroup>
 
