@@ -10,12 +10,12 @@ namespace Admin.API.Tests;
 public class UsersControllerTest
 {
     private readonly Mock<IMediator> _mediatorMock;
-    private readonly UsersController _controllerMock;
+    private readonly UsersController _controller;
 
     public UsersControllerTest()
     {
         _mediatorMock = new Mock<IMediator>();
-        _controllerMock = new UsersController(_mediatorMock.Object);
+        _controller = new UsersController(_mediatorMock.Object);
     }
     
     [Fact]
@@ -37,7 +37,7 @@ public class UsersControllerTest
         var request = new GetUsersRequest();
 
         // Act
-        var result = await _controllerMock.Index(request, CancellationToken.None);
+        var result = await _controller.Index(request, CancellationToken.None);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -61,7 +61,7 @@ public class UsersControllerTest
             .ReturnsAsync(users[0]);
 
         // Act
-        var result = await _controllerMock.Get(users[0].Id, CancellationToken.None);
+        var result = await _controller.Get(users[0].Id, CancellationToken.None);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);

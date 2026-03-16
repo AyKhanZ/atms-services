@@ -88,6 +88,7 @@ public class AuthenticationController(IMediator mediator) : AdminControllerBase
     {
         command.UserId = GetUserId();
         await mediator.Send(command, cancellationToken);
+        
         return NoContent();
     }
 }

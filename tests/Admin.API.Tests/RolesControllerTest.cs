@@ -12,12 +12,12 @@ namespace Admin.API.Tests;
 public class RolesControllerTest
 {
     private readonly Mock<IMediator> _mediatorMock;
-    private readonly RolesController _controllerMock;
+    private readonly RolesController _controller;
     
     public RolesControllerTest()
     {
         _mediatorMock = new Mock<IMediator>();
-        _controllerMock = new RolesController(_mediatorMock.Object);
+        _controller = new RolesController(_mediatorMock.Object);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class RolesControllerTest
         var request = new GetRolesRequest();
 
         // Act
-        var result = await _controllerMock.Index(request, CancellationToken.None);
+        var result = await _controller.Index(request, CancellationToken.None);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -72,7 +72,7 @@ public class RolesControllerTest
         };
 
         // Act
-        var result = await _controllerMock.Get(request, CancellationToken.None);
+        var result = await _controller.Get(request, CancellationToken.None);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -91,7 +91,7 @@ public class RolesControllerTest
         var command = new CreateRoleCommand { Name = "NewAdmin" };
         
         // Act
-        var result = await _controllerMock.Create(command, CancellationToken.None);
+        var result = await _controller.Create(command, CancellationToken.None);
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
@@ -111,7 +111,7 @@ public class RolesControllerTest
         var command = new UpdateRoleCommand { Id = Guid.NewGuid(), Name = "UpdatedRole" };
 
         // Act
-        var result = await _controllerMock.Update(command, CancellationToken.None);
+        var result = await _controller.Update(command, CancellationToken.None);
 
         // Assert
         var noContentResult = Assert.IsType<NoContentResult>(result);
@@ -129,7 +129,7 @@ public class RolesControllerTest
         var command = new DeleteRoleCommand { Id = Guid.NewGuid() };
 
         // Act
-        var result = await _controllerMock.Delete(command, CancellationToken.None);
+        var result = await _controller.Delete(command, CancellationToken.None);
 
         // Assert
         var noContentResult = Assert.IsType<NoContentResult>(result);
