@@ -4,10 +4,9 @@ public enum AuthErrorType
 {
     InvalidToken,
     InvalidCredentials,
-    PasswordMismatch,
     EmailNotConfirmed,
     EmailAlreadyConfirmed,
     TokenGenerationFailed,
-
-    UserStatusLocked
+    AccountLocked,
+    AccountInactive
 }

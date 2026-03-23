@@ -49,11 +49,16 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
             case AuthErrorType.InvalidToken:
             case AuthErrorType.InvalidCredentials:
             case AuthErrorType.EmailNotConfirmed:
-            case AuthErrorType.PasswordMismatch:
                 code = HttpStatusCode.Unauthorized;
                 break;
+            case AuthErrorType.AccountLocked:
+                code = HttpStatusCode.Locked;
+                break;
+            case AuthErrorType.AccountInactive:
+                code = HttpStatusCode.Forbidden;
+                break;
             case AuthErrorType.EmailAlreadyConfirmed:
-                code = HttpStatusCode.NoContent;
+                code = HttpStatusCode.Conflict;
                 break;
             case AuthErrorType.TokenGenerationFailed:
                 logger.LogError(exception, "Authentication error: {Message}", exception.Message);
@@ -89,7 +94,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
     private Task HandleExceptionAsync(HttpContext context, ConfigurationException exception)
     {
-        logger.LogError(exception, "Configuration error on {Path} {Method}: {Message}",
+        logger.LogCritical(exception, "Configuration error on {Path} {Method}: {Message}",
             context.Request.Path, context.Request.Method, exception.Message);
 
         var result = JsonConvert.SerializeObject(new { error = exception.Message });
@@ -112,7 +117,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
     private Task HandleExceptionAsync(HttpContext context, ValidationException exception)
     {
-        logger.LogWarning(exception,
+        logger.LogError(exception,
             "Validation error. Count: {Count}. Errors: {@Errors}",
             exception.Errors.Count(),
             exception.Errors.Select(f => new

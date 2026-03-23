@@ -1,6 +1,6 @@
-﻿using System.Security.Claims;
-using ATMS.Admin.Contracts.Commands.Account;
+﻿using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Security.Interfaces;
 using MediatR;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -32,7 +32,7 @@ public class ConfirmEmailHandler(
         }
         if (user.EmailConfirmed)
         {
-            return true;
+            throw new AuthException(AuthErrorType.EmailAlreadyConfirmed, "Email already confirmed .");
         }
 
         user.EmailConfirmed = true;

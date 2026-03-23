@@ -19,7 +19,16 @@ public class LoginHandler(
     {
         var user = await userRepository.FindAsync(u => u.Email == command.Email, cancellationToken);
 
-        await VerifyPasswordsAsync(user, command, cancellationToken);
+        if (user is null)
+        {
+            throw new AuthException(AuthErrorType.InvalidCredentials, "Invalid email or password");
+        }
+
+        EnsureAccountIsActive(user);
+
+        EnsureEmailConfirmed(user);
+
+        VerifyPasswords(user, command, cancellationToken);
 
         var accessTokenResult = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
         var refreshToken = await refreshTokenService.GenerateTokenAsync(user, cancellationToken);
@@ -34,26 +43,53 @@ public class LoginHandler(
         };
     }
 
-    private async Task VerifyPasswordsAsync(User user, LoginCommand command, CancellationToken cancellationToken)
+    private void EnsureEmailConfirmed(User user)
+    {
+        if (!user.EmailConfirmed)
+        {
+            throw new AuthException(AuthErrorType.EmailNotConfirmed, "Email not confirmed .");
+        }
+    }
+
+    private void EnsureAccountIsActive(User user)
+    {
+        if (user.UserStatusId == (int)UserStatusEnum.Inactive)
+        {
+            throw new AuthException(AuthErrorType.AccountInactive,
+                "Your account is not active anymore. Please contact support.");
+        }
+
+        if (user.UserStatusId == (int)UserStatusEnum.Locked &&
+            user.LockoutEnd.HasValue &&
+            user.LockoutEnd > DateTime.UtcNow)
+        {
+            var remaining = user.LockoutEnd.Value - DateTime.UtcNow;
+            var remainingMinutes = Math.Ceiling(remaining.TotalMinutes);
+
+            throw new AuthException(AuthErrorType.AccountLocked,
+                $"Account is locked. Try again in {remainingMinutes} minutes.");
+        }
+    }
+
+    private void VerifyPasswords(User user, LoginCommand command, CancellationToken cancellationToken)
     {
         var match = passwordHasherService.Verify(command.Password, user.PasswordHash);
         if (match)
         {
             user.FailedLoginCount = 0;
             user.LockoutEnd = null; // error
-            await userRepository.SaveAsync(cancellationToken);
+            user.UserStatusId = (int)UserStatusEnum.Active;
             return;
         }
 
         user.FailedLoginCount++;
-        if (user.FailedLoginCount == 5 && user.UserStatusId == (int)UserStatusEnum.Active)
+        if (user.FailedLoginCount >= 5 && user.UserStatusId == (int)UserStatusEnum.Active)
         {
             user.LockoutEnd = DateTime.UtcNow.AddMinutes(15);
             user.UserStatusId = (int)UserStatusEnum.Locked;
             user.FailedLoginCount = 0;
         }
-        await userRepository.SaveAsync(cancellationToken);
 
-        throw new AuthException(AuthErrorType.PasswordMismatch, "Incorrect password .");
+        throw new AuthException(AuthErrorType.InvalidCredentials, "Invalid email or password");
     }
 }
