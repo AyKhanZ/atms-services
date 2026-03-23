@@ -6,6 +6,6 @@ namespace ATMS.Admin.Contracts.Commands.Authentication;
 public class LogoutCommand : IRequest
 {
     [JsonIgnore]
-    public required Guid UserId { get; set; }
+    public Guid UserId { get; set; }
     public required string RefreshToken { get; init; }
 }

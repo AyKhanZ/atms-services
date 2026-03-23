@@ -69,7 +69,7 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     ///
     /// Example request:
     ///
-    ///     GET /v1/api/email/confirm?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    ///     GET /api/v1/email/confirm?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     ///
     /// </remarks>
     /// <param name="token">Email confirmation token.</param>
@@ -109,7 +109,7 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     ///
     /// Example request:
     ///
-    ///     POST /v1/api/account/email-confirmation/resend
+    ///     POST /api/v1/account/email-confirmation/resend
     ///     {
     ///         "email": "user@example.com"
     ///     }
@@ -178,7 +178,7 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// 
     /// Example request:
     ///
-    ///     POST /v1/api/account/forgot-password
+    ///     POST /api/v1/account/forgot-password
     ///     {
     ///         "email": "user@example.com"
     ///     }
@@ -223,7 +223,7 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     ///
     /// Example request:
     ///
-    ///     POST /v1/api/account/reset-password
+    ///     POST /api/v1/account/reset-password
     ///     {
     ///         "token": "reset-token-value",
     ///         "password": "NewPassword123!",

@@ -55,5 +55,5 @@ public class ResendEmailConfirmationHandler(
     }
 
     private string GenerateConfirmationLink(string token) =>
-        $"{_redirectUrlOptions.BaseUrl}/v1/api/account/confirm-email?token={token}";
+        $"{_redirectUrlOptions.BaseUrl}/account/confirm-email?token={token}";
 }

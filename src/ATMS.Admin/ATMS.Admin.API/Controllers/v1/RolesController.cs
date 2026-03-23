@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
-[Route("v1/api/roles")]
+[Route("api/v1/roles")]
 public class RolesController(IMediator mediator) : AdminControllerBase
 {
     
@@ -47,24 +47,22 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     /// <remarks>
     /// Retrieves detailed information about a role given its ID.
     /// </remarks>
-    /// <param name="request">Request containing the role ID.</param>
+    /// <param name="id">Role ID (Guid).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Returns the role data.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
     /// <response code="403">Resource forbidden.</response>
     /// <response code="404">Role with the specified ID was not found.</response>
     /// <response code="500">Unexpected server error.</response>
-    [HttpGet(":id")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(RoleModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<RoleModel>> Get(
-        [FromQuery] GetRoleRequest request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<RoleModel>> Get(Guid id, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(request, cancellationToken);
+        var result = await mediator.Send(new GetRoleRequest { Id = id }, cancellationToken);
 
         return Ok(result);
     }

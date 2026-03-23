@@ -39,7 +39,7 @@ public class UsersController(IMediator mediator) : AdminControllerBase
     /// <summary>
     /// Retrieves a single user by ID.
     /// </summary>
-    /// <param name="id">User ID (GUID).</param>
+    /// <param name="id">User ID (Guid).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Returns the user info.</response>
     /// <response code="404">User with specified ID not found.</response>
@@ -52,7 +52,7 @@ public class UsersController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<UserModel>> Get(Guid id,  CancellationToken cancellationToken)
+    public async Task<ActionResult<UserModel>> Get(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetUserRequest { Id = id }, cancellationToken);
 

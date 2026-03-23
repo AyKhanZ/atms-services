@@ -15,7 +15,7 @@ public class MeController(IMediator mediator) : AdminControllerBase
     /// Get Permissions
     /// </summary>
     /// <remarks>Method returns the list of current user permissions</remarks>
-    /// <param name="id">User ID (GUID).</param>
+    /// <param name="id">User ID (Guid).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Array of items</response>
     /// <response code="401">Unauthorized access, no access token provided by a client</response>
@@ -36,7 +36,7 @@ public class MeController(IMediator mediator) : AdminControllerBase
     /// Get Roles 
     /// </summary>
     /// <remarks>Method returns the list of current user roles</remarks>
-    /// <param name="id">User ID (GUID).</param>
+    /// <param name="id">User ID (Guid).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Dictionary of items</response>
     /// <response code="401">Unauthorized access, no access token provided by a client</response>

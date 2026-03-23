@@ -66,13 +66,8 @@ public class RolesControllerTest
             .Setup(m => m.Send(It.IsAny<GetRoleRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(roles[0]);
 
-        var request = new GetRoleRequest
-        {
-            Id =  roles[0].Id
-        };
-
         // Act
-        var result = await _controller.Get(request, CancellationToken.None);
+        var result = await _controller.Get(roles[0].Id, CancellationToken.None);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
