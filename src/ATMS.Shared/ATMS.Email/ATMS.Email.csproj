@@ -17,7 +17,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="Templates\InviteTemplate.cshtml">
+      <None Remove="Templates\InviteTemplate.cshtml" />
+      <Content Include="Templates\InviteTemplate.cshtml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Templates\ForgotPasswordTemplate.cshtml" />
+      <Content Include="Templates\ForgotPasswordTemplate.cshtml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
