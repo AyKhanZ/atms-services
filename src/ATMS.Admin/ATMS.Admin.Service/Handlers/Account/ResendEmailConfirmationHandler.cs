@@ -33,7 +33,7 @@ public class ResendEmailConfirmationHandler(
 
         if (user is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, $"User with email '{command.Email}' not found.");
+            throw new EntityException(EntityErrorType.NotFound, "User not found .");
         }
 
         var emailConfirmationTokenResult = emailConfirmationTokenService.GenerateToken(user);

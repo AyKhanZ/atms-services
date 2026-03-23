@@ -16,7 +16,7 @@ public class ChangePasswordHandler(
 
         if (user is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, "User not found");
+            throw new EntityException(EntityErrorType.NotFound, "User not found .");
         }
 
         var newPassword = passwordHasherService.Hash(command.NewPassword);

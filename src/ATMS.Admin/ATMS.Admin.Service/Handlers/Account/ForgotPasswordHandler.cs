@@ -26,9 +26,9 @@ public class ForgotPasswordHandler(
     public async Task Handle(ForgotPasswordCommand command, CancellationToken cancellationToken)
     {
         var user = await userRepository.FindAsync(u => u.Email == command.Email, cancellationToken);
-        if (user == null)
+        if (user is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, $"User with email: {command.Email} not found");
+            throw new EntityException(EntityErrorType.NotFound, "User not found .");
         }
         
         var tokenResult = await resetPasswordTokenService.GenerateTokenAsync(user, cancellationToken);

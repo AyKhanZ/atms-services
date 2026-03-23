@@ -18,7 +18,7 @@ public class GetUserHandler(
 
         if (result is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, $"User with id {request.Id} not found");
+            throw new EntityException(EntityErrorType.NotFound, $"User not found .");
         }
 
         return mapper.Map<UserModel>(result);

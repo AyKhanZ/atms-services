@@ -10,7 +10,7 @@ namespace ATMS.Admin.API.Controllers.v1;
 [Route("api/v1/me")]
 public class MeController(IMediator mediator) : AdminControllerBase
 {
-    
+
     /// <summary>
     /// Get Permissions
     /// </summary>
@@ -19,10 +19,12 @@ public class MeController(IMediator mediator) : AdminControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Array of items</response>
     /// <response code="401">Unauthorized access, no access token provided by a client</response>
+    /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unhandled server error</response>
     [HttpGet("{id:guid}/permissions")]
     [ProducesResponseType(typeof(string[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<string[]>> GetPermissionsAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -30,8 +32,8 @@ public class MeController(IMediator mediator) : AdminControllerBase
         
         return Ok(result);
     }
-    
-    
+
+
     /// <summary>
     /// Get Roles 
     /// </summary>
@@ -40,10 +42,12 @@ public class MeController(IMediator mediator) : AdminControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Dictionary of items</response>
     /// <response code="401">Unauthorized access, no access token provided by a client</response>
+    /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unhandled server error</response>
     [HttpGet("{id:guid}/roles")]
     [ProducesResponseType(typeof(DictionaryModel<Guid>[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<DictionaryModel<Guid>[]>> GetRolesAsync(Guid id, CancellationToken cancellationToken)
     {

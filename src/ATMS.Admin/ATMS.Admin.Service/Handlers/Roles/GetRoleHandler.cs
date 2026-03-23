@@ -17,7 +17,7 @@ public class GetRoleHandler(
 
         if (role is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, "Role not found");
+            throw new EntityException(EntityErrorType.NotFound, "Role not found .");
         }
 
         return mapper.Map<RoleModel>(role);

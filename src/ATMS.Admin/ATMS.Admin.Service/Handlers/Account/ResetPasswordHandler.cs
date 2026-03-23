@@ -28,7 +28,7 @@ public class ResetPasswordHandler(
 
         if (user is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, "User associated with the reset token was not found.");
+            throw new EntityException(EntityErrorType.NotFound, "User not found .");
         }
 
         user.PasswordHash = passwordHasherService.Hash(command.Password);

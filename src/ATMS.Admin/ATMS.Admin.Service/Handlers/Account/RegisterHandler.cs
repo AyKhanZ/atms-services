@@ -6,6 +6,7 @@ using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Exceptions.Configuration;
+using ATMS.Exceptions.Entity;
 using ATMS.Infrastructure.Options;
 using AutoMapper;
 using FluentValidation;
@@ -40,9 +41,7 @@ public class RegisterHandler(
         var role = await roleRepository.GetAsync(r => r.Id == command.RoleId, cancellationToken);
         if (role is null)
         {
-            throw new ValidationException([
-                new ValidationFailure(nameof(command.RoleId), "Role not found")
-            ]);
+            throw new EntityException(EntityErrorType.NotFound, "Role not found .");
         }
         var userRole = new UserRole
         {

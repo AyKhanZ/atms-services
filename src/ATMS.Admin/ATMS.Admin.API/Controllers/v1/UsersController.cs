@@ -42,15 +42,15 @@ public class UsersController(IMediator mediator) : AdminControllerBase
     /// <param name="id">User ID (Guid).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Returns the user info.</response>
-    /// <response code="404">User with specified ID not found.</response>
     /// <response code="401">Unauthorized access, no access token provided by a client</response>
     /// <response code="403">Resource forbidden.</response>
+    /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unhandled server error.</response>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<UserModel>> Get(Guid id, CancellationToken cancellationToken)
     {

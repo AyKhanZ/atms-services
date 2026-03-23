@@ -30,12 +30,14 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <response code="201">User successfully created.</response>
     /// <response code="400">Validation error, e.g., missing fields or invalid data.</response>
     /// <response code="403">Resource forbidden.</response>
+    /// <response code="404">Role with specified ID not found.</response>
     /// <response code="500">Unhandled server error.</response>
     [Authorize]
     [HttpPost("register")]
     [ProducesResponseType(typeof(UserModel), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<UserModel>> Register(
         [FromBody] RegisterCommand command,
@@ -121,10 +123,12 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="202">Request accepted. If the account exists and is not yet confirmed, a confirmation email will be sent.</response>
     /// <response code="400">Validation error.</response>
+    /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPost("email-confirmation/resend")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ResendConfirmationLetter(
         [FromBody] ResendEmailConfirmationCommand command,
@@ -151,11 +155,13 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <response code="204">Password successfully changed.</response>
     /// <response code="400">Validation error, e.g., password format invalid or missing fields.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unhandled server error.</response>
     [Authorize]
     [HttpPut("change-password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ChangePassword(
@@ -192,11 +198,13 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="202">Request accepted. If the account exists, a password reset email will be sent.</response>
     /// <response code="400">Invalid email format or validation error.</response>
+    /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]
     [HttpPost("forgot-password")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ForgotPassword(
         [FromBody] ForgotPasswordCommand command,
@@ -241,11 +249,13 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">Password successfully reset.</response>
     /// <response code="400">Invalid email format or validation error.</response>
+    /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]
     [HttpPost("reset-password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ResetPassword(
         [FromBody] ResetPasswordCommand command,

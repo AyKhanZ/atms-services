@@ -58,7 +58,7 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(RoleModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RoleModel>> Get(Guid id, CancellationToken cancellationToken)
     {
@@ -101,7 +101,7 @@ public class RolesController(IMediator mediator) : AdminControllerBase
             value: result);
     }
 
-    
+
     /// <summary>
     /// Updates an existing role.
     /// </summary>
@@ -114,12 +114,14 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     /// <response code="400">Validation error.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
     /// <response code="403">Resource forbidden.</response>
+    /// <response code="404">Role with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update(
         [FromBody] UpdateRoleCommand command,
@@ -130,7 +132,7 @@ public class RolesController(IMediator mediator) : AdminControllerBase
         return NoContent();
     }
 
-    
+
     /// <summary>
     /// Deletes an existing role.
     /// </summary>
@@ -144,12 +146,14 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     /// <response code="400">Validation error.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
     /// <response code="403">Resource forbidden.</response>
+    /// <response code="404">Role with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete(
         Guid id,

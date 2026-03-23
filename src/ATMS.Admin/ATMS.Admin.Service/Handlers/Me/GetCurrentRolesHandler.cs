@@ -16,7 +16,7 @@ public class GetCurrentRolesHandler(
         var isExist = await userRepository.IsExistAsync(r => r.Id == request.UserId, cancellationToken);
         if (!isExist)
         {
-            throw new EntityException(EntityErrorType.NotFound, "User Not Found .");
+            throw new EntityException(EntityErrorType.NotFound, "User not found .");
         }
         
         var roles = await userRepository.GetRolesAsync(request.UserId, cancellationToken);

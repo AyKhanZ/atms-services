@@ -13,7 +13,7 @@ public class GetCurrentPermissionsHandler(
         var isExist = await userRepository.IsExistAsync(r => r.Id == request.UserId, cancellationToken);
         if (!isExist)
         {
-            throw new EntityException(EntityErrorType.NotFound, "User Not Found .");
+            throw new EntityException(EntityErrorType.NotFound, "User not found .");
         }
         
         var permissions = await userRepository.GetPermissionsAsync(request.UserId, cancellationToken);
