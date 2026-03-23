@@ -21,10 +21,6 @@ public sealed class DataInitializer(
             ?? throw new ConfigurationException(ConfigurationErrorType.AdminSectionNotFound,
                 $"Configuration for section '{nameof(AdminOptions)}' is not found or could not be loaded.");
     
-    private const string SuperAdminName = "System";
-    private const string SuperAdminSurname = "Administrator";
-    private const string SuperAdminRoleName = "SuperAdmin";
-    
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         await EnsureSuperAdminRoleAsync(cancellationToken);
@@ -34,7 +30,7 @@ public sealed class DataInitializer(
     private async Task EnsureSuperAdminRoleAsync(CancellationToken cancellationToken)
     {
         var roleExists = await roleRepository.IsExistAsync(
-            r => r.Name == SuperAdminRoleName, cancellationToken);
+            r => r.Name == _adminOptions.RoleName, cancellationToken);
 
         if (roleExists)
         {
@@ -45,7 +41,7 @@ public sealed class DataInitializer(
         var role = new Role
         {
             Id = Guid.NewGuid(),
-            Name = SuperAdminRoleName,
+            Name = _adminOptions.RoleName,
             Description = "Super administrator with all permissions",
             RolePermissions = permissions.Select(p => new RolePermission
             {
@@ -66,7 +62,7 @@ public sealed class DataInitializer(
             return;
         }
         var role = await roleRepository.GetAsync(
-            r => r.Name == SuperAdminRoleName, cancellationToken);
+            r => r.Name == _adminOptions.RoleName, cancellationToken);
 
         var userId = Guid.NewGuid();
 
@@ -74,10 +70,11 @@ public sealed class DataInitializer(
         {
             Id = userId,
             Email = _adminOptions.Email,
-            Name = SuperAdminName,
-            Surname = SuperAdminSurname,
+            Name = _adminOptions.Name,
+            Surname = _adminOptions.Surname,
             PasswordHash = passwordHasherService.Hash(_adminOptions.Password),
             EmailConfirmed = true,
+            HasCompletedSurvey = true,
             UserRoles = [new UserRole { RoleId = role!.Id, UserId = userId }]
         };
 
