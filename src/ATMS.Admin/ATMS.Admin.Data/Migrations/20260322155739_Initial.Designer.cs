@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20260313165602_renamedTableRevokedTokens")]
-    partial class renamedTableRevokedTokens
+    [Migration("20260322155739_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,6 +173,32 @@ namespace ATMS.Admin.Data.Migrations
                     b.ToTable("RolePermissions");
                 });
 
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.PasswordResetToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.RefreshRevokedToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -232,7 +258,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<bool>("HasCompletedSurvey")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("LockoutEnd")
+                    b.Property<DateTime?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MaritalStatusId")
@@ -266,10 +292,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("RefreshTokenCreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                    b.Property<DateTime>("RefreshTokenExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Surname")
@@ -332,6 +355,17 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.PasswordResetToken", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.RefreshRevokedToken", b =>

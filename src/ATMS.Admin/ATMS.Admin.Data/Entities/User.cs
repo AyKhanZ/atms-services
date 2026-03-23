@@ -27,14 +27,12 @@ public class User : UserBase
 
     public uint FailedLoginCount { get; set; }
 
-    public DateTime LockoutEnd { get; set; }
+    public DateTime? LockoutEnd { get; set; }
 
 
     public string? RefreshToken { get; set; }
 
-    public DateTime RefreshTokenExpiryTime { get; set; }
-
-    public DateTime RefreshTokenCreatedAt { get; set; }
+    public DateTime RefreshTokenExpiresAt { get; set; }
 
     
     #region Dictionaries

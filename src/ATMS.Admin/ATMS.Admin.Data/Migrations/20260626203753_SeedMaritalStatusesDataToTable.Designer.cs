@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20260226181520_Initial")]
-    partial class Initial
+    [Migration("20260626203753_SeedMaritalStatusesDataToTable")]
+    partial class SeedMaritalStatusesDataToTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -206,7 +206,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<bool>("HasCompletedSurvey")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("LockoutEnd")
+                    b.Property<DateTime?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MaritalStatusId")

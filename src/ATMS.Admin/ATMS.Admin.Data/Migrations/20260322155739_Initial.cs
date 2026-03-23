@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -121,10 +122,9 @@ namespace ATMS.Admin.Data.Migrations
                     HasCompletedSurvey = table.Column<bool>(type: "boolean", nullable: false),
                     EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
                     FailedLoginCount = table.Column<long>(type: "bigint", nullable: false),
-                    LockoutEnd = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LockoutEnd = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
-                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RefreshTokenCreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RefreshTokenExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     MaritalStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     GenderId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
@@ -151,6 +151,46 @@ namespace ATMS.Admin.Data.Migrations
                         name: "FK_Users_UserStatuses_UserStatusId",
                         column: x => x.UserStatusId,
                         principalTable: "UserStatuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PasswordResetTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PasswordResetTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PasswordResetTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshRevokedTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshRevokedTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshRevokedTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -192,10 +232,32 @@ namespace ATMS.Admin.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PasswordResetTokens_Token",
+                table: "PasswordResetTokens",
+                column: "Token",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PasswordResetTokens_UserId",
+                table: "PasswordResetTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Permissions_Code",
                 table: "Permissions",
                 column: "Code",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshRevokedTokens_Token",
+                table: "RefreshRevokedTokens",
+                column: "Token",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshRevokedTokens_UserId",
+                table: "RefreshRevokedTokens",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RolePermissions_PermissionId",
@@ -260,6 +322,12 @@ namespace ATMS.Admin.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "PasswordResetTokens");
+
+            migrationBuilder.DropTable(
+                name: "RefreshRevokedTokens");
+
             migrationBuilder.DropTable(
                 name: "RolePermissions");
 

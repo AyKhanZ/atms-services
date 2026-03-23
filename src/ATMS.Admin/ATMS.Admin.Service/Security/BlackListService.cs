@@ -14,7 +14,7 @@ public class BlackListService(IRefreshTokenRepository refreshTokenRepository) : 
             Id = Guid.NewGuid(),
             UserId = user.Id,
             Token = user.RefreshToken,
-            ExpiresAt = user.RefreshTokenExpiryTime
+            ExpiresAt = user.RefreshTokenExpiresAt
         };
         return refreshTokenRepository
             .AddToListAsync(revokedToken, cancellationToken);

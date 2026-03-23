@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20260316113506_PasswordResetTokensTableAdded")]
-    partial class name
+    [Migration("20260626183832_SeedUserStatusesDataToTable")]
+    partial class SeedUserStatusesDataToTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,58 +173,6 @@ namespace ATMS.Admin.Data.Migrations
                     b.ToTable("RolePermissions");
                 });
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.PasswordResetToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Token")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PasswordResetTokens");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.RefreshRevokedToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Token")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshRevokedTokens");
-                });
-
             modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -258,7 +206,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<bool>("HasCompletedSurvey")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("LockoutEnd")
+                    b.Property<DateTime?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MaritalStatusId")
@@ -358,28 +306,6 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.PasswordResetToken", b =>
-                {
-                    b.HasOne("ATMS.Admin.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.RefreshRevokedToken", b =>
-                {
-                    b.HasOne("ATMS.Admin.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>

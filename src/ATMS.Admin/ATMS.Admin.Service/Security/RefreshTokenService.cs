@@ -1,6 +1,5 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Exceptions.Configuration;
 using ATMS.Infrastructure.Options;
@@ -25,9 +24,8 @@ public class RefreshTokenService(
         );
 
         user.RefreshToken = refreshToken;
-        //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(10);
-        user.RefreshTokenCreatedAt = DateTime.UtcNow;
+        // user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
+        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(10);
 
         return refreshToken;
     }

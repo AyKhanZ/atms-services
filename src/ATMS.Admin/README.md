@@ -36,3 +36,34 @@
             ?? throw new ConfigurationException(ConfigurationErrorType.QueueSectionNotFound,
             $"Configuration for section '{nameof(QueueOptions)}' is not found or could not be loaded.");
 ```
+
+```
+    -- Tables DROP
+        DROP TABLE "__EFMigrationsHistory";
+        DROP TABLE "Genders";
+        DROP TABLE "Roles";
+        DROP TABLE "MaritalStatuses";
+        DROP TABLE "Permissions";
+        DROP TABLE "RefreshRevokedTokens";
+        DROP TABLE "RolePermissions";
+        DROP TABLE "UserRoles";
+        DROP TABLE "Users";
+        DROP TABLE "UserStatuses";
+    
+    -- Migrations
+        select *
+        from "__EFMigrationsHistory";
+    
+    -- Dictionaries
+        SELECT * FROM "Permissions";
+        SELECT * FROM "Genders";
+        SELECT * FROM "MaritalStatuses";
+        SELECT * FROM "UserStatuses";
+    
+    -- Entities
+        SELECT * FROM "Users";
+        SELECT * FROM "Roles";
+        SELECT * FROM "UserRoles";
+        SELECT * FROM "RolePermissions";
+        SELECT * FROM "RefreshRevokedTokens";
+```

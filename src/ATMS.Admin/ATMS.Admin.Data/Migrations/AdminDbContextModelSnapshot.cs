@@ -255,7 +255,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<bool>("HasCompletedSurvey")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("LockoutEnd")
+                    b.Property<DateTime?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MaritalStatusId")
@@ -289,10 +289,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("RefreshTokenCreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                    b.Property<DateTime>("RefreshTokenExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Surname")
