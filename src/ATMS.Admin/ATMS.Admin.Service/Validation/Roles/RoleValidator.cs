@@ -20,8 +20,8 @@ public class RoleValidator : AbstractValidator<RoleCommand>
             .WithMessage("Role with this name already exists.");
 
         RuleFor(x => x.Description)
-            .MaximumLength(20)
-            .WithMessage("Role description must not exceed 20 characters.");
+            .MaximumLength(100)
+            .WithMessage("Role description must not exceed 100 characters.");
     }
 
     private async Task<bool> CheckRoleExistAsync(string name, CancellationToken cancellationToken)
