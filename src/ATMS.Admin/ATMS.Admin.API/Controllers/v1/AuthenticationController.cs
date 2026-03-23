@@ -24,7 +24,6 @@ public class AuthenticationController(IMediator mediator) : AdminControllerBase
     /// <response code="400">Validation error, e.g., missing fields or invalid data.</response>
     /// <response code="401">Unauthorized access, no access token provided by a client</response>
     /// <response code="403">Resource forbidden.</response>
-    /// <response code="409">Email already confirmed.</response>
     /// <response code="423">Account temporary locked.</response>
     /// <response code="500">Unhandled server error</response>
     [HttpPost("login")]
@@ -32,7 +31,6 @@ public class AuthenticationController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(string),StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(string),StatusCodes.Status423Locked)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<AccessInfoModel>> LoginAsync(
