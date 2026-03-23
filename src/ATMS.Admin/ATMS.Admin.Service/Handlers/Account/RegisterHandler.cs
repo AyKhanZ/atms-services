@@ -6,9 +6,10 @@ using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Exceptions.Configuration;
-using ATMS.Exceptions.Entity;
 using ATMS.Infrastructure.Options;
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 
@@ -26,9 +27,10 @@ public class RegisterHandler(
     : IRequestHandler<RegisterCommand, UserModel>
 {
     
-    private readonly RedirectUrlOptions  _redirectUrlOptions = configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
-                                                               ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-                                                                   $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
+    private readonly RedirectUrlOptions  _redirectUrlOptions =
+        configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
+            ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
+                $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
     
     public async Task<UserModel> Handle(RegisterCommand command, CancellationToken cancellationToken)
     {
@@ -38,7 +40,9 @@ public class RegisterHandler(
         var role = await roleRepository.GetAsync(r => r.Id == command.RoleId, cancellationToken);
         if (role is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, "Role not found");
+            throw new ValidationException([
+                new ValidationFailure(nameof(command.RoleId), "Role not found")
+            ]);
         }
         var userRole = new UserRole
         {

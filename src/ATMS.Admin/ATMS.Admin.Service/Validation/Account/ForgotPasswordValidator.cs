@@ -10,12 +10,12 @@ public class ForgotPasswordValidator : AbstractValidator<ForgotPasswordCommand>
 
     public ForgotPasswordValidator(IUserRepository userRepository)
     {
+        _userRepository = userRepository;
+        
         RuleFor(x => x.Email).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Email is required")
             .EmailAddress().WithMessage("Email is invalid")
             .MustAsync(IsUserExistAsync).WithMessage("No account found with this email");
-        
-        _userRepository = userRepository;
     }
 
     private Task<bool> IsUserExistAsync(string email, CancellationToken cancellationToken)

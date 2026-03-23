@@ -4,5 +4,5 @@ namespace ATMS.Admin.Contracts.Commands.Role;
 
 public class DeleteRoleCommand : IRequest
 {
-    public Guid Id { get; set; }
+    public required Guid Id { get; init; }
 }

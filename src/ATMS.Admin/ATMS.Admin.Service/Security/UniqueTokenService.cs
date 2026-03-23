@@ -7,7 +7,7 @@ namespace ATMS.Admin.Service.Security;
 
 public class UniqueTokenService : IUniqueTokenService
 {
-    public string Generate(int size = 32)
+    private static string Generate(int size = 32)
     {
         var bytes = RandomNumberGenerator.GetBytes(size);
         return WebEncoders.Base64UrlEncode(bytes);
@@ -17,7 +17,7 @@ public class UniqueTokenService : IUniqueTokenService
         Func<string, Task<bool>> existsAsync,
         int maxAttempts = 5)
     {
-        for (int i = 0; i < maxAttempts; i++)
+        for (var i = 0; i < maxAttempts; i++)
         {
             var token = Generate();
 

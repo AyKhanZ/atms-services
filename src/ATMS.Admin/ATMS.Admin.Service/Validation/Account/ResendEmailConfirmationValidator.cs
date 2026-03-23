@@ -10,13 +10,13 @@ public class ResendEmailConfirmationValidator : AbstractValidator<ResendEmailCon
 
     public ResendEmailConfirmationValidator(IUserRepository userRepository)
     {
+        _userRepository = userRepository;
+        
         RuleFor(x => x.Email).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Email is required.")
             .EmailAddress().WithMessage("Invalid email format.")
             .MustAsync(IsUserExistAsync).WithMessage("User with the specified email does not exist.")
             .MustAsync(IsEmailConfirmedAsync).WithMessage("Email is already confirmed.");
-
-        _userRepository = userRepository;
     }
 
     private Task<bool> IsEmailConfirmedAsync(string email, CancellationToken cancellationToken)

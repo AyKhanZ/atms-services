@@ -7,11 +7,13 @@ namespace ATMS.Admin.Service.Validation.Authentication;
 
 public class LoginValidator : AbstractValidator<LoginCommand>
 {
-    private readonly IUserRepository userRepository;
+    private readonly IUserRepository _userRepository;
 
     public LoginValidator(
         IUserRepository userRepository)
     {
+        _userRepository = userRepository;
+        
         RuleFor(x => x).Cascade(CascadeMode.Stop)
             // Deleted status
             .MustAsync(IsStatusDeletedAsync)
@@ -19,11 +21,13 @@ public class LoginValidator : AbstractValidator<LoginCommand>
             // Locked status
             .CustomAsync(async (command, context, cancellationToken) =>
             {
-                var result = await IsStatusLockedAsync(command, cancellationToken);
-                if (result)
+                var user = await _userRepository.FindAsync(u => u.Email == command.Email, cancellationToken);
+
+                if (user?.UserStatusId == (int)UserStatusEnum.Locked &&
+                    user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTime.UtcNow)
                 {
-                    var message = await GetMessageLockedAsync(command, cancellationToken);
-                    context.AddFailure(message);
+                    var remainingTime = user.LockoutEnd.Value - DateTime.UtcNow;
+                    context.AddFailure($"Account is locked. Try again in {remainingTime.Minutes} minutes. ");
                 }
             });
 
@@ -38,44 +42,25 @@ public class LoginValidator : AbstractValidator<LoginCommand>
         RuleFor(x => x.Password).Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Password is required .");
-
-        this.userRepository = userRepository;
     }
 
     private Task<bool> IsEmailExistAsync(string email, CancellationToken cancellationToken)
     {
-        return userRepository.IsExistAsync(u => u.Email == email, cancellationToken);
+        return _userRepository.IsExistAsync(u => u.Email == email, cancellationToken);
     }
 
     private async Task<bool> IsEmailConfirmedAsync(string email, CancellationToken cancellationToken)
     {
-        var user = await userRepository.FindAsync(u => u.Email == email, cancellationToken);
+        var user = await _userRepository.FindAsync(u => u.Email == email, cancellationToken);
 
         return user?.EmailConfirmed ?? false;
     }
 
-    private async Task<bool> IsStatusLockedAsync(LoginCommand command, CancellationToken cancellationToken)
-    {
-        var user = await userRepository
-            .FindAsync(u => u.Email == command.Email, cancellationToken);
-
-        return user?.UserStatusId == (int)UserStatusEnum.Locked && user.LockoutEnd > DateTime.UtcNow;
-    }
-
-    private async Task<string> GetMessageLockedAsync(LoginCommand command, CancellationToken cancellationToken)
-    {
-        var user = await userRepository
-            .FindAsync(u => u.Email == command.Email, cancellationToken);
-
-        var remainingTime = user.LockoutEnd - DateTime.UtcNow;
-        return $"Account is locked. Try again in {remainingTime.Minutes} minutes. ";
-    }
-
     private async Task<bool> IsStatusDeletedAsync(LoginCommand command, CancellationToken cancellationToken)
     {
-        var user = await userRepository
+        var user = await _userRepository
             .FindAsync(u => u.Email == command.Email, cancellationToken);
 
-        return user?.UserStatusId == (int)UserStatusEnum.Inactive;
+        return user?.UserStatusId != (int)UserStatusEnum.Inactive;
     }
 }

@@ -11,17 +11,20 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 
     public RegisterUserValidator(IUserRepository userRepository, IRoleRepository roleRepository)
     {
+        _userRepository = userRepository;
+        _roleRepository = roleRepository;
+        
         RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Name is required .")
             .MaximumLength(50)
-            .WithMessage("Name should be max 50 simbols .");
+            .WithMessage("Name should be max 50 symbols .");
 
         RuleFor(x => x.Surname).Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Surname is required .")
             .MaximumLength(100)
-            .WithMessage("Surname should be max 100 simbols .");
+            .WithMessage("Surname should be max 100 symbols .");
 
         RuleFor(x => x.RoleId)
             .MustAsync(IsRoleExist)
@@ -30,11 +33,10 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
         RuleFor(x => x.Email).Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage("Email is required .")
+            .EmailAddress()
+            .WithMessage("Email is invalid .")
             .MustAsync(IsEmailUnique)
             .WithMessage("User with this email already exist .");
-
-        _userRepository = userRepository;
-        _roleRepository = roleRepository;
     }
 
     private async Task<bool> IsEmailUnique(string email, CancellationToken cancellationToken)

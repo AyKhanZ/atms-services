@@ -20,9 +20,10 @@ public class ResendEmailConfirmationHandler(
     IConfiguration configuration
     ) : IRequestHandler<ResendEmailConfirmationCommand>
 {
-    private readonly RedirectUrlOptions _redirectUrlOptions = configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
-                                                               ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-                                                                   $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
+    private readonly RedirectUrlOptions _redirectUrlOptions =
+        configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
+            ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
+                $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
 
     public async Task Handle(ResendEmailConfirmationCommand command, CancellationToken cancellationToken)
     {

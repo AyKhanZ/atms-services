@@ -29,7 +29,9 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<RoleModel[]>> Index([FromQuery] GetRolesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<RoleModel[]>> Index(
+        [FromQuery] GetRolesRequest request,
+        CancellationToken cancellationToken)
     {
         var result = await mediator.Send(request, cancellationToken);
 
@@ -56,7 +58,9 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<RoleModel>> Get([FromQuery] GetRoleRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<RoleModel>> Get(
+        [FromQuery] GetRoleRequest request,
+        CancellationToken cancellationToken)
     {
         var result = await mediator.Send(request, cancellationToken);
 
@@ -84,7 +88,9 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create([FromBody] CreateRoleCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create(
+        [FromBody] CreateRoleCommand command,
+        CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken);
 
@@ -115,7 +121,9 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Update([FromBody] UpdateRoleCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(
+        [FromBody] UpdateRoleCommand command,
+        CancellationToken cancellationToken)
     {
         await mediator.Send(command, cancellationToken);
 
@@ -130,22 +138,24 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     /// Removes a role from the system by ID. 
     /// Use with caution, as deleting a role may affect user permissions.
     /// </remarks>
-    /// <param name="command">Command containing the role ID to delete.</param>
+    /// <param name="id">Role ID to delete.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">Role successfully deleted.</response>
     /// <response code="400">Validation error.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
     /// <response code="403">Resource forbidden.</response>
     /// <response code="500">Unexpected server error.</response>
-    [HttpDelete]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Delete([FromQuery] DeleteRoleCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken cancellationToken)
     {
-        await mediator.Send(command, cancellationToken);
+        await mediator.Send(new DeleteRoleCommand{ Id = id }, cancellationToken);
 
         return NoContent();
     }

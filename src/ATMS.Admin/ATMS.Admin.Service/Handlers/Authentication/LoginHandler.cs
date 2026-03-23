@@ -40,6 +40,7 @@ public class LoginHandler(
         if (match)
         {
             user.FailedLoginCount = 0;
+            user.LockoutEnd = null; // error
             await userRepository.SaveAsync(cancellationToken);
             return;
         }

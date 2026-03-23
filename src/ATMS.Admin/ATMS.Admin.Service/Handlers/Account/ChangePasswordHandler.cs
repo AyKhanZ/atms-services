@@ -13,10 +13,12 @@ public class ChangePasswordHandler(
     public async Task Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
     {
         var user = await userRepository.FindAsync(u => u.Email == command.Email, cancellationToken);
-        
-        if(user is null) 
+
+        if (user is null)
+        {
             throw new EntityException(EntityErrorType.NotFound, "User not found");
-        
+        }
+
         var newPassword = passwordHasherService.Hash(command.NewPassword);
 
         user.PasswordHash = newPassword;

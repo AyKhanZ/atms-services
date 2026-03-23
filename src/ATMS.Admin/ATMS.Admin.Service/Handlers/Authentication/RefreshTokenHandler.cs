@@ -27,7 +27,7 @@ public class RefreshTokenHandler(
 
         await userRepository.SaveAsync(cancellationToken);
 
-        return new AccessInfoModel()
+        return new AccessInfoModel
         {
             AccessToken = newAccessToken.Token,
             AccessTokenExpireTime = newAccessToken.ExpiresInMinutes,

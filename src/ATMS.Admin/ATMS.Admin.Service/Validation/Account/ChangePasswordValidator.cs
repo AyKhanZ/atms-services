@@ -11,10 +11,12 @@ public class ChangePasswordValidator : AbstractValidator<ChangePasswordCommand>
     
     public ChangePasswordValidator(IUserRepository userRepository)
     {
+        _userRepository = userRepository;
+        
         RuleFor(x => x.Email).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Email is required")
-            .MustAsync(IsUserExistAsync).WithMessage("No account found with this email")
-            .EmailAddress().WithMessage("Please enter a valid email (e.g. user@example.com)");
+            .EmailAddress().WithMessage("Please enter a valid email (e.g. user@example.com)")
+            .MustAsync(IsUserExistAsync).WithMessage("No account found with this email");
         
         RuleFor(x => x.OldPassword)
             .NotEmpty().WithMessage("Old password is required");
@@ -25,8 +27,6 @@ public class ChangePasswordValidator : AbstractValidator<ChangePasswordCommand>
             .MaximumLength(40).WithMessage("Password must be less than 40 symbols")
             .Must(IsValidPassword)
             .WithMessage("Password must include uppercase, number, special char (!@#$%^&*()-_=+), no spaces");
-
-        _userRepository = userRepository;
     }
 
     private Task<bool> IsUserExistAsync(string email, CancellationToken cancellationToken)

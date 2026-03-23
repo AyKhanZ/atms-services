@@ -49,9 +49,9 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
             routeValues: new { id = user.Id },
             value: user);
     }
-
-
-
+    
+    
+    
 
     /// <summary>
     /// Confirms user email using a confirmation token.

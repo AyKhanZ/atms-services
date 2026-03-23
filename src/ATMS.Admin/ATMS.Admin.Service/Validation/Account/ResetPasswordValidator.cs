@@ -15,6 +15,8 @@ public class ResetPasswordValidator : AbstractValidator<ResetPasswordCommand>
 
     public ResetPasswordValidator(IPasswordResetTokenRepository passwordResetTokenRepository)
     {
+        _passwordResetTokenRepository = passwordResetTokenRepository;
+        
         RuleFor(x => x.Password).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Password is required.")
             .MinimumLength(6).WithMessage("Password must be at least 6 symbols")
@@ -29,8 +31,6 @@ public class ResetPasswordValidator : AbstractValidator<ResetPasswordCommand>
             .NotEmpty().WithMessage("Reset password token is required.")
             .MustAsync(IsTokenExistAsync).WithMessage("Invalid password reset token.")
             .MustAsync(IsTokenExpiredAsync).WithMessage("Expired password reset token.");
-
-        _passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
     private Task<bool> IsTokenExistAsync(string token, CancellationToken cancellationToken)
