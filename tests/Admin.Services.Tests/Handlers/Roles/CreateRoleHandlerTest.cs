@@ -1,6 +1,48 @@
-﻿namespace Admin.Services.Tests.Handlers.Roles;
+﻿using ATMS.Admin.Contracts.Commands.Role;
+using ATMS.Admin.Contracts.Models;
+using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Service.Handlers.Roles;
+using Moq;
 
-public class CreateRoleHandlerTest
+namespace Admin.Services.Tests.Handlers.Roles;
+
+public class CreateRoleHandlerTest : BaseHandlerTest
 {
-    
+    private readonly CreateRoleHandler _handler;
+ 
+    public CreateRoleHandlerTest()
+    {
+        _handler = new CreateRoleHandler(MapperMock.Object, RoleRepositoryMock.Object);
+    }
+ 
+    [Fact]
+    public async Task Handle_CreatesEntityAndReturnsMappedModel()
+    {
+        var command = new CreateRoleCommand { Name = "Admin", Description = "Admin role" };
+        var entity = new Role { Name = command.Name };
+        var expectedModel = new RoleModel { Name = command.Name };
+ 
+        MapperMock.Setup(m => m.Map<Role>(command)).Returns(entity);
+        MapperMock.Setup(m => m.Map<RoleModel>(entity)).Returns(expectedModel);
+ 
+        var result = await _handler.Handle(command, CancellationToken.None);
+ 
+        Assert.Equal(expectedModel, result);
+        RoleRepositoryMock.Verify(r => r.CreateAsync(entity,
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+ 
+    [Fact]
+    public async Task Handle_SetsNewIdOnEntity()
+    {
+        var command = new CreateRoleCommand { Name = "Admin" };
+        var entity = new Role { Id = Guid.Empty };
+ 
+        MapperMock.Setup(m => m.Map<Role>(command)).Returns(entity);
+        MapperMock.Setup(m => m.Map<RoleModel>(entity)).Returns(new RoleModel());
+ 
+        await _handler.Handle(command, CancellationToken.None);
+ 
+        Assert.NotEqual(Guid.Empty, entity.Id);
+    }
 }

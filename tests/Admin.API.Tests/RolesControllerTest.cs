@@ -126,10 +126,8 @@ public class RolesControllerTest
             .Setup(m => m.Send(It.IsAny<DeleteRoleCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(0));
 
-        var command = new DeleteRoleCommand { Id = Guid.NewGuid() };
-
         // Act
-        var result = await _controller.Delete(command, CancellationToken.None);
+        var result = await _controller.Delete(Guid.NewGuid(), CancellationToken.None);
 
         // Assert
         var noContentResult = Assert.IsType<NoContentResult>(result);
