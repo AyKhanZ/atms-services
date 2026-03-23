@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Entities;
@@ -19,7 +21,7 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
  
     private ClaimsPrincipal CreatePrincipal(Guid userId) =>
         new(new ClaimsIdentity([
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString())
         ]));
  
     [Fact]
@@ -79,7 +81,7 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
             .ReturnsAsync(CreatePrincipal(userId));
  
         UserRepositoryMock
-            .Setup(r => r.GetAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User,bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
  
         var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
@@ -99,7 +101,7 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
             .ReturnsAsync(CreatePrincipal(userId));
  
         UserRepositoryMock
-            .Setup(r => r.GetAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
  
         var result = await _handler.Handle(CreateCommand(), CancellationToken.None);

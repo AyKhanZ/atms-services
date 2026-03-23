@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
 using ATMS.Admin.Service.Exceptions.Auth;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +9,7 @@ public abstract class AdminControllerBase : ControllerBase
 {
     protected Guid GetUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
         if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
         {
             throw new AuthException(AuthErrorType.InvalidCredentials,

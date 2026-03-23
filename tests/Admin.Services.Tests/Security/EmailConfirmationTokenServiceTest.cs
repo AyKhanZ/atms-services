@@ -1,3 +1,4 @@
+using Microsoft.IdentityModel.JsonWebTokens;
 using System.Security.Claims;
 using ATMS.Admin.Service.Security;
 
@@ -44,8 +45,8 @@ public class EmailConfirmationTokenServiceTest : BaseServiceTest
         var principal = await _emailConfirmationTokenService.ValidateTokenAsync(generated.Token);
  
         Assert.NotNull(principal);
-        var email = principal.FindFirstValue(ClaimTypes.Email);
-        Assert.Equal(user.Email, email);
+        var id = principal.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        Assert.Equal(user.Id.ToString(), id);
     }
  
     [Fact]

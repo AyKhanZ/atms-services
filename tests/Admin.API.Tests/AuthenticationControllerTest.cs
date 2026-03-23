@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using ATMS.Admin.API.Controllers.v1;
 using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Contracts.Models;
@@ -87,7 +88,7 @@ public class AuthenticationControllerTest
         
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString())
         };
 
         var identity = new ClaimsIdentity(claims, "TestAuth");

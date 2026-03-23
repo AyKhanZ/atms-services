@@ -24,8 +24,7 @@ public class RefreshTokenService(
         );
 
         user.RefreshToken = refreshToken;
-        // user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
-        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(10);
+        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
 
         return refreshToken;
     }

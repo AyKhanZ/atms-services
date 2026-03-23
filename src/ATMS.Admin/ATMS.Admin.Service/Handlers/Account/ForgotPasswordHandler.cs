@@ -18,15 +18,18 @@ public class ForgotPasswordHandler(
     IConfiguration configuration) : IRequestHandler<ForgotPasswordCommand>
 {
     
-    private readonly RedirectUrlOptions  _redirectUrlOptions = configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
-                                                               ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-                                                                   $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
+    private readonly RedirectUrlOptions  _redirectUrlOptions =
+        configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
+            ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
+                $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
 
     public async Task Handle(ForgotPasswordCommand command, CancellationToken cancellationToken)
     {
         var user = await userRepository.FindAsync(u => u.Email == command.Email, cancellationToken);
         if (user == null)
+        {
             throw new EntityException(EntityErrorType.NotFound, $"User with email: {command.Email} not found");
+        }
         
         var tokenResult = await resetPasswordTokenService.GenerateTokenAsync(user, cancellationToken);
 
@@ -40,5 +43,6 @@ public class ForgotPasswordHandler(
             }, cancellationToken);
     }
     
-    private string GenerateResetPasswordUrl(string resetToken) => $"{_redirectUrlOptions.ResetPasswordPage}?token={Uri.EscapeDataString(resetToken)}";
+    private string GenerateResetPasswordUrl(string resetToken) =>
+        $"{_redirectUrlOptions.ResetPasswordPage}?token={Uri.EscapeDataString(resetToken)}";
 }

@@ -82,7 +82,9 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     [ProducesResponseType(StatusCodes.Status302Found)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> ConfirmEmail([FromQuery] string token, CancellationToken cancellationToken)
+    public async Task<IActionResult> ConfirmEmail(
+        [FromQuery] string token,
+        CancellationToken cancellationToken)
     {
         var isConfirmed = await mediator.Send(new ConfirmEmailCommand { Token = token }, cancellationToken);
 
@@ -124,7 +126,9 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> ResendConfirmationLetter([FromBody] ResendEmailConfirmationCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> ResendConfirmationLetter(
+        [FromBody] ResendEmailConfirmationCommand command,
+        CancellationToken cancellationToken)
     {
         await mediator.Send(command, cancellationToken);
 
@@ -194,7 +198,9 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> ForgotPassword(
+        [FromBody] ForgotPasswordCommand command,
+        CancellationToken cancellationToken)
     {
         await mediator.Send(command, cancellationToken);
 
@@ -241,7 +247,9 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> ResetPassword(
+        [FromBody] ResetPasswordCommand command,
+        CancellationToken cancellationToken)
     {
         await mediator.Send(command, cancellationToken);
 

@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Admin.Service.Modules;
 
-public static class AddInfrastructureModule
+public static class InfrastructureModule
 {
     public static IServiceCollection AddInfrastructureServices(
         this IServiceCollection services)

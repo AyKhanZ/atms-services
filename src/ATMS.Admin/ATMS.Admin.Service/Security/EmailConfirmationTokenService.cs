@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Service.Security.Constants;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Exceptions.Configuration;
@@ -26,9 +25,7 @@ public class EmailConfirmationTokenService(IConfiguration configuration) : IEmai
         
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Email, user.Email),
-            new(CustomClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

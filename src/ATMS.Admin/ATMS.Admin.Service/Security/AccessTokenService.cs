@@ -31,15 +31,15 @@ public class AccessTokenService(
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.Name, user.Name),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.Name, user.Name),
             new(CustomClaimTypes.Surname, user.Surname),
             new(CustomClaimTypes.HasCompletedSurvey, user.HasCompletedSurvey.ToString().ToLower()),
             new(CustomClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.Name)));
+        claims.AddRange(roles.Select(role => new Claim(CustomClaimTypes.Role, role.Name)));
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
