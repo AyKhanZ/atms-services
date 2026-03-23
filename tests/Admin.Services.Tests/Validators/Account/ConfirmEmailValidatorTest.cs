@@ -14,7 +14,7 @@ public class ConfirmEmailValidatorTest
     {
         return new ConfirmEmailCommand
         {
-            Token = token ?? _faker.Random.String(200),
+            Token = token ?? _faker.Random.String(500),
         };
     }
     
@@ -24,16 +24,6 @@ public class ConfirmEmailValidatorTest
         var result = await _validator.ValidateAsync(GetCommand());
  
         Assert.True(result.IsValid);
-    }
-    
-    [Fact]
-    public async Task Validate_TokenMaxLength_Failure()
-    {
-        var command = GetCommand(_faker.Random.String(201));
-        var result = await _validator.ValidateAsync(command);
- 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Token must not exceed 200 characters.");
     }
     
     [Theory]

@@ -20,7 +20,7 @@ public class ConfirmEmailHandler(
         if (!Guid.TryParse(userIdClaim, out var userId))
             return false;
 
-        var user = await userRepository.GetAsync(userId, cancellationToken);
+        var user = await userRepository.FindAsync(u => u.Id == userId, cancellationToken);
         if (user == null)
             return false;
 
