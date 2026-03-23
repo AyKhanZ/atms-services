@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
-[Route("v1/api/migrations")]
+[Route("api/v1/migrations")]
 public class MigrationController(IMediator mediator) : AdminControllerBase
 {
     

@@ -3,10 +3,12 @@ using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Contracts.Requests.Roles;
 using ATMS.Application.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ATMS.Admin.API.Controllers.v1;
 
+[Authorize]
 [Route("v1/api/roles")]
 public class RolesController(IMediator mediator) : AdminControllerBase
 {

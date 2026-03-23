@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ATMS.Admin.API.Controllers.v1;
 
-[Route("v1/api/account")]
+[Route("api/v1/account")]
 public class AccountController(IMediator mediator, IConfiguration configuration) : AdminControllerBase
 {
 

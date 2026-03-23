@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
-[Route("v1/api/users")]
+[Route("api/v1/users")]
 public class UsersController(IMediator mediator) : AdminControllerBase
 {
     

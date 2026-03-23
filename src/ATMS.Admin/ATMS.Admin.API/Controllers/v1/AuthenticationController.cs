@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ATMS.Admin.API.Controllers.v1;
 
-[Route("v1/api/auth")]
+[Route("api/v1/auth")]
 public class AuthenticationController(IMediator mediator) : AdminControllerBase
 {
     
@@ -29,7 +29,9 @@ public class AuthenticationController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<AccessInfoModel>> LoginAsync([FromBody] LoginCommand command,  CancellationToken cancellationToken)
+    public async Task<ActionResult<AccessInfoModel>> LoginAsync(
+        [FromBody] LoginCommand command,
+        CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken);
 
@@ -57,7 +59,9 @@ public class AuthenticationController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<AccessInfoModel>> RefreshTokenAsync([FromBody] RefreshTokenCommand command,  CancellationToken cancellationToken)
+    public async Task<ActionResult<AccessInfoModel>> RefreshTokenAsync(
+        [FromBody] RefreshTokenCommand command,
+        CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken);
 
@@ -84,7 +88,9 @@ public class AuthenticationController(IMediator mediator) : AdminControllerBase
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> LogoutAsync([FromBody] LogoutCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult> LogoutAsync(
+        [FromBody] LogoutCommand command,
+        CancellationToken cancellationToken)
     {
         command.UserId = GetUserId();
         await mediator.Send(command, cancellationToken);
