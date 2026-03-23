@@ -10,6 +10,7 @@ public static class AdminServicesModule
     public static IServiceCollection AddAdminServices(
         this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddInfrastructureServices();
         services.AddValidationServices();
         services.AddAdminData(configuration);
         services.AddEmailServices(configuration);
