@@ -68,12 +68,12 @@ public class CreateRoleValidatorTest
     [Fact]
     public async Task Validate_WhenDescriptionExceedsMaxLength_ReturnsFailure()
     {
-        var command = GetCommand(_faker.Random.AlphaNumeric(10), _faker.Random.AlphaNumeric(21));
+        var command = GetCommand(_faker.Random.AlphaNumeric(10), _faker.Random.AlphaNumeric(101));
  
         var result = await _validator.ValidateAsync(command);
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Role description must not exceed 20 characters.");
+        Assert.Contains(result.Errors, e => e.ErrorMessage == "Role description must not exceed 100 characters.");
     }
  
     [Fact]
