@@ -9,8 +9,6 @@ using ATMS.Exceptions.Configuration;
 using ATMS.Exceptions.Entity;
 using ATMS.Infrastructure.Options;
 using AutoMapper;
-using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 

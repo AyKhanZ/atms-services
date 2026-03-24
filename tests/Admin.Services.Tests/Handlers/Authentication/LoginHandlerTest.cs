@@ -26,13 +26,14 @@ public class LoginHandlerTest : BaseHandlerTest
             PasswordHasherServiceMock.Object);
     }
  
-    private User CreateUser(uint failedLoginCount = 0, int? statusId = null) =>
+    private User CreateUser(uint failedLoginCount = 0, int? statusId = null, bool isEmailConfirmed = true) =>
         new()
         {
             Id = Guid.NewGuid(),
             Email = Faker.Internet.Email(),
             PasswordHash = Faker.Random.AlphaNumeric(32),
             FailedLoginCount = failedLoginCount,
+            EmailConfirmed = isEmailConfirmed,
             UserStatusId = statusId ?? (int)UserStatusEnum.Active
         };
  
@@ -109,7 +110,7 @@ public class LoginHandlerTest : BaseHandlerTest
         var exception = await Assert.ThrowsAsync<AuthException>(() =>
             _handler.Handle(command, CancellationToken.None));
  
-        Assert.Equal(AuthErrorType.PasswordMismatch, exception.AuthErrorType);
+        Assert.Equal(AuthErrorType.InvalidCredentials, exception.AuthErrorType);
     }
  
     [Fact]
@@ -143,5 +144,133 @@ public class LoginHandlerTest : BaseHandlerTest
         Assert.Equal((uint)0, user.FailedLoginCount);
         Assert.True(user.LockoutEnd.HasValue);
         Assert.True(user.LockoutEnd.Value > DateTime.UtcNow);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenUserNotFound_ThrowsAuthException()
+    {
+        UserRepositoryMock
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        var command = CreateCommand();
+        var exception = await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.InvalidCredentials, exception.AuthErrorType);
+    }
+
+    [Fact]
+    public async Task Handle_WhenEmailNotConfirmed_ThrowsAuthException()
+    {
+        var user = CreateUser(isEmailConfirmed: false);
+        var command = CreateCommand();
+
+        SetupUser(user);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.EmailNotConfirmed, exception.AuthErrorType);
+    }
+
+    [Fact]
+    public async Task Handle_WhenAccountIsInactive_ThrowsAuthException()
+    {
+        var user = CreateUser(statusId: (int)UserStatusEnum.Inactive);
+        var command = CreateCommand();
+
+        SetupUser(user);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.AccountInactive, exception.AuthErrorType);
+    }
+
+    [Fact]
+    public async Task Handle_WhenAccountIsLockedAndLockoutNotExpired_ThrowsAuthException()
+    {
+        var user = CreateUser(statusId: (int)UserStatusEnum.Locked);
+        user.LockoutEnd = DateTime.UtcNow.AddMinutes(10);
+        var command = CreateCommand();
+
+        SetupUser(user);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.AccountLocked, exception.AuthErrorType);
+    }
+
+    [Fact]
+    public async Task Handle_WhenAccountIsLockedButLockoutExpired_AllowsLogin()
+    {
+        var user = CreateUser(statusId: (int)UserStatusEnum.Locked);
+        user.LockoutEnd = DateTime.UtcNow.AddMinutes(-1); // срок истёк
+        var command = CreateCommand();
+
+        SetupUser(user);
+        SetupPasswordMatch(true);
+        SetupTokenServices(user);
+
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        Assert.Equal(FakeAccessToken, result.AccessToken);
+        Assert.Equal((int)UserStatusEnum.Active, user.UserStatusId);
+        Assert.Null(user.LockoutEnd);
+    }
+
+    [Fact]
+    public async Task Handle_WithValidCredentials_CallsSaveAsync()
+    {
+        var user = CreateUser();
+        var command = CreateCommand();
+
+        SetupUser(user);
+        SetupPasswordMatch(true);
+        SetupTokenServices(user);
+
+        await _handler.Handle(command, CancellationToken.None);
+
+        UserRepositoryMock.Verify(
+            r => r.SaveAsync(It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WithWrongPassword_DoesNotCallSaveAsync()
+    {
+        var user = CreateUser();
+        var command = CreateCommand();
+
+        SetupUser(user);
+        SetupPasswordMatch(false);
+
+        await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        UserRepositoryMock.Verify(
+            r => r.SaveAsync(It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public async Task Handle_WithWrongPassword_BeforeThreshold_DoesNotLockUser(int failedCount)
+    {
+        var user = CreateUser(failedLoginCount: (uint)failedCount);
+        var command = CreateCommand();
+
+        SetupUser(user);
+        SetupPasswordMatch(false);
+
+        await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        Assert.Equal((int)UserStatusEnum.Active, user.UserStatusId);
+        Assert.Null(user.LockoutEnd);
     }
 }

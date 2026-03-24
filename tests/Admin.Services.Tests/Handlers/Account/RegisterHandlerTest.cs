@@ -6,7 +6,6 @@ using ATMS.Admin.Service.Handlers.Account;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Email.Models;
 using ATMS.Exceptions.Entity;
-using FluentValidation;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Account;
@@ -111,22 +110,24 @@ public class RegisterHandlerTest : BaseHandlerTest
             It.Is<InviteModel>(m => m.Link.Contains(FakeToken) && m.Link.Contains(BaseUrl)),
             It.IsAny<CancellationToken>()), Times.Once);
     }
- 
+    
     [Fact]
-    public async Task Handle_WhenRoleNotFound_ThrowsValidationException()
+    public async Task Handle_WhenRoleNotFound_ThrowsEntityException()
     {
         var command = CreateCommand();
         var entity = new User { Id = Guid.NewGuid() };
- 
+
         MapperMock.Setup(m => m.Map<User>(command)).Returns(entity);
- 
+
         RoleRepositoryMock
-            .Setup(r => r.GetAsync(It.IsAny<Expression<Func<Role, bool>>>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetAsync(It.IsAny<Expression<Func<Role, bool>>>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((Role?)null);
- 
-        var exception = await Assert.ThrowsAsync<ValidationException>(() =>
+
+        var exception = await Assert.ThrowsAsync<EntityException>(() =>
             _handler.Handle(command, CancellationToken.None));
- 
-        Assert.Contains(exception.Errors, e => e.PropertyName == nameof(command.RoleId));
+
+        Assert.Equal(EntityErrorType.NotFound, exception.ErrorType);
+        Assert.Equal("Role not found .", exception.Message);
     }
 }

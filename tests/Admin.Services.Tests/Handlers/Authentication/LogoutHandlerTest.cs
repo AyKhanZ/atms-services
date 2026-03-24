@@ -60,4 +60,64 @@ public class LogoutHandlerTest : BaseHandlerTest
  
         Assert.Equal(AuthErrorType.InvalidToken, exception.AuthErrorType);
     }
+    
+    [Fact]
+    public async Task Handle_WhenUserNotFound_ThrowsAuthException()
+    {
+        var command = CreateCommand();
+
+        BlackListServiceMock
+            .Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        UserRepositoryMock
+            .Setup(r => r.GetAsync(command.UserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.InvalidToken, exception.AuthErrorType);
+    }
+
+    [Fact]
+    public async Task Handle_WhenTokenRevoked_DoesNotCallAddToBlackList()
+    {
+        var command = CreateCommand();
+
+        BlackListServiceMock
+            .Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        BlackListServiceMock.Verify(s => s.AddToListAsync(
+            It.IsAny<User>(),
+            It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserNotFound_DoesNotCallAddToBlackList()
+    {
+        var command = CreateCommand();
+
+        BlackListServiceMock
+            .Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        UserRepositoryMock
+            .Setup(r => r.GetAsync(command.UserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        BlackListServiceMock.Verify(s => s.AddToListAsync(
+            It.IsAny<User>(),
+            It.IsAny<CancellationToken>()), Times.Never);
+    }
 }

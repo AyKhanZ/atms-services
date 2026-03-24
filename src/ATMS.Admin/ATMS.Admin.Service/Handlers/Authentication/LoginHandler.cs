@@ -24,11 +24,11 @@ public class LoginHandler(
             throw new AuthException(AuthErrorType.InvalidCredentials, "Invalid email or password");
         }
 
-        EnsureAccountIsActive(user);
-
         EnsureEmailConfirmed(user);
 
-        VerifyPasswords(user, command, cancellationToken);
+        EnsureAccountIsActive(user);
+
+        VerifyPasswords(user, command);
 
         var accessTokenResult = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
         var refreshToken = await refreshTokenService.GenerateTokenAsync(user, cancellationToken);
@@ -53,32 +53,36 @@ public class LoginHandler(
 
     private void EnsureAccountIsActive(User user)
     {
-        if (user.UserStatusId == (int)UserStatusEnum.Inactive)
+        switch (user.UserStatusId)
         {
-            throw new AuthException(AuthErrorType.AccountInactive,
-                "Your account is not active anymore. Please contact support.");
-        }
+            case (int)UserStatusEnum.Inactive:
+                throw new AuthException(AuthErrorType.AccountInactive,
+                    "Your account is not active anymore. Please contact support.");
+            case (int)UserStatusEnum.Locked when
+                user.LockoutEnd.HasValue &&
+                user.LockoutEnd > DateTime.UtcNow:
+            {
+                var remaining = user.LockoutEnd.Value - DateTime.UtcNow;
+                var remainingMinutes = Math.Ceiling(remaining.TotalMinutes);
 
-        if (user.UserStatusId == (int)UserStatusEnum.Locked &&
-            user.LockoutEnd.HasValue &&
-            user.LockoutEnd > DateTime.UtcNow)
-        {
-            var remaining = user.LockoutEnd.Value - DateTime.UtcNow;
-            var remainingMinutes = Math.Ceiling(remaining.TotalMinutes);
-
-            throw new AuthException(AuthErrorType.AccountLocked,
-                $"Account is locked. Try again in {remainingMinutes} minutes.");
+                throw new AuthException(AuthErrorType.AccountLocked,
+                    $"Account is locked. Try again in {remainingMinutes} minutes.");
+            }
         }
     }
 
-    private void VerifyPasswords(User user, LoginCommand command, CancellationToken cancellationToken)
+    private void VerifyPasswords(User user, LoginCommand command)
     {
         var match = passwordHasherService.Verify(command.Password, user.PasswordHash);
         if (match)
         {
             user.FailedLoginCount = 0;
-            user.LockoutEnd = null; // error
-            user.UserStatusId = (int)UserStatusEnum.Active;
+            user.LockoutEnd = null;
+            if (user.UserStatusId == (int)UserStatusEnum.Locked)
+            {
+                user.UserStatusId = (int)UserStatusEnum.Active;
+            }
+            
             return;
         }
 

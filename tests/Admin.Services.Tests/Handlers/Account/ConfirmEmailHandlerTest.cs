@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Handlers.Account;
 using Moq;
 
@@ -56,37 +57,40 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
     public async Task Handle_WhenUserNotFound_ReturnsFalse()
     {
         var userId = Guid.NewGuid();
- 
+
         EmailConfirmationTokenServiceMock
             .Setup(s => s.ValidateTokenAsync(It.IsAny<string>()))
             .ReturnsAsync(CreatePrincipal(userId));
- 
+
         UserRepositoryMock
-            .Setup(r => r.GetAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
- 
+
         var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
- 
+
         Assert.False(result);
     }
- 
+
     [Fact]
-    public async Task Handle_WhenEmailAlreadyConfirmed_ReturnsTrueWithoutSaving()
+    public async Task Handle_WhenEmailAlreadyConfirmed_ThrowsAuthException()
     {
         var userId = Guid.NewGuid();
         var user = new User { Id = userId, EmailConfirmed = true };
- 
+
         EmailConfirmationTokenServiceMock
             .Setup(s => s.ValidateTokenAsync(It.IsAny<string>()))
             .ReturnsAsync(CreatePrincipal(userId));
- 
+
         UserRepositoryMock
-            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User,bool>>>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
- 
-        var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
- 
-        Assert.True(result);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.EmailAlreadyConfirmed, exception.AuthErrorType);
         UserRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
  
