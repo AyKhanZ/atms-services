@@ -15,9 +15,42 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Email\ATMS.Email.csproj" />
-		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Exceptions\ATMS.Exceptions.csproj" />
+		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Exceptions\ATMS.Application.Exceptions.csproj" />
 		<ProjectReference Include="..\ATMS.Admin.Contracts\ATMS.Admin.Contracts.csproj" />
 		<ProjectReference Include="..\ATMS.Admin.Data\ATMS.Admin.Data.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\AccountMessages.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AccountMessages.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\AuthMessages.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AuthMessages.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\RoleMessages.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>RoleMessages.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Resources\AccountMessages.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AccountMessages.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\AuthMessages.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AuthMessages.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\RoleMessages.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>RoleMessages.resx</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 </Project>

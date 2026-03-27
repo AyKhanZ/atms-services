@@ -1,4 +1,4 @@
-﻿namespace ATMS.Exceptions.Configuration;
+﻿namespace ATMS.Application.Exceptions.Configuration;
 
 public class ConfigurationException : Exception
 {

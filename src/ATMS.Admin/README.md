@@ -24,17 +24,16 @@
 ---
 
 ```aiignore
-        var adminOptions = configuration.GetSection(nameof(AdminOptions)).Get<AdminOptions>() 
-            ?? throw new ConfigurationException(ConfigurationErrorType.AdminSectionNotFound,
-            $"Configuration for section '{nameof(AdminOptions)}' is not found or could not be loaded.");
 
-        var imagesOptions = configuration.GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.ImagesSectionNotFound,
-            $"Configuration for section '{nameof(ImagesOptions)}' is not found or could not be loaded.");
-            
-        var queueOptions = configuration.GetSection(nameof(QueueOptions)).Get<QueueOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.QueueSectionNotFound,
-            $"Configuration for section '{nameof(QueueOptions)}' is not found or could not be loaded.");
+        private readonly ImagesOptions _imagesOptions =
+            configuration.GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()
+                ?? throw new ConfigurationException(ConfigurationErrorType.ImagesSectionNotFound,
+                    string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(ImagesOptions)));
+                    
+        private readonly QueueOptions _queueOptions =
+            configuration.GetSection(nameof(QueueOptions)).Get<QueueOptions>()
+                ?? throw new ConfigurationException(ConfigurationErrorType.ImagesSectionNotFound,
+                    string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(QueueOptions)));
 ```
 
 ```

@@ -1,4 +1,4 @@
-﻿namespace ATMS.Exceptions.Entity;
+﻿namespace ATMS.Application.Exceptions.Entity;
 
 public class EntityException : Exception
 {

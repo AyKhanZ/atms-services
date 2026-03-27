@@ -13,6 +13,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\ATMS.Exceptions\ATMS.Exceptions.csproj" />
+	  <ProjectReference Include="..\ATMS.Application.Exceptions\ATMS.Application.Exceptions.csproj" />
 	</ItemGroup>
 </Project>
