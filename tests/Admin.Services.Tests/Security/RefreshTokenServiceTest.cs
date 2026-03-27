@@ -43,7 +43,8 @@ public class RefreshTokenServiceTest : BaseServiceTest
         await _refreshTokenService.GenerateTokenAsync(user, CancellationToken.None);
         var after = DateTime.UtcNow.AddDays(ValidRefreshExpirationInDays);
  
-        Assert.InRange(user.RefreshTokenExpiresAt, before, after);
+        Assert.True(user.RefreshTokenExpiresAt.HasValue);
+        Assert.InRange(user.RefreshTokenExpiresAt.Value, before, after);
     }
     
     [Fact]

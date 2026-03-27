@@ -1,5 +1,5 @@
 ﻿using ATMS.Admin.API.Controllers.v1;
-using ATMS.Admin.Contracts.Models;
+using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

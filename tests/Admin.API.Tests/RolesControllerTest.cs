@@ -83,7 +83,7 @@ public class RolesControllerTest
             .Setup(m => m.Send(It.IsAny<CreateRoleCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(role);
         
-        var command = new CreateRoleCommand { Name = "NewAdmin" };
+        var command = new CreateRoleCommand { Name = "NewAdmin", PermissionIds = [1, 2, 3] };
         
         // Act
         var result = await _controller.Create(command, CancellationToken.None);
@@ -103,7 +103,7 @@ public class RolesControllerTest
             .Setup(m => m.Send(It.IsAny<UpdateRoleCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(0));
 
-        var command = new UpdateRoleCommand { Id = Guid.NewGuid(), Name = "UpdatedRole" };
+        var command = new UpdateRoleCommand { Id = Guid.NewGuid(), Name = "UpdatedRole", PermissionIds = [1, 2, 3] };
 
         // Act
         var result = await _controller.Update(command, CancellationToken.None);

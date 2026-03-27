@@ -1,4 +1,5 @@
-﻿using ATMS.Admin.Contracts.Commands.Authentication;
+﻿using System.Linq.Expressions;
+using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Handlers.Authentication;
@@ -28,7 +29,11 @@ public class LogoutHandlerTest : BaseHandlerTest
     public async Task Handle_WhenTokenNotRevoked_AddsUserToBlackList()
     {
         var command = CreateCommand();
-        var user = new User { Id = command.UserId };
+        var user = new User {
+            Id = command.UserId,
+            RefreshToken = command.RefreshToken,
+            RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7)
+        };
  
         BlackListServiceMock
             .Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken,
@@ -36,13 +41,41 @@ public class LogoutHandlerTest : BaseHandlerTest
             .ReturnsAsync(false);
  
         UserRepositoryMock
-            .Setup(r => r.GetAsync(command.UserId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
  
         await _handler.Handle(command, CancellationToken.None);
  
         BlackListServiceMock.Verify(s => s.AddToListAsync(user,
             It.IsAny<CancellationToken>()), Times.Once);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenUserHasNoRefreshToken_ThrowsAuthException()
+    {
+        var command = CreateCommand();
+        var user = new User
+        {
+            Id = command.UserId,
+            RefreshToken = null,
+            RefreshTokenExpiresAt = null
+        };
+
+        BlackListServiceMock
+            .Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        UserRepositoryMock
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.InvalidToken, exception.AuthErrorType);
     }
  
     [Fact]
@@ -72,7 +105,8 @@ public class LogoutHandlerTest : BaseHandlerTest
             .ReturnsAsync(false);
 
         UserRepositoryMock
-            .Setup(r => r.GetAsync(command.UserId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
         var exception = await Assert.ThrowsAsync<AuthException>(() =>
@@ -110,7 +144,8 @@ public class LogoutHandlerTest : BaseHandlerTest
             .ReturnsAsync(false);
 
         UserRepositoryMock
-            .Setup(r => r.GetAsync(command.UserId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
         await Assert.ThrowsAsync<AuthException>(() =>

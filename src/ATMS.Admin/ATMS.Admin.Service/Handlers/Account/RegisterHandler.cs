@@ -1,5 +1,5 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
-using ATMS.Admin.Contracts.Models;
+using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;

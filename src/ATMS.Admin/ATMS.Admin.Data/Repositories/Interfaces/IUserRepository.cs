@@ -8,7 +8,7 @@ public interface IUserRepository
 {
     Task CreateAsync(User user, CancellationToken cancellationToken);
 
-    Task<List<User>> GetAsync();
+    Task<List<User>> GetAsync(CancellationToken cancellationToken);
 
     Task<User?> GetAsync(Guid id, CancellationToken cancellationToken);
 

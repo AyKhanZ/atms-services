@@ -1,7 +1,6 @@
 ﻿using ATMS.Admin.API.Controllers.v1;
 using ATMS.Admin.Contracts.Commands.Account;
-using ATMS.Admin.Contracts.Models;
-using ATMS.Infrastructure.Options;
+using ATMS.Admin.Contracts.Models.Users;
 using Bogus;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

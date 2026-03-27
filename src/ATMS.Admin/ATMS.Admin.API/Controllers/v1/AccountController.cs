@@ -1,5 +1,5 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
-using ATMS.Admin.Contracts.Models;
+using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Application.Models;
 using ATMS.Exceptions.Configuration;
 using ATMS.Infrastructure.Options;

@@ -14,14 +14,19 @@ public class LogoutHandler(
     {
         if (await blackListService.IsRefreshTokenRevokedAsync(command.RefreshToken, cancellationToken))
         {
-            throw new AuthException(AuthErrorType.InvalidToken, "Refresh token is revoked .");
+            throw new AuthException(AuthErrorType.InvalidToken, "Invalid token .");
         }
-        var user = await userRepository.GetAsync(command.UserId, cancellationToken);
-        if (user is null)
+        
+        var user = await userRepository.FindAsync(u => u.Id == command.UserId, cancellationToken);
+        if (user?.RefreshToken is null || user.RefreshTokenExpiresAt is null)
         {
-            throw new AuthException(AuthErrorType.InvalidToken, "User not found .");
+            throw new AuthException(AuthErrorType.InvalidToken, "Invalid token.");
         }
         
         await blackListService.AddToListAsync(user, cancellationToken);
+        
+        user.RefreshToken = null;
+        user.RefreshTokenExpiresAt = null;
+        await userRepository.SaveAsync(cancellationToken);
     }
 }

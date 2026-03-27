@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Account;
-using ATMS.Admin.Contracts.Models;
+using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Account;
 using ATMS.Admin.Service.Security.Models;

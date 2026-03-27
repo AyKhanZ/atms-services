@@ -1,4 +1,4 @@
-using ATMS.Admin.Contracts.Models;
+using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Users;
@@ -22,7 +22,7 @@ public class GetUsersHandlerTest : BaseHandlerTest
         var expectedModels = new UserModel[] { new(), new() };
  
         UserRepositoryMock
-            .Setup(r => r.GetAsync())
+            .Setup(r => r.GetAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(users);
  
         MapperMock
@@ -38,7 +38,7 @@ public class GetUsersHandlerTest : BaseHandlerTest
     public async Task Handle_WhenNoUsers_ReturnsEmptyArray()
     {
         UserRepositoryMock
-            .Setup(r => r.GetAsync())
+            .Setup(r => r.GetAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync([]);
  
         MapperMock

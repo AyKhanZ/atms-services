@@ -124,7 +124,7 @@ namespace ATMS.Admin.Data.Migrations
                     FailedLoginCount = table.Column<long>(type: "bigint", nullable: false),
                     LockoutEnd = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
-                    RefreshTokenExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    RefreshTokenExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UserStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     MaritalStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     GenderId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
@@ -181,7 +181,7 @@ namespace ATMS.Admin.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>

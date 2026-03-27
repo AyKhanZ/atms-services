@@ -31,7 +31,8 @@ public class RefreshTokenValidator : AbstractValidator<RefreshTokenCommand>
     private async Task<bool> IsRefreshTokenExtendedAsync(string refreshToken, CancellationToken cancellationToken)
     {
         var user = await _userRepository.FindAsync(u => u.RefreshToken == refreshToken, cancellationToken);
-
-        return user?.RefreshTokenExpiresAt > DateTime.UtcNow;
+        
+        return user?.RefreshTokenExpiresAt != null
+               && user.RefreshTokenExpiresAt.Value > DateTime.UtcNow;
     }
 }

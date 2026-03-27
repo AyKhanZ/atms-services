@@ -16,6 +16,15 @@ public class CreateRoleHandler(
     {
         var entity = mapper.Map<Role>(command);
         entity.Id = Guid.NewGuid();
+        
+        entity.RolePermissions = command.PermissionIds
+            .Distinct()
+            .Select(pid => new RolePermission
+            {
+                RoleId = entity.Id,
+                PermissionId = pid
+            })
+            .ToList();
 
         await roleRepository.CreateAsync(entity, cancellationToken);
 

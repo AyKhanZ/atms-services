@@ -21,9 +21,11 @@ public class UserRepository(AdminDbContext context) : IUserRepository
             .FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public Task<List<User>> GetAsync()
+    public Task<List<User>> GetAsync(CancellationToken cancellationToken)
     {
-        return context.Users.ToListAsync();
+        return context.Users
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
     public Task<User?> GetAsync(Guid id, CancellationToken cancellationToken)

@@ -6,8 +6,8 @@ namespace ATMS.Admin.Service.Validation.Roles;
 
 public class UpdateRoleValidator : AbstractValidator<UpdateRoleCommand>
 {
-    public UpdateRoleValidator(IRoleRepository roleRepository)
+    public UpdateRoleValidator(IRoleRepository roleRepository, IPermissionRepository permissionRepository)
     {
-        RuleFor(x => x).SetValidator(new RoleValidator(roleRepository));
+        RuleFor(x => x).SetValidator(new RoleValidator(roleRepository, permissionRepository));
     }
 }

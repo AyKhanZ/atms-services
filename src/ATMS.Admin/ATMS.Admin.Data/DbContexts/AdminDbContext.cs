@@ -133,11 +133,13 @@ public class AdminDbContext: DbContext
 
             entity.HasOne(x => x.User)
                   .WithMany(x => x.UserRoles)
-                  .HasForeignKey(x => x.UserId);
+                  .HasForeignKey(x => x.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(x => x.Role)
                   .WithMany(x => x.UserRoles)
-                  .HasForeignKey(x => x.RoleId);
+                  .HasForeignKey(x => x.RoleId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<RolePermission>(entity =>
@@ -149,11 +151,13 @@ public class AdminDbContext: DbContext
 
             entity.HasOne(x => x.Permission)
                   .WithMany(x => x.RolePermissions)
-                  .HasForeignKey(x => x.PermissionId);
+                  .HasForeignKey(x => x.PermissionId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(x => x.Role)
                   .WithMany(x => x.RolePermissions)
-                  .HasForeignKey(x => x.RoleId);
+                  .HasForeignKey(x => x.RoleId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
         
         modelBuilder.Entity<RefreshRevokedToken>(entity =>

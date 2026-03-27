@@ -32,7 +32,8 @@ public class RefreshTokenValidatorTest
     private void SetupFindUser(User? user)
     {
         _userRepositoryMock
-            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
     }
 

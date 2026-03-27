@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Models;
+﻿using ATMS.Admin.Contracts.Models.Users;
 using MediatR;
 
 namespace ATMS.Admin.Contracts.Commands.Account;

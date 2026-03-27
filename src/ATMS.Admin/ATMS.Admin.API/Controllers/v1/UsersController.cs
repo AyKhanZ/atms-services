@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Models;
+﻿using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Application.Models;
 using MediatR;

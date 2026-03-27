@@ -1,4 +1,4 @@
-using ATMS.Admin.Contracts.Models;
+using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Users;

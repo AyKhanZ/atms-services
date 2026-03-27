@@ -13,11 +13,11 @@ public class UpdateRoleHandlerTest : BaseHandlerTest
  
     public UpdateRoleHandlerTest()
     {
-        _handler = new UpdateRoleHandler(RoleRepositoryMock.Object, MapperMock.Object);
+        _handler = new UpdateRoleHandler(RoleRepositoryMock.Object);
     }
  
     private UpdateRoleCommand CreateCommand(Guid? id = null) =>
-        new() { Id = id ?? Guid.NewGuid(), Name = "Admin" };
+        new() { Id = id ?? Guid.NewGuid(), Name = "Admin", PermissionIds = [1, 2, 3]  };
 
     private void SetupRoleExists(bool exists) =>
         RoleRepositoryMock
@@ -32,12 +32,12 @@ public class UpdateRoleHandlerTest : BaseHandlerTest
         var entity = new Role { Id = command.Id, Name = command.Name };
 
         SetupRoleExists(true);
-        MapperMock.Setup(m => m.Map<Role>(command)).Returns(entity);
+        RoleRepositoryMock.Setup(u => u.FindAsync(It.IsAny<Expression<Func<Role, bool>>>(),
+            It.IsAny<CancellationToken>())).ReturnsAsync(entity);
 
         await _handler.Handle(command, CancellationToken.None);
 
-        RoleRepositoryMock.Verify(r => r.UpdateAsync(entity,
-            It.IsAny<CancellationToken>()), Times.Once);
+        RoleRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class UpdateRoleHandlerTest : BaseHandlerTest
     }
 
     [Fact]
-    public async Task Handle_WhenRoleNotFound_DoesNotCallUpdateAsync()
+    public async Task Handle_WhenRoleNotFound_DoesNotCallSaveAsync()
     {
         var command = CreateCommand();
         SetupRoleExists(false);
@@ -61,20 +61,71 @@ public class UpdateRoleHandlerTest : BaseHandlerTest
         await Assert.ThrowsAsync<EntityException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
-        RoleRepositoryMock.Verify(r => r.UpdateAsync(
-            It.IsAny<Role>(),
-            It.IsAny<CancellationToken>()), Times.Never);
+        RoleRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
-
+    
     [Fact]
-    public async Task Handle_WhenRoleNotFound_DoesNotCallMapper()
+    public async Task Handle_UpdatesSuccessfully()
     {
         var command = CreateCommand();
-        SetupRoleExists(false);
+        var entity = new Role {
+            Id = command.Id,
+            Name = "OldName",
+            Description = "OldDesc",
+            RolePermissions = [ new RolePermission { PermissionId = 1, RoleId = command.Id }]
+        };
 
-        await Assert.ThrowsAsync<EntityException>(() =>
-            _handler.Handle(command, CancellationToken.None));
+        RoleRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<Role, bool>>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(entity);
 
-        MapperMock.Verify(m => m.Map<Role>(It.IsAny<UpdateRoleCommand>()), Times.Never);
+        await _handler.Handle(command, CancellationToken.None);
+
+        Assert.Equal(command.Name, entity.Name);
+        Assert.Equal(command.Description, entity.Description);
+        Assert.Contains(entity.RolePermissions, rp => rp.PermissionId == 2);
+        Assert.Contains(entity.RolePermissions, rp => rp.PermissionId == 3);
+    }
+    
+    [Fact]
+    public async Task Handle_RemovesPermissionsNotInCommand()
+    {
+        var command = new UpdateRoleCommand { Id = Guid.NewGuid(), Name = "Admin", PermissionIds = [1] };
+        var entity = new Role { Id = command.Id, Name = "Old", RolePermissions =
+            [
+                new RolePermission { PermissionId = 1, RoleId = command.Id },
+                new RolePermission { PermissionId = 2, RoleId = command.Id },
+                new RolePermission { PermissionId = 3, RoleId = command.Id },
+                new RolePermission { PermissionId = 4, RoleId = command.Id },
+                new RolePermission { PermissionId = 5, RoleId = command.Id }
+            ]
+        };
+
+        RoleRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<Role, bool>>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(entity);
+
+        await _handler.Handle(command, CancellationToken.None);
+
+        Assert.Single(entity.RolePermissions);
+        Assert.Equal(1, entity.RolePermissions.First().PermissionId);
+    }
+    
+    [Fact]
+    public async Task Handle_DistinctPermissionIds_AreApplied()
+    {
+        var command = new UpdateRoleCommand { Id = Guid.NewGuid(), Name = "Admin", PermissionIds = [1, 2, 2, 3] };
+        var entity = new Role { Id = command.Id, Name = "Old", RolePermissions = [] };
+
+        RoleRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<Role, bool>>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(entity);
+
+        await _handler.Handle(command, CancellationToken.None);
+
+        Assert.Equal(3, entity.RolePermissions.Count);
+        Assert.Contains(entity.RolePermissions, rp => rp.PermissionId == 1);
+        Assert.Contains(entity.RolePermissions, rp => rp.PermissionId == 2);
+        Assert.Contains(entity.RolePermissions, rp => rp.PermissionId == 3);
     }
 }

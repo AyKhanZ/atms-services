@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Contracts.Models;
+using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Application.Models;
 using AutoMapper;

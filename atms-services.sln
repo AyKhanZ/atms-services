@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATMS.Infrastructure", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATMS.Exceptions", "src\ATMS.Shared\ATMS.Exceptions\ATMS.Exceptions.csproj", "{58FC49BC-1F7D-4147-B45E-0C49AFF6E2D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATMS.Application.Models", "src\ATMS.Shared\ATMS.Application.Models\ATMS.Application.Models.csproj", "{BF4EF163-552D-42CB-B2E0-3400AD1621BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATMS.Application", "src\ATMS.Shared\ATMS.Application\ATMS.Application.csproj", "{BF4EF163-552D-42CB-B2E0-3400AD1621BD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATMS.Email", "src\ATMS.Shared\ATMS.Email\ATMS.Email.csproj", "{2C51FC13-2662-46B8-A70C-645478EEDB04}"
 EndProject

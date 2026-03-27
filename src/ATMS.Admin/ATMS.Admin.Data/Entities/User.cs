@@ -32,7 +32,7 @@ public class User : UserBase
 
     public string? RefreshToken { get; set; }
 
-    public DateTime RefreshTokenExpiresAt { get; set; }
+    public DateTime? RefreshTokenExpiresAt { get; set; }
 
     
     #region Dictionaries
@@ -50,5 +50,5 @@ public class User : UserBase
     #endregion
 
 
-    public List<UserRole> UserRoles { get; set; }
+    public List<UserRole> UserRoles { get; set; } = [];
 }

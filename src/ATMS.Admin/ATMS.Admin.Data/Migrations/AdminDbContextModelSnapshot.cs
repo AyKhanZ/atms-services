@@ -202,7 +202,7 @@ namespace ATMS.Admin.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("ExpiresAt")
+                    b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Token")
@@ -289,7 +289,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("RefreshTokenExpiresAt")
+                    b.Property<DateTime?>("RefreshTokenExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Surname")

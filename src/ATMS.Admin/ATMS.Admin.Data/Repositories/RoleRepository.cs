@@ -20,6 +20,12 @@ public class RoleRepository(AdminDbContext context) : IRoleRepository
             .Where(r => r.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
     }
+    
+    public Task<Role?> FindAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
+    {
+        return context.Roles
+            .FirstOrDefaultAsync(predicate, cancellationToken);
+    }
 
     public async Task<Role?> GetAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
     {
@@ -44,5 +50,10 @@ public class RoleRepository(AdminDbContext context) : IRoleRepository
             .ExecuteUpdateAsync(s => s
                 .SetProperty(x => x.Name, entity.Name)
                 .SetProperty(x => x.Description, entity.Description), cancellationToken);
+    }
+    
+    public Task SaveAsync(CancellationToken cancellationToken)
+    {
+        return context.SaveChangesAsync(cancellationToken);
     }
 }

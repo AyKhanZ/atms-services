@@ -9,6 +9,8 @@ public interface IRoleRepository
     
     Task<List<Role>> GetAsync(CancellationToken cancellationToken);
     
+    Task<Role?> FindAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken);
+    
     Task CreateAsync(Role entity, CancellationToken cancellationToken);
     
     Task UpdateAsync(Role entity, CancellationToken cancellationToken);
@@ -16,4 +18,6 @@ public interface IRoleRepository
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
     
     Task<bool> IsExistAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken);
+    
+    Task SaveAsync(CancellationToken cancellationToken);
 }
