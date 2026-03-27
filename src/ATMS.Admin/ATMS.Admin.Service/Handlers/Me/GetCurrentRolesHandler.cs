@@ -1,7 +1,8 @@
 ﻿using ATMS.Admin.Contracts.Requests.Me;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Resources;
 using ATMS.Application.Models;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Entity;
 using AutoMapper;
 using MediatR;
 
@@ -16,7 +17,7 @@ public class GetCurrentRolesHandler(
         var isExist = await userRepository.IsExistAsync(r => r.Id == request.UserId, cancellationToken);
         if (!isExist)
         {
-            throw new EntityException(EntityErrorType.NotFound, "User not found .");
+            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
         }
         
         var roles = await userRepository.GetRolesAsync(request.UserId, cancellationToken);

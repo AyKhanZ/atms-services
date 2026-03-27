@@ -4,7 +4,7 @@ using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Account;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Email.Models;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Entity;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Account;

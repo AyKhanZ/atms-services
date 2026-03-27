@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Contracts.Commands.Authentication;
+using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Validation.Authentication;
 using Bogus;
 
@@ -37,6 +38,6 @@ public class LogoutValidatorTest
         var result = await _validator.ValidateAsync(command);
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "RefreshToken is required .");
+        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.TokenRequired);
     }
 }

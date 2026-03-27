@@ -1,6 +1,7 @@
 ﻿using ATMS.Admin.Contracts.Requests.Me;
 using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Exceptions.Entity;
+using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Entity;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Me;
@@ -13,7 +14,7 @@ public class GetCurrentPermissionsHandler(
         var isExist = await userRepository.IsExistAsync(r => r.Id == request.UserId, cancellationToken);
         if (!isExist)
         {
-            throw new EntityException(EntityErrorType.NotFound, "User not found .");
+            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
         }
         
         var permissions = await userRepository.GetPermissionsAsync(request.UserId, cancellationToken);

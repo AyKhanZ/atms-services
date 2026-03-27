@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Handlers.Account;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Email.Models;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Entity;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Account;
@@ -90,5 +91,22 @@ public class ResendEmailConfirmationHandlerTest : BaseHandlerTest
             _handler.Handle(CreateCommand(), CancellationToken.None));
  
         Assert.Equal(EntityErrorType.NotFound, exception.ErrorType);
+    }
+    
+    [Fact]
+    public async Task Handle_WhenUserEmailAlreadyConfirmed_ThrowsAuthException()
+    {
+        var command = CreateCommand();
+        var user = new User { Email = command.Email, EmailConfirmed = true };
+
+        UserRepositoryMock
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(command, CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.EmailAlreadyConfirmed, exception.AuthErrorType);
     }
 }

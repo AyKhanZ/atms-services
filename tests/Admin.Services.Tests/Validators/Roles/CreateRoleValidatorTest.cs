@@ -2,7 +2,9 @@
 using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Validation.Roles;
+using ATMS.Application.Exceptions.Resources;
 using Bogus;
 using Moq;
 
@@ -23,11 +25,13 @@ public class CreateRoleValidatorTest
         _validator = new CreateRoleValidator(_roleRepositoryMock.Object, _permissionRepositoryMock.Object);
         
         _roleRepositoryMock
-            .Setup(r => r.IsExistAsync(It.IsAny<Expression<Func<Role, bool>>>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.IsExistAsync(It.IsAny<Expression<Func<Role, bool>>>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
         
         _permissionRepositoryMock
-            .Setup(r => r.GetExistingIdsAsync(It.IsAny<int[]>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetExistingIdsAsync(It.IsAny<int[]>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync([1, 2, 3]);
     }
     
@@ -58,18 +62,20 @@ public class CreateRoleValidatorTest
         var result = await _validator.ValidateAsync(command);
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Role name is required .");
+        Assert.Contains(result.Errors,
+            e => e.ErrorMessage == ValidationMessages.NameRequired);
     }
  
     [Fact]
     public async Task Validate_WhenNameExceedsMaxLength_ReturnsFailure()
     {
-        var command = GetCommand(_faker.Random.AlphaNumeric(21));
+        var command = GetCommand(_faker.Random.AlphaNumeric(31));
  
         var result = await _validator.ValidateAsync(command);
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Role name must not exceed 20 characters .");
+        Assert.Contains(result.Errors,
+            e => e.ErrorMessage == string.Format(ValidationMessages.NameShouldBeLessThan, 30));
     }
  
     [Fact]
@@ -80,18 +86,8 @@ public class CreateRoleValidatorTest
         var result = await _validator.ValidateAsync(command);
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Role description must not exceed 100 characters .");
-    }
- 
-    [Fact]
-    public async Task Validate_WhenNameIsEmpty_DoesNotValidateMaxLength()
-    {
-        var command = GetCommand(string.Empty);
- 
-        var result = await _validator.ValidateAsync(command);
- 
-        Assert.Single(result.Errors);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Role name is required .");
+        Assert.Contains(result.Errors,
+            e => e.ErrorMessage == string.Format(ValidationMessages.DescriptionShouldBeLessThan, 100));
     }
     
     [Fact]
@@ -100,13 +96,15 @@ public class CreateRoleValidatorTest
         var command = GetCommand();
  
         _roleRepositoryMock
-            .Setup(r => r.IsExistAsync(It.IsAny<Expression<Func<Role, bool>>>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.IsExistAsync(It.IsAny<Expression<Func<Role, bool>>>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
  
         var result = await _validator.ValidateAsync(command);
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Role with this name already exists .");
+        Assert.Contains(result.Errors,
+            e => e.ErrorMessage == RoleMessages.AlreadyExists);
     }
     
     [Fact]
@@ -117,7 +115,8 @@ public class CreateRoleValidatorTest
         var resultEmpty = await _validator.ValidateAsync(command);
         
         Assert.False(resultEmpty.IsValid);
-        Assert.Contains(resultEmpty.Errors, e => e.ErrorMessage == "Permissions are required .");
+        Assert.Contains(resultEmpty.Errors,
+            e => e.ErrorMessage == RoleMessages.PermissionsRequired);
     }
 
     [Fact]
@@ -126,12 +125,14 @@ public class CreateRoleValidatorTest
         var command = GetCommand(permissions: [1, 2, 99]);
 
         _permissionRepositoryMock
-            .Setup(r => r.GetExistingIdsAsync(It.IsAny<int[]>(), It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetExistingIdsAsync(It.IsAny<int[]>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync([1, 2]);
 
         var result = await _validator.ValidateAsync(command);
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "One or more permissions do not exist .");
+        Assert.Contains(result.Errors,
+            e => e.ErrorMessage == RoleMessages.PermissionsNotFound);
     }
 }

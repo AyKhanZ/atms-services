@@ -1,7 +1,8 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
-using ATMS.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 
@@ -12,9 +13,10 @@ public class RefreshTokenService(
     IUniqueTokenService uniqueTokenService,
     IConfiguration configuration) : IRefreshTokenService
 {
-    private readonly JwtOptions _jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
-                                           ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-                                               $"Configuration for section '{nameof(JwtOptions)}' is not found or could not be loaded.");
+    private readonly JwtOptions _jwtOptions =
+        configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
+            ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
+                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
     
     public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken)

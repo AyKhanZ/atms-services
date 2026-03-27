@@ -3,7 +3,8 @@ using ATMS.Admin.Data.Infrastructure.Migrations;
 using ATMS.Admin.Data.Repositories;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Data.Mongo.Modules;
-using ATMS.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,7 @@ public static class DataAccessModule
     {
         var dbOptions = configuration.GetSection(nameof(AdminDatabaseOptions)).Get<AdminDatabaseOptions>() 
                         ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
-                            $"Configuration for section '{nameof(AdminDatabaseOptions)}' is not found or could not be loaded.");
+                            string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(AdminDatabaseOptions)));
         
         services.AddDbContext<AdminDbContext>(options => options.UseNpgsql(dbOptions.SqlConnection));
 

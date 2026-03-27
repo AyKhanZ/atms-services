@@ -1,6 +1,7 @@
-
 using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Validation.Account;
+using ATMS.Application.Exceptions.Resources;
 using Bogus;
 
 namespace Admin.Services.Tests.Validators.Account;
@@ -34,6 +35,6 @@ public class ConfirmEmailValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(token));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Token is required");
+        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.TokenRequired);
     }
 }

@@ -2,7 +2,7 @@
 using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Roles;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Entity;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Roles;

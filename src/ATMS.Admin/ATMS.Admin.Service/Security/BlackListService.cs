@@ -1,5 +1,4 @@
-﻿using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Data.Entities.Tokens;
+﻿using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 
@@ -7,14 +6,14 @@ namespace ATMS.Admin.Service.Security;
 
 public class BlackListService(IRefreshTokenRepository refreshTokenRepository) : IBlackListService
 {
-    public Task AddToListAsync(User user, CancellationToken cancellationToken)
+    public Task AddToListAsync(Guid userId, string refreshToken, DateTime expiresAt, CancellationToken cancellationToken)
     {
         var revokedToken = new RefreshRevokedToken
         {
             Id = Guid.NewGuid(),
-            UserId = user.Id,
-            Token = user.RefreshToken!,
-            ExpiresAt = user.RefreshTokenExpiresAt!.Value
+            UserId = userId,
+            Token = refreshToken,
+            ExpiresAt = expiresAt
         };
         return refreshTokenRepository
             .AddToListAsync(revokedToken, cancellationToken);

@@ -1,28 +1,16 @@
-﻿using System.Linq.Expressions;
-using ATMS.Admin.Contracts.Commands.Account;
-using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Data.Repositories.Interfaces;
+﻿using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Validation.Account;
+using ATMS.Application.Exceptions.Resources;
 using Bogus;
-using Moq;
 
 namespace Admin.Services.Tests.Validators.Account;
 
 public class ChangePasswordValidatorTest
 {
-    private readonly Faker _faker;
-    private readonly ChangePasswordValidator _validator;
-    private readonly Mock<IUserRepository> _userRepositoryMock;
- 
-    public ChangePasswordValidatorTest()
-    {
-        _faker = new Faker();
-        _userRepositoryMock = new Mock<IUserRepository>();
-        _validator = new ChangePasswordValidator(_userRepositoryMock.Object);
-        
-        SetupUserExists(true);
-    }
-    
+    private readonly Faker _faker = new();
+    private readonly ChangePasswordValidator _validator = new();
+
     private ChangePasswordCommand GetCommand(
         string? email = null,
         string? oldPassword = null,
@@ -33,12 +21,6 @@ public class ChangePasswordValidatorTest
             OldPassword = oldPassword ?? "OldPass1!",
             NewPassword = newPassword ?? "NewPass1!"
         };
-    
-    private void SetupUserExists(bool exists) =>
-        _userRepositoryMock
-            .Setup(r => r.IsExistAsync(It.IsAny<Expression<Func<User, bool>>>(), 
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(exists);
     
     [Fact]
     public async Task Validate_WithValidCommand_ReturnsSuccess()
@@ -54,7 +36,8 @@ public class ChangePasswordValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(email: string.Empty));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Email is required");
+        Assert.Contains(result.Errors,
+            e => e.ErrorMessage == AccountMessages.EmailRequired);
     }
  
     [Fact]
@@ -63,18 +46,7 @@ public class ChangePasswordValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(email: "not-an-email"));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Please enter a valid email (e.g. user@example.com)");
-    }
- 
-    [Fact]
-    public async Task Validate_WhenUserNotFound_ReturnsFailure()
-    {
-        SetupUserExists(false);
- 
-        var result = await _validator.ValidateAsync(GetCommand());
- 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "No account found with this email");
+        Assert.Contains(result.Errors, e => e.ErrorMessage == ValidationMessages.InvalidEmailFormat);
     }
     
     
@@ -84,7 +56,7 @@ public class ChangePasswordValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(oldPassword: string.Empty));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Old password is required");
+        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.OldPasswordRequired);
     }
  
  
@@ -94,7 +66,7 @@ public class ChangePasswordValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(newPassword: string.Empty));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "New password is required");
+        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.NewPasswordRequired);
     }
  
     [Fact]
@@ -103,7 +75,7 @@ public class ChangePasswordValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(newPassword: "A1!bc"));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Password must be at least 6 symbols");
+        Assert.Contains(result.Errors, e => e.ErrorMessage == string.Format(AccountMessages.PasswordTooShort, 6));
     }
  
     [Fact]
@@ -112,7 +84,7 @@ public class ChangePasswordValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(newPassword: $"A1!{"a".PadRight(41, 'a')}"));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Password must be less than 40 symbols");
+        Assert.Contains(result.Errors, e => e.ErrorMessage == string.Format(AccountMessages.PasswordTooLong, 40));
     }
  
     [Theory]
@@ -125,6 +97,6 @@ public class ChangePasswordValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(newPassword: password));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == "Password must include uppercase, number, special char (!@#$%^&*()-_=+), no spaces");
+        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.PasswordInvalidFormat);
     }
 }

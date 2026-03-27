@@ -2,7 +2,7 @@
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Account;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Entity;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Account;

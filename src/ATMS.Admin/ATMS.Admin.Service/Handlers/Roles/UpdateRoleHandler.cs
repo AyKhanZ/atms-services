@@ -1,7 +1,8 @@
 ﻿using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Exceptions.Entity;
+using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Entity;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Roles;
@@ -15,7 +16,7 @@ public class UpdateRoleHandler(
 
         if (role is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, "Role not found .");
+            throw new EntityException(EntityErrorType.NotFound, RoleMessages.NotFound);
         }
 
         var newPermissions = command.PermissionIds.Distinct().ToList();

@@ -1,7 +1,8 @@
 ﻿using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Contracts.Requests.Roles;
 using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Exceptions.Entity;
+using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Entity;
 using AutoMapper;
 using MediatR;
 
@@ -17,7 +18,7 @@ public class GetRoleHandler(
 
         if (role is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, "Role not found .");
+            throw new EntityException(EntityErrorType.NotFound, RoleMessages.NotFound);
         }
 
         return mapper.Map<RoleModel>(role);

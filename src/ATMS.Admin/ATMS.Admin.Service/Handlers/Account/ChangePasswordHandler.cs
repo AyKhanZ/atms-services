@@ -1,7 +1,8 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Entity;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Account;
@@ -16,7 +17,7 @@ public class ChangePasswordHandler(
 
         if (user is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, "User not found .");
+            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
         }
 
         var newPassword = passwordHasherService.Hash(command.NewPassword);

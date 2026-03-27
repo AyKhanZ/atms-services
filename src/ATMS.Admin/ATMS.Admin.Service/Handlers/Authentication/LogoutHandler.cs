@@ -1,6 +1,7 @@
 ﻿using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Exceptions.Auth;
+using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using MediatR;
 
@@ -14,16 +15,16 @@ public class LogoutHandler(
     {
         if (await blackListService.IsRefreshTokenRevokedAsync(command.RefreshToken, cancellationToken))
         {
-            throw new AuthException(AuthErrorType.InvalidToken, "Invalid token .");
+            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
         }
         
         var user = await userRepository.FindAsync(u => u.Id == command.UserId, cancellationToken);
         if (user?.RefreshToken is null || user.RefreshTokenExpiresAt is null)
         {
-            throw new AuthException(AuthErrorType.InvalidToken, "Invalid token.");
+            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
         }
         
-        await blackListService.AddToListAsync(user, cancellationToken);
+        await blackListService.AddToListAsync(user.Id, user.RefreshToken, user.RefreshTokenExpiresAt.Value, cancellationToken);
         
         user.RefreshToken = null;
         user.RefreshTokenExpiresAt = null;

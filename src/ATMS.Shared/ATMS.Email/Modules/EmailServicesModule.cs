@@ -2,7 +2,8 @@
 using System.Net.Mail;
 using ATMS.Email.Services;
 using ATMS.Email.Services.Interfaces;
-using ATMS.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ public static class EmailServicesModule
     {
         var emailOptions = configuration.GetSection(nameof(EmailOptions)).Get<EmailOptions>()
                            ?? throw new ConfigurationException(ConfigurationErrorType.EmailSectionNotFound,
-                               $"Configuration for section '{nameof(EmailOptions)}' is not found or could not be loaded.");
+                               string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(EmailOptions)));
 
         var smtp = new SmtpClient(emailOptions.SmtpServer, emailOptions.Port)
         {

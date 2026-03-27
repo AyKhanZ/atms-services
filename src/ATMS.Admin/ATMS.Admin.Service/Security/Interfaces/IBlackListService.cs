@@ -1,10 +1,8 @@
-﻿using ATMS.Admin.Data.Entities;
-
-namespace ATMS.Admin.Service.Security.Interfaces;
+﻿namespace ATMS.Admin.Service.Security.Interfaces;
 
 public interface IBlackListService
 {
-    Task AddToListAsync(User user, CancellationToken token);
+    Task AddToListAsync(Guid userId, string refreshToken, DateTime expiresAt, CancellationToken cancellationToken);
     
     Task<bool> IsRefreshTokenRevokedAsync(string refreshToken, CancellationToken cancellationToken);
     

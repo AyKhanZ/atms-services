@@ -3,7 +3,8 @@ using System.Text;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Admin.Service.Security.Models;
-using ATMS.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -14,9 +15,10 @@ namespace ATMS.Admin.Service.Security;
 public class EmailConfirmationTokenService(IConfiguration configuration) : IEmailConfirmationTokenService
 {
     
-    private readonly JwtOptions _jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
-                                              ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-                                                  $"Configuration for section '{nameof(JwtOptions)}' is not found or could not be loaded.");
+    private readonly JwtOptions _jwtOptions =
+        configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
+            ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
+                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
     public EmailConfirmationTokenResult GenerateToken(User user)
     {

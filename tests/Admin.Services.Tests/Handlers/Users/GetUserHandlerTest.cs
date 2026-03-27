@@ -2,7 +2,7 @@ using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Users;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Entity;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Users;

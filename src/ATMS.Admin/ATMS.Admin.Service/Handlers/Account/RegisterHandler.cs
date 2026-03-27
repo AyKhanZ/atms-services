@@ -2,11 +2,13 @@
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
-using ATMS.Exceptions.Configuration;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using AutoMapper;
 using MediatR;
@@ -29,18 +31,19 @@ public class RegisterHandler(
     private readonly RedirectUrlOptions  _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-                $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
+                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
     
     public async Task<UserModel> Handle(RegisterCommand command, CancellationToken cancellationToken)
     {
-        var entity = mapper.Map<User>(command);
-        entity.Id = Guid.NewGuid();
-
         var role = await roleRepository.GetAsync(r => r.Id == command.RoleId, cancellationToken);
         if (role is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, "Role not found .");
+            throw new EntityException(EntityErrorType.NotFound, RoleMessages.NotFound);
         }
+        
+        var entity = mapper.Map<User>(command);
+        entity.Id = Guid.NewGuid();
+
         var userRole = new UserRole
         {
             UserId = entity.Id,

@@ -4,6 +4,7 @@ using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Exceptions.Auth;
+using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using MediatR;
 
@@ -21,7 +22,8 @@ public class LoginHandler(
 
         if (user is null)
         {
-            throw new AuthException(AuthErrorType.InvalidCredentials, "Invalid email or password");
+            throw new AuthException(AuthErrorType.InvalidCredentials,
+                AuthMessages.InvalidLoginCredentials);
         }
 
         EnsureEmailConfirmed(user);
@@ -47,7 +49,8 @@ public class LoginHandler(
     {
         if (!user.EmailConfirmed)
         {
-            throw new AuthException(AuthErrorType.EmailNotConfirmed, "Email not confirmed .");
+            throw new AuthException(AuthErrorType.EmailNotConfirmed,
+                AuthMessages.EmailNotConfirmed);
         }
     }
 
@@ -55,10 +58,10 @@ public class LoginHandler(
     {
         switch (user.UserStatusId)
         {
-            case (int)UserStatusEnum.Inactive:
+            case (int)UserStatus.Inactive:
                 throw new AuthException(AuthErrorType.AccountInactive,
-                    "Your account is not active anymore. Please contact support.");
-            case (int)UserStatusEnum.Locked when
+                    AuthMessages.AccountInactive);
+            case (int)UserStatus.Locked when
                 user.LockoutEnd.HasValue &&
                 user.LockoutEnd > DateTime.UtcNow:
             {
@@ -66,7 +69,7 @@ public class LoginHandler(
                 var remainingMinutes = Math.Ceiling(remaining.TotalMinutes);
 
                 throw new AuthException(AuthErrorType.AccountLocked,
-                    $"Account is locked. Try again in {remainingMinutes} minutes.");
+                    string.Format(AuthMessages.AccountLocked, remainingMinutes));
             }
         }
     }
@@ -78,22 +81,23 @@ public class LoginHandler(
         {
             user.FailedLoginCount = 0;
             user.LockoutEnd = null;
-            if (user.UserStatusId == (int)UserStatusEnum.Locked)
+            if (user.UserStatusId == (int)UserStatus.Locked)
             {
-                user.UserStatusId = (int)UserStatusEnum.Active;
+                user.UserStatusId = (int)UserStatus.Active;
             }
             
             return;
         }
 
         user.FailedLoginCount++;
-        if (user.FailedLoginCount >= 5 && user.UserStatusId == (int)UserStatusEnum.Active)
+        if (user.FailedLoginCount >= 5 && user.UserStatusId == (int)UserStatus.Active)
         {
             user.LockoutEnd = DateTime.UtcNow.AddMinutes(15);
-            user.UserStatusId = (int)UserStatusEnum.Locked;
+            user.UserStatusId = (int)UserStatus.Locked;
             user.FailedLoginCount = 0;
         }
 
-        throw new AuthException(AuthErrorType.InvalidCredentials, "Invalid email or password");
+        throw new AuthException(AuthErrorType.InvalidCredentials,
+            AuthMessages.InvalidLoginCredentials);
     }
 }

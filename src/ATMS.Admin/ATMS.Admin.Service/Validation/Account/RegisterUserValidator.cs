@@ -1,5 +1,7 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Resources;
 using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Account;
@@ -7,45 +9,38 @@ namespace ATMS.Admin.Service.Validation.Account;
 public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IRoleRepository _roleRepository;
 
-    public RegisterUserValidator(IUserRepository userRepository, IRoleRepository roleRepository)
+    public RegisterUserValidator(IUserRepository userRepository)
     {
         _userRepository = userRepository;
-        _roleRepository = roleRepository;
         
         RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage("Name is required .")
+            .WithMessage(AccountMessages.NameRequired)
             .MaximumLength(50)
-            .WithMessage("Name should be max 50 symbols .");
+            .WithMessage(x => string.Format(AccountMessages.NameShouldBeLessThan, 50));
 
         RuleFor(x => x.Surname).Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage("Surname is required .")
+            .WithMessage(AccountMessages.SurnameRequired)
             .MaximumLength(100)
-            .WithMessage("Surname should be max 100 symbols .");
+            .WithMessage(x => string.Format(AccountMessages.SurnameShouldBeLessThan, 100));
 
         RuleFor(x => x.RoleId)
-            .MustAsync(IsRoleExist)
-            .WithMessage("Role doesn't exist .");
+            .NotEmpty()
+            .WithMessage(ValidationMessages.RoleIdRequired);
 
         RuleFor(x => x.Email).Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage("Email is required .")
+            .WithMessage(AccountMessages.EmailRequired)
             .EmailAddress()
-            .WithMessage("Email is invalid .")
+            .WithMessage(ValidationMessages.InvalidEmailFormat)
             .MustAsync(IsEmailUnique)
-            .WithMessage("User with this email already exist .");
+            .WithMessage(AccountMessages.UserAlreadyExists);
     }
 
     private async Task<bool> IsEmailUnique(string email, CancellationToken cancellationToken)
     {
         return !await _userRepository.IsExistAsync(u => u.Email == email, cancellationToken);
-    }
-
-    private async Task<bool> IsRoleExist(Guid roleId, CancellationToken cancellationToken)
-    {
-        return await _roleRepository.IsExistAsync(r => r.Id == roleId, cancellationToken);
     }
 }

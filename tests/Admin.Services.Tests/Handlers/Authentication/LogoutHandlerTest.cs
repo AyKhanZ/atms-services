@@ -24,6 +24,32 @@ public class LogoutHandlerTest : BaseHandlerTest
             RefreshToken = refreshToken ?? "valid-refresh-token"
         };
     }
+    
+    [Fact]
+    public async Task Handle_WhenTokenNotRevoked_ResetsUserTokensAndSaves()
+    {
+        var command = CreateCommand();
+        var user = new User
+        {
+            Id = command.UserId,
+            RefreshToken = command.RefreshToken,
+            RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7)
+        };
+
+        BlackListServiceMock
+            .Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        UserRepositoryMock
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        await _handler.Handle(command, CancellationToken.None);
+
+        Assert.Null(user.RefreshToken);
+        Assert.Null(user.RefreshTokenExpiresAt);
+        UserRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
         
     [Fact]
     public async Task Handle_WhenTokenNotRevoked_AddsUserToBlackList()
@@ -47,7 +73,10 @@ public class LogoutHandlerTest : BaseHandlerTest
  
         await _handler.Handle(command, CancellationToken.None);
  
-        BlackListServiceMock.Verify(s => s.AddToListAsync(user,
+        BlackListServiceMock.Verify(s => s.AddToListAsync(
+            It.IsAny<Guid>(), 
+            It.IsAny<string>(), 
+            It.IsAny<DateTime>(), 
             It.IsAny<CancellationToken>()), Times.Once);
     }
     
@@ -129,7 +158,9 @@ public class LogoutHandlerTest : BaseHandlerTest
             _handler.Handle(command, CancellationToken.None));
 
         BlackListServiceMock.Verify(s => s.AddToListAsync(
-            It.IsAny<User>(),
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<DateTime>(),
             It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -152,7 +183,9 @@ public class LogoutHandlerTest : BaseHandlerTest
             _handler.Handle(command, CancellationToken.None));
 
         BlackListServiceMock.Verify(s => s.AddToListAsync(
-            It.IsAny<User>(),
+            It.IsAny<Guid>(),
+            It.IsAny<string>(),
+            It.IsAny<DateTime>(),
             It.IsAny<CancellationToken>()), Times.Never);
     }
 }

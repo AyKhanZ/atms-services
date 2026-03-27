@@ -5,7 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Reflection;
 using System.Text;
-using ATMS.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Resources;
 
 namespace ATMS.Admin.API.Extensions;
 
@@ -43,7 +44,7 @@ public static class DependencyInjection
             {
                 var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
                     ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-                    $"Configuration for section '{nameof(JwtOptions)}' is not found or could not be loaded.");
+                        string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
                 
                 options.RequireHttpsMetadata = true;
                 options.TokenValidationParameters = new TokenValidationParameters

@@ -3,7 +3,7 @@ using ATMS.Admin.Contracts.Requests.Me;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Handlers.Me;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Entity;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Me;

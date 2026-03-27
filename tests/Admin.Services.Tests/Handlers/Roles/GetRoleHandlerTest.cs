@@ -3,7 +3,7 @@ using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Contracts.Requests.Roles;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Roles;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Entity;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Roles;

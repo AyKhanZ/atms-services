@@ -1,38 +1,29 @@
 ﻿using System.Text.RegularExpressions;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Resources;
 using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Account;
 
 public class ChangePasswordValidator : AbstractValidator<ChangePasswordCommand>
 {
-    private readonly IUserRepository _userRepository;
-    
-    public ChangePasswordValidator(IUserRepository userRepository)
+    public ChangePasswordValidator()
     {
-        _userRepository = userRepository;
-        
         RuleFor(x => x.Email).Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage("Email is required")
-            .EmailAddress().WithMessage("Please enter a valid email (e.g. user@example.com)")
-            .MustAsync(IsUserExistAsync).WithMessage("No account found with this email");
+            .NotEmpty().WithMessage(AccountMessages.EmailRequired)
+            .EmailAddress().WithMessage(ValidationMessages.InvalidEmailFormat);
         
         RuleFor(x => x.OldPassword)
-            .NotEmpty().WithMessage("Old password is required");
+            .NotEmpty().WithMessage(AccountMessages.OldPasswordRequired);
 
         RuleFor(x => x.NewPassword).Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage("New password is required")
-            .MinimumLength(6).WithMessage("Password must be at least 6 symbols")
-            .MaximumLength(40).WithMessage("Password must be less than 40 symbols")
+            .NotEmpty().WithMessage(AccountMessages.NewPasswordRequired)
+            .MinimumLength(6).WithMessage(string.Format(AccountMessages.PasswordTooShort, 6))
+            .MaximumLength(40).WithMessage(string.Format(AccountMessages.PasswordTooLong, 40))
             .Must(IsValidPassword)
-            .WithMessage("Password must include uppercase, number, special char (!@#$%^&*()-_=+), no spaces");
-    }
-
-    private Task<bool> IsUserExistAsync(string email, CancellationToken cancellationToken)
-    {
-        var result = _userRepository.IsExistAsync(u => u.Email == email, cancellationToken);
-        return result;
+            .WithMessage(AccountMessages.PasswordInvalidFormat);
     }
 
     private bool IsValidPassword(string password)

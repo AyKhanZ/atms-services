@@ -1,7 +1,8 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Application.Models;
-using ATMS.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +17,7 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     private readonly RedirectUrlOptions _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>() 
         ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-            $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
+            string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
 
     /// <summary>
     /// Registers a new user in the system.

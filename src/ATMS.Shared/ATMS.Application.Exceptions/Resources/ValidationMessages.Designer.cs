@@ -60,25 +60,25 @@ namespace ATMS.Application.Exceptions.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} must me less than {1} symbols ..
+        ///   Looks up a localized string similar to Description is required..
         /// </summary>
-        public static string FieldLessThan {
+        public static string DescriptionRequired {
             get {
-                return ResourceManager.GetString("FieldLessThan", resourceCulture);
+                return ResourceManager.GetString("DescriptionRequired", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} is required ..
+        ///   Looks up a localized string similar to Description must me less than {0} symbols..
         /// </summary>
-        public static string FieldRequired {
+        public static string DescriptionShouldBeLessThan {
             get {
-                return ResourceManager.GetString("FieldRequired", resourceCulture);
+                return ResourceManager.GetString("DescriptionShouldBeLessThan", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please enter a valid email (e.g. user@example.com) ..
+        ///   Looks up a localized string similar to Enter a valid email (e.g. user@example.com)..
         /// </summary>
         public static string InvalidEmailFormat {
             get {
@@ -87,11 +87,29 @@ namespace ATMS.Application.Exceptions.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User with this email already exist ..
+        ///   Looks up a localized string similar to Name is required..
         /// </summary>
-        public static string UserAlreadyExists {
+        public static string NameRequired {
             get {
-                return ResourceManager.GetString("UserAlreadyExists", resourceCulture);
+                return ResourceManager.GetString("NameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name must me less than {0} symbols..
+        /// </summary>
+        public static string NameShouldBeLessThan {
+            get {
+                return ResourceManager.GetString("NameShouldBeLessThan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Role ID is required..
+        /// </summary>
+        public static string RoleIdRequired {
+            get {
+                return ResourceManager.GetString("RoleIdRequired", resourceCulture);
             }
         }
     }

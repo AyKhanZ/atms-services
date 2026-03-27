@@ -2,7 +2,8 @@ using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Infrastructure.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
-using ATMS.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 
@@ -19,7 +20,7 @@ public sealed class DataInitializer(
     private readonly AdminOptions _adminOptions =
         configuration.GetSection(nameof(AdminOptions)).Get<AdminOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.AdminSectionNotFound,
-                $"Configuration for section '{nameof(AdminOptions)}' is not found or could not be loaded.");
+                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(AdminOptions)));
     
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {

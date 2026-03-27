@@ -1,7 +1,8 @@
 ﻿using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Exceptions.Entity;
+using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Entity;
 using AutoMapper;
 using MediatR;
 
@@ -14,13 +15,13 @@ public class GetUserHandler(
 {
     public async Task<UserModel> Handle(GetUserRequest request, CancellationToken cancellationToken)
     {
-        var result = await userRepository.GetAsync(request.Id, cancellationToken);
+        var user = await userRepository.GetAsync(request.Id, cancellationToken);
 
-        if (result is null)
+        if (user is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, $"User not found .");
+            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
         }
 
-        return mapper.Map<UserModel>(result);
+        return mapper.Map<UserModel>(user);
     }
 }

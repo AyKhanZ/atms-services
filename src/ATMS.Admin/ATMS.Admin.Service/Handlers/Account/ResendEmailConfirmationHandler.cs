@@ -1,10 +1,13 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Exceptions.Auth;
+using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
-using ATMS.Exceptions.Configuration;
-using ATMS.Exceptions.Entity;
+using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +26,7 @@ public class ResendEmailConfirmationHandler(
     private readonly RedirectUrlOptions _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-                $"Configuration for section '{nameof(RedirectUrlOptions)}' is not found or could not be loaded.");
+                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
 
     public async Task Handle(ResendEmailConfirmationCommand command, CancellationToken cancellationToken)
     {
@@ -33,7 +36,13 @@ public class ResendEmailConfirmationHandler(
 
         if (user is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, "User not found .");
+            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+        }
+
+        if (user.EmailConfirmed)
+        {
+            throw new AuthException(AuthErrorType.EmailAlreadyConfirmed,
+                AccountMessages.EmailAlreadyConfirmed);
         }
 
         var emailConfirmationTokenResult = emailConfirmationTokenService.GenerateToken(user);

@@ -1,5 +1,7 @@
 ﻿using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Resources;
 using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Roles;
@@ -16,19 +18,19 @@ public class RoleValidator : AbstractValidator<RoleCommand>
         
         RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage("Role name is required .")
-            .MaximumLength(20)
-            .WithMessage("Role name must not exceed 20 characters .")
+            .WithMessage(ValidationMessages.NameRequired)
+            .MaximumLength(30)
+            .WithMessage(x => string.Format(ValidationMessages.NameShouldBeLessThan, 30))
             .MustAsync(CheckRoleExistAsync)
-            .WithMessage("Role with this name already exists .");
+            .WithMessage(RoleMessages.AlreadyExists);
 
         RuleFor(x => x.Description)
             .MaximumLength(100)
-            .WithMessage("Role description must not exceed 100 characters .");
+            .WithMessage(x => string.Format(ValidationMessages.DescriptionShouldBeLessThan, 100));
         
         RuleFor(x => x.PermissionIds).Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage("Permissions are required .")
-            .MustAsync(AllPermissionsExistAsync).WithMessage("One or more permissions do not exist .");
+            .NotEmpty().WithMessage(RoleMessages.PermissionsRequired)
+            .MustAsync(AllPermissionsExistAsync).WithMessage(RoleMessages.PermissionsNotFound);
     }
 
     private async Task<bool> AllPermissionsExistAsync(int[] ids, CancellationToken cancellationToken)

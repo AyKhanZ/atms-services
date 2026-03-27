@@ -60,7 +60,7 @@ namespace ATMS.Application.Exceptions.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Configuration for section &apos;{0}&apos; is not found or could not be loaded ..
+        ///   Looks up a localized string similar to Configuration for section &apos;{0}&apos; is not found or could not be loaded..
         /// </summary>
         public static string ConfigSectionNotFound {
             get {
@@ -69,25 +69,7 @@ namespace ATMS.Application.Exceptions.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} already exists ..
-        /// </summary>
-        public static string EntityAlreadyExists {
-            get {
-                return ResourceManager.GetString("EntityAlreadyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} not found ..
-        /// </summary>
-        public static string EntityNotFound {
-            get {
-                return ResourceManager.GetString("EntityNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User ID is invalid or not found in claims ..
+        ///   Looks up a localized string similar to User ID is invalid or not found in claims..
         /// </summary>
         public static string InvalidCredentials {
             get {
