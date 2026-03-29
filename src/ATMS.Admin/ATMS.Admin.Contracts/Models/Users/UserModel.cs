@@ -1,4 +1,6 @@
-﻿namespace ATMS.Admin.Contracts.Models.Users;
+﻿using ATMS.Application.Models;
+
+namespace ATMS.Admin.Contracts.Models.Users;
 
 public class UserModel
 {
@@ -21,14 +23,15 @@ public class UserModel
     
     
     public DateTime? BirthDate { get; set; }
+
+
+    public DictionaryModel<Guid>[] Roles { get; set; } = [];
+    public DictionaryModel? Gender { get; set; }
+    
+    public DictionaryModel? MaritalStatus { get; set; }
     
     
-    public GenderModel? Gender { get; set; }
-    
-    public MaritalStatusModel? MaritalStatus { get; set; }
-    
-    
-    public UserStatusModel? UserStatus { get; set; }
+    public DictionaryModel? UserStatus { get; set; }
     
     public DateTime? LockoutEnd { get; set; }
 
@@ -39,4 +42,6 @@ public class UserModel
 
 
     public bool HasCompletedSurvey { get; set; }
+    
+    public bool EmailConfirmed { get; set; }
 }

@@ -6,5 +6,7 @@ public interface IPermissionRepository
 {
     Task<List<Permission>> GetAsync(CancellationToken cancellationToken);
     
+    Task<List<int>> GetIdsAsync(CancellationToken cancellationToken);
+    
     Task<List<int>> GetExistingIdsAsync(int[] ids, CancellationToken cancellationToken);
 }

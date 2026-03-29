@@ -1,4 +1,6 @@
-﻿namespace ATMS.Admin.Data.Entities.Tokens;
+﻿using ATMS.Data;
+
+namespace ATMS.Admin.Data.Entities.Tokens;
 
 public class PasswordResetToken : BaseEntity
 {

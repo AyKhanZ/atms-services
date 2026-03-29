@@ -24,14 +24,15 @@ public class UsersControllerTest
         // Arrange
         var users = new[]
         {
-            new UserModel { Id = Guid.NewGuid(), Name = "User test1" },
-            new UserModel { Id = Guid.NewGuid(), Name = "User test2" },
-            new UserModel { Id = Guid.NewGuid(), Name = "User test3" },
-            new UserModel { Id = Guid.NewGuid(), Name = "User test4" },
+            new UserListItemModel { Id = Guid.NewGuid(), Name = "User test1" },
+            new UserListItemModel { Id = Guid.NewGuid(), Name = "User test2" },
+            new UserListItemModel { Id = Guid.NewGuid(), Name = "User test3" },
+            new UserListItemModel { Id = Guid.NewGuid(), Name = "User test4" },
         };
         
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetUsersRequest>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<GetUsersRequest>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(users);
 
         var request = new GetUsersRequest();
@@ -57,7 +58,8 @@ public class UsersControllerTest
         };
         
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetUserRequest>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<GetUserRequest>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(users[0]);
 
         // Act

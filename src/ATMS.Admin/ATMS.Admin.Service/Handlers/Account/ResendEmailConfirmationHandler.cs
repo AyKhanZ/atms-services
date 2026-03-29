@@ -1,8 +1,8 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
+using ATMS.Application.Exceptions.Auth;
 using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Application.Exceptions.Configuration;

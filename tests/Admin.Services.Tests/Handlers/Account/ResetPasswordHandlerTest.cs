@@ -2,8 +2,8 @@ using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Tokens;
-using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Handlers.Account;
+using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Entity;
 using Moq;
 

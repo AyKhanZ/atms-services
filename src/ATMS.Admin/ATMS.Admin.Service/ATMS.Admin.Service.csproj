@@ -9,11 +9,12 @@
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="16.0.0" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-		<PackageReference Include="MediatR" Version="14.0.0" />
+		<PackageReference Include="MediatR" Version="14.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Dispatcher\ATMS.Application.Dispatcher.csproj" />
 		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Email\ATMS.Email.csproj" />
 		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Exceptions\ATMS.Application.Exceptions.csproj" />
 		<ProjectReference Include="..\ATMS.Admin.Contracts\ATMS.Admin.Contracts.csproj" />
@@ -33,6 +34,30 @@
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>RoleMessages.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\AuthMessages.ru.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AuthMessages.ru.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\AuthMessages.az.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AuthMessages.az.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\AccountMessages.az.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AccountMessages.az.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\AccountMessages.ru.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AccountMessages.ru.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\RoleMessages.ru.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>RoleMessages.ru.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\RoleMessages.az.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>RoleMessages.az.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -50,6 +75,36 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>RoleMessages.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\AuthMessages.ru.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AuthMessages.ru.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\AuthMessages.az.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AuthMessages.az.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\AccountMessages.az.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AccountMessages.az.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\AccountMessages.ru.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AccountMessages.ru.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\RoleMessages.ru.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>RoleMessages.ru.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\RoleMessages.az.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>RoleMessages.az.resx</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 

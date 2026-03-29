@@ -1,7 +1,10 @@
-﻿namespace ATMS.Admin.Data.Entities.Dictionaries;
+﻿using ATMS.Data;
 
-public class Permission : DictionaryEntity
+namespace ATMS.Admin.Data.Entities.Dictionaries;
+
+public class Permission : TranslatableDictionaryEntity
 {
     public string Module { get; set; }
-    public List<RolePermission> RolePermissions { get; set; }
+    public List<RolePermission> RolePermissions { get; set; } = [];
+    public ICollection<PermissionTranslation> Translations { get; set; } = [];
 }

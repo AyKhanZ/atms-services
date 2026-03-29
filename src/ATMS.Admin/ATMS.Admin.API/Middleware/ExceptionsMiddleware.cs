@@ -1,8 +1,8 @@
-﻿using ATMS.Admin.Service.Exceptions.Auth;
-using ATMS.Application.Exceptions.Entity;
+﻿using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Exceptions.Configuration;
 using Newtonsoft.Json;
 using System.Net;
+using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Models;
 using FluentValidation;
 

@@ -1,3 +1,8 @@
-﻿namespace ATMS.Admin.Data.Entities.Dictionaries;
+﻿using ATMS.Data;
 
-public class Gender : DictionaryEntity { }
+namespace ATMS.Admin.Data.Entities.Dictionaries;
+
+public class Gender : TranslatableDictionaryEntity
+{
+    public ICollection<GenderTranslation> Translations { get; set; } = [];
+}

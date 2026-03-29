@@ -13,8 +13,6 @@ public interface IRoleRepository
     
     Task CreateAsync(Role entity, CancellationToken cancellationToken);
     
-    Task UpdateAsync(Role entity, CancellationToken cancellationToken);
-    
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
     
     Task<bool> IsExistAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken);

@@ -1,4 +1,5 @@
-﻿using ATMS.Admin.API.Middleware;
+﻿using System.IdentityModel.Tokens.Jwt;
+using ATMS.Admin.API.Middleware;
 using ATMS.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -34,6 +35,8 @@ public static class DependencyInjection
 
     public static IServiceCollection AddJwtSecurityServices(this IServiceCollection services, IConfiguration configuration)
     {
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+        
         services
             .AddAuthentication(options =>
             {
@@ -47,6 +50,7 @@ public static class DependencyInjection
                         string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
                 
                 options.RequireHttpsMetadata = true;
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,

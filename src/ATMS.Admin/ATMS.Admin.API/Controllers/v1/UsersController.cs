@@ -23,12 +23,12 @@ public class UsersController(IMediator mediator) : AdminControllerBase
     /// <response code="403">Resource forbidden.</response>
     /// <response code="500">Unhandled server error.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(UserModel[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserListItemModel[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<UserModel[]>> Index([FromQuery] GetUsersRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UserListItemModel[]>> Index([FromQuery] GetUsersRequest request, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(request, cancellationToken);
 

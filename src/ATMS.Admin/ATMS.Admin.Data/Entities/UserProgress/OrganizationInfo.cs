@@ -1,4 +1,6 @@
-﻿namespace ATMS.Admin.Data.Entities;
+﻿using ATMS.Data;
+
+namespace ATMS.Admin.Data.Entities;
 
 public class OrganizationInfo : BaseEntity
 {

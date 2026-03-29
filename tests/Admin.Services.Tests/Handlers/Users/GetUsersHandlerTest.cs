@@ -1,6 +1,7 @@
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Handlers.Users;
 using Moq;
 
@@ -14,39 +15,104 @@ public class GetUsersHandlerTest : BaseHandlerTest
     {
         _handler = new GetUsersHandler(UserRepositoryMock.Object, MapperMock.Object);
     }
- 
+
+    private User CreateUser()
+    {
+        return new User
+        {
+            UserStatus = new UserStatus
+            {
+                Translations = new List<UserStatusTranslation>()
+            }
+        };
+    }
+
     [Fact]
     public async Task Handle_ReturnsMappedUsers()
     {
-        var users = new List<User> { new(), new() };
-        var expectedModels = new UserModel[] { new(), new() };
- 
+        // Arrange
+        var users = new List<User>
+        {
+            CreateUser(),
+            CreateUser()
+        };
+
         UserRepositoryMock
             .Setup(r => r.GetAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(users);
- 
+
         MapperMock
-            .Setup(m => m.Map<UserModel[]>(users))
-            .Returns(expectedModels);
- 
+            .Setup(m => m.Map<UserListItemModel>(It.IsAny<User>()))
+            .Returns(new UserListItemModel());
+
+        // Act
         var result = await _handler.Handle(new GetUsersRequest(), CancellationToken.None);
- 
-        Assert.Equal(expectedModels, result);
+
+        // Assert
+        Assert.Equal(users.Count, result.Length);
     }
  
     [Fact]
     public async Task Handle_WhenNoUsers_ReturnsEmptyArray()
     {
+        // Arrange
         UserRepositoryMock
             .Setup(r => r.GetAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync([]);
- 
-        MapperMock
-            .Setup(m => m.Map<UserModel[]>(It.IsAny<User[]>()))
-            .Returns([]);
- 
+
+        // Act
         var result = await _handler.Handle(new GetUsersRequest(), CancellationToken.None);
- 
+
+        // Assert
         Assert.Empty(result);
+    }
+    
+    [Fact]
+    public async Task Handle_Should_Map_Each_User()
+    {
+        // Arrange
+        var users = new List<User>
+        {
+            CreateUser(),
+            CreateUser(),
+            CreateUser()
+        };
+
+        UserRepositoryMock
+            .Setup(r => r.GetAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(users);
+
+        MapperMock
+            .Setup(m => m.Map<UserListItemModel>(It.IsAny<User>()))
+            .Returns(new UserListItemModel());
+
+        // Act
+        await _handler.Handle(new GetUsersRequest(), CancellationToken.None);
+
+        // Assert
+        MapperMock.Verify(m =>
+                m.Map<UserListItemModel>(It.IsAny<User>()),
+            Times.Exactly(users.Count));
+    }
+    
+    [Fact]
+    public async Task Handle_WhenSingleUser_ReturnsSingleModel()
+    {
+        // Arrange
+        var users = new List<User> { CreateUser() };
+
+        UserRepositoryMock
+            .Setup(r => r.GetAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(users);
+
+        MapperMock
+            .Setup(m => m.Map<UserListItemModel>(It.IsAny<User>()))
+            .Returns(new UserListItemModel());
+
+        // Act
+        var result = await _handler.Handle(new GetUsersRequest(), CancellationToken.None);
+
+        // Assert
+        Assert.Single(result);
     }
 }

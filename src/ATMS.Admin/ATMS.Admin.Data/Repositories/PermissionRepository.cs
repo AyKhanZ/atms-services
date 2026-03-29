@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using ATMS.Admin.Data.DbContexts;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -8,9 +7,19 @@ namespace ATMS.Admin.Data.Repositories;
 
 public class PermissionRepository(AdminDbContext context) : IPermissionRepository
 {
+    public Task<List<int>> GetIdsAsync(CancellationToken cancellationToken)
+    {
+        return context.Permissions
+            .AsNoTracking()
+            .Select(p => p.Id)
+            .ToListAsync(cancellationToken);
+    }
+    
     public Task<List<Permission>> GetAsync(CancellationToken cancellationToken)
     {
-        return context.Permissions.AsNoTracking()
+        return context.Permissions
+            .Include(p => p.Translations)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 
@@ -21,7 +30,4 @@ public class PermissionRepository(AdminDbContext context) : IPermissionRepositor
             .Select(p => p.Id)
             .ToListAsync(cancellationToken);
     }
-
-    public Task<bool> IsExistAsync(Expression<Func<Permission, bool>> predicate, CancellationToken cancellationToken)
-        => context.Permissions.AnyAsync(predicate, cancellationToken);
 }

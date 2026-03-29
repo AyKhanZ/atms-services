@@ -3,6 +3,8 @@ using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Localization;
+using ATMS.Application.Models;
 using AutoMapper;
 using MediatR;
 
@@ -21,7 +23,17 @@ public class GetUserHandler(
         {
             throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
         }
+        
+        var language = CultureHelper.CurrentLanguage;
+        var model = mapper.Map<UserModel>(user);
 
-        return mapper.Map<UserModel>(user);
+        model.Gender = user.Gender.ToDictionaryModel(user.Gender.Translations, language);
+        model.MaritalStatus = user.MaritalStatus.ToDictionaryModel(user.MaritalStatus.Translations, language);
+        model.UserStatus = user.UserStatus.ToDictionaryModel(user.UserStatus.Translations, language);
+        model.Roles = user.UserRoles
+            .Select(ur => mapper.Map<DictionaryModel<Guid>>(ur.Role))
+            .ToArray();
+
+        return model;
     }
 }

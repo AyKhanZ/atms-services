@@ -1,5 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using ATMS.Admin.Service.Exceptions.Auth;
+using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Resources;
 using Microsoft.AspNetCore.Mvc;
 

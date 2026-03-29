@@ -1,9 +1,9 @@
 ﻿using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
+using ATMS.Application.Exceptions.Auth;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Authentication;

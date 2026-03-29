@@ -1,6 +1,7 @@
 using ATMS.Admin.Data.Infrastructure.Migrations;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
+using ATMS.Application.Interfaces;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Infrastructure.Options;
 using AutoMapper;
@@ -15,6 +16,9 @@ public abstract class BaseHandlerTest
     protected readonly Faker Faker =  new();
     
     protected readonly Mock<IMapper> MapperMock = new();
+    
+    
+    protected readonly Mock<ICurrentUser> СurrentUserMock = new();
     
     protected readonly Mock<IUserRepository> UserRepositoryMock = new();
     protected readonly Mock<IRoleRepository> RoleRepositoryMock = new();

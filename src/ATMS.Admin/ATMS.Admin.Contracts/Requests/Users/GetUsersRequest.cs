@@ -3,6 +3,4 @@ using MediatR;
 
 namespace ATMS.Admin.Contracts.Requests.Users;
 
-public class GetUsersRequest: IRequest<UserModel[]>
-{
-}
+public class GetUsersRequest: IRequest<UserListItemModel[]>;

@@ -1,5 +1,4 @@
-﻿using ATMS.Admin.Service.Behaviors;
-using MediatR;
+﻿using ATMS.Application.Dispatcher.Modules;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Admin.Service.Modules;
@@ -13,11 +12,7 @@ public static class HandlersModule
         {
             configuration.RegisterServicesFromAssembly(typeof(HandlersModule).Assembly);
         });
-
-        services.AddTransient(
-            typeof(IPipelineBehavior<,>),
-            typeof(ValidationBehavior<,>)
-        );
+        services.AddDispatcherServices();
 
         return services;
     }

@@ -2,9 +2,9 @@
 using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Handlers.Authentication;
 using ATMS.Admin.Service.Security.Models;
+using ATMS.Application.Exceptions.Auth;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Authentication;

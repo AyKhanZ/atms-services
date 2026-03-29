@@ -19,6 +19,15 @@ public class AdminDbContext: DbContext
     public DbSet<MaritalStatus> MaritalStatuses { get; set; }
     public DbSet<UserStatus> UserStatuses { get; set; }
     public DbSet<Permission> Permissions { get; set; }
+    
+    
+    public DbSet<GenderTranslation> GenderTranslations { get; set; }
+    
+    public DbSet<MaritalStatusTranslation> MaritalStatusTranslations { get; set; }
+    
+    public DbSet<UserStatusTranslation> UserStatusTranslations { get; set; }
+    
+    public DbSet<PermissionTranslation> PermissionTranslations { get; set; }
     #endregion
 
     public DbSet<UserRole> UserRoles { get; set; }
@@ -46,6 +55,7 @@ public class AdminDbContext: DbContext
             entity.HasIndex(e => e.RefreshToken).IsUnique();
 
             entity.Property(e => e.AvatarPath).HasDefaultValue("test.png");
+            entity.Property(e => e.Language).HasDefaultValue("en");
 
             entity.Property(u => u.MaritalStatusId)
                     .HasDefaultValue(1)
@@ -66,63 +76,94 @@ public class AdminDbContext: DbContext
             entity.Property(e => e.Name).IsRequired();
         });
 
+        
         #region Dictionaries
         modelBuilder.Entity<Permission>(entity =>
         {
             entity.HasIndex(p => p.Code).IsUnique();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Module).HasMaxLength(50).IsRequired();
 
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .IsRequired();
-
-            entity.Property(e => e.Code)
-                .HasMaxLength(50)
-                .IsRequired();
-
-            entity.Property(e => e.Module)
-                .HasMaxLength(50)
-                .IsRequired();
+            entity.HasMany(p => p.Translations)
+                .WithOne(t => t.Permission)
+                .HasForeignKey(t => t.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
-
-        modelBuilder.Entity<UserStatus>(entity =>
+        
+        modelBuilder.Entity<PermissionTranslation>(entity =>
         {
-            entity.HasIndex(p => p.Code).IsUnique();
-
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .IsRequired();
-
-            entity.Property(e => e.Code)
-                .HasMaxLength(50)
-                .IsRequired();
+            entity.HasIndex(t => new { t.PermissionId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
         });
 
+        
         modelBuilder.Entity<MaritalStatus>(entity =>
         {
             entity.HasIndex(p => p.Code).IsUnique();
 
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .IsRequired();
-
             entity.Property(e => e.Code)
                 .HasMaxLength(50)
                 .IsRequired();
+            
+            entity.HasMany(m => m.Translations)
+                .WithOne(t => t.MaritalStatus)
+                .HasForeignKey(t => t.MaritalStatusId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
+        modelBuilder.Entity<MaritalStatusTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.MaritalStatusId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
         modelBuilder.Entity<Gender>(entity =>
         {
             entity.HasIndex(p => p.Code).IsUnique();
 
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
                 .IsRequired();
+            
+            entity.HasMany(g => g.Translations)
+                .WithOne(t => t.Gender)
+                .HasForeignKey(t => t.GenderId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<GenderTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.GenderId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<UserStatus>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
 
             entity.Property(e => e.Code)
                 .HasMaxLength(50)
                 .IsRequired();
+            
+            entity.HasMany(u => u.Translations)
+                .WithOne(t => t.UserStatus)
+                .HasForeignKey(t => t.UserStatusId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<UserStatusTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.UserStatusId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
         });
         #endregion
+        
 
         modelBuilder.Entity<UserRole>(entity =>
         {

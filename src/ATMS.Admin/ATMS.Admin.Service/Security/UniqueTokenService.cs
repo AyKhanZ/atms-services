@@ -1,7 +1,7 @@
-﻿using ATMS.Admin.Service.Exceptions.Auth;
-using ATMS.Admin.Service.Security.Interfaces;
+﻿using ATMS.Admin.Service.Security.Interfaces;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Cryptography;
+using ATMS.Application.Exceptions.Auth;
 
 namespace ATMS.Admin.Service.Security;
 

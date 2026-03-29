@@ -80,8 +80,10 @@ public class RolesControllerTest
         var role = new RoleModel { Id = Guid.NewGuid(), Name = "NewAdmin" };
         
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<CreateRoleCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(role);
+            .Setup(m => m.Send(
+                It.IsAny<CreateRoleCommand>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(role.Id);
         
         var command = new CreateRoleCommand { Name = "NewAdmin", PermissionIds = [1, 2, 3] };
         

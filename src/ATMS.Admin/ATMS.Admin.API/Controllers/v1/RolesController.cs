@@ -83,7 +83,7 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     /// <response code="403">Resource forbidden.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPost]
-    [ProducesResponseType(typeof(RoleModel), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
@@ -92,13 +92,13 @@ public class RolesController(IMediator mediator) : AdminControllerBase
         [FromBody] CreateRoleCommand command,
         CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(command, cancellationToken);
+        var id = await mediator.Send(command, cancellationToken);
 
         return CreatedAtAction(
             actionName: nameof(Get),
             controllerName: "Roles",
-            routeValues: new { id = result.Id },
-            value: result);
+            routeValues: new { id },
+            value: id);
     }
 
 

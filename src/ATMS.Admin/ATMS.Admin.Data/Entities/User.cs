@@ -35,6 +35,9 @@ public class User : UserBase
     public DateTime? RefreshTokenExpiresAt { get; set; }
 
     
+    public string Language { get; set; }
+    
+    
     #region Dictionaries
     public int UserStatusId { get; set; }
 

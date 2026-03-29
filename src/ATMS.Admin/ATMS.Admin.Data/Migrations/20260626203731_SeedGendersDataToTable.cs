@@ -6,33 +6,46 @@ namespace ATMS.Admin.Data.Migrations;
 
 public partial class SeedGendersDataToTable : Migration
 {
-    private readonly List<(int Id, string Name, string Code)> items =
-    [
-        (1, "Not specified", "NotSpecified"),
-        (2, "Male", "Male"),
-        (3, "Female", "Female"),
-        (4, "Other", "Other")
-    ];
-
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        foreach (var item in items)
-        {
-            migrationBuilder.InsertData(
-                table: "Genders",
-                columns: ["Id", "Name", "Code"],
-                values: [item.Id, item.Name, item.Code]);
-        }
+        migrationBuilder.InsertData(
+            table: "Genders",
+            columns: ["Id", "Code"],
+            columnTypes: ["integer", "character varying(50)"],
+            values: new object[,]
+            {
+                { 1, "NotSpecified" },
+                { 2, "Male"         },
+                { 3, "Female"       },
+                { 4, "Other"        }
+            });
+
+        migrationBuilder.InsertData(
+            table: "GenderTranslations",
+            columns: ["GenderId", "Language", "Name"],
+            columnTypes: ["integer", "character varying(5)", "character varying(100)"],
+            values: new object[,]
+            {
+                { 1, "en", "Not specified"  },
+                { 1, "ru", "Не указано"     },
+                { 1, "az", "Göstərilməyib"  },
+                { 2, "en", "Male"           },
+                { 2, "ru", "Мужской"        },
+                { 2, "az", "Kişi"           },
+                { 3, "en", "Female"         },
+                { 3, "ru", "Женский"        },
+                { 3, "az", "Qadın"          },
+                { 4, "en", "Other"          },
+                { 4, "ru", "Другое"         },
+                { 4, "az", "Digər"          }
+            });
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-        foreach (var id in items.Select(x => x.Id))
-        {
-            migrationBuilder.DeleteData(
-                table: "Genders",
-                keyColumn: "Id",
-                keyValue: id);
-        }
+        migrationBuilder.DeleteData(table: "Genders", keyColumn: "Id", keyValue: 1);
+        migrationBuilder.DeleteData(table: "Genders", keyColumn: "Id", keyValue: 2);
+        migrationBuilder.DeleteData(table: "Genders", keyColumn: "Id", keyValue: 3);
+        migrationBuilder.DeleteData(table: "Genders", keyColumn: "Id", keyValue: 4);
     }
 }

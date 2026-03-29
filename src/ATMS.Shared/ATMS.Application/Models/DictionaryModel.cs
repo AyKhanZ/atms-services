@@ -7,4 +7,4 @@ public class DictionaryModel<TKey>
     public string Code { get; set; }
 }
 
-public class DictionaryModel : DictionaryModel<int> { }
+public class DictionaryModel : DictionaryModel<int>;

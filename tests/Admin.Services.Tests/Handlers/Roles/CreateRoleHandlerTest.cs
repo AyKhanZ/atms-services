@@ -62,7 +62,7 @@ public class CreateRoleHandlerTest : BaseHandlerTest
  
         var result = await _handler.Handle(command, CancellationToken.None);
  
-        Assert.Equal(expectedModel, result);
+        Assert.Equal(entity.Id, result);
         RoleRepositoryMock.Verify(r => r.CreateAsync(entity,
             It.IsAny<CancellationToken>()), Times.Once);
     }

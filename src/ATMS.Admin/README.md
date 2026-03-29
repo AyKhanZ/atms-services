@@ -48,16 +48,25 @@
         DROP TABLE "UserRoles";
         DROP TABLE "Users";
         DROP TABLE "UserStatuses";
+        DROP TABLE "GenderTranslations";
+        DROP TABLE "MaritalStatusTranslations";
+        DROP TABLE "UserStatusTranslations";
+        DROP TABLE "PermissionTranslations";
     
     -- Migrations
         select *
         from "__EFMigrationsHistory";
     
     -- Dictionaries
-        SELECT * FROM "Permissions";
-        SELECT * FROM "Genders";
-        SELECT * FROM "MaritalStatuses";
-        SELECT * FROM "UserStatuses";
+        select * from "Permissions";
+        select * from "UserStatuses";
+        select * from "MaritalStatuses";
+        select * from "Genders";
+        
+        select * from "GenderTranslations";
+        select * from "MaritalStatusTranslations";
+        select * from "UserStatusTranslations";
+        select * from "PermissionTranslations";
     
     -- Entities
         SELECT * FROM "Users";

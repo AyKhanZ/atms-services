@@ -6,33 +6,41 @@ namespace ATMS.Admin.Data.Migrations;
 
 public partial class SeedUserStatusesDataToTable : Migration
 {
-    private readonly List<(int Id, string Name, string Code)> items =
-    [
-        (1, "Active", "Active"),
-        (2, "Inactive", "Inactive"),
-        (3, "Locked", "Locked")
-    ];
-
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        foreach (var item in items)
-        {
-            migrationBuilder.InsertData(
-                table: "UserStatuses",
-                columns: ["Id", "Name", "Code"],
-                values: [item.Id, item.Name, item.Code]);
-        }
+        migrationBuilder.InsertData(
+            table: "UserStatuses",
+            columns: ["Id", "Code"],
+            columnTypes: ["integer", "character varying(50)"],
+            values: new object[,]
+            {
+                { 1, "Active"   },
+                { 2, "Inactive" },
+                { 3, "Locked"   }
+            });
+
+        migrationBuilder.InsertData(
+            table: "UserStatusTranslations",
+            columns: ["UserStatusId", "Language", "Name"],
+            columnTypes: ["integer", "character varying(5)", "character varying(100)"],
+            values: new object[,]
+            {
+                { 1, "en", "Active"       },
+                { 1, "ru", "Активный"     },
+                { 1, "az", "Aktiv"        },
+                { 2, "en", "Inactive"     },
+                { 2, "ru", "Неактивный"   },
+                { 2, "az", "Qeyri-aktiv"  },
+                { 3, "en", "Locked"       },
+                { 3, "ru", "Заблокирован" },
+                { 3, "az", "Bloklanmış"   }
+            });
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-        //migrationBuilder.Sql("DELETE FROM UserStatuses");
-        foreach (var id in items.Select(x => x.Id))
-        {
-            migrationBuilder.DeleteData(
-                table: "UserStatuses",
-                keyColumn: "Id",
-                keyValue: id);
-        }
+        migrationBuilder.DeleteData(table: "UserStatuses", keyColumn: "Id", keyValue: 1);
+        migrationBuilder.DeleteData(table: "UserStatuses", keyColumn: "Id", keyValue: 2);
+        migrationBuilder.DeleteData(table: "UserStatuses", keyColumn: "Id", keyValue: 3);
     }
 }

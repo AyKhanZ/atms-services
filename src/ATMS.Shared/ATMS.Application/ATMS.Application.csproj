@@ -7,4 +7,15 @@
         <RootNamespace>ATMS.Application</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ATMS.Application.Exceptions\ATMS.Application.Exceptions.csproj" />
+      <ProjectReference Include="..\ATMS.Data\ATMS.Data.csproj" />
+    </ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
+	</ItemGroup>
+
 </Project>

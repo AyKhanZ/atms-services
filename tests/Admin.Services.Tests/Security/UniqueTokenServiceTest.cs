@@ -1,5 +1,5 @@
-using ATMS.Admin.Service.Exceptions.Auth;
 using ATMS.Admin.Service.Security;
+using ATMS.Application.Exceptions.Auth;
 
 namespace Admin.Services.Tests.Security;
 

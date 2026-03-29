@@ -24,12 +24,16 @@ public class RoleRepository(AdminDbContext context) : IRoleRepository
     public Task<Role?> FindAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
     {
         return context.Roles
+            .Include(r => r.RolePermissions).ThenInclude(rp => rp.Permission)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
     public async Task<Role?> GetAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
     {
         return await context.Roles
+            .Include(r => r.RolePermissions).ThenInclude(rp => rp.Permission)
+            .AsSplitQuery()
             .AsNoTracking()
             .FirstOrDefaultAsync(predicate, cancellationToken);
     }
@@ -37,20 +41,14 @@ public class RoleRepository(AdminDbContext context) : IRoleRepository
     public Task<List<Role>> GetAsync(CancellationToken cancellationToken)
     {
         return context.Roles
+            .Include(r => r.RolePermissions).ThenInclude(rp => rp.Permission)
+            .AsSplitQuery()
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 
     public Task<bool> IsExistAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
         => context.Roles.AnyAsync(predicate, cancellationToken);
-
-    public Task UpdateAsync(Role entity, CancellationToken cancellationToken)
-    {
-        return context.Roles.Where(x => x.Id == entity.Id)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(x => x.Name, entity.Name)
-                .SetProperty(x => x.Description, entity.Description), cancellationToken);
-    }
     
     public Task SaveAsync(CancellationToken cancellationToken)
     {

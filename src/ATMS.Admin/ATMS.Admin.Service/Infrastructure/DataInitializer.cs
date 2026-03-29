@@ -37,16 +37,16 @@ public sealed class DataInitializer(
         {
             return;
         }
-        var permissions = await permissionRepository.GetAsync(cancellationToken);
+        var permissionIds = await permissionRepository.GetIdsAsync(cancellationToken);
 
         var role = new Role
         {
             Id = Guid.NewGuid(),
             Name = _adminOptions.RoleName,
             Description = "Super administrator with all permissions",
-            RolePermissions = permissions.Select(p => new RolePermission
+            RolePermissions = permissionIds.Select(id => new RolePermission
             {
-                PermissionId = p.Id
+                PermissionId = id
             }).ToList()
         };
 
@@ -62,8 +62,7 @@ public sealed class DataInitializer(
         {
             return;
         }
-        var role = await roleRepository.GetAsync(
-            r => r.Name == _adminOptions.RoleName, cancellationToken);
+        var role = await roleRepository.GetAsync(r => r.Name == _adminOptions.RoleName, cancellationToken);
 
         var userId = Guid.NewGuid();
 

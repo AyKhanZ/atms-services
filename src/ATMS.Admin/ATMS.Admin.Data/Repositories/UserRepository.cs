@@ -20,11 +20,20 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         return context.Users
             .FirstOrDefaultAsync(predicate, cancellationToken);
     }
+    
+    public Task<User?> GetMeAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
 
     public Task<List<User>> GetAsync(CancellationToken cancellationToken)
     {
         return context.Users
+            .Include(u => u.UserStatus).ThenInclude(s => s.Translations)
             .AsNoTracking()
+            .AsSplitQuery()
             .ToListAsync(cancellationToken);
     }
 
@@ -32,6 +41,11 @@ public class UserRepository(AdminDbContext context) : IUserRepository
     {
         return context.Users
             .AsNoTracking()
+            .Include(u => u.Gender).ThenInclude(g => g.Translations)
+            .Include(u => u.MaritalStatus).ThenInclude(m => m.Translations)
+            .Include(u => u.UserStatus).ThenInclude(s => s.Translations)
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
