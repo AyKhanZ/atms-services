@@ -7,10 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="DbContexts\" />
-      <Folder Include="Migrations\" />
-      <Folder Include="Modules\" />
-      <Folder Include="Repositories\" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Data\ATMS.Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Npgsql" Version="10.0.0" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     </ItemGroup>
 
 </Project>
