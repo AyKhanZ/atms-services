@@ -9,7 +9,7 @@ public class Role : BaseEntity
     public string Description { get; set; }
 
     
-    public ICollection<MemberRole> RoleMembers { get; set; }
+    public ICollection<WorkProjectParticipantRole> WorkProjectParticipantRoles { get; set; }
     
     public ICollection<RolePermission> RolePermissions { get; set; }
 }

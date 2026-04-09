@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Project.Data.Entities;
 using Project.Data.Entities.Dictionaries;
 
 namespace Project.Data.DbContexts;
@@ -10,28 +11,47 @@ public class ProjectDbContext : DbContext
         : base(options) { }
     
     #region Dictionaries
+    public DbSet<WorkTicketType> WorkTicketTypes { get; set; }
+    public DbSet<WorkTicketTypeTranslation> WorkTicketTypeTranslations { get; set; }
+    
+    public DbSet<WorkTicketStatus> WorkTicketStatuses { get; set; }
+    public DbSet<WorkTicketStatusTranslation> WorkTicketStatusTranslations { get; set; }
+    
+    public DbSet<WorkTaskStatus> WorkTaskStatuses { get; set; }
+    public DbSet<WorkTaskStatusTranslation> WorkTaskStatusTranslations { get; set; }
+    
+    public DbSet<WorkGroupStatus> WorkGroupStatuses { get; set; }
+    public DbSet<WorkGroupStatusTranslation> WorkGroupStatusTranslations { get; set; }
+    
+    public DbSet<WorkItemPriority> WorkItemPriorities { get; set; }
+    public DbSet<WorkItemPriorityTranslation> WorkItemPriorityTranslations { get; set; }
+    
     public DbSet<ProjectType> ProjectTypes { get; set; }
     public DbSet<ProjectTypeTranslation> ProjectTypeTranslations { get; set; }
     
-    public DbSet<State> State { get; set; }
-    public DbSet<StateTranslation> StateTranslations { get; set; }
+    public DbSet<ProjectStatus> ProjectStatuses { get; set; }
+    public DbSet<ProjectStatusTranslation> ProjectStatusTranslations { get; set; }
     
-    public DbSet<Permission> Permission { get; set; }
+    public DbSet<ProjectKind> ProjectKinds { get; set; }
+    public DbSet<ProjectKindTranslation> ProjectKindTranslations { get; set; }
+    
+    public DbSet<Permission> Permissions { get; set; }
     public DbSet<PermissionTranslation> PermissionTranslations { get; set; }
     #endregion
     
-    public DbSet<Entities.Project> Projects { get; set; }
-    public DbSet<Entities.Group> Groups { get; set; }
-    public DbSet<Entities.Ticket> Tickets { get; set; }
+    public DbSet<WorkProject> WorkProjects { get; set; }
+    public DbSet<WorkGroup> WorkGroups { get; set; }
+    public DbSet<WorkTicket> WorkTickets { get; set; }
+    public DbSet<WorkTask> WorkTasks { get; set; }
     
-    public DbSet<Entities.Member> Members { get; set; }
-    public DbSet<Entities.MemberRole> MemberRoles { get; set; }
+    public DbSet<WorkProjectParticipant> ProjectParticipants { get; set; }
+    public DbSet<WorkProjectParticipantRole> ProjectParticipantRoles { get; set; }
     
-    public DbSet<Entities.User> Users { get; set; }
-    public DbSet<Entities.Organization> Organizations { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Organization> Organizations { get; set; }
     
-    public DbSet<Entities.Role> Roles { get; set; }
-    public DbSet<Entities.RolePermission> RolePermissions { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<RolePermission> RolePermissions { get; set; }
     
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -46,7 +66,7 @@ public class ProjectDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Entity<Entities.Project>(entity =>
+        modelBuilder.Entity<WorkProject>(entity =>
         {
             entity.HasIndex(e => e.Title).IsUnique();
             entity.HasIndex(e => e.Code).IsUnique();
@@ -55,33 +75,63 @@ public class ProjectDbContext : DbContext
             entity.Property(e => e.Code).IsRequired();
 
             entity.Property(e => e.CreatedAt).IsRequired();
+            entity.Property(e => e.CreatedById).IsRequired();
 
             entity.Property(u => u.ProjectTypeId)
                 .HasDefaultValue(1)
                 .IsRequired();
+            
+            entity.Property(u => u.ProjectKindId)
+                .HasDefaultValue(1)
+                .IsRequired();
 
-            entity.Property(u => u.StateId)
+            entity.Property(u => u.ProjectStatusId)
                 .HasDefaultValue(1)
                 .IsRequired();
             
             entity.HasOne(p => p.Organization)
-                .WithMany(o => o.Projects)
+                .WithMany(o => o.WorkProjects)
                 .HasForeignKey(o => o.OrganizationId)
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasMany(p => p.WorkProjectParticipants)
+                .WithOne(o => o.WorkProject)
+                .HasForeignKey(o => o.WorkProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasMany(p => p.WorkGroups)
+                .WithOne(o => o.WorkProject)
+                .HasForeignKey(o => o.WorkProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
         
-        modelBuilder.Entity<Entities.Group>(entity =>
+        modelBuilder.Entity<WorkGroup>(entity =>
         {
             entity.HasIndex(e => e.Title).IsUnique();
             
             entity.Property(e => e.Title).IsRequired();
 
             entity.Property(e => e.CreatedAt).IsRequired();
+            entity.Property(e => e.Level).IsRequired();
             
-            ////// add!
+            
+            entity.Property(u => u.StatusId)
+                .HasDefaultValue(1)
+                .IsRequired();
+            
+            
+            entity.HasOne(e => e.ParentWorkGroup)
+                .WithMany(e => e.Children)
+                .HasForeignKey(e => e.ParentWorkGroupId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(e => e.WorkProject)
+                .WithMany(o => o.WorkGroups)
+                .HasForeignKey(e => e.WorkProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
         
-        modelBuilder.Entity<Entities.Organization>(entity =>
+        modelBuilder.Entity<Organization>(entity =>
         {
             entity.HasIndex(e => e.Title).IsUnique();
             entity.HasIndex(e => e.Voen).IsUnique();
@@ -90,26 +140,38 @@ public class ProjectDbContext : DbContext
             entity.Property(e => e.Voen).IsRequired();
 
             entity.Property(e => e.LogoPath).HasDefaultValue("logo path");
+            
+            
+            entity.HasMany(o => o.Users)
+                .WithOne(o => o.Organization)
+                .HasForeignKey(o => o.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasMany(o => o.WorkProjects)
+                .WithOne(o => o.Organization)
+                .HasForeignKey(o => o.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
         
         #region Dictionaries
-        modelBuilder.Entity<State>(entity =>
+        modelBuilder.Entity<ProjectStatus>(entity =>
         {
             entity.HasIndex(p => p.Code).IsUnique();
             entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
 
             entity.HasMany(p => p.Translations)
-                .WithOne(t => t.State)
-                .HasForeignKey(t => t.StateId)
+                .WithOne(t => t.ProjectStatus)
+                .HasForeignKey(t => t.ProjectStatusId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-        modelBuilder.Entity<StateTranslation>(entity =>
+        modelBuilder.Entity<ProjectStatusTranslation>(entity =>
         {
-            entity.HasIndex(t => new { t.StateId, t.Language }).IsUnique();
+            entity.HasIndex(t => new { t.ProjectStatusId, t.Language }).IsUnique();
             entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
             entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
         });
+        
         
         modelBuilder.Entity<ProjectType>(entity =>
         {
@@ -122,12 +184,127 @@ public class ProjectDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-        modelBuilder.Entity<PermissionTranslation>(entity =>
+        modelBuilder.Entity<ProjectTypeTranslation>(entity =>
         {
-            entity.HasIndex(t => new { t.PermissionId, t.Language }).IsUnique();
+            entity.HasIndex(t => new { t.ProjectTypeId, t.Language }).IsUnique();
             entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
             entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
         });
+        
+        
+        modelBuilder.Entity<WorkGroupStatus>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+
+            entity.HasMany(p => p.Translations)
+                .WithOne(t => t.WorkGroupStatus)
+                .HasForeignKey(t => t.WorkGroupStatusId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<WorkGroupStatusTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.WorkGroupStatusId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<ProjectKind>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+
+            entity.HasMany(p => p.Translations)
+                .WithOne(t => t.ProjectKind)
+                .HasForeignKey(t => t.ProjectKindId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<ProjectKindTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.ProjectKindId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<WorkTaskStatus>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+
+            entity.HasMany(p => p.Translations)
+                .WithOne(t => t.WorkTaskStatus)
+                .HasForeignKey(t => t.WorkTaskStatusId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<WorkTaskStatusTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.WorkTaskStatusId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<WorkItemPriority>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+
+            entity.HasMany(p => p.Translations)
+                .WithOne(t => t.WorkItemPriority)
+                .HasForeignKey(t => t.WorkItemPriorityId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<WorkItemPriorityTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.WorkItemPriorityId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<WorkTicketStatus>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+
+            entity.HasMany(p => p.Translations)
+                .WithOne(t => t.WorkTicketStatus)
+                .HasForeignKey(t => t.WorkTicketStatusId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<WorkTicketStatusTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.WorkTicketStatusId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<WorkTicketType>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+
+            entity.HasMany(p => p.Translations)
+                .WithOne(t => t.WorkTicketType)
+                .HasForeignKey(t => t.WorkTicketTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<WorkTicketTypeTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.WorkTicketTypeId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
         
         modelBuilder.Entity<Permission>(entity =>
         {
@@ -140,9 +317,9 @@ public class ProjectDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-        modelBuilder.Entity<ProjectTypeTranslation>(entity =>
+        modelBuilder.Entity<PermissionTranslation>(entity =>
         {
-            entity.HasIndex(t => new { t.ProjectTypeId, t.Language }).IsUnique();
+            entity.HasIndex(t => new { t.PermissionId, t.Language }).IsUnique();
             entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
             entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
         });

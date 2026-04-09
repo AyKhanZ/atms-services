@@ -10,5 +10,7 @@ public class Organization : BaseEntity
     
     public string? LogoPath { get; set; }
 
-    public ICollection<Project> Projects { get; set; } = [];
+    public ICollection<WorkProject> WorkProjects { get; set; } = [];
+    
+    public ICollection<User> Users { get; set; } = [];
 }
