@@ -167,7 +167,7 @@ namespace ATMS.Project.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserType = table.Column<int>(type: "integer", nullable: false),
+                    UserTypeId = table.Column<int>(type: "integer", nullable: false),
                     OrganizationId = table.Column<Guid>(type: "uuid", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),

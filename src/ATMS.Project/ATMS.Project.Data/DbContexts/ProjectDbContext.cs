@@ -117,6 +117,9 @@ public class ProjectDbContext : DbContext
         modelBuilder.Entity<Role>()
             .HasQueryFilter(t => !t.IsDeleted);
         
+        modelBuilder.Entity<RolePermission>()
+            .HasQueryFilter(rp => !rp.Role.IsDeleted);
+        
         modelBuilder.Entity<WorkProjectParticipant>()
             .HasQueryFilter(t => !t.IsDeleted);
         

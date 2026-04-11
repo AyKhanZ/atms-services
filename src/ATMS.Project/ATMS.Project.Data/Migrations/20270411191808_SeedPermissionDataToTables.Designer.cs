@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Project.Data.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20260411135314_SeedDataToDictionaryTables")]
-    partial class SeedDataToDictionaryTables
+    [Migration("20270411191808_SeedPermissionDataToTables")]
+    partial class SeedPermissionDataToTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -592,7 +592,7 @@ namespace ATMS.Project.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("UserType")
+                    b.Property<int>("UserTypeId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
