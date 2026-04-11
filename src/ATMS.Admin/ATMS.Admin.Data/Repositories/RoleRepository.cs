@@ -1,6 +1,7 @@
-﻿using ATMS.Admin.Data.DbContexts;
+﻿using System.Linq.Expressions;
+using ATMS.Admin.Data.DbContexts;
 using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Repositories;
@@ -19,30 +20,38 @@ public class RoleRepository(AdminDbContext context) : IRoleRepository
             .Where(r => r.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
     }
-
-    public Task<Role?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    
+    public Task<Role?> FindAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
     {
         return context.Roles
-            .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+            .Include(r => r.RolePermissions).ThenInclude(rp => rp.Permission)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public Task<List<Role>> GetAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<Role?> GetAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
+    {
+        return await context.Roles
+            .Include(r => r.RolePermissions).ThenInclude(rp => rp.Permission)
+            .AsSplitQuery()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(predicate, cancellationToken);
+    }
+
+    public Task<List<Role>> GetAsync(CancellationToken cancellationToken)
     {
         return context.Roles
+            .Include(r => r.RolePermissions).ThenInclude(rp => rp.Permission)
+            .AsSplitQuery()
             .AsNoTracking()
-            .Where(r => r.UserRoles.Any(ur => ur.UserId == userId))
             .ToListAsync(cancellationToken);
     }
 
-    public Task<bool> IsExistAsync(string name, CancellationToken cancellationToken)
-        => context.Roles.AnyAsync(r => r.Name == name, cancellationToken);
-
-    public Task UpdateAsync(Role entity, CancellationToken cancellationToken)
+    public Task<bool> IsExistAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken)
+        => context.Roles.AnyAsync(predicate, cancellationToken);
+    
+    public Task SaveAsync(CancellationToken cancellationToken)
     {
-        return context.Roles.Where(x => x.Id == entity.Id)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(x => x.Name, entity.Name)
-                .SetProperty(x => x.Description, entity.Description), cancellationToken);
+        return context.SaveChangesAsync(cancellationToken);
     }
 }

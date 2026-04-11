@@ -1,31 +1,32 @@
-﻿using ATMS.Admin.Contracts.Commands;
-using ATMS.Admin.Contracts.Models;
+﻿using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using AutoMapper;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Roles;
 
-public class CreateRoleHandler : IRequestHandler<CreateRoleCommand, RoleModel>
+public class CreateRoleHandler(
+    IMapper mapper,
+    IRoleRepository roleRepository)
+    : IRequestHandler<CreateRoleCommand, Guid>
 {
-    private readonly IMapper _mapper;
-    private readonly IRoleRepository _roleRepository;
-
-    public CreateRoleHandler(IMapper mapper,
-        IRoleRepository roleRepository)
+    public async Task<Guid> Handle(CreateRoleCommand command, CancellationToken cancellationToken)
     {
-        _mapper = mapper;
-        _roleRepository = roleRepository;
-    }
-
-    public async Task<RoleModel> Handle(CreateRoleCommand command, CancellationToken cancellationToken)
-    {
-        var entity = _mapper.Map<Role>(command);
+        var entity = mapper.Map<Role>(command);
         entity.Id = Guid.NewGuid();
+        
+        entity.RolePermissions = command.PermissionIds
+            .Distinct()
+            .Select(pid => new RolePermission
+            {
+                RoleId = entity.Id,
+                PermissionId = pid
+            })
+            .ToList();
 
-        await _roleRepository.CreateAsync(entity, cancellationToken);
+        await roleRepository.CreateAsync(entity, cancellationToken);
 
-        return _mapper.Map<RoleModel>(entity);
+        return entity.Id;
     }
 }

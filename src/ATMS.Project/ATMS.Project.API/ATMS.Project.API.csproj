@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\docker\ATMS.Aspire.ServiceDefaults\ATMS.Aspire.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Dispatcher\ATMS.Application.Dispatcher.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Infrastructure\ATMS.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Swagger\ATMS.Swagger.csproj" />
+      <ProjectReference Include="..\ATMS.Project.Contracts\ATMS.Project.Contracts.csproj" />
+      <ProjectReference Include="..\ATMS.Project.Services\ATMS.Project.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
+</Project>

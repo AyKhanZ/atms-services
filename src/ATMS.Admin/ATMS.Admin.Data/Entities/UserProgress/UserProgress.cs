@@ -1,14 +1,17 @@
-﻿namespace ATMS.Admin.Data.Entities;
+﻿namespace ATMS.Admin.Data.Entities.UserProgress;
 
 public class UserProgress
 {
     public Guid UserId { get; set; }
-    public UserBase User { get; set; }
+    
+    public User User { get; set; }
+    
 
     public ushort CurrentStep { get; set; }
 
 
     public Guid? PersonalInfoId { get; set; }
+    
     public PersonalInfo? PersonalInfo { get; set; }
 
 
@@ -16,6 +19,7 @@ public class UserProgress
 
 
     public Guid? OrganizationInfoId { get; set; }
+    
     public OrganizationInfo? OrganizationInfo { get; set; }
 
 

@@ -1,4 +1,6 @@
-﻿namespace ATMS.Admin.Data.Entities.AuditLogs;
+﻿using ATMS.Data;
+
+namespace ATMS.Admin.Data.Entities.AuditLogs;
 
 public class AuditLog : BaseDocument
 {

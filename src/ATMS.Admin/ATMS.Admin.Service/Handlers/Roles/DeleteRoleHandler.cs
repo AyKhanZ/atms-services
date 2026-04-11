@@ -1,16 +1,24 @@
-﻿using ATMS.Admin.Contracts.Commands;
-using ATMS.Admin.Data.Interfaces;
+﻿using ATMS.Admin.Contracts.Commands.Role;
+using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Entity;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Roles;
 
 public class DeleteRoleHandler (
     IRoleRepository roleRepository
-    ) : IRequestHandler<DeleteRoleCommand, Guid>
+    ) : IRequestHandler<DeleteRoleCommand>
 {
-    public async Task<Guid> Handle(DeleteRoleCommand command, CancellationToken cancellationToken)
+    public async Task Handle(DeleteRoleCommand command, CancellationToken cancellationToken)
     {
+        var isExist = await roleRepository.IsExistAsync(r => r.Id == command.Id, cancellationToken);
+
+        if (!isExist)
+        {
+            throw new EntityException(EntityErrorType.NotFound, RoleMessages.NotFound);
+        }
+
         await roleRepository.DeleteAsync(command.Id, cancellationToken);
-        return command.Id;
     }
 }

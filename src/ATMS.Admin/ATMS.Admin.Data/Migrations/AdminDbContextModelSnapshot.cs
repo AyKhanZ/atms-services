@@ -17,24 +17,264 @@ namespace ATMS.Admin.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Permission", b =>
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.Gender", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Name")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Genders");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.GenderTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GenderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GenderId", "Language")
+                        .IsUnique();
+
+                    b.ToTable("GenderTranslations");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("MaritalStatuses");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatusTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<int>("MaritalStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaritalStatusId", "Language")
+                        .IsUnique();
+
+                    b.ToTable("MaritalStatusTranslations");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Module")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.PermissionTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PermissionId", "Language")
+                        .IsUnique();
+
+                    b.ToTable("PermissionTranslations");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("UserStatuses");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserStatusTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("UserStatusId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserStatusId", "Language")
+                        .IsUnique();
+
+                    b.ToTable("UserStatusTranslations");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("UserTypes");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserTypeTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("UserTypeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserTypeId", "Language")
+                        .IsUnique();
+
+                    b.ToTable("UserTypeTranslations");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Role", b =>
@@ -53,22 +293,79 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.RolePermission", b =>
                 {
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid");
 
                     b.HasKey("PermissionId", "RoleId");
 
+                    b.HasIndex("PermissionId");
+
                     b.HasIndex("RoleId");
 
                     b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.PasswordResetToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.RefreshRevokedToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshRevokedTokens");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>
@@ -79,53 +376,100 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<string>("AvatarPath")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("test.png");
 
-                    b.Property<DateTime>("BirthDate")
+                    b.Property<DateTime?>("BirthDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("BusinessPhoneNumber")
-                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("FailedLoginCount")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("GenderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
                     b.Property<bool>("HasCompletedSurvey")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid>("InvitedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("en");
+
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MaritalStatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Patronymic")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PersonalEmail")
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Position")
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("RefreshTokenCreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                    b.Property<DateTime?>("RefreshTokenExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("UserStatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<int>("UserTypeId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("GenderId");
+
+                    b.HasIndex("InvitedById");
+
+                    b.HasIndex("MaritalStatusId");
+
+                    b.HasIndex("RefreshToken")
+                        .IsUnique();
+
+                    b.HasIndex("UserStatusId");
+
+                    b.HasIndex("UserTypeId");
 
                     b.ToTable("Users");
                 });
@@ -142,12 +486,69 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.HasIndex("RoleId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.GenderTranslation", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Gender", "Gender")
+                        .WithMany("Translations")
+                        .HasForeignKey("GenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gender");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatusTranslation", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", "MaritalStatus")
+                        .WithMany("Translations")
+                        .HasForeignKey("MaritalStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MaritalStatus");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.PermissionTranslation", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Permission", "Permission")
+                        .WithMany("Translations")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserStatusTranslation", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.UserStatus", "UserStatus")
+                        .WithMany("Translations")
+                        .HasForeignKey("UserStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserStatus");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserTypeTranslation", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.UserType", "UserType")
+                        .WithMany("Translations")
+                        .HasForeignKey("UserTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserType");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.RolePermission", b =>
                 {
-                    b.HasOne("ATMS.Admin.Data.Entities.Permission", "Permission")
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Permission", "Permission")
                         .WithMany("RolePermissions")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -162,6 +563,71 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.PasswordResetToken", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.RefreshRevokedToken", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Gender", "Gender")
+                        .WithMany()
+                        .HasForeignKey("GenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Admin.Data.Entities.User", "InvitedBy")
+                        .WithMany()
+                        .HasForeignKey("InvitedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", "MaritalStatus")
+                        .WithMany()
+                        .HasForeignKey("MaritalStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.UserStatus", "UserStatus")
+                        .WithMany()
+                        .HasForeignKey("UserStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.UserType", "UserType")
+                        .WithMany()
+                        .HasForeignKey("UserTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gender");
+
+                    b.Navigation("InvitedBy");
+
+                    b.Navigation("MaritalStatus");
+
+                    b.Navigation("UserStatus");
+
+                    b.Navigation("UserType");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.UserRole", b =>
@@ -183,9 +649,31 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Permission", b =>
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.Gender", b =>
+                {
+                    b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", b =>
+                {
+                    b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
+
+                    b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserStatus", b =>
+                {
+                    b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserType", b =>
+                {
+                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Role", b =>

@@ -4,23 +4,27 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
     </PropertyGroup>
 
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
     <ItemGroup>
-        <PackageReference Include="MediatR" Version="14.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
+      <ProjectReference Include="..\..\..\docker\ATMS.Aspire.ServiceDefaults\ATMS.Aspire.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Exceptions\ATMS.Application.Exceptions.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Swagger\ATMS.Swagger.csproj" />
+      <ProjectReference Include="..\ATMS.Admin.Service\ATMS.Admin.Service.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\ATMS.Shared.Exceptions\ATMS.Shared.Exceptions.csproj" />
-      <ProjectReference Include="..\..\..\docker\ATMS.Aspire.ServiceDefaults\ATMS.Aspire.ServiceDefaults.csproj" />
-      <ProjectReference Include="..\ATMS.Admin.Service\ATMS.Admin.Service.csproj" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
 </Project>

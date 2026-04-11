@@ -2,6 +2,11 @@
 
 public class DatabaseOptions
 {
-    public string PgSql { get; set; }
-    public string Mongo { get; set; }
+    public required string SqlConnection { get; init; }
+    public required string MongoConnection { get; init; }
+    public required string MongoDatabase { get; init; }
 }
+
+public class AdminDatabaseOptions : DatabaseOptions;
+
+public class ProjectDatabaseOptions : DatabaseOptions;

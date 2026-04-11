@@ -1,6 +1,6 @@
 ﻿using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Contracts.Requests.Roles;
-using ATMS.Admin.Data.Interfaces;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -12,7 +12,7 @@ public class GetRolesHandler(
 {
     public async Task<RoleModel[]> Handle(GetRolesRequest request, CancellationToken cancellationToken)
     {
-        var roles = await roleRepository.GetAsync(request.UserId, cancellationToken);
+        var roles = await roleRepository.GetAsync(cancellationToken);
 
         return mapper.Map<RoleModel[]>(roles);
     }

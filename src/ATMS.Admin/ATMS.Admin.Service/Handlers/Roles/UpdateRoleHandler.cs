@@ -1,22 +1,36 @@
-﻿using ATMS.Admin.Contracts.Commands;
-using ATMS.Admin.Contracts.Models;
+﻿using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Data.Entities;
-using ATMS.Admin.Data.Interfaces;
-using AutoMapper;
+using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Entity;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Roles;
 
 public class UpdateRoleHandler(
-    IRoleRepository roleRepository,
-    IMapper mapper) : IRequestHandler<UpdateRoleCommand, RoleModel>
+    IRoleRepository roleRepository) : IRequestHandler<UpdateRoleCommand>
 {
-    public async Task<RoleModel> Handle(UpdateRoleCommand command, CancellationToken cancellationToken)
+    public async Task Handle(UpdateRoleCommand command, CancellationToken cancellationToken)
     {
-        var entity = mapper.Map<Role>(command);
+        var role = await roleRepository.FindAsync(r => r.Id == command.Id, cancellationToken);
 
-        await roleRepository.UpdateAsync(entity, cancellationToken);
+        if (role is null)
+        {
+            throw new EntityException(EntityErrorType.NotFound, RoleMessages.NotFound);
+        }
 
-        return mapper.Map<RoleModel>(entity);
+        var newPermissions = command.PermissionIds.Distinct().ToList();
+        var toRemove = role.RolePermissions.Where(rp => !newPermissions.Contains(rp.PermissionId)).ToList();
+        var toAdd = newPermissions
+            .Where(id => role.RolePermissions.All(rp => rp.PermissionId != id))
+            .Select(id => new RolePermission { RoleId = role.Id, PermissionId = id })
+            .ToList();
+
+        role.Name = command.Name;
+        role.Description = command.Description;
+        role.RolePermissions.RemoveAll(rp => toRemove.Contains(rp));
+        role.RolePermissions.AddRange(toAdd);
+
+        await roleRepository.SaveAsync(cancellationToken);
     }
 }

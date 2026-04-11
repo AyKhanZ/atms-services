@@ -7,11 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
       <ProjectReference Include="..\ATMS.Admin.Data\ATMS.Admin.Data.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="MediatR" Version="14.0.0" />
     </ItemGroup>
 
 </Project>

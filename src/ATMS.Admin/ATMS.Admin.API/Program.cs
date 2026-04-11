@@ -1,31 +1,19 @@
-using ATMS.Admin.API.Middleware;
-using ATMS.Admin.Data.DbContexts;
+using ATMS.Admin.API.Extensions;
 using ATMS.Admin.Service.Modules;
-using Microsoft.EntityFrameworkCore;
+using ATMS.Swagger.Extensions;
+using ATMS.Swagger.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod());
-});
-
-builder.Services.AddTransient<ExceptionsMiddleware>();
-
-var sqlConnection = builder.Configuration["Admin:Databases:PgSql"] ?? throw new Exception("PgSql config not found");
-var mongoConnection = builder.Configuration["Admin:Databases:Mongo"] ?? throw new Exception("Mongo config not found");
-
-builder.Services.AddAdminServices(sqlConnection ,mongoConnection);
+builder.Services
+    .AddApiServices()
+    .AddCustomMiddlewares()
+    .AddAdminServices(builder.Configuration)
+    .AddJwtSecurityServices(builder.Configuration)
+    .AddAuthorizationPolicies()
+    .AddSwaggerDocumentation("Admin API");
 
 var app = builder.Build();
 
@@ -43,7 +31,12 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionsMiddleware>();
 
+app.UseAuthentication();
+
+app.UseAuthorization();
+
 app.MapControllers();
 
+await app.InitializeDataAsync();
+
 app.Run();
-    

@@ -1,4 +1,6 @@
 ﻿using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Dictionaries;
+using ATMS.Admin.Data.Entities.Tokens;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.DbContexts;
@@ -10,17 +12,46 @@ public class AdminDbContext: DbContext
         : base(options) { }
 
     public DbSet<User> Users { get; set; }
+    
     public DbSet<Role> Roles { get; set; }
+
+    #region Dictionaries
+    public DbSet<UserType> UserTypes { get; set; }
+    
+    public DbSet<Gender> Genders { get; set; }
+    
+    public DbSet<MaritalStatus> MaritalStatuses { get; set; }
+    
+    public DbSet<UserStatus> UserStatuses { get; set; }
+    
     public DbSet<Permission> Permissions { get; set; }
+    
+    
+    public DbSet<GenderTranslation> GenderTranslations { get; set; }
+    
+    public DbSet<MaritalStatusTranslation> MaritalStatusTranslations { get; set; }
+    
+    public DbSet<UserStatusTranslation> UserStatusTranslations { get; set; }
+    
+    public DbSet<PermissionTranslation> PermissionTranslations { get; set; }
+    
+    public DbSet<UserTypeTranslation> UserTypeTranslations { get; set; }
+    #endregion
 
     public DbSet<UserRole> UserRoles { get; set; }
+    
     public DbSet<RolePermission> RolePermissions { get; set; }
+    
+    public DbSet<RefreshRevokedToken> RefreshRevokedTokens { get; set; }
+    
+    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+    
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=atms;Username=admin;Password=p@ssw0rd!");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=atms_admin;Username=admin;Password=p@ssw0rd!");
         }
     }
 
@@ -32,29 +63,142 @@ public class AdminDbContext: DbContext
         {
             entity.HasIndex(e => e.Email).IsUnique();
             entity.Property(e => e.Email).IsRequired();
+            entity.Property(e => e.UserTypeId).IsRequired();
+
+            entity.HasIndex(e => e.RefreshToken).IsUnique();
+
+            entity.Property(e => e.AvatarPath).HasDefaultValue("test.png");
+            entity.Property(e => e.Language).HasDefaultValue("en");
+
+            entity.Property(u => u.MaritalStatusId)
+                    .HasDefaultValue(1)
+                    .IsRequired();
+
+            entity.Property(u => u.UserStatusId)
+                    .HasDefaultValue(1)
+                    .IsRequired();
+
+            entity.Property(u => u.GenderId)
+                    .HasDefaultValue(1)
+                    .IsRequired();
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
+            entity.HasIndex(e => e.Name).IsUnique();
             entity.Property(e => e.Name).IsRequired();
         });
 
+        
+        #region Dictionaries
         modelBuilder.Entity<Permission>(entity =>
         {
             entity.HasIndex(p => p.Code).IsUnique();
+            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Module).HasMaxLength(50).IsRequired();
 
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .IsRequired();
+            entity.HasMany(p => p.Translations)
+                .WithOne(t => t.Permission)
+                .HasForeignKey(t => t.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<PermissionTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.PermissionId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+
+        
+        modelBuilder.Entity<MaritalStatus>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
 
             entity.Property(e => e.Code)
                 .HasMaxLength(50)
                 .IsRequired();
+            
+            entity.HasMany(m => m.Translations)
+                .WithOne(t => t.MaritalStatus)
+                .HasForeignKey(t => t.MaritalStatusId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
 
-            entity.Property(e => e.Module)
+        modelBuilder.Entity<MaritalStatusTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.MaritalStatusId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<Gender>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+
+            entity.Property(e => e.Code)
                 .HasMaxLength(50)
                 .IsRequired();
+            
+            entity.HasMany(g => g.Translations)
+                .WithOne(t => t.Gender)
+                .HasForeignKey(t => t.GenderId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
+        
+        modelBuilder.Entity<GenderTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.GenderId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<UserStatus>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
+                .IsRequired();
+            
+            entity.HasMany(u => u.Translations)
+                .WithOne(t => t.UserStatus)
+                .HasForeignKey(t => t.UserStatusId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<UserStatusTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.UserStatusId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<UserType>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
+                .IsRequired();
+            
+            entity.HasMany(u => u.Translations)
+                .WithOne(t => t.UserType)
+                .HasForeignKey(t => t.UserTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<UserTypeTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.UserTypeId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        #endregion
+        
 
         modelBuilder.Entity<UserRole>(entity =>
         {
@@ -65,11 +209,13 @@ public class AdminDbContext: DbContext
 
             entity.HasOne(x => x.User)
                   .WithMany(x => x.UserRoles)
-                  .HasForeignKey(x => x.UserId);
+                  .HasForeignKey(x => x.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(x => x.Role)
                   .WithMany(x => x.UserRoles)
-                  .HasForeignKey(x => x.RoleId);
+                  .HasForeignKey(x => x.RoleId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<RolePermission>(entity =>
@@ -81,11 +227,25 @@ public class AdminDbContext: DbContext
 
             entity.HasOne(x => x.Permission)
                   .WithMany(x => x.RolePermissions)
-                  .HasForeignKey(x => x.PermissionId);
+                  .HasForeignKey(x => x.PermissionId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(x => x.Role)
                   .WithMany(x => x.RolePermissions)
-                  .HasForeignKey(x => x.RoleId);
+                  .HasForeignKey(x => x.RoleId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<RefreshRevokedToken>(entity =>
+        {
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.Token).IsUnique();
+        });
+        
+        modelBuilder.Entity<PasswordResetToken>(entity =>
+        {
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.Token).IsUnique();
         });
     }
 }

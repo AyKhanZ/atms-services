@@ -2,6 +2,6 @@
 
 public interface IMigrationRunner
 {
-    Task<MigrationResult> MigrateUpAsync(CancellationToken ct);
-    Task<MigrationResult> MigrateDownAsync(string targetMigration, CancellationToken ct);
+    Task<MigrationResult> MigrateUpAsync(CancellationToken cancellationToken);
+    Task<MigrationResult> MigrateDownAsync(string targetMigration, CancellationToken cancellationToken);
 }

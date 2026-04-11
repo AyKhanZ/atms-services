@@ -1,6 +1,7 @@
 ﻿namespace ATMS.Data.Interfaces;
 
-public interface IEntity
+public interface IEntity: IEntity<Guid> { }
+public interface IEntity<TKey>
 {
-    public Guid Id { get; set; }
+    public TKey Id { get; set; }
 }
