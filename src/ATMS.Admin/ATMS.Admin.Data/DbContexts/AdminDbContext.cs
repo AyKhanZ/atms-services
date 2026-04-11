@@ -12,12 +12,18 @@ public class AdminDbContext: DbContext
         : base(options) { }
 
     public DbSet<User> Users { get; set; }
+    
     public DbSet<Role> Roles { get; set; }
 
     #region Dictionaries
+    public DbSet<UserType> UserTypes { get; set; }
+    
     public DbSet<Gender> Genders { get; set; }
+    
     public DbSet<MaritalStatus> MaritalStatuses { get; set; }
+    
     public DbSet<UserStatus> UserStatuses { get; set; }
+    
     public DbSet<Permission> Permissions { get; set; }
     
     
@@ -28,18 +34,24 @@ public class AdminDbContext: DbContext
     public DbSet<UserStatusTranslation> UserStatusTranslations { get; set; }
     
     public DbSet<PermissionTranslation> PermissionTranslations { get; set; }
+    
+    public DbSet<UserTypeTranslation> UserTypeTranslations { get; set; }
     #endregion
 
     public DbSet<UserRole> UserRoles { get; set; }
+    
     public DbSet<RolePermission> RolePermissions { get; set; }
+    
     public DbSet<RefreshRevokedToken> RefreshRevokedTokens { get; set; }
+    
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+    
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=atms;Username=admin;Password=p@ssw0rd!");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=atms_admin;Username=admin;Password=p@ssw0rd!");
         }
     }
 
@@ -51,6 +63,7 @@ public class AdminDbContext: DbContext
         {
             entity.HasIndex(e => e.Email).IsUnique();
             entity.Property(e => e.Email).IsRequired();
+            entity.Property(e => e.UserTypeId).IsRequired();
 
             entity.HasIndex(e => e.RefreshToken).IsUnique();
 
@@ -159,6 +172,28 @@ public class AdminDbContext: DbContext
         modelBuilder.Entity<UserStatusTranslation>(entity =>
         {
             entity.HasIndex(t => new { t.UserStatusId, t.Language }).IsUnique();
+            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
+            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        });
+        
+        
+        modelBuilder.Entity<UserType>(entity =>
+        {
+            entity.HasIndex(p => p.Code).IsUnique();
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
+                .IsRequired();
+            
+            entity.HasMany(u => u.Translations)
+                .WithOne(t => t.UserType)
+                .HasForeignKey(t => t.UserTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        modelBuilder.Entity<UserTypeTranslation>(entity =>
+        {
+            entity.HasIndex(t => new { t.UserTypeId, t.Language }).IsUnique();
             entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
             entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
         });

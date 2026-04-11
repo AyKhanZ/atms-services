@@ -7,6 +7,9 @@
 - dotnet ef database update --project src\ATMS.Admin\ATMS.Admin.Data --startup-project src\ATMS.Admin\ATMS.Admin.API
 - dotnet ef migrations remove --project src\ATMS.Admin\ATMS.Admin.Data --startup-project src\ATMS.Admin\ATMS.Admin.API
 
+- dotnet ef migrations add Initial --project src\ATMS.Project\ATMS.Project.Data --startup-project src\ATMS.Project\ATMS.Project.API
+- dotnet ef database update --project src\ATMS.Project\ATMS.Project.Data --startup-project src\ATMS.Project\ATMS.Project.API
+
 ---
 #### If Error(1):
 ```aiignore
@@ -39,19 +42,28 @@
 ```
     -- Tables DROP
         DROP TABLE "__EFMigrationsHistory";
-        DROP TABLE "Genders";
-        DROP TABLE "Roles";
-        DROP TABLE "MaritalStatuses";
-        DROP TABLE "Permissions";
+
         DROP TABLE "RefreshRevokedTokens";
+        DROP TABLE "PasswordResetTokens";
+        
         DROP TABLE "RolePermissions";
         DROP TABLE "UserRoles";
-        DROP TABLE "Users";
-        DROP TABLE "UserStatuses";
+        
         DROP TABLE "GenderTranslations";
         DROP TABLE "MaritalStatusTranslations";
         DROP TABLE "UserStatusTranslations";
         DROP TABLE "PermissionTranslations";
+        DROP TABLE "UserTypeTranslations";
+        
+        DROP TABLE "Roles";
+        DROP TABLE "Permissions";
+        
+        DROP TABLE "Users";
+        
+        DROP TABLE "Genders";
+        DROP TABLE "UserTypes";
+        DROP TABLE "MaritalStatuses";
+        DROP TABLE "UserStatuses";
     
     -- Migrations
         select *
@@ -74,4 +86,12 @@
         SELECT * FROM "UserRoles";
         SELECT * FROM "RolePermissions";
         SELECT * FROM "RefreshRevokedTokens";
+```
+
+```angular2html
+    select * from "__EFMigrationsHistory";
+    
+    select * from "ProjectKindTranslations";
+
+    select * from "ProjectKinds";
 ```

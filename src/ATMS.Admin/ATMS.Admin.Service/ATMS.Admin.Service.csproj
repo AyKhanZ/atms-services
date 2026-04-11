@@ -7,13 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="16.0.0" />
-		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-		<PackageReference Include="MediatR" Version="14.1.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Dispatcher\ATMS.Application.Dispatcher.csproj" />
 		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Email\ATMS.Email.csproj" />
 		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Exceptions\ATMS.Application.Exceptions.csproj" />

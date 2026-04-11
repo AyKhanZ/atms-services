@@ -85,6 +85,7 @@ public class LoginHandler(
             {
                 user.UserStatusId = (int)UserStatus.Active;
             }
+            user.LastLogin = DateTime.UtcNow;
             
             return;
         }

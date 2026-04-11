@@ -7,4 +7,6 @@ public class DatabaseOptions
     public required string MongoDatabase { get; init; }
 }
 
-public class AdminDatabaseOptions : DatabaseOptions { }
+public class AdminDatabaseOptions : DatabaseOptions;
+
+public class ProjectDatabaseOptions : DatabaseOptions;

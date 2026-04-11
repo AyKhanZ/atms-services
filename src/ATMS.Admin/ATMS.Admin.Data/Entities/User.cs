@@ -1,16 +1,11 @@
 ﻿using ATMS.Admin.Data.Entities.Dictionaries;
+using ATMS.Data;
 
 namespace ATMS.Admin.Data.Entities;
 
 public class User : UserBase
 {
-    public string? Patronymic { get; set; }
-    
     public string? PhoneNumber { get; set; }
-
-    public string? PersonalEmail { get; set; }
-
-    public string? PersonalPhoneNumber { get; set; }
 
     public DateTime? BirthDate { get; set; }
 
@@ -36,6 +31,14 @@ public class User : UserBase
 
     
     public string Language { get; set; }
+
+    
+    
+    public Guid InvitedById { get; set; }
+    
+    public User InvitedBy { get; set; }
+    
+    public DateTime? LastLogin { get; set; }
     
     
     #region Dictionaries
@@ -43,13 +46,20 @@ public class User : UserBase
 
     public UserStatus UserStatus { get; set; }
 
+    
     public int MaritalStatusId { get; set; }
 
     public MaritalStatus MaritalStatus { get; set; }
 
+    
     public int GenderId { get; set; }
 
     public Gender Gender { get; set; }
+    
+    
+    public int UserTypeId { get; set; }
+    
+    public UserType UserType { get; set; }
     #endregion
 
 

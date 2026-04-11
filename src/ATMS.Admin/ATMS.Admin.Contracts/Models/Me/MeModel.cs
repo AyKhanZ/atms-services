@@ -8,8 +8,6 @@ public class MeModel
 
     public string Surname { get; set; }
 
-    public string Patronymic { get; set; }
-
     public string Language { get; set; }
     
     public string AvatarPath { get; set; }

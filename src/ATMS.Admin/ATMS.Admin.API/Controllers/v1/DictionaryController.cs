@@ -13,6 +13,13 @@ public class DictionaryController(IMediator mediator) : AdminControllerBase
 {
     
     /// <summary>Gets all genders</summary>
+    [HttpGet("user-types")]
+    public async Task<ActionResult<DictionaryModel[]>> GetUserTypes(CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(new GetUserTypesDictionariesRequest(), cancellationToken));
+    }
+    
+    /// <summary>Gets all genders</summary>
     [HttpGet("genders")]
     public async Task<ActionResult<DictionaryModel[]>> GetGenders(CancellationToken cancellationToken)
     {
