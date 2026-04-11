@@ -23,25 +23,25 @@ services:
       POSTGRES_PASSWORD: p@ssw0rd!
       POSTGRES_DB: atms_project
     ports:
-      - "5433:5432"
+      - "5434:5432"
     volumes:
       - atms.project.db.data:/var/lib/postgresql/data
     restart: unless-stopped
 
 
-  atms.mongo.db:
-    image: mongo:7
-    container_name: atms.mongo.db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: p@ssw0rd!
-      MONGO_INITDB_DATABASE: atms_admin
-    ports:
-      - "27017:27017"
-    volumes:
-      - atms.mongo.db.data:/var/lib/mongo/data
-      # - atms.mongo.db.data:/data/db      # ← исправлен путь!CLAude
-    restart: unless-stopped
+#  atms.mongo.db:
+#    image: mongo:7
+#    container_name: atms.mongo.db
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: p@ssw0rd!
+#      MONGO_INITDB_DATABASE: atms_admin
+#    ports:
+#      - "27017:27017"
+#    volumes:
+#      - atms.mongo.db.data:/var/lib/mongo/data
+#      # - atms.mongo.db.data:/data/db      # ← исправлен путь!CLAude
+#    restart: unless-stopped
 
 
 volumes:
