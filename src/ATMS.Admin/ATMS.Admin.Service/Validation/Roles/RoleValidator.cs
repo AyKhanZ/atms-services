@@ -20,7 +20,7 @@ public class RoleValidator : AbstractValidator<RoleCommand>
             .NotEmpty()
             .WithMessage(ValidationMessages.NameRequired)
             .MaximumLength(30)
-            .WithMessage(x => string.Format(ValidationMessages.NameShouldBeLessThan, 30))
+            .WithMessage(_ => string.Format(ValidationMessages.NameShouldBeLessThan, 30))
             .MustAsync(CheckRoleExistAsync)
             .WithMessage(RoleMessages.AlreadyExists);
 

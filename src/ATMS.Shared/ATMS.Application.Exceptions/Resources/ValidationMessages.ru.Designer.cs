@@ -21,7 +21,7 @@ namespace ATMS.Application.Exceptions.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ValidationMessages_ru {
+    public class ValidationMessages_ru {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -35,7 +35,7 @@ namespace ATMS.Application.Exceptions.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ATMS.Application.Exceptions.Resources.ValidationMessages.ru", typeof(ValidationMessages_ru).Assembly);
@@ -50,7 +50,7 @@ namespace ATMS.Application.Exceptions.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -62,7 +62,7 @@ namespace ATMS.Application.Exceptions.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Описание обязательно..
         /// </summary>
-        internal static string DescriptionRequired {
+        public static string DescriptionRequired {
             get {
                 return ResourceManager.GetString("DescriptionRequired", resourceCulture);
             }
@@ -71,7 +71,7 @@ namespace ATMS.Application.Exceptions.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Описание должно быть меньше {0} символов..
         /// </summary>
-        internal static string DescriptionShouldBeLessThan {
+        public static string DescriptionShouldBeLessThan {
             get {
                 return ResourceManager.GetString("DescriptionShouldBeLessThan", resourceCulture);
             }
@@ -80,7 +80,7 @@ namespace ATMS.Application.Exceptions.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Введите корректный email (например: user@example.com)..
         /// </summary>
-        internal static string InvalidEmailFormat {
+        public static string InvalidEmailFormat {
             get {
                 return ResourceManager.GetString("InvalidEmailFormat", resourceCulture);
             }
@@ -89,7 +89,7 @@ namespace ATMS.Application.Exceptions.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Название обязательно..
         /// </summary>
-        internal static string NameRequired {
+        public static string NameRequired {
             get {
                 return ResourceManager.GetString("NameRequired", resourceCulture);
             }
@@ -98,7 +98,7 @@ namespace ATMS.Application.Exceptions.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Название должно быть меньше {0} символов..
         /// </summary>
-        internal static string NameShouldBeLessThan {
+        public static string NameShouldBeLessThan {
             get {
                 return ResourceManager.GetString("NameShouldBeLessThan", resourceCulture);
             }
@@ -107,9 +107,36 @@ namespace ATMS.Application.Exceptions.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Идентификатор роли обязателен..
         /// </summary>
-        internal static string RoleIdRequired {
+        public static string RoleIdRequired {
             get {
                 return ResourceManager.GetString("RoleIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Название уже существует..
+        /// </summary>
+        public static string TitleAlreadyExists {
+            get {
+                return ResourceManager.GetString("TitleAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Название обязательно..
+        /// </summary>
+        public static string TitleRequired {
+            get {
+                return ResourceManager.GetString("TitleRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Длина названия не должна превышать {0} символов..
+        /// </summary>
+        public static string TitleShouldBeLessThan {
+            get {
+                return ResourceManager.GetString("TitleShouldBeLessThan", resourceCulture);
             }
         }
     }

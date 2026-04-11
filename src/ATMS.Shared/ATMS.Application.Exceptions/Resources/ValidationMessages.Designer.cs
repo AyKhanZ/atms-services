@@ -112,5 +112,32 @@ namespace ATMS.Application.Exceptions.Resources {
                 return ResourceManager.GetString("RoleIdRequired", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title already exists ..
+        /// </summary>
+        public static string TitleAlreadyExists {
+            get {
+                return ResourceManager.GetString("TitleAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title is required..
+        /// </summary>
+        public static string TitleRequired {
+            get {
+                return ResourceManager.GetString("TitleRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title must me less than {0} symbols..
+        /// </summary>
+        public static string TitleShouldBeLessThan {
+            get {
+                return ResourceManager.GetString("TitleShouldBeLessThan", resourceCulture);
+            }
+        }
     }
 }

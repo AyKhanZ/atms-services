@@ -42,4 +42,13 @@
     <data name="InvalidEmailFormat" xml:space="preserve">
         <value>Düzgün e-poçt daxil edin (məsələn: user@example.com).</value>
     </data>
+    <data name="TitleAlreadyExists" xml:space="preserve">
+        <value>Başlıq artıq mövcuddur.</value>
+    </data>
+    <data name="TitleRequired" xml:space="preserve">
+        <value>Başlıq tələb olunur.</value>
+    </data>
+    <data name="TitleShouldBeLessThan" xml:space="preserve">
+        <value>Başlıq {0} simvoldan çox olmamalıdır.</value>
+    </data>
 </root>
