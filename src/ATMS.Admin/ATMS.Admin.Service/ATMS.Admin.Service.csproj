@@ -9,7 +9,9 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Dispatcher\ATMS.Application.Dispatcher.csproj" />
 		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Email\ATMS.Email.csproj" />
-		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Exceptions\ATMS.Application.Exceptions.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
 		<ProjectReference Include="..\ATMS.Admin.Contracts\ATMS.Admin.Contracts.csproj" />
 		<ProjectReference Include="..\ATMS.Admin.Data\ATMS.Admin.Data.csproj" />
 	</ItemGroup>

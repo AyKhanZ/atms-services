@@ -10,9 +10,4 @@
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Data\ATMS.Data.csproj" />
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Infrastructure\ATMS.Infrastructure.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Migrations\" />
-    </ItemGroup>
-
 </Project>

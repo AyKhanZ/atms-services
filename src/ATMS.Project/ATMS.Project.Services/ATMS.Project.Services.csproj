@@ -8,11 +8,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Dispatcher\ATMS.Application.Dispatcher.csproj" />
-      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Email\ATMS.Email.csproj" />
-      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Infrastructure\ATMS.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
       <ProjectReference Include="..\ATMS.Project.Contracts\ATMS.Project.Contracts.csproj" />
-      <ProjectReference Include="..\ATMS.Project.Data\ATMS.Project.Data.csproj" />
       <ProjectReference Include="..\ATMS.Project.Data\ATMS.Project.Data.csproj" />
     </ItemGroup>
 
