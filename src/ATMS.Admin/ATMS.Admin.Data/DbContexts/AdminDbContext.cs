@@ -15,6 +15,10 @@ public class AdminDbContext: DbContext
     
     public DbSet<Role> Roles { get; set; }
 
+    public DbSet<UserRole> UserRoles { get; set; }
+    
+    public DbSet<RolePermission> RolePermissions { get; set; }
+    
     #region Dictionaries
     public DbSet<UserType> UserTypes { get; set; }
     
@@ -25,27 +29,13 @@ public class AdminDbContext: DbContext
     public DbSet<UserStatus> UserStatuses { get; set; }
     
     public DbSet<Permission> Permissions { get; set; }
-    
-    
-    public DbSet<GenderTranslation> GenderTranslations { get; set; }
-    
-    public DbSet<MaritalStatusTranslation> MaritalStatusTranslations { get; set; }
-    
-    public DbSet<UserStatusTranslation> UserStatusTranslations { get; set; }
-    
-    public DbSet<PermissionTranslation> PermissionTranslations { get; set; }
-    
-    public DbSet<UserTypeTranslation> UserTypeTranslations { get; set; }
     #endregion
 
-    public DbSet<UserRole> UserRoles { get; set; }
-    
-    public DbSet<RolePermission> RolePermissions { get; set; }
-    
+    #region Tokens
     public DbSet<RefreshRevokedToken> RefreshRevokedTokens { get; set; }
     
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
-    
+    #endregion
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -58,194 +48,7 @@ public class AdminDbContext: DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasIndex(e => e.Email).IsUnique();
-            entity.Property(e => e.Email).IsRequired();
-            entity.Property(e => e.UserTypeId).IsRequired();
-
-            entity.HasIndex(e => e.RefreshToken).IsUnique();
-
-            entity.Property(e => e.AvatarPath).HasDefaultValue("test.png");
-            entity.Property(e => e.Language).HasDefaultValue("en");
-
-            entity.Property(u => u.MaritalStatusId)
-                    .HasDefaultValue(1)
-                    .IsRequired();
-
-            entity.Property(u => u.UserStatusId)
-                    .HasDefaultValue(1)
-                    .IsRequired();
-
-            entity.Property(u => u.GenderId)
-                    .HasDefaultValue(1)
-                    .IsRequired();
-        });
-
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.HasIndex(e => e.Name).IsUnique();
-            entity.Property(e => e.Name).IsRequired();
-        });
-
         
-        #region Dictionaries
-        modelBuilder.Entity<Permission>(entity =>
-        {
-            entity.HasIndex(p => p.Code).IsUnique();
-            entity.Property(e => e.Code).HasMaxLength(50).IsRequired();
-            entity.Property(e => e.Module).HasMaxLength(50).IsRequired();
-
-            entity.HasMany(p => p.Translations)
-                .WithOne(t => t.Permission)
-                .HasForeignKey(t => t.PermissionId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-        
-        modelBuilder.Entity<PermissionTranslation>(entity =>
-        {
-            entity.HasIndex(t => new { t.PermissionId, t.Language }).IsUnique();
-            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
-            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
-        });
-
-        
-        modelBuilder.Entity<MaritalStatus>(entity =>
-        {
-            entity.HasIndex(p => p.Code).IsUnique();
-
-            entity.Property(e => e.Code)
-                .HasMaxLength(50)
-                .IsRequired();
-            
-            entity.HasMany(m => m.Translations)
-                .WithOne(t => t.MaritalStatus)
-                .HasForeignKey(t => t.MaritalStatusId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        modelBuilder.Entity<MaritalStatusTranslation>(entity =>
-        {
-            entity.HasIndex(t => new { t.MaritalStatusId, t.Language }).IsUnique();
-            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
-            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
-        });
-        
-        
-        modelBuilder.Entity<Gender>(entity =>
-        {
-            entity.HasIndex(p => p.Code).IsUnique();
-
-            entity.Property(e => e.Code)
-                .HasMaxLength(50)
-                .IsRequired();
-            
-            entity.HasMany(g => g.Translations)
-                .WithOne(t => t.Gender)
-                .HasForeignKey(t => t.GenderId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-        
-        modelBuilder.Entity<GenderTranslation>(entity =>
-        {
-            entity.HasIndex(t => new { t.GenderId, t.Language }).IsUnique();
-            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
-            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
-        });
-        
-        
-        modelBuilder.Entity<UserStatus>(entity =>
-        {
-            entity.HasIndex(p => p.Code).IsUnique();
-
-            entity.Property(e => e.Code)
-                .HasMaxLength(50)
-                .IsRequired();
-            
-            entity.HasMany(u => u.Translations)
-                .WithOne(t => t.UserStatus)
-                .HasForeignKey(t => t.UserStatusId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-        
-        modelBuilder.Entity<UserStatusTranslation>(entity =>
-        {
-            entity.HasIndex(t => new { t.UserStatusId, t.Language }).IsUnique();
-            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
-            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
-        });
-        
-        
-        modelBuilder.Entity<UserType>(entity =>
-        {
-            entity.HasIndex(p => p.Code).IsUnique();
-
-            entity.Property(e => e.Code)
-                .HasMaxLength(50)
-                .IsRequired();
-            
-            entity.HasMany(u => u.Translations)
-                .WithOne(t => t.UserType)
-                .HasForeignKey(t => t.UserTypeId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-        
-        modelBuilder.Entity<UserTypeTranslation>(entity =>
-        {
-            entity.HasIndex(t => new { t.UserTypeId, t.Language }).IsUnique();
-            entity.Property(t => t.Language).HasMaxLength(5).IsRequired();
-            entity.Property(t => t.Name).HasMaxLength(100).IsRequired();
-        });
-        #endregion
-        
-
-        modelBuilder.Entity<UserRole>(entity =>
-        {
-            entity.HasKey(x => new { x.UserId, x.RoleId });
-
-            entity.HasIndex(x => x.RoleId);
-            entity.HasIndex(x => x.UserId);
-
-            entity.HasOne(x => x.User)
-                  .WithMany(x => x.UserRoles)
-                  .HasForeignKey(x => x.UserId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(x => x.Role)
-                  .WithMany(x => x.UserRoles)
-                  .HasForeignKey(x => x.RoleId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        modelBuilder.Entity<RolePermission>(entity =>
-        {
-            entity.HasKey(x => new { x.PermissionId, x.RoleId });
-
-            entity.HasIndex(x => x.RoleId);
-            entity.HasIndex(x => x.PermissionId);
-
-            entity.HasOne(x => x.Permission)
-                  .WithMany(x => x.RolePermissions)
-                  .HasForeignKey(x => x.PermissionId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(x => x.Role)
-                  .WithMany(x => x.RolePermissions)
-                  .HasForeignKey(x => x.RoleId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-        
-        modelBuilder.Entity<RefreshRevokedToken>(entity =>
-        {
-            entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => e.Token).IsUnique();
-        });
-        
-        modelBuilder.Entity<PasswordResetToken>(entity =>
-        {
-            entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => e.Token).IsUnique();
-        });
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AdminDbContext).Assembly);
     }
 }
