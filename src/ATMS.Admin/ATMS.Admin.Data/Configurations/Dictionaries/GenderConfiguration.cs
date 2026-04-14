@@ -8,7 +8,8 @@ public class GenderConfiguration : IEntityTypeConfiguration<Gender>
 {
     public void Configure(EntityTypeBuilder<Gender> builder)
     {
-        builder.HasIndex(p => p.Code).IsUnique();
+        builder.HasIndex(p => p.Code)
+            .IsUnique();
 
         builder.Property(e => e.Code)
             .HasMaxLength(50)
@@ -34,23 +35,32 @@ public class GenderTranslationConfiguration : IEntityTypeConfiguration<GenderTra
 {
     public void Configure(EntityTypeBuilder<GenderTranslation> builder)
     {
-        builder.HasIndex(t => new { t.GenderId, t.Language }).IsUnique();
+        builder.HasIndex(t => new { t.GenderId, t.Language })
+            .IsUnique();
         
-        builder.Property(t => t.Language).HasMaxLength(5).IsRequired();
+        builder.Property(t => t.Language)
+            .HasMaxLength(2)
+            .IsRequired();
         
-        builder.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        builder.Property(t => t.Name)
+            .HasMaxLength(100)
+            .IsRequired();
 
         
         builder.HasData(
+            // NotSpecified
             new { GenderId = 1, Language = "en", Name = "Not specified" },
             new { GenderId = 1, Language = "ru", Name = "Не указано" },
             new { GenderId = 1, Language = "az", Name = "Göstərilməyib" },
+            // Male
             new { GenderId = 2, Language = "en", Name = "Male" },
             new { GenderId = 2, Language = "ru", Name = "Мужской" },
             new { GenderId = 2, Language = "az", Name = "Kişi" },
+            // Female
             new { GenderId = 3, Language = "en", Name = "Female" },
             new { GenderId = 3, Language = "ru", Name = "Женский" },
             new { GenderId = 3, Language = "az", Name = "Qadın" },
+            // Other
             new { GenderId = 4, Language = "en", Name = "Other" },
             new { GenderId = 4, Language = "ru", Name = "Другое" },
             new { GenderId = 4, Language = "az", Name = "Digər" }

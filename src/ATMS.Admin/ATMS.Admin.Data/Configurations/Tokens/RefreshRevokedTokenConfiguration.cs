@@ -10,6 +10,7 @@ public class RefreshRevokedTokenConfiguration : IEntityTypeConfiguration<Refresh
     {
         builder.HasIndex(e => e.UserId);
         
-        builder.HasIndex(e => e.Token).IsUnique();
+        builder.HasIndex(e => e.Token)
+            .IsUnique();
     }
 }

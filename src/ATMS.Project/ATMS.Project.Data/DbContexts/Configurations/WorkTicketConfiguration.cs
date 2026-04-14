@@ -1,6 +1,13 @@
-﻿namespace ATMS.Project.Data.DbContexts.Configurations;
+﻿using ATMS.Project.Data.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-public class WorkTicketConfiguration
+namespace ATMS.Project.Data.DbContexts.Configurations;
+
+public class WorkTicketConfiguration : IEntityTypeConfiguration<WorkTicket>
 {
-    
+    public void Configure(EntityTypeBuilder<WorkTicket> builder)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -8,9 +8,12 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
 {
     public void Configure(EntityTypeBuilder<Permission> builder)
     {
-        builder.HasIndex(p => p.Code).IsUnique();
+        builder.HasIndex(p => p.Code)
+            .IsUnique();
 
-        builder.Property(e => e.Code).HasMaxLength(50).IsRequired();
+        builder.Property(e => e.Code)
+            .HasMaxLength(50)
+            .IsRequired();
 
 
         builder.HasMany(p => p.Translations)
@@ -55,14 +58,20 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
 {
     public void Configure(EntityTypeBuilder<PermissionTranslation> builder)
     {
-        builder.HasIndex(t => new { t.PermissionId, t.Language }).IsUnique();
+        builder.HasIndex(t => new { t.PermissionId, t.Language })
+            .IsUnique();
 
-        builder.Property(t => t.Language).HasMaxLength(5).IsRequired();
+        builder.Property(t => t.Language)
+            .HasMaxLength(2)
+            .IsRequired();
 
-        builder.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        builder.Property(t => t.Name)
+            .HasMaxLength(100)
+            .IsRequired();
 
 
         builder.HasData(
+            // Project
             new { PermissionId = 1, Language = "en", Name = "Project view" },
             new { PermissionId = 1, Language = "ru", Name = "Просмотр проектов" },
             new { PermissionId = 1, Language = "az", Name = "Layihəyə baxış" },
@@ -72,6 +81,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { PermissionId = 3, Language = "en", Name = "Project delete" },
             new { PermissionId = 3, Language = "ru", Name = "Удаление проектов" },
             new { PermissionId = 3, Language = "az", Name = "Layihəni sil" },
+            // Ticket
             new { PermissionId = 4, Language = "en", Name = "Ticket view" },
             new { PermissionId = 4, Language = "ru", Name = "Просмотр тикетов" },
             new { PermissionId = 4, Language = "az", Name = "Tiketi baxış" },
@@ -81,6 +91,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { PermissionId = 6, Language = "en", Name = "Ticket delete" },
             new { PermissionId = 6, Language = "ru", Name = "Удаление тикетов" },
             new { PermissionId = 6, Language = "az", Name = "Tiketi sil" },
+            // Task
             new { PermissionId = 7, Language = "en", Name = "Task view" },
             new { PermissionId = 7, Language = "ru", Name = "Просмотр задач" },
             new { PermissionId = 7, Language = "az", Name = "Tapşırığa baxış" },
@@ -90,6 +101,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { PermissionId = 9, Language = "en", Name = "Task delete" },
             new { PermissionId = 9, Language = "ru", Name = "Удаление задач" },
             new { PermissionId = 9, Language = "az", Name = "Tapşırığı sil" },
+            // Comment
             new { PermissionId = 10, Language = "en", Name = "Comment view" },
             new { PermissionId = 10, Language = "ru", Name = "Просмотр комментариев" },
             new { PermissionId = 10, Language = "az", Name = "Şərhə baxış" },
@@ -99,6 +111,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { PermissionId = 12, Language = "en", Name = "Comment delete" },
             new { PermissionId = 12, Language = "ru", Name = "Удаление комментариев" },
             new { PermissionId = 12, Language = "az", Name = "Şərhi sil" },
+            // Notification
             new { PermissionId = 13, Language = "en", Name = "Notification view" },
             new { PermissionId = 13, Language = "ru", Name = "Просмотр уведомлений" },
             new { PermissionId = 13, Language = "az", Name = "Bildirişə baxış" },
@@ -108,6 +121,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { PermissionId = 15, Language = "en", Name = "Notification delete" },
             new { PermissionId = 15, Language = "ru", Name = "Удаление уведомлений" },
             new { PermissionId = 15, Language = "az", Name = "Bildirişi sil" },
+            // Group
             new { PermissionId = 16, Language = "en", Name = "Group view" },
             new { PermissionId = 16, Language = "ru", Name = "Просмотр групп" },
             new { PermissionId = 16, Language = "az", Name = "Qrupa baxış" },
@@ -117,6 +131,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { PermissionId = 18, Language = "en", Name = "Group delete" },
             new { PermissionId = 18, Language = "ru", Name = "Удаление групп" },
             new { PermissionId = 18, Language = "az", Name = "Qrupu sil" },
+            // Dictionary
             new { PermissionId = 19, Language = "en", Name = "Dictionary view" },
             new { PermissionId = 19, Language = "ru", Name = "Просмотр справочников" },
             new { PermissionId = 19, Language = "az", Name = "Lüğətə baxış" },
@@ -126,6 +141,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { PermissionId = 21, Language = "en", Name = "Dictionary delete" },
             new { PermissionId = 21, Language = "ru", Name = "Удаление справочников" },
             new { PermissionId = 21, Language = "az", Name = "Lüğəti sil" },
+            // Organization
             new { PermissionId = 22, Language = "en", Name = "Organization view" },
             new { PermissionId = 22, Language = "ru", Name = "Просмотр организаций" },
             new { PermissionId = 22, Language = "az", Name = "Təşkilata baxış" },
@@ -135,6 +151,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { PermissionId = 24, Language = "en", Name = "Organization delete" },
             new { PermissionId = 24, Language = "ru", Name = "Удаление организаций" },
             new { PermissionId = 24, Language = "az", Name = "Təşkilatı sil" },
+            // User
             new { PermissionId = 25, Language = "en", Name = "User view" },
             new { PermissionId = 25, Language = "ru", Name = "Просмотр пользователей" },
             new { PermissionId = 25, Language = "az", Name = "İstifadəçiyə baxış" },

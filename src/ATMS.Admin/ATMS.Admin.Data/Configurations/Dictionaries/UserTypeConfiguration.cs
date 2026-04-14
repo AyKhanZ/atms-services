@@ -8,7 +8,8 @@ public class UserTypeConfiguration : IEntityTypeConfiguration<UserType>
 {
     public void Configure(EntityTypeBuilder<UserType> builder)
     {
-        builder.HasIndex(p => p.Code).IsUnique();
+        builder.HasIndex(p => p.Code)
+            .IsUnique();
 
         builder.Property(e => e.Code)
             .HasMaxLength(50)
@@ -32,17 +33,24 @@ public class UserTypeTranslationConfiguration : IEntityTypeConfiguration<UserTyp
 {
     public void Configure(EntityTypeBuilder<UserTypeTranslation> builder)
     {
-        builder.HasIndex(t => new { t.UserTypeId, t.Language }).IsUnique();
+        builder.HasIndex(t => new { t.UserTypeId, t.Language })
+            .IsUnique();
         
-        builder.Property(t => t.Language).HasMaxLength(5).IsRequired();
+        builder.Property(t => t.Language)
+            .HasMaxLength(2)
+            .IsRequired();
         
-        builder.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        builder.Property(t => t.Name)
+            .HasMaxLength(100)
+            .IsRequired();
         
 
         builder.HasData(
+            // Agent
             new { UserTypeId = 1, Language = "en", Name = "Agent" },
             new { UserTypeId = 1, Language = "ru", Name = "Агент" },
             new { UserTypeId = 1, Language = "az", Name = "Agent" },
+            // Client
             new { UserTypeId = 2, Language = "en", Name = "Client" },
             new { UserTypeId = 2, Language = "ru", Name = "Клиент" },
             new { UserTypeId = 2, Language = "az", Name = "Müştəri" }

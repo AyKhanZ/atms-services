@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Data.Entities;
+using ATMS.Data.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,18 +9,24 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasIndex(e => e.Email).IsUnique();
+        builder.HasIndex(e => e.Email)
+            .IsUnique();
         
-        builder.Property(e => e.Email).IsRequired();
+        builder.Property(e => e.Email)
+            .IsRequired();
         
-        builder.Property(e => e.UserTypeId).IsRequired();
+        builder.Property(e => e.UserTypeId)
+            .IsRequired();
 
-        builder.HasIndex(e => e.RefreshToken).IsUnique();
+        builder.HasIndex(e => e.RefreshToken)
+            .IsUnique();
 
         
-        builder.Property(e => e.AvatarPath).HasDefaultValue("test.png");
+        builder.Property(e => e.AvatarPath)
+            .HasDefaultValue(DefaultValues.UserAvatar);
         
-        builder.Property(e => e.Language).HasDefaultValue("en");
+        builder.Property(e => e.Language)
+            .HasDefaultValue(DefaultValues.Language);
 
         
         builder.Property(u => u.MaritalStatusId)

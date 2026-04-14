@@ -104,17 +104,28 @@ public class ProjectDbContext : DbContext
         
         modelBuilder.Entity<WorkProject>(entity =>
         {
-            entity.HasIndex(e => new { e.OrganizationId, e.Title }).IsUnique();
+            entity.HasIndex(e => new { e.OrganizationId, e.Title })
+                .IsUnique();
             
-            entity.HasIndex(e => e.Title).IsUnique();
-            entity.HasIndex(e => e.Code).IsUnique();
+            entity.HasIndex(e => e.Title)
+                .IsUnique();
             
-            entity.Property(e => e.Title).IsRequired();
-            entity.Property(e => e.Code).IsRequired().HasMaxLength(50);
+            entity.HasIndex(e => e.Code)
+                .IsUnique();
+            
+            entity.Property(e => e.Title)
+                .IsRequired();
+            
+            entity.Property(e => e.Code)
+                .IsRequired()
+                .HasMaxLength(50);
 
-            entity.Property(e => e.CreatedAt).IsRequired();
-            entity.Property(e => e.CreatedById).IsRequired();
+            entity.Property(e => e.CreatedAt)
+                .IsRequired();
+            entity.Property(e => e.CreatedById)
+                .IsRequired();
 
+            
             entity.Property(u => u.ProjectTypeId)
                 .HasDefaultValue(1)
                 .IsRequired();
@@ -126,6 +137,7 @@ public class ProjectDbContext : DbContext
             entity.Property(u => u.ProjectStatusId)
                 .HasDefaultValue(1)
                 .IsRequired();
+            
             
             entity.HasMany(p => p.WorkProjectParticipants)
                 .WithOne(o => o.WorkProject)

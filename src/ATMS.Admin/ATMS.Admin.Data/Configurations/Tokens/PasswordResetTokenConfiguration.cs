@@ -10,6 +10,7 @@ public class PasswordResetTokenConfiguration : IEntityTypeConfiguration<Password
     {
         builder.HasIndex(e => e.UserId);
         
-        builder.HasIndex(e => e.Token).IsUnique();
+        builder.HasIndex(e => e.Token)
+            .IsUnique();
     }
 }

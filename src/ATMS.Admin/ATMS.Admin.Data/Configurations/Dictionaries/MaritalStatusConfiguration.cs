@@ -8,7 +8,8 @@ public class MaritalStatusConfiguration : IEntityTypeConfiguration<MaritalStatus
 {
     public void Configure(EntityTypeBuilder<MaritalStatus> builder)
     {
-        builder.HasIndex(p => p.Code).IsUnique();
+        builder.HasIndex(p => p.Code)
+            .IsUnique();
 
         builder.Property(e => e.Code)
             .HasMaxLength(50)
@@ -33,20 +34,28 @@ public class MaritalStatusTranslationConfiguration : IEntityTypeConfiguration<Ma
 {
     public void Configure(EntityTypeBuilder<MaritalStatusTranslation> builder)
     {
-        builder.HasIndex(t => new { t.MaritalStatusId, t.Language }).IsUnique();
+        builder.HasIndex(t => new { t.MaritalStatusId, t.Language })
+            .IsUnique();
 
-        builder.Property(t => t.Language).HasMaxLength(2).IsRequired();
+        builder.Property(t => t.Language)
+            .HasMaxLength(2)
+            .IsRequired();
 
-        builder.Property(t => t.Name).HasMaxLength(100).IsRequired();
+        builder.Property(t => t.Name)
+            .HasMaxLength(100)
+            .IsRequired();
 
         
         builder.HasData(
+            // NotSpecified
             new { MaritalStatusId = 1, Language = "en", Name = "Not specified" },
             new { MaritalStatusId = 1, Language = "ru", Name = "Не указано" },
             new { MaritalStatusId = 1, Language = "az", Name = "Göstərilməyib" },
+            // Single
             new { MaritalStatusId = 2, Language = "en", Name = "Single" },
             new { MaritalStatusId = 2, Language = "ru", Name = "Холост" },
             new { MaritalStatusId = 2, Language = "az", Name = "Subay" },
+            // Married
             new { MaritalStatusId = 3, Language = "en", Name = "Married" },
             new { MaritalStatusId = 3, Language = "ru", Name = "Женат" },
             new { MaritalStatusId = 3, Language = "az", Name = "Evli" }
