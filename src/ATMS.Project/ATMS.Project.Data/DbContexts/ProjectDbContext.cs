@@ -7,54 +7,27 @@ namespace ATMS.Project.Data.DbContexts;
 public class ProjectDbContext : DbContext
 {
     public ProjectDbContext() { }
-    public ProjectDbContext(DbContextOptions<ProjectDbContext> options)
-        : base(options) { }
+    public ProjectDbContext(DbContextOptions<ProjectDbContext> options) : base(options) { }
     
     #region Dictionaries
     
     public DbSet<WorkTicketType> WorkTicketTypes { get; set; }
     
-    public DbSet<WorkTicketTypeTranslation> WorkTicketTypeTranslations { get; set; }
-    
-    
     public DbSet<WorkTicketStatus> WorkTicketStatuses { get; set; }
-    
-    public DbSet<WorkTicketStatusTranslation> WorkTicketStatusTranslations { get; set; }
-    
     
     public DbSet<WorkTaskStatus> WorkTaskStatuses { get; set; }
     
-    public DbSet<WorkTaskStatusTranslation> WorkTaskStatusTranslations { get; set; }
-    
-    
     public DbSet<WorkGroupStatus> WorkGroupStatuses { get; set; }
-    
-    public DbSet<WorkGroupStatusTranslation> WorkGroupStatusTranslations { get; set; }
-    
     
     public DbSet<WorkItemPriority> WorkItemPriorities { get; set; }
     
-    public DbSet<WorkItemPriorityTranslation> WorkItemPriorityTranslations { get; set; }
-    
-    
     public DbSet<ProjectType> ProjectTypes { get; set; }
-    
-    public DbSet<ProjectTypeTranslation> ProjectTypeTranslations { get; set; }
-    
     
     public DbSet<ProjectStatus> ProjectStatuses { get; set; }
     
-    public DbSet<ProjectStatusTranslation> ProjectStatusTranslations { get; set; }
-    
-    
     public DbSet<ProjectKind> ProjectKinds { get; set; }
     
-    public DbSet<ProjectKindTranslation> ProjectKindTranslations { get; set; }
-    
-    
     public DbSet<Permission> Permissions { get; set; }
-    
-    public DbSet<PermissionTranslation> PermissionTranslations { get; set; }
     
     #endregion
     
