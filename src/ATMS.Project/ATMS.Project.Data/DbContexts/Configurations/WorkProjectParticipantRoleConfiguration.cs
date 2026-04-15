@@ -8,6 +8,13 @@ public class WorkProjectParticipantRoleConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<WorkProjectParticipantRole> builder)
     {
-        throw new NotImplementedException();
+        builder.HasIndex(e => new { e.WorkProjectParticipantId, e.RoleId })
+            .IsUnique();
+            
+
+        builder.HasOne(ppr => ppr.Role)
+            .WithMany(r => r.WorkProjectParticipantRoles)
+            .HasForeignKey(ppr => ppr.RoleId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

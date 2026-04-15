@@ -8,6 +8,18 @@ public class WorkProjectParticipantConfiguration : IEntityTypeConfiguration<Work
 {
     public void Configure(EntityTypeBuilder<WorkProjectParticipant> builder)
     {
-        throw new NotImplementedException();
+        builder.HasIndex(e => new { e.WorkProjectId, e.UserId })
+            .IsUnique();
+
+            
+        builder.HasOne(pp => pp.User)
+            .WithMany()
+            .HasForeignKey(pp => pp.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(pp => pp.WorkProjectParticipantRoles)
+            .WithOne(ppr => ppr.WorkProjectParticipant)
+            .HasForeignKey(ppr => ppr.WorkProjectParticipantId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -8,8 +8,10 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
     public void Configure(EntityTypeBuilder<Role> builder)
     {
-        builder.HasIndex(e => e.Name).IsUnique();
+        builder.HasIndex(e => e.Name)
+            .IsUnique();
         
-        builder.Property(e => e.Name).IsRequired();
+        builder.Property(e => e.Name)
+            .IsRequired();
     }
 }

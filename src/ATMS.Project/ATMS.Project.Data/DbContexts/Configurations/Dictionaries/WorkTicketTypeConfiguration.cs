@@ -1,6 +1,64 @@
-﻿namespace ATMS.Project.Data.DbContexts.Configurations.Dictionaries;
+﻿using ATMS.Project.Data.Entities.Dictionaries;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-public class WorkTicketTypeConfiguration
+namespace ATMS.Project.Data.DbContexts.Configurations.Dictionaries;
+
+public class WorkTicketTypeConfiguration : IEntityTypeConfiguration<WorkTicketType>
 {
-    
+    public void Configure(EntityTypeBuilder<WorkTicketType> builder)
+    {
+        builder.HasIndex(p => p.Code)
+            .IsUnique();
+
+        builder.Property(e => e.Code)
+            .HasMaxLength(50)
+            .IsRequired();
+
+        
+        builder.HasMany(p => p.Translations)
+            .WithOne(t => t.WorkTicketType)
+            .HasForeignKey(t => t.WorkTicketTypeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        
+        builder.HasData(
+            new { Id = 1, Code = "Bug" },
+            new { Id = 2, Code = "Feature" },
+            new { Id = 3, Code = "Task" }
+        );
+    }
+}
+
+public class WorkTicketTypeTranslationConfiguration : IEntityTypeConfiguration<WorkTicketTypeTranslation>
+{
+    public void Configure(EntityTypeBuilder<WorkTicketTypeTranslation> builder)
+    {
+        builder.HasIndex(t => new { t.WorkTicketTypeId, t.Language })
+            .IsUnique();
+
+        builder.Property(t => t.Language)
+            .HasMaxLength(2)
+            .IsRequired();
+
+        builder.Property(t => t.Name)
+            .HasMaxLength(100)
+            .IsRequired();
+
+        
+        builder.HasData(
+            // Bug
+            new { Id = 1, WorkTicketTypeId = 1, Language = "en", Name = "Bug" },
+            new { Id = 2, WorkTicketTypeId = 1, Language = "ru", Name = "Ошибка" },
+            new { Id = 3, WorkTicketTypeId = 1, Language = "az", Name = "Xəta" },
+            // Feature
+            new { Id = 4, WorkTicketTypeId = 2, Language = "en", Name = "Feature" },
+            new { Id = 5, WorkTicketTypeId = 2, Language = "ru", Name = "Новая функция" },
+            new { Id = 6, WorkTicketTypeId = 2, Language = "az", Name = "Təzə Funksiya" },
+            // Task
+            new { Id = 7, WorkTicketTypeId = 3, Language = "en", Name = "Task" },
+            new { Id = 8, WorkTicketTypeId = 3, Language = "ru", Name = "Задача" },
+            new { Id = 9, WorkTicketTypeId = 3, Language = "az", Name = "Tapşırıq" }
+        );
+    }
 }

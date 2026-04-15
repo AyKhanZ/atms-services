@@ -1,4 +1,5 @@
-﻿using ATMS.Project.Data.Entities;
+﻿using ATMS.Data.Constants;
+using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,6 +9,48 @@ public class WorkTicketConfiguration : IEntityTypeConfiguration<WorkTicket>
 {
     public void Configure(EntityTypeBuilder<WorkTicket> builder)
     {
-        throw new NotImplementedException();
+        builder.HasIndex(e => e.Code)
+            .IsUnique();
+
+
+        builder.Property(e => e.Code)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.Property(e => e.Title)
+            .IsRequired();
+
+        builder.Property(e => e.WorkTicketStatusId)
+            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .IsRequired();
+
+        builder.Property(e => e.WorkTicketTypeId)
+            .IsRequired();
+
+        builder.Property(e => e.PriorityId)
+            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .IsRequired();
+
+        builder.Property(e => e.CreatedAt)
+            .IsRequired();
+
+        builder.Property(e => e.CreatedById)
+            .IsRequired();
+
+
+        builder.HasOne(t => t.WorkGroup)
+            .WithMany(g => g.WorkTickets)
+            .HasForeignKey(t => t.WorkGroupId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(t => t.Assignee)
+            .WithMany()
+            .HasForeignKey(t => t.AssigneeId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasMany(t => t.WorkTasks)
+            .WithOne(wt => wt.WorkTicket)
+            .HasForeignKey(wt => wt.WorkTicketId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

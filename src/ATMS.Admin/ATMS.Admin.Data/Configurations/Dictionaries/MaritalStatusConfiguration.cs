@@ -48,17 +48,17 @@ public class MaritalStatusTranslationConfiguration : IEntityTypeConfiguration<Ma
         
         builder.HasData(
             // NotSpecified
-            new { MaritalStatusId = 1, Language = "en", Name = "Not specified" },
-            new { MaritalStatusId = 1, Language = "ru", Name = "Не указано" },
-            new { MaritalStatusId = 1, Language = "az", Name = "Göstərilməyib" },
+            new { Id = 1, MaritalStatusId = 1, Language = "en", Name = "Not specified" },
+            new { Id = 2, MaritalStatusId = 1, Language = "ru", Name = "Не указано" },
+            new { Id = 3, MaritalStatusId = 1, Language = "az", Name = "Göstərilməyib" },
             // Single
-            new { MaritalStatusId = 2, Language = "en", Name = "Single" },
-            new { MaritalStatusId = 2, Language = "ru", Name = "Холост" },
-            new { MaritalStatusId = 2, Language = "az", Name = "Subay" },
+            new { Id = 4, MaritalStatusId = 2, Language = "en", Name = "Single" },
+            new { Id = 5, MaritalStatusId = 2, Language = "ru", Name = "Холост" },
+            new { Id = 6, MaritalStatusId = 2, Language = "az", Name = "Subay" },
             // Married
-            new { MaritalStatusId = 3, Language = "en", Name = "Married" },
-            new { MaritalStatusId = 3, Language = "ru", Name = "Женат" },
-            new { MaritalStatusId = 3, Language = "az", Name = "Evli" }
+            new { Id = 7, MaritalStatusId = 3, Language = "en", Name = "Married" },
+            new { Id = 8, MaritalStatusId = 3, Language = "ru", Name = "Женат" },
+            new { Id = 9, MaritalStatusId = 3, Language = "az", Name = "Evli" }
         );
     }
 }

@@ -47,13 +47,13 @@ public class UserTypeTranslationConfiguration : IEntityTypeConfiguration<UserTyp
 
         builder.HasData(
             // Agent
-            new { UserTypeId = 1, Language = "en", Name = "Agent" },
-            new { UserTypeId = 1, Language = "ru", Name = "Агент" },
-            new { UserTypeId = 1, Language = "az", Name = "Agent" },
+            new { Id = 1, UserTypeId = 1, Language = "en", Name = "Agent" },
+            new { Id = 2, UserTypeId = 1, Language = "ru", Name = "Агент" },
+            new { Id = 3, UserTypeId = 1, Language = "az", Name = "Agent" },
             // Client
-            new { UserTypeId = 2, Language = "en", Name = "Client" },
-            new { UserTypeId = 2, Language = "ru", Name = "Клиент" },
-            new { UserTypeId = 2, Language = "az", Name = "Müştəri" }
+            new { Id = 4, UserTypeId = 2, Language = "en", Name = "Client" },
+            new { Id = 5, UserTypeId = 2, Language = "ru", Name = "Клиент" },
+            new { Id = 6, UserTypeId = 2, Language = "az", Name = "Müştəri" }
         );
     }
 }

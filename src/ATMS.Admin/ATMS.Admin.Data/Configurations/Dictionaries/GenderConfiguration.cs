@@ -49,21 +49,21 @@ public class GenderTranslationConfiguration : IEntityTypeConfiguration<GenderTra
         
         builder.HasData(
             // NotSpecified
-            new { GenderId = 1, Language = "en", Name = "Not specified" },
-            new { GenderId = 1, Language = "ru", Name = "Не указано" },
-            new { GenderId = 1, Language = "az", Name = "Göstərilməyib" },
+            new { Id = 1, GenderId = 1, Language = "en", Name = "Not specified" },
+            new { Id = 2, GenderId = 1, Language = "ru", Name = "Не указано" },
+            new { Id = 3, GenderId = 1, Language = "az", Name = "Göstərilməyib" },
             // Male
-            new { GenderId = 2, Language = "en", Name = "Male" },
-            new { GenderId = 2, Language = "ru", Name = "Мужской" },
-            new { GenderId = 2, Language = "az", Name = "Kişi" },
+            new { Id = 4, GenderId = 2, Language = "en", Name = "Male" },
+            new { Id = 5, GenderId = 2, Language = "ru", Name = "Мужской" },
+            new { Id = 6, GenderId = 2, Language = "az", Name = "Kişi" },
             // Female
-            new { GenderId = 3, Language = "en", Name = "Female" },
-            new { GenderId = 3, Language = "ru", Name = "Женский" },
-            new { GenderId = 3, Language = "az", Name = "Qadın" },
+            new { Id = 7, GenderId = 3, Language = "en", Name = "Female" },
+            new { Id = 8, GenderId = 3, Language = "ru", Name = "Женский" },
+            new { Id = 9, GenderId = 3, Language = "az", Name = "Qadın" },
             // Other
-            new { GenderId = 4, Language = "en", Name = "Other" },
-            new { GenderId = 4, Language = "ru", Name = "Другое" },
-            new { GenderId = 4, Language = "az", Name = "Digər" }
+            new { Id = 10, GenderId = 4, Language = "en", Name = "Other" },
+            new { Id = 11, GenderId = 4, Language = "ru", Name = "Другое" },
+            new { Id = 12, GenderId = 4, Language = "az", Name = "Digər" }
         );
     }
 }

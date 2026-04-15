@@ -1,4 +1,5 @@
-﻿using ATMS.Project.Data.Entities;
+﻿using ATMS.Data.Constants;
+using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,26 +35,26 @@ public class WorkProjectConfiguration : IEntityTypeConfiguration<WorkProject>
 
             
         builder.Property(u => u.ProjectTypeId)
-            .HasDefaultValue(1)
+            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
             .IsRequired();
             
         builder.Property(u => u.ProjectKindId)
-            .HasDefaultValue(1)
+            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
             .IsRequired();
 
         builder.Property(u => u.ProjectStatusId)
-            .HasDefaultValue(1)
+            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
             .IsRequired();
             
             
         builder.HasMany(p => p.WorkProjectParticipants)
             .WithOne(o => o.WorkProject)
             .HasForeignKey(o => o.WorkProjectId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
             
         builder.HasMany(p => p.WorkGroups)
             .WithOne(o => o.WorkProject)
             .HasForeignKey(o => o.WorkProjectId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

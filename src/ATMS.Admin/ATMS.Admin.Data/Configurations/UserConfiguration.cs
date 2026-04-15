@@ -30,15 +30,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         
         builder.Property(u => u.MaritalStatusId)
-            .HasDefaultValue(1)
+            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
             .IsRequired();
 
         builder.Property(u => u.UserStatusId)
-            .HasDefaultValue(1)
+            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
             .IsRequired();
 
         builder.Property(u => u.GenderId)
-            .HasDefaultValue(1)
+            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
             .IsRequired();
     }
 }
