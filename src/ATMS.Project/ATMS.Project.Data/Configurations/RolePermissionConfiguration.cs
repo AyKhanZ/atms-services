@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ATMS.Project.Data.DbContexts.Configurations;
+namespace ATMS.Project.Data.Configurations;
 
 public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermission>
 {

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ATMS.Project.Data.DbContexts.Configurations.Dictionaries;
+namespace ATMS.Project.Data.Configurations.Dictionaries;
 
 public class WorkTicketTypeConfiguration : IEntityTypeConfiguration<WorkTicketType>
 {
