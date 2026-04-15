@@ -96,4 +96,10 @@
     <data name="TokenRequired" xml:space="preserve">
         <value>Токен обязателен.</value>
     </data>
+    <data name="UserTypeIdRequired" xml:space="preserve">
+        <value>Тип пользователя обязателен.</value>
+    </data>
+    <data name="UserTypeNotFound" xml:space="preserve">
+        <value>Тип пользователя не существует.</value>
+    </data>
 </root>

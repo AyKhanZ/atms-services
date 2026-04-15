@@ -99,7 +99,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         logger.LogCritical(exception, "Configuration error on {Path} {Method}: {Message}",
             context.Request.Path, context.Request.Method, exception.Message);
 
-        var result = JsonConvert.SerializeObject(new { error = exception.Message });
+        var result = JsonConvert.SerializeObject(new { error = "System is not properly initialized. Please contact support." });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 

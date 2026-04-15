@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -9,6 +10,7 @@ using ATMS.Email.Services.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Constants;
 using ATMS.Infrastructure.Options;
 using AutoMapper;
 using MediatR;
@@ -27,20 +29,15 @@ public class RegisterHandler(
     IConfiguration configuration)
     : IRequestHandler<RegisterCommand, UserModel>
 {
-    
-    private readonly RedirectUrlOptions  _redirectUrlOptions =
+    private readonly RedirectUrlOptions _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
-    
+        ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
+            string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
+
     public async Task<UserModel> Handle(RegisterCommand command, CancellationToken cancellationToken)
     {
-        var role = await roleRepository.GetAsync(r => r.Id == command.RoleId, cancellationToken);
-        if (role is null)
-        {
-            throw new EntityException(EntityErrorType.NotFound, RoleMessages.NotFound);
-        }
-        
+        var role = await ResolveRoleAsync(command.UserTypeId, cancellationToken);
+
         var entity = mapper.Map<User>(command);
         entity.Id = Guid.NewGuid();
 
@@ -55,12 +52,13 @@ public class RegisterHandler(
         entity.PasswordHash = passwordHasherService.Hash(rndPassword);
 
         await userRepository.CreateAsync(entity, cancellationToken);
-        
+
         var emailConfirmationTokenResult = emailConfirmationTokenService.GenerateToken(entity);
         var link = GenerateConfirmationLink(emailConfirmationTokenResult.Token);
 
         await emailSender.SendAsync(entity.Email,
-            new InviteModel {
+            new InviteModel
+            {
                 Email = entity.Email,
                 Name = entity.Name,
                 Surname = entity.Surname,
@@ -71,7 +69,31 @@ public class RegisterHandler(
 
         return mapper.Map<UserModel>(entity);
     }
-    
+
+    private async Task<Role> ResolveRoleAsync(UserTypeEnum userType, CancellationToken cancellationToken)
+    {
+        var roleId = userType switch
+        {
+            UserTypeEnum.Agent => RoleIds.Agent,
+            UserTypeEnum.Client => RoleIds.Client,
+            UserTypeEnum.ClientManager => RoleIds.ClientManager,
+            _ => throw new ConfigurationException(
+                ConfigurationErrorType.MissingSeedData,
+                $"Unsupported user type: {userType}")
+        };
+
+        var role = await roleRepository.GetAsync(r => r.Id == roleId, cancellationToken);
+
+        if (role is null)
+        {
+            throw new ConfigurationException(
+                ConfigurationErrorType.MissingSeedData,
+                string.Format(ExceptionMessages.MissingSeedData, roleId));
+        }
+
+        return role;
+    }
+
     private string GenerateConfirmationLink(string token) =>
         $"{_redirectUrlOptions.BaseUrl}/account/confirm?token={token}";
 }

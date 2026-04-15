@@ -24,7 +24,8 @@ public class UserTypeConfiguration : IEntityTypeConfiguration<UserType>
         
         builder.HasData(
             new { Id = 1, Code = "Agent" },
-            new { Id = 2, Code = "Client" }
+            new { Id = 2, Code = "Client" },
+            new { Id = 3, Code = "ClientManager" }
         );
     }
 }
@@ -53,7 +54,11 @@ public class UserTypeTranslationConfiguration : IEntityTypeConfiguration<UserTyp
             // Client
             new { Id = 4, UserTypeId = 2, Language = "en", Name = "Client" },
             new { Id = 5, UserTypeId = 2, Language = "ru", Name = "Клиент" },
-            new { Id = 6, UserTypeId = 2, Language = "az", Name = "Müştəri" }
+            new { Id = 6, UserTypeId = 2, Language = "az", Name = "Müştəri" },
+            // Client Manager
+            new { Id = 4, UserTypeId = 2, Language = "en", Name = "Client Manager" },
+            new { Id = 5, UserTypeId = 2, Language = "ru", Name = "Менеджер клиентов" },
+            new { Id = 6, UserTypeId = 2, Language = "az", Name = "Müştəri meneceri" }
         );
     }
 }

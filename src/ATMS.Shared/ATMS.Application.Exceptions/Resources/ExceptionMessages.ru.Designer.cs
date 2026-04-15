@@ -76,5 +76,14 @@ namespace ATMS.Application.Exceptions.Resources {
                 return ResourceManager.GetString("InvalidCredentials", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;Required role &apos;{0}&apos; was not found in database.&quot;.
+        /// </summary>
+        internal static string MissingSeedData {
+            get {
+                return ResourceManager.GetString("MissingSeedData", resourceCulture);
+            }
+        }
     }
 }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20260415115325_Initial")]
-    partial class Initial
+    [Migration("20260415124337_AddDefaultRoles")]
+    partial class AddDefaultRoles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -398,38 +398,38 @@ namespace ATMS.Admin.Data.Migrations
                         new
                         {
                             Id = 10,
-                            Code = "CommentView",
-                            Module = "Comment"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Code = "CommentEdit",
-                            Module = "Comment"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Code = "CommentDelete",
-                            Module = "Comment"
-                        },
-                        new
-                        {
-                            Id = 13,
                             Code = "NotificationView",
                             Module = "Notification"
                         },
                         new
                         {
-                            Id = 14,
+                            Id = 11,
                             Code = "NotificationEdit",
                             Module = "Notification"
                         },
                         new
                         {
-                            Id = 15,
+                            Id = 12,
                             Code = "NotificationDelete",
                             Module = "Notification"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Code = "CommentView",
+                            Module = "Comment"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Code = "CommentEdit",
+                            Module = "Comment"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Code = "CommentDelete",
+                            Module = "Comment"
                         });
                 });
 
@@ -1037,6 +1037,26 @@ namespace ATMS.Admin.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5"),
+                            Description = "Client Manager Role",
+                            Name = "Client Manager"
+                        },
+                        new
+                        {
+                            Id = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8"),
+                            Description = "Client Role",
+                            Name = "Client"
+                        },
+                        new
+                        {
+                            Id = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53"),
+                            Description = "Agent Role",
+                            Name = "Agent"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.RolePermission", b =>
@@ -1054,6 +1074,108 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("RolePermissions");
+
+                    b.HasData(
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 14,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 15,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 8,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 14,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 15,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.PasswordResetToken", b =>

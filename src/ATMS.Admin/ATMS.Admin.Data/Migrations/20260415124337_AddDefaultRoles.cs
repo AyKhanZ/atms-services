@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class AddDefaultRoles : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -383,12 +383,22 @@ namespace ATMS.Admin.Data.Migrations
                     { 7, "ProjectView", "Project" },
                     { 8, "ProjectEdit", "Project" },
                     { 9, "ProjectDelete", "Project" },
-                    { 10, "CommentView", "Comment" },
-                    { 11, "CommentEdit", "Comment" },
-                    { 12, "CommentDelete", "Comment" },
-                    { 13, "NotificationView", "Notification" },
-                    { 14, "NotificationEdit", "Notification" },
-                    { 15, "NotificationDelete", "Notification" }
+                    { 10, "NotificationView", "Notification" },
+                    { 11, "NotificationEdit", "Notification" },
+                    { 12, "NotificationDelete", "Notification" },
+                    { 13, "CommentView", "Comment" },
+                    { 14, "CommentEdit", "Comment" },
+                    { 15, "CommentDelete", "Comment" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5"), "Client Manager Role", "Client Manager" },
+                    { new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53"), "Agent Role", "Agent" },
+                    { new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8"), "Client Role", "Client" }
                 });
 
             migrationBuilder.InsertData(
@@ -495,6 +505,33 @@ namespace ATMS.Admin.Data.Migrations
                     { 43, "en", "Notification delete", 15 },
                     { 44, "ru", "Удаление уведомлений", 15 },
                     { 45, "az", "Bildirişi sil", 15 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "RolePermissions",
+                columns: new[] { "PermissionId", "RoleId" },
+                values: new object[,]
+                {
+                    { 1, new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5") },
+                    { 1, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") },
+                    { 1, new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8") },
+                    { 4, new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5") },
+                    { 4, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") },
+                    { 4, new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8") },
+                    { 7, new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5") },
+                    { 7, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") },
+                    { 7, new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8") },
+                    { 8, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") },
+                    { 10, new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5") },
+                    { 10, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") },
+                    { 10, new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8") },
+                    { 13, new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5") },
+                    { 13, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") },
+                    { 13, new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8") },
+                    { 14, new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5") },
+                    { 14, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") },
+                    { 15, new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5") },
+                    { 15, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") }
                 });
 
             migrationBuilder.InsertData(

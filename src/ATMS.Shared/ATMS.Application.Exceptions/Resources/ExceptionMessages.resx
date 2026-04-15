@@ -27,4 +27,7 @@
     <data name="InvalidCredentials" xml:space="preserve">
         <value>User ID is invalid or not found in claims.</value>
     </data>
+    <data name="MissingSeedData" xml:space="preserve">
+        <value>"Required role '{0}' was not found in database."</value>
+    </data>
 </root>

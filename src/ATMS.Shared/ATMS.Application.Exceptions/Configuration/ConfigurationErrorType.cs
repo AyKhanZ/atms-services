@@ -9,4 +9,5 @@ public enum ConfigurationErrorType
     QueueSectionNotFound,
     RedirectUrlSectionNotFound,
     DatabaseSectionNotFound,
+    MissingSeedData
 }
