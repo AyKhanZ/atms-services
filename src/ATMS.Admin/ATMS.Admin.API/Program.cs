@@ -1,5 +1,6 @@
 using ATMS.Admin.API.Extensions;
 using ATMS.Admin.Service.Modules;
+using ATMS.Swagger.Constants;
 using ATMS.Swagger.Extensions;
 using ATMS.Swagger.Middlewares;
 
@@ -13,7 +14,7 @@ builder.Services
     .AddAdminServices(builder.Configuration)
     .AddJwtSecurityServices(builder.Configuration)
     .AddAuthorizationPolicies()
-    .AddSwaggerDocumentation("Admin API");
+    .AddSwaggerDocumentation(SwaggerConstants.ApiAdminTitle);
 
 var app = builder.Build();
 

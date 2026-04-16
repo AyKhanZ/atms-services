@@ -16,8 +16,9 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
                 .FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
 
             if (claim is null || !Guid.TryParse(claim, out var id))
+            {
                 throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
-
+            }
             return id;
         }
     }

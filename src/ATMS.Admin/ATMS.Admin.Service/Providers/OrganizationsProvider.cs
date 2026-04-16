@@ -5,11 +5,12 @@ using ATMS.Admin.Service.Providers.Interfaces;
 
 namespace ATMS.Admin.Service.Providers;
 
-public class OrganizationsProvider(HttpClient http) : IOrganizationProvider
+public class OrganizationsProvider(IHttpClientFactory factory) : IOrganizationProvider
 {
     public async Task<OrganizationModel?> GetAsync(Guid id, CancellationToken cancellationToken)
     {
-        var response = await http.GetAsync($"/organizations/{id}", cancellationToken);
+        var client = factory.CreateClient("ProjectClient");
+        var response = await client.GetAsync($"api/v1/organization/{id}", cancellationToken);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {

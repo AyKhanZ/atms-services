@@ -7,6 +7,7 @@ using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Application.Interfaces;
 using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using ATMS.Infrastructure.Options;
@@ -19,6 +20,7 @@ namespace ATMS.Admin.Service.Handlers.Account;
 public class RegisterHandler(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
+    ICurrentUser currentUser,
     IMapper mapper,
     IPasswordService passwordService,
     IPasswordHasherService passwordHasherService,
@@ -52,6 +54,7 @@ public class RegisterHandler(
             RoleId = role.Id
         };
         entity.UserRoles = [userRole];
+        entity.InvitedById = currentUser.Id;
 
         var rndPassword = passwordService.GenerateRandomPassword();
         entity.PasswordHash = passwordHasherService.Hash(rndPassword);

@@ -2,6 +2,7 @@ using ATMS.Project.API.Extensions;
 using ATMS.Swagger.Extensions;
 using ATMS.Swagger.Middlewares;
 using ATMS.Project.Services.Modules;
+using ATMS.Swagger.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,7 @@ builder.Services
     .AddProjectServices(builder.Configuration)
     .AddJwtSecurityServices(builder.Configuration)
     .AddAuthorizationPolicies()
-    .AddSwaggerDocumentation("Project API");
+    .AddSwaggerDocumentation(SwaggerConstants.ApiProjectTitle);
 
 var app = builder.Build();
 

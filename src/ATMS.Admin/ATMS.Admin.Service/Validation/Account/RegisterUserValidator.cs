@@ -4,7 +4,6 @@ using ATMS.Admin.Service.Providers.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Constants;
-using ATMS.Data.Enums;
 using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Account;
@@ -12,12 +11,15 @@ namespace ATMS.Admin.Service.Validation.Account;
 public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
     private readonly IOrganizationProvider _organizationProvider;
 
     public RegisterUserValidator(IUserRepository userRepository,
+        IRoleRepository roleRepository,
         IOrganizationProvider organizationProvider)
     {
         _userRepository = userRepository;
+        _roleRepository = roleRepository;
         _organizationProvider = organizationProvider;
         
         RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
@@ -34,7 +36,7 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 
         RuleFor(x => x.RoleId)
             .NotEmpty().WithMessage(ValidationMessages.RoleIdRequired)
-            .IsInEnum().WithMessage(RoleMessages.NotFound);
+            .MustAsync(IsRoleExistAsync).WithMessage(RoleMessages.NotFound);
 
         RuleFor(x => x.OrganizationId).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(AccountMessages.OrganizationIdRequired)
@@ -58,6 +60,12 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
         }
         
         var result = await _organizationProvider.GetAsync(organizationId.Value, cancellationToken);
+        
+        return result is not null;
+    }
+    private async Task<bool> IsRoleExistAsync(Guid roleId, CancellationToken cancellationToken)
+    {
+        var result = await _roleRepository.GetAsync(r => r.Id == roleId, cancellationToken);
         
         return result is not null;
     }

@@ -29,19 +29,20 @@ public static class DependencyInjection
         });
         return services;
     }
-    
-    
+
+
     public static IServiceCollection AddCustomMiddlewares(this IServiceCollection services)
     {
         services.AddTransient<ExceptionsMiddleware>();
         return services;
     }
-    
-    
-    public static IServiceCollection AddJwtSecurityServices(this IServiceCollection services, IConfiguration configuration)
+
+
+    public static IServiceCollection AddJwtSecurityServices(this IServiceCollection services,
+        IConfiguration configuration)
     {
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-        
+
         services
             .AddAuthentication(options =>
             {
@@ -53,7 +54,7 @@ public static class DependencyInjection
                 var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
                                  ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
                                      string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
-                
+
                 options.RequireHttpsMetadata = true;
                 options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -71,8 +72,8 @@ public static class DependencyInjection
 
         return services;
     }
-    
-    
+
+
     public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services, string title)
     {
         services.AddSwaggerGen(options =>
@@ -92,8 +93,7 @@ public static class DependencyInjection
                 }
             });
 
-            options.AddServer(new OpenApiServer { Url = "https://localhost:7117", Description = "Local development server" });
-            options.AddServer(new OpenApiServer { Url = "Example IP Address", Description = "Dev server" });
+            options.AddServer(new OpenApiServer { Url = "/" });
 
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
