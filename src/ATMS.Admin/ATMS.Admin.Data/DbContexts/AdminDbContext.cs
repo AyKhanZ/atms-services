@@ -20,8 +20,6 @@ public class AdminDbContext: DbContext
     public DbSet<RolePermission> RolePermissions { get; set; }
     
     #region Dictionaries
-    public DbSet<UserType> UserTypes { get; set; }
-    
     public DbSet<Gender> Genders { get; set; }
     
     public DbSet<MaritalStatus> MaritalStatuses { get; set; }

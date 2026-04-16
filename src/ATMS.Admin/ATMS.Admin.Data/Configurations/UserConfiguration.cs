@@ -13,15 +13,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(e => e.Email)
             .IsUnique();
         
+        builder.HasIndex(e => e.RefreshToken)
+            .IsUnique();
+        
+        
         builder.Property(e => e.Email)
             .IsRequired();
         
-        builder.Property(e => e.UserTypeId)
-            .IsRequired();
-
-        builder.HasIndex(e => e.RefreshToken)
-            .IsUnique();
-
         
         builder.Property(e => e.AvatarPath)
             .HasDefaultValue(DefaultValues.UserAvatar);

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20260416144140_Initial")]
+    [Migration("20260416160428_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -911,138 +911,6 @@ namespace ATMS.Admin.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("UserTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Code = "Agent"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Code = "Client"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Code = "ClientManager"
-                        });
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserTypeTranslation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("character varying(2)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("UserTypeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserTypeId", "Language")
-                        .IsUnique();
-
-                    b.ToTable("UserTypeTranslation");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Language = "en",
-                            Name = "Agent",
-                            UserTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Language = "ru",
-                            Name = "Агент",
-                            UserTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Language = "az",
-                            Name = "Agent",
-                            UserTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Language = "en",
-                            Name = "Client",
-                            UserTypeId = 2
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Language = "ru",
-                            Name = "Клиент",
-                            UserTypeId = 2
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Language = "az",
-                            Name = "Müştəri",
-                            UserTypeId = 2
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Language = "en",
-                            Name = "Client Manager",
-                            UserTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Language = "ru",
-                            Name = "Менеджер клиентов",
-                            UserTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Language = "az",
-                            Name = "Müştəri meneceri",
-                            UserTypeId = 3
-                        });
-                });
-
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1338,9 +1206,6 @@ namespace ATMS.Admin.Data.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(1);
 
-                    b.Property<int>("UserTypeId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -1356,8 +1221,6 @@ namespace ATMS.Admin.Data.Migrations
                         .IsUnique();
 
                     b.HasIndex("UserStatusId");
-
-                    b.HasIndex("UserTypeId");
 
                     b.ToTable("Users");
                 });
@@ -1421,17 +1284,6 @@ namespace ATMS.Admin.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("UserStatus");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserTypeTranslation", b =>
-                {
-                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.UserType", "UserType")
-                        .WithMany("Translations")
-                        .HasForeignKey("UserTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserType");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.RolePermission", b =>
@@ -1501,12 +1353,6 @@ namespace ATMS.Admin.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.UserType", "UserType")
-                        .WithMany()
-                        .HasForeignKey("UserTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Gender");
 
                     b.Navigation("InvitedBy");
@@ -1514,8 +1360,6 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("MaritalStatus");
 
                     b.Navigation("UserStatus");
-
-                    b.Navigation("UserType");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.UserRole", b =>
@@ -1555,11 +1399,6 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserStatus", b =>
-                {
-                    b.Navigation("Translations");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserType", b =>
                 {
                     b.Navigation("Translations");
                 });

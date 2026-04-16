@@ -34,7 +34,14 @@ public class RegisterHandler(
 
     public async Task<UserModel> Handle(RegisterCommand command, CancellationToken cancellationToken)
     {
-        var role = await ResolveRoleAsync(command.UserTypeId, cancellationToken);
+        var role = await roleRepository.GetAsync(r => r.Id == command.RoleId, cancellationToken);
+
+        if (role is null)
+        {
+            throw new ConfigurationException(
+                ConfigurationErrorType.MissingSeedData,
+                string.Format(ExceptionMessages.MissingSeedData, command.RoleId));
+        }
 
         var entity = mapper.Map<User>(command);
         entity.Id = Guid.NewGuid();
@@ -66,30 +73,6 @@ public class RegisterHandler(
             }, cancellationToken);
 
         return mapper.Map<UserModel>(entity);
-    }
-
-    private async Task<Role> ResolveRoleAsync(UserTypeEnum userType, CancellationToken cancellationToken)
-    {
-        var roleId = userType switch
-        {
-            UserTypeEnum.Agent => RoleIds.Agent,
-            UserTypeEnum.Client => RoleIds.Client,
-            UserTypeEnum.ClientManager => RoleIds.ClientManager,
-            _ => throw new ConfigurationException(
-                ConfigurationErrorType.MissingSeedData,
-                $"Unsupported user type: {userType}")
-        };
-
-        var role = await roleRepository.GetAsync(r => r.Id == roleId, cancellationToken);
-
-        if (role is null)
-        {
-            throw new ConfigurationException(
-                ConfigurationErrorType.MissingSeedData,
-                string.Format(ExceptionMessages.MissingSeedData, roleId));
-        }
-
-        return role;
     }
 
     private string GenerateConfirmationLink(string token) =>

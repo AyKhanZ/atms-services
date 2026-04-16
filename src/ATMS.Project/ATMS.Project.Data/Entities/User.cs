@@ -5,9 +5,6 @@ namespace ATMS.Project.Data.Entities;
 
 public class User : UserBase, ISoftDeletable
 {
-    public int UserTypeId { get; set; }
-
-    
     public Guid? OrganizationId { get; set; }
     
     public Organization? Organization { get; set; }

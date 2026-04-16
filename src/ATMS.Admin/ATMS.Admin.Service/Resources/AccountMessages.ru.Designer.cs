@@ -132,6 +132,24 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Организация не найдена..
+        /// </summary>
+        public static string OrganizationIdNotExist {
+            get {
+                return ResourceManager.GetString("OrganizationIdNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Организация не обязательна..
+        /// </summary>
+        public static string OrganizationIdRequired {
+            get {
+                return ResourceManager.GetString("OrganizationIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Пароль должен содержать заглавную букву, цифру, специальный символ (!@#$%^&amp;*()-_=+) и не содержать пробелов..
         /// </summary>
         public static string PasswordInvalidFormat {
@@ -218,24 +236,6 @@ namespace ATMS.Admin.Service.Resources {
         public static string UserNotFound {
             get {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Тип пользователя обязателен..
-        /// </summary>
-        public static string UserTypeIdRequired {
-            get {
-                return ResourceManager.GetString("UserTypeIdRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Тип пользователя не существует..
-        /// </summary>
-        public static string UserTypeNotFound {
-            get {
-                return ResourceManager.GetString("UserTypeNotFound", resourceCulture);
             }
         }
     }

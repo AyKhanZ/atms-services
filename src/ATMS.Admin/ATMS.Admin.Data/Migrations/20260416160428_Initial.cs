@@ -81,19 +81,6 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTypes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserTypes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GenderTranslation",
                 columns: table => new
                 {
@@ -181,27 +168,6 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserStatusTranslation",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserStatusId = table.Column<int>(type: "integer", nullable: false),
-                    Language = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserStatusTranslation", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserStatusTranslation_UserStatuses_UserStatusId",
-                        column: x => x.UserStatusId,
-                        principalTable: "UserStatuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -223,7 +189,6 @@ namespace ATMS.Admin.Data.Migrations
                     UserStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     MaritalStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     GenderId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
-                    UserTypeId = table.Column<int>(type: "integer", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Surname = table.Column<string>(type: "text", nullable: false)
@@ -250,12 +215,6 @@ namespace ATMS.Admin.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Users_UserTypes_UserTypeId",
-                        column: x => x.UserTypeId,
-                        principalTable: "UserTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Users_Users_InvitedById",
                         column: x => x.InvitedById,
                         principalTable: "Users",
@@ -264,22 +223,22 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserTypeTranslation",
+                name: "UserStatusTranslation",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserTypeId = table.Column<int>(type: "integer", nullable: false),
+                    UserStatusId = table.Column<int>(type: "integer", nullable: false),
                     Language = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserTypeTranslation", x => x.Id);
+                    table.PrimaryKey("PK_UserStatusTranslation", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserTypeTranslation_UserTypes_UserTypeId",
-                        column: x => x.UserTypeId,
-                        principalTable: "UserTypes",
+                        name: "FK_UserStatusTranslation_UserStatuses_UserStatusId",
+                        column: x => x.UserStatusId,
+                        principalTable: "UserStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -412,16 +371,6 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "UserTypes",
-                columns: new[] { "Id", "Code" },
-                values: new object[,]
-                {
-                    { 1, "Agent" },
-                    { 2, "Client" },
-                    { 3, "ClientManager" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "GenderTranslation",
                 columns: new[] { "Id", "GenderId", "Language", "Name" },
                 values: new object[,]
@@ -551,22 +500,6 @@ namespace ATMS.Admin.Data.Migrations
                     { 9, "az", "Bloklanmış", 3 }
                 });
 
-            migrationBuilder.InsertData(
-                table: "UserTypeTranslation",
-                columns: new[] { "Id", "Language", "Name", "UserTypeId" },
-                values: new object[,]
-                {
-                    { 1, "en", "Agent", 1 },
-                    { 2, "ru", "Агент", 1 },
-                    { 3, "az", "Agent", 1 },
-                    { 4, "en", "Client", 2 },
-                    { 5, "ru", "Клиент", 2 },
-                    { 6, "az", "Müştəri", 2 },
-                    { 7, "en", "Client Manager", 3 },
-                    { 8, "ru", "Менеджер клиентов", 3 },
-                    { 9, "az", "Müştəri meneceri", 3 }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Genders_Code",
                 table: "Genders",
@@ -684,11 +617,6 @@ namespace ATMS.Admin.Data.Migrations
                 column: "UserStatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_UserTypeId",
-                table: "Users",
-                column: "UserTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserStatuses_Code",
                 table: "UserStatuses",
                 column: "Code",
@@ -698,18 +626,6 @@ namespace ATMS.Admin.Data.Migrations
                 name: "IX_UserStatusTranslation_UserStatusId_Language",
                 table: "UserStatusTranslation",
                 columns: new[] { "UserStatusId", "Language" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserTypes_Code",
-                table: "UserTypes",
-                column: "Code",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserTypeTranslation_UserTypeId_Language",
-                table: "UserTypeTranslation",
-                columns: new[] { "UserTypeId", "Language" },
                 unique: true);
         }
 
@@ -741,9 +657,6 @@ namespace ATMS.Admin.Data.Migrations
                 name: "UserStatusTranslation");
 
             migrationBuilder.DropTable(
-                name: "UserTypeTranslation");
-
-            migrationBuilder.DropTable(
                 name: "Permissions");
 
             migrationBuilder.DropTable(
@@ -760,9 +673,6 @@ namespace ATMS.Admin.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserStatuses");
-
-            migrationBuilder.DropTable(
-                name: "UserTypes");
         }
     }
 }

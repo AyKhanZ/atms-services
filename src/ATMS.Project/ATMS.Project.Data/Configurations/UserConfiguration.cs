@@ -19,8 +19,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             
         builder.Property(e => e.Surname)
             .IsRequired();
-            
-        builder.Property(e => e.UserTypeId)
-            .IsRequired();
     }
 }

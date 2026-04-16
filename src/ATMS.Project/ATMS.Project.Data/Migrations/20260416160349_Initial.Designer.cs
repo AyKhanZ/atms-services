@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Project.Data.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20260416152753_Initial")]
+    [Migration("20260416160349_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -2448,9 +2448,6 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("UserTypeId")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

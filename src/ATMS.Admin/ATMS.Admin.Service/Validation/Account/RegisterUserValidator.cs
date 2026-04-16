@@ -3,6 +3,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Providers.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using FluentValidation;
 
@@ -31,14 +32,14 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
             .MaximumLength(100)
             .WithMessage(_ => string.Format(AccountMessages.SurnameShouldBeLessThan, 100));
 
-        RuleFor(x => x.UserTypeId)
-            .NotEmpty().WithMessage(AccountMessages.UserTypeIdRequired)
-            .IsInEnum().WithMessage(AccountMessages.UserTypeNotExist);
+        RuleFor(x => x.RoleId)
+            .NotEmpty().WithMessage(ValidationMessages.RoleIdRequired)
+            .IsInEnum().WithMessage(RoleMessages.NotFound);
 
         RuleFor(x => x.OrganizationId).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(AccountMessages.OrganizationIdRequired)
             .MustAsync(IsOrganizationExistAsync).WithMessage(AccountMessages.OrganizationIdNotExist)
-            .When(x => x.UserTypeId is UserTypeEnum.Client or UserTypeEnum.ClientManager);
+            .When(x => x.RoleId == RoleIds.Client || x.RoleId == RoleIds.ClientManager);
 
         RuleFor(x => x.Email).Cascade(CascadeMode.Stop)
             .NotEmpty()

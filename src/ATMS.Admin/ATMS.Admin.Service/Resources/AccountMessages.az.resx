@@ -91,10 +91,10 @@
     <data name="TokenRequired" xml:space="preserve">
         <value>Token tələb olunur.</value>
     </data>
-    <data name="UserTypeIdRequired" xml:space="preserve">
-        <value>İstifadəçi tipi tələb olunur.</value>
+    <data name="OrganizationIdNotExist" xml:space="preserve">
+        <value>Təşkilat tapılmadı.</value>
     </data>
-    <data name="UserTypeNotFound" xml:space="preserve">
-        <value>İstifadəçi tipi mövcud deyil.</value>
+    <data name="OrganizationIdRequired" xml:space="preserve">
+        <value>Təşkilat tələb olunur.</value>
     </data>
 </root>

@@ -34,9 +34,9 @@ public class User : UserBase
 
     
     
-    public Guid InvitedById { get; set; }
+    public Guid? InvitedById { get; set; }
     
-    public User InvitedBy { get; set; }
+    public User? InvitedBy { get; set; }
     
     public DateTime? LastLogin { get; set; }
     
@@ -56,10 +56,6 @@ public class User : UserBase
 
     public Gender Gender { get; set; }
     
-    
-    public int UserTypeId { get; set; }
-    
-    public UserType UserType { get; set; }
     #endregion
 
 

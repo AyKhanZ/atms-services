@@ -12,7 +12,7 @@ public class RegisterCommand: IRequest<UserModel>
     
     public required string Email { get; init; }
     
-    public required UserTypeEnum UserTypeId { get; init; }
+    public required Guid RoleId { get; init; }
     
     public Guid? OrganizationId { get; init; }
 }

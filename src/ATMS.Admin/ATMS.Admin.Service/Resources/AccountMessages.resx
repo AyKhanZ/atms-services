@@ -94,15 +94,6 @@
     <data name="TokenRequired" xml:space="preserve">
         <value>Token is required .</value>
     </data>
-    
-    <data name="UserTypeIdRequired" xml:space="preserve">
-        <value>UserTypeId is required .</value>
-    </data>
-    
-    <data name="UserTypeNotExist" xml:space="preserve">
-        <value>UserType does not exist .</value>
-    </data>
-    
     <data name="OrganizationIdRequired" xml:space="preserve">
         <value>OrganizationId is required .</value>
     </data>

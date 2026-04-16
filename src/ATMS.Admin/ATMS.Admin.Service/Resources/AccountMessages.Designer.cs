@@ -238,23 +238,5 @@ namespace ATMS.Admin.Service.Resources {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to UserTypeId is required ..
-        /// </summary>
-        public static string UserTypeIdRequired {
-            get {
-                return ResourceManager.GetString("UserTypeIdRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to UserType does not exist ..
-        /// </summary>
-        public static string UserTypeNotExist {
-            get {
-                return ResourceManager.GetString("UserTypeNotExist", resourceCulture);
-            }
-        }
     }
 }

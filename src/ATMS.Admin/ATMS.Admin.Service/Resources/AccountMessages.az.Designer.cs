@@ -132,6 +132,24 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Təşkilat tapılmadı..
+        /// </summary>
+        public static string OrganizationIdNotExist {
+            get {
+                return ResourceManager.GetString("OrganizationIdNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Təşkilat tələb olunur..
+        /// </summary>
+        public static string OrganizationIdRequired {
+            get {
+                return ResourceManager.GetString("OrganizationIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Şifrə böyük hərf, rəqəm, xüsusi simvol (!@#$%^&amp;*()-_=+) ehtiva etməli və boşluq olmamalıdır..
         /// </summary>
         public static string PasswordInvalidFormat {
@@ -218,24 +236,6 @@ namespace ATMS.Admin.Service.Resources {
         public static string UserNotFound {
             get {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to İstifadəçi tipi tələb olunur..
-        /// </summary>
-        public static string UserTypeIdRequired {
-            get {
-                return ResourceManager.GetString("UserTypeIdRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to İstifadəçi tipi mövcud deyil..
-        /// </summary>
-        public static string UserTypeNotFound {
-            get {
-                return ResourceManager.GetString("UserTypeNotFound", resourceCulture);
             }
         }
     }
