@@ -1,5 +1,6 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Data.Constants;
+using ATMS.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -29,28 +30,28 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
 
         builder.HasData(
             // Client
-            new { PermissionId = PermissionIds.RoleView, RoleId = RoleIds.Client },
-            new { PermissionId = PermissionIds.UserView, RoleId = RoleIds.Client },
-            new { PermissionId = PermissionIds.ProjectView, RoleId = RoleIds.Client },
-            new { PermissionId = PermissionIds.NotificationView, RoleId = RoleIds.Client },
-            new { PermissionId = PermissionIds.CommentView, RoleId = RoleIds.Client },
+            new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.Client },
+            new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.Client },
+            new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.Client },
+            new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.Client },
+            new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.Client },
             // Client Manager
-            new { PermissionId = PermissionIds.RoleView, RoleId = RoleIds.ClientManager },
-            new { PermissionId = PermissionIds.UserView, RoleId = RoleIds.ClientManager },
-            new { PermissionId = PermissionIds.ProjectView, RoleId = RoleIds.ClientManager },
-            new { PermissionId = PermissionIds.NotificationView, RoleId = RoleIds.ClientManager },
-            new { PermissionId = PermissionIds.CommentView, RoleId = RoleIds.ClientManager },
-            new { PermissionId = PermissionIds.CommentEdit, RoleId = RoleIds.ClientManager },
-            new { PermissionId = PermissionIds.CommentDelete, RoleId = RoleIds.ClientManager },
+            new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.ClientManager },
+            new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.ClientManager },
+            new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.ClientManager },
+            new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.ClientManager },
+            new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.ClientManager },
+            new { PermissionId = (int)PermissionEnum.CommentEdit, RoleId = RoleIds.ClientManager },
+            new { PermissionId = (int)PermissionEnum.CommentDelete, RoleId = RoleIds.ClientManager },
             // Agent
-            new { PermissionId = PermissionIds.RoleView, RoleId = RoleIds.Agent },
-            new { PermissionId = PermissionIds.UserView, RoleId = RoleIds.Agent },
-            new { PermissionId = PermissionIds.ProjectView, RoleId = RoleIds.Agent },
-            new { PermissionId = PermissionIds.ProjectEdit, RoleId = RoleIds.Agent },
-            new { PermissionId = PermissionIds.NotificationView, RoleId = RoleIds.Agent },
-            new { PermissionId = PermissionIds.CommentView, RoleId = RoleIds.Agent },
-            new { PermissionId = PermissionIds.CommentEdit, RoleId = RoleIds.Agent },
-            new { PermissionId = PermissionIds.CommentDelete, RoleId = RoleIds.Agent }
+            new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.Agent },
+            new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.Agent },
+            new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.Agent },
+            new { PermissionId = (int)PermissionEnum.ProjectEdit, RoleId = RoleIds.Agent },
+            new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.Agent },
+            new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.Agent },
+            new { PermissionId = (int)PermissionEnum.CommentEdit, RoleId = RoleIds.Agent },
+            new { PermissionId = (int)PermissionEnum.CommentDelete, RoleId = RoleIds.Agent }
         );
     }
 }

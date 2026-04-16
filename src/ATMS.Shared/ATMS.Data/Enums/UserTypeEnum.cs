@@ -1,4 +1,4 @@
-﻿namespace ATMS.Admin.Contracts.Enums;
+﻿namespace ATMS.Data.Enums;
 
 public enum UserTypeEnum
 {

@@ -1,5 +1,6 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Data.Constants;
+using ATMS.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -30,15 +31,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         
         builder.Property(u => u.MaritalStatusId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .HasDefaultValue((int)MaritalStatusEnum.NotSpecified)
             .IsRequired();
 
         builder.Property(u => u.UserStatusId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .HasDefaultValue((int)UserStatusEnum.Active)
             .IsRequired();
 
         builder.Property(u => u.GenderId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .HasDefaultValue((int)GenderEnum.NotSpecified)
             .IsRequired();
     }
 }

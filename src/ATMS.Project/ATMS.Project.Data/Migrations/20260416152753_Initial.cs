@@ -90,7 +90,7 @@ namespace ATMS.Project.Data.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
@@ -284,9 +284,9 @@ namespace ATMS.Project.Data.Migrations
                     OrganizationId = table.Column<Guid>(type: "uuid", nullable: true),
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ProjectTypeId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
-                    ProjectKindId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
-                    ProjectStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
+                    ProjectTypeId = table.Column<int>(type: "integer", nullable: false),
+                    ProjectKindId = table.Column<int>(type: "integer", nullable: false),
+                    ProjectStatusId = table.Column<int>(type: "integer", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedById = table.Column<Guid>(type: "uuid", nullable: true),
@@ -332,7 +332,7 @@ namespace ATMS.Project.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RolePermissions", x => new { x.RoleId, x.PermissionId });
+                    table.PrimaryKey("PK_RolePermissions", x => new { x.PermissionId, x.RoleId });
                     table.ForeignKey(
                         name: "FK_RolePermissions_Permissions_PermissionId",
                         column: x => x.PermissionId,
@@ -710,7 +710,8 @@ namespace ATMS.Project.Data.Migrations
                     { 24, "OrganizationDelete" },
                     { 25, "UserView" },
                     { 26, "UserEdit" },
-                    { 27, "UserDelete" }
+                    { 27, "UserDelete" },
+                    { 28, "UserInvite" }
                 });
 
             migrationBuilder.InsertData(
@@ -743,6 +744,18 @@ namespace ATMS.Project.Data.Migrations
                     { 1, "Standard" },
                     { 2, "Optimal" },
                     { 3, "Premium" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "DeletedAt", "DeletedById", "Description", "Name" },
+                values: new object[,]
+                {
+                    { new Guid("51805e71-420c-40c4-a074-76b4f29eee7a"), null, null, "Developer Role", "Developer" },
+                    { new Guid("6b738142-0c09-47d0-848b-f2d5e411b266"), null, null, "Client Viewer Role", "Client Viewer" },
+                    { new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca"), null, null, "Business Consultant Role", "Business Consultant" },
+                    { new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890"), null, null, "Project Manager Role", "Project Manager" },
+                    { new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346"), null, null, "Client Manager Role", "Client Manager" }
                 });
 
             migrationBuilder.InsertData(
@@ -941,6 +954,78 @@ namespace ATMS.Project.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "RolePermissions",
+                columns: new[] { "PermissionId", "RoleId" },
+                values: new object[,]
+                {
+                    { 1, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 1, new Guid("6b738142-0c09-47d0-848b-f2d5e411b266") },
+                    { 1, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 1, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 1, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") },
+                    { 2, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 2, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 2, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 3, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 3, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 3, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 4, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 4, new Guid("6b738142-0c09-47d0-848b-f2d5e411b266") },
+                    { 4, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 4, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 4, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") },
+                    { 5, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 5, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 5, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 6, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 6, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 6, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 7, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 7, new Guid("6b738142-0c09-47d0-848b-f2d5e411b266") },
+                    { 7, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 7, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 7, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") },
+                    { 8, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 8, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 8, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 9, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 9, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 9, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 10, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 10, new Guid("6b738142-0c09-47d0-848b-f2d5e411b266") },
+                    { 10, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 10, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 10, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") },
+                    { 11, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 11, new Guid("6b738142-0c09-47d0-848b-f2d5e411b266") },
+                    { 11, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 11, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 11, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") },
+                    { 12, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 12, new Guid("6b738142-0c09-47d0-848b-f2d5e411b266") },
+                    { 12, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 12, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 12, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") },
+                    { 13, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 13, new Guid("6b738142-0c09-47d0-848b-f2d5e411b266") },
+                    { 13, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 13, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 13, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") },
+                    { 16, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 16, new Guid("6b738142-0c09-47d0-848b-f2d5e411b266") },
+                    { 16, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 16, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 16, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") },
+                    { 17, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 17, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 17, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 18, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
+                    { 18, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") },
+                    { 18, new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890") },
+                    { 28, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") }
+                });
+
+            migrationBuilder.InsertData(
                 table: "WorkGroupStatusTranslation",
                 columns: new[] { "Id", "Language", "Name", "WorkGroupStatusId" },
                 values: new object[,]
@@ -1090,9 +1175,9 @@ namespace ATMS.Project.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePermissions_PermissionId",
+                name: "IX_RolePermissions_RoleId",
                 table: "RolePermissions",
-                column: "PermissionId");
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Roles_Name",

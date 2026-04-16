@@ -1,9 +1,9 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
-using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Providers.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Enums;
 using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Account;

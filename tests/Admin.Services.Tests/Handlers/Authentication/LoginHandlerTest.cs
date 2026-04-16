@@ -1,10 +1,10 @@
 ﻿using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Authentication;
-using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Authentication;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Data.Enums;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Authentication;
@@ -34,7 +34,7 @@ public class LoginHandlerTest : BaseHandlerTest
             PasswordHash = Faker.Random.AlphaNumeric(32),
             FailedLoginCount = failedLoginCount,
             EmailConfirmed = isEmailConfirmed,
-            UserStatusId = statusId ?? (int)UserStatus.Active
+            UserStatusId = statusId ?? (int)UserStatusEnum.Active
         };
  
     private LoginCommand CreateCommand(string? email = null, string? password = null) =>
@@ -140,7 +140,7 @@ public class LoginHandlerTest : BaseHandlerTest
         await Assert.ThrowsAsync<AuthException>(() =>
             _handler.Handle(command, CancellationToken.None));
  
-        Assert.Equal((int)UserStatus.Locked, user.UserStatusId);
+        Assert.Equal((int)UserStatusEnum.Locked, user.UserStatusId);
         Assert.Equal((uint)0, user.FailedLoginCount);
         Assert.True(user.LockoutEnd.HasValue);
         Assert.True(user.LockoutEnd.Value > DateTime.UtcNow);
@@ -177,7 +177,7 @@ public class LoginHandlerTest : BaseHandlerTest
     [Fact]
     public async Task Handle_WhenAccountIsInactive_ThrowsAuthException()
     {
-        var user = CreateUser(statusId: (int)UserStatus.Inactive);
+        var user = CreateUser(statusId: (int)UserStatusEnum.Inactive);
         var command = CreateCommand();
 
         SetupUser(user);
@@ -191,7 +191,7 @@ public class LoginHandlerTest : BaseHandlerTest
     [Fact]
     public async Task Handle_WhenAccountIsLockedAndLockoutNotExpired_ThrowsAuthException()
     {
-        var user = CreateUser(statusId: (int)UserStatus.Locked);
+        var user = CreateUser(statusId: (int)UserStatusEnum.Locked);
         user.LockoutEnd = DateTime.UtcNow.AddMinutes(10);
         var command = CreateCommand();
 
@@ -206,7 +206,7 @@ public class LoginHandlerTest : BaseHandlerTest
     [Fact]
     public async Task Handle_WhenAccountIsLockedButLockoutExpired_AllowsLogin()
     {
-        var user = CreateUser(statusId: (int)UserStatus.Locked);
+        var user = CreateUser(statusId: (int)UserStatusEnum.Locked);
         user.LockoutEnd = DateTime.UtcNow.AddMinutes(-1); // срок истёк
         var command = CreateCommand();
 
@@ -217,7 +217,7 @@ public class LoginHandlerTest : BaseHandlerTest
         var result = await _handler.Handle(command, CancellationToken.None);
 
         Assert.Equal(FakeAccessToken, result.AccessToken);
-        Assert.Equal((int)UserStatus.Active, user.UserStatusId);
+        Assert.Equal((int)UserStatusEnum.Active, user.UserStatusId);
         Assert.Null(user.LockoutEnd);
     }
 
@@ -270,7 +270,7 @@ public class LoginHandlerTest : BaseHandlerTest
         await Assert.ThrowsAsync<AuthException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
-        Assert.Equal((int)UserStatus.Active, user.UserStatusId);
+        Assert.Equal((int)UserStatusEnum.Active, user.UserStatusId);
         Assert.Null(user.LockoutEnd);
     }
 }

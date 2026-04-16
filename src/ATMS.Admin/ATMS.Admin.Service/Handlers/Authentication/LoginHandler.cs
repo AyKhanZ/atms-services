@@ -1,11 +1,11 @@
 ﻿using ATMS.Admin.Contracts.Commands.Authentication;
-using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Data.Enums;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Authentication;
@@ -58,10 +58,10 @@ public class LoginHandler(
     {
         switch (user.UserStatusId)
         {
-            case (int)UserStatus.Inactive:
+            case (int)UserStatusEnum.Inactive:
                 throw new AuthException(AuthErrorType.AccountInactive,
                     AuthMessages.AccountInactive);
-            case (int)UserStatus.Locked when
+            case (int)UserStatusEnum.Locked when
                 user.LockoutEnd.HasValue &&
                 user.LockoutEnd > DateTime.UtcNow:
             {
@@ -81,9 +81,9 @@ public class LoginHandler(
         {
             user.FailedLoginCount = 0;
             user.LockoutEnd = null;
-            if (user.UserStatusId == (int)UserStatus.Locked)
+            if (user.UserStatusId == (int)UserStatusEnum.Locked)
             {
-                user.UserStatusId = (int)UserStatus.Active;
+                user.UserStatusId = (int)UserStatusEnum.Active;
             }
             user.LastLogin = DateTime.UtcNow;
             
@@ -91,10 +91,10 @@ public class LoginHandler(
         }
 
         user.FailedLoginCount++;
-        if (user.FailedLoginCount >= 5 && user.UserStatusId == (int)UserStatus.Active)
+        if (user.FailedLoginCount >= 5 && user.UserStatusId == (int)UserStatusEnum.Active)
         {
             user.LockoutEnd = DateTime.UtcNow.AddMinutes(15);
-            user.UserStatusId = (int)UserStatus.Locked;
+            user.UserStatusId = (int)UserStatusEnum.Locked;
             user.FailedLoginCount = 0;
         }
 

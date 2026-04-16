@@ -1,4 +1,5 @@
-﻿using ATMS.Project.Data.Entities.Dictionaries;
+﻿using ATMS.Data.Enums;
+using ATMS.Project.Data.Entities.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,9 +24,9 @@ public class WorkGroupStatusConfiguration : IEntityTypeConfiguration<WorkGroupSt
 
         
         builder.HasData(
-            new { Id = 1, Code = "Planned" },
-            new { Id = 2, Code = "Active" },
-            new { Id = 3, Code = "Done" }
+            new { Id = (int)WorkGroupStatusEnum.Planned, Code = "Planned" },
+            new { Id = (int)WorkGroupStatusEnum.Active, Code = "Active" },
+            new { Id = (int)WorkGroupStatusEnum.Done, Code = "Done" }
         );
     }
 }
@@ -48,17 +49,17 @@ public class WorkGroupStatusTranslationConfiguration : IEntityTypeConfiguration<
 
         builder.HasData(
             // Planned
-            new { Id = 1, WorkGroupStatusId = 1, Language = "en", Name = "Planned" },
-            new { Id = 2, WorkGroupStatusId = 1, Language = "ru", Name = "Запланировано" },
-            new { Id = 3, WorkGroupStatusId = 1, Language = "az", Name = "Planlaşdırılıb" },
+            new { Id = 1, WorkGroupStatusId = (int)WorkGroupStatusEnum.Planned, Language = "en", Name = "Planned" },
+            new { Id = 2, WorkGroupStatusId = (int)WorkGroupStatusEnum.Planned, Language = "ru", Name = "Запланировано" },
+            new { Id = 3, WorkGroupStatusId = (int)WorkGroupStatusEnum.Planned, Language = "az", Name = "Planlaşdırılıb" },
             // Active
-            new { Id = 4, WorkGroupStatusId = 2, Language = "en", Name = "Active" },
-            new { Id = 5, WorkGroupStatusId = 2, Language = "ru", Name = "Активный" },
-            new { Id = 6, WorkGroupStatusId = 2, Language = "az", Name = "Aktiv" },
+            new { Id = 4, WorkGroupStatusId = (int)WorkGroupStatusEnum.Active, Language = "en", Name = "Active" },
+            new { Id = 5, WorkGroupStatusId = (int)WorkGroupStatusEnum.Active, Language = "ru", Name = "Активный" },
+            new { Id = 6, WorkGroupStatusId = (int)WorkGroupStatusEnum.Active, Language = "az", Name = "Aktiv" },
             // Done
-            new { Id = 7, WorkGroupStatusId = 3, Language = "en", Name = "Done" },
-            new { Id = 8, WorkGroupStatusId = 3, Language = "ru", Name = "Завершено" },
-            new { Id = 9, WorkGroupStatusId = 3, Language = "az", Name = "Bitdi" }
+            new { Id = 7, WorkGroupStatusId = (int)WorkGroupStatusEnum.Done, Language = "en", Name = "Done" },
+            new { Id = 8, WorkGroupStatusId = (int)WorkGroupStatusEnum.Done, Language = "ru", Name = "Завершено" },
+            new { Id = 9, WorkGroupStatusId = (int)WorkGroupStatusEnum.Done, Language = "az", Name = "Bitdi" }
         );
     }
 }

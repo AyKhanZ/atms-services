@@ -1,4 +1,5 @@
 ﻿using ATMS.Data.Constants;
+using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -21,14 +22,14 @@ public class WorkTicketConfiguration : IEntityTypeConfiguration<WorkTicket>
             .IsRequired();
 
         builder.Property(e => e.WorkTicketStatusId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .HasDefaultValue((int)WorkTicketStatusEnum.New)
             .IsRequired();
 
         builder.Property(e => e.WorkTicketTypeId)
             .IsRequired();
 
         builder.Property(e => e.PriorityId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .HasDefaultValue((int)WorkItemPriorityEnum.Low)
             .IsRequired();
 
         builder.Property(e => e.CreatedAt)

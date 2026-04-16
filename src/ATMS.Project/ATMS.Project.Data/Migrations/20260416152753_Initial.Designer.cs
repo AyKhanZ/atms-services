@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Project.Data.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    [Migration("20260415115543_Initial")]
+    [Migration("20260416152753_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -180,6 +180,11 @@ namespace ATMS.Project.Data.Migrations
                         {
                             Id = 27,
                             Code = "UserDelete"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Code = "UserInvite"
                         });
                 });
 
@@ -2024,7 +2029,9 @@ namespace ATMS.Project.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2036,21 +2043,380 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890"),
+                            Description = "Project Manager Role",
+                            Name = "Project Manager"
+                        },
+                        new
+                        {
+                            Id = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca"),
+                            Description = "Business Consultant Role",
+                            Name = "Business Consultant"
+                        },
+                        new
+                        {
+                            Id = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a"),
+                            Description = "Developer Role",
+                            Name = "Developer"
+                        },
+                        new
+                        {
+                            Id = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346"),
+                            Description = "Client Manager Role",
+                            Name = "Client Manager"
+                        },
+                        new
+                        {
+                            Id = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266"),
+                            Description = "Client Viewer Role",
+                            Name = "Client Viewer"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.RolePermission", b =>
                 {
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("PermissionId")
                         .HasColumnType("integer");
 
-                    b.HasKey("RoleId", "PermissionId");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("PermissionId");
+                    b.HasKey("PermissionId", "RoleId");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("RolePermissions");
+
+                    b.HasData(
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 2,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 3,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 17,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 18,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 5,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 6,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 8,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 9,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 2,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 3,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 17,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 18,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 5,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 6,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 8,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 9,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 2,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 3,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 17,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 18,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 5,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 6,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 8,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 9,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 28,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.User", b =>
@@ -2200,19 +2566,13 @@ namespace ATMS.Project.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<int>("ProjectKindId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProjectStatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProjectTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("timestamp with time zone");

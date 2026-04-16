@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Data.Entities.Dictionaries;
+using ATMS.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,10 +24,10 @@ public class GenderConfiguration : IEntityTypeConfiguration<Gender>
 
         
         builder.HasData(
-            new { Id = 1, Code = "NotSpecified" },
-            new { Id = 2, Code = "Male" },
-            new { Id = 3, Code = "Female" },
-            new { Id = 4, Code = "Other" }
+            new { Id = (int)GenderEnum.NotSpecified, Code = "NotSpecified" },
+            new { Id = (int)GenderEnum.Male, Code = "Male" },
+            new { Id = (int)GenderEnum.Female, Code = "Female" },
+            new { Id = (int)GenderEnum.Other, Code = "Other" }
         );
     }
 }
@@ -49,21 +50,21 @@ public class GenderTranslationConfiguration : IEntityTypeConfiguration<GenderTra
         
         builder.HasData(
             // NotSpecified
-            new { Id = 1, GenderId = 1, Language = "en", Name = "Not specified" },
-            new { Id = 2, GenderId = 1, Language = "ru", Name = "Не указано" },
-            new { Id = 3, GenderId = 1, Language = "az", Name = "Göstərilməyib" },
+            new { Id = 1, GenderId = (int)GenderEnum.NotSpecified, Language = "en", Name = "Not specified" },
+            new { Id = 2, GenderId = (int)GenderEnum.NotSpecified, Language = "ru", Name = "Не указано" },
+            new { Id = 3, GenderId = (int)GenderEnum.NotSpecified, Language = "az", Name = "Göstərilməyib" },
             // Male
-            new { Id = 4, GenderId = 2, Language = "en", Name = "Male" },
-            new { Id = 5, GenderId = 2, Language = "ru", Name = "Мужской" },
-            new { Id = 6, GenderId = 2, Language = "az", Name = "Kişi" },
+            new { Id = 4, GenderId = (int)GenderEnum.Male, Language = "en", Name = "Male" },
+            new { Id = 5, GenderId = (int)GenderEnum.Male, Language = "ru", Name = "Мужской" },
+            new { Id = 6, GenderId = (int)GenderEnum.Male, Language = "az", Name = "Kişi" },
             // Female
-            new { Id = 7, GenderId = 3, Language = "en", Name = "Female" },
-            new { Id = 8, GenderId = 3, Language = "ru", Name = "Женский" },
-            new { Id = 9, GenderId = 3, Language = "az", Name = "Qadın" },
+            new { Id = 7, GenderId = (int)GenderEnum.Female, Language = "en", Name = "Female" },
+            new { Id = 8, GenderId = (int)GenderEnum.Female, Language = "ru", Name = "Женский" },
+            new { Id = 9, GenderId = (int)GenderEnum.Female, Language = "az", Name = "Qadın" },
             // Other
-            new { Id = 10, GenderId = 4, Language = "en", Name = "Other" },
-            new { Id = 11, GenderId = 4, Language = "ru", Name = "Другое" },
-            new { Id = 12, GenderId = 4, Language = "az", Name = "Digər" }
+            new { Id = 10, GenderId = (int)GenderEnum.Other, Language = "en", Name = "Other" },
+            new { Id = 11, GenderId = (int)GenderEnum.Other, Language = "ru", Name = "Другое" },
+            new { Id = 12, GenderId = (int)GenderEnum.Other, Language = "az", Name = "Digər" }
         );
     }
 }

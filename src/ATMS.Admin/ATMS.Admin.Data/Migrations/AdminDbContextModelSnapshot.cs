@@ -653,126 +653,126 @@ namespace ATMS.Admin.Data.Migrations
                             Id = 28,
                             Language = "en",
                             Name = "Comment view",
-                            PermissionId = 10
+                            PermissionId = 13
                         },
                         new
                         {
                             Id = 29,
                             Language = "ru",
                             Name = "Просмотр комментариев",
-                            PermissionId = 10
+                            PermissionId = 13
                         },
                         new
                         {
                             Id = 30,
                             Language = "az",
                             Name = "Şərhə baxış",
-                            PermissionId = 10
+                            PermissionId = 13
                         },
                         new
                         {
                             Id = 31,
                             Language = "en",
                             Name = "Comment edit",
-                            PermissionId = 11
+                            PermissionId = 14
                         },
                         new
                         {
                             Id = 32,
                             Language = "ru",
                             Name = "Редактирование комментариев",
-                            PermissionId = 11
+                            PermissionId = 14
                         },
                         new
                         {
                             Id = 33,
                             Language = "az",
                             Name = "Şərhi redaktə",
-                            PermissionId = 11
+                            PermissionId = 14
                         },
                         new
                         {
                             Id = 34,
                             Language = "en",
                             Name = "Comment delete",
-                            PermissionId = 12
+                            PermissionId = 15
                         },
                         new
                         {
                             Id = 35,
                             Language = "ru",
                             Name = "Удаление комментариев",
-                            PermissionId = 12
+                            PermissionId = 15
                         },
                         new
                         {
                             Id = 36,
                             Language = "az",
                             Name = "Şərhi sil",
-                            PermissionId = 12
+                            PermissionId = 15
                         },
                         new
                         {
                             Id = 37,
                             Language = "en",
                             Name = "Notification view",
-                            PermissionId = 13
+                            PermissionId = 10
                         },
                         new
                         {
                             Id = 38,
                             Language = "ru",
                             Name = "Просмотр уведомлений",
-                            PermissionId = 13
+                            PermissionId = 10
                         },
                         new
                         {
                             Id = 39,
                             Language = "az",
                             Name = "Bildirişə baxış",
-                            PermissionId = 13
+                            PermissionId = 10
                         },
                         new
                         {
                             Id = 40,
                             Language = "en",
                             Name = "Notification edit",
-                            PermissionId = 14
+                            PermissionId = 11
                         },
                         new
                         {
                             Id = 41,
                             Language = "ru",
                             Name = "Редактирование уведомлений",
-                            PermissionId = 14
+                            PermissionId = 11
                         },
                         new
                         {
                             Id = 42,
                             Language = "az",
                             Name = "Bildirişi redaktə",
-                            PermissionId = 14
+                            PermissionId = 11
                         },
                         new
                         {
                             Id = 43,
                             Language = "en",
                             Name = "Notification delete",
-                            PermissionId = 15
+                            PermissionId = 12
                         },
                         new
                         {
                             Id = 44,
                             Language = "ru",
                             Name = "Удаление уведомлений",
-                            PermissionId = 15
+                            PermissionId = 12
                         },
                         new
                         {
                             Id = 45,
                             Language = "az",
                             Name = "Bildirişi sil",
-                            PermissionId = 15
+                            PermissionId = 12
                         });
                 });
 
@@ -938,6 +938,11 @@ namespace ATMS.Admin.Data.Migrations
                         {
                             Id = 2,
                             Code = "Client"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "ClientManager"
                         });
                 });
 
@@ -1011,6 +1016,27 @@ namespace ATMS.Admin.Data.Migrations
                             Language = "az",
                             Name = "Müştəri",
                             UserTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "Client Manager",
+                            UserTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Менеджер клиентов",
+                            UserTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Müştəri meneceri",
+                            UserTypeId = 3
                         });
                 });
 

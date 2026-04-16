@@ -1,4 +1,5 @@
-﻿using ATMS.Project.Data.Entities.Dictionaries;
+﻿using ATMS.Data.Enums;
+using ATMS.Project.Data.Entities.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,9 +24,9 @@ public class ProjectTypeConfiguration : IEntityTypeConfiguration<ProjectType>
 
 
         builder.HasData(
-            new { Id = 1, Code = "Standard" },
-            new { Id = 2, Code = "Optimal" },
-            new { Id = 3, Code = "Premium" }
+            new { Id = (int)ProjectTypeEnum.Standard, Code = "Standard" },
+            new { Id = (int)ProjectTypeEnum.Optimal, Code = "Optimal" },
+            new { Id = (int)ProjectTypeEnum.Premium, Code = "Premium" }
         );
     }
 }
@@ -48,17 +49,17 @@ public class ProjectTypeTranslationConfiguration : IEntityTypeConfiguration<Proj
 
         builder.HasData(
             // Standard
-            new { Id = 1, ProjectTypeId = 1, Language = "en", Name = "Standard" },
-            new { Id = 2, ProjectTypeId = 1, Language = "ru", Name = "Стандартный" },
-            new { Id = 3, ProjectTypeId = 1, Language = "az", Name = "Standart" },
+            new { Id = 1, ProjectTypeId = (int)ProjectTypeEnum.Standard, Language = "en", Name = "Standard" },
+            new { Id = 2, ProjectTypeId = (int)ProjectTypeEnum.Standard, Language = "ru", Name = "Стандартный" },
+            new { Id = 3, ProjectTypeId = (int)ProjectTypeEnum.Standard, Language = "az", Name = "Standart" },
             // Optimal
-            new { Id = 4, ProjectTypeId = 2, Language = "en", Name = "Optimal" },
-            new { Id = 5, ProjectTypeId = 2, Language = "ru", Name = "Оптимальный" },
-            new { Id = 6, ProjectTypeId = 2, Language = "az", Name = "Optimal" },
+            new { Id = 4, ProjectTypeId = (int)ProjectTypeEnum.Optimal, Language = "en", Name = "Optimal" },
+            new { Id = 5, ProjectTypeId = (int)ProjectTypeEnum.Optimal, Language = "ru", Name = "Оптимальный" },
+            new { Id = 6, ProjectTypeId = (int)ProjectTypeEnum.Optimal, Language = "az", Name = "Optimal" },
             // Premium
-            new { Id = 7, ProjectTypeId = 3, Language = "en", Name = "Premium" },
-            new { Id = 8, ProjectTypeId = 3, Language = "ru", Name = "Премиум" },
-            new { Id = 9, ProjectTypeId = 3, Language = "az", Name = "Premium" }
+            new { Id = 7, ProjectTypeId = (int)ProjectTypeEnum.Premium, Language = "en", Name = "Premium" },
+            new { Id = 8, ProjectTypeId = (int)ProjectTypeEnum.Premium, Language = "ru", Name = "Премиум" },
+            new { Id = 9, ProjectTypeId = (int)ProjectTypeEnum.Premium, Language = "az", Name = "Premium" }
         );
     }
 }

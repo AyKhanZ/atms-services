@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Data.Entities.Dictionaries;
+using ATMS.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,9 +24,9 @@ public class UserStatusConfiguration : IEntityTypeConfiguration<UserStatus>
         
 
         builder.HasData(
-            new { Id = 1, Code = "Active" },
-            new { Id = 2, Code = "Inactive" },
-            new { Id = 3, Code = "Locked" }
+            new { Id = (int)UserStatusEnum.Active, Code = "Active" },
+            new { Id = (int)UserStatusEnum.Inactive, Code = "Inactive" },
+            new { Id = (int)UserStatusEnum.Locked, Code = "Locked" }
         );
     }
 }
@@ -48,17 +49,17 @@ public class UserStatusTranslationConfiguration : IEntityTypeConfiguration<UserS
 
         builder.HasData(
             // Active
-            new { Id = 1, UserStatusId = 1, Language = "en", Name = "Active" },
-            new { Id = 2, UserStatusId = 1, Language = "ru", Name = "Активный" },
-            new { Id = 3, UserStatusId = 1, Language = "az", Name = "Aktiv" },
+            new { Id = 1, UserStatusId = (int)UserStatusEnum.Active, Language = "en", Name = "Active" },
+            new { Id = 2, UserStatusId = (int)UserStatusEnum.Active, Language = "ru", Name = "Активный" },
+            new { Id = 3, UserStatusId = (int)UserStatusEnum.Active, Language = "az", Name = "Aktiv" },
             // Inactive
-            new { Id = 4, UserStatusId = 2, Language = "en", Name = "Inactive" },
-            new { Id = 5, UserStatusId = 2, Language = "ru", Name = "Неактивный" },
-            new { Id = 6, UserStatusId = 2, Language = "az", Name = "Qeyri-aktiv" },
+            new { Id = 4, UserStatusId = (int)UserStatusEnum.Inactive, Language = "en", Name = "Inactive" },
+            new { Id = 5, UserStatusId = (int)UserStatusEnum.Inactive, Language = "ru", Name = "Неактивный" },
+            new { Id = 6, UserStatusId = (int)UserStatusEnum.Inactive, Language = "az", Name = "Qeyri-aktiv" },
             // Locked
-            new { Id = 7, UserStatusId = 3, Language = "en", Name = "Locked" },
-            new { Id = 8, UserStatusId = 3, Language = "ru", Name = "Заблокирован" },
-            new { Id = 9, UserStatusId = 3, Language = "az", Name = "Bloklanmış" }
+            new { Id = 7, UserStatusId = (int)UserStatusEnum.Locked, Language = "en", Name = "Locked" },
+            new { Id = 8, UserStatusId = (int)UserStatusEnum.Locked, Language = "ru", Name = "Заблокирован" },
+            new { Id = 9, UserStatusId = (int)UserStatusEnum.Locked, Language = "az", Name = "Bloklanmış" }
         );
     }
 }

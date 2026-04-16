@@ -1,5 +1,5 @@
-﻿using ATMS.Admin.Contracts.Enums;
-using ATMS.Admin.Contracts.Models.Users;
+﻿using ATMS.Admin.Contracts.Models.Users;
+using ATMS.Data.Enums;
 using MediatR;
 
 namespace ATMS.Admin.Contracts.Commands.Account;

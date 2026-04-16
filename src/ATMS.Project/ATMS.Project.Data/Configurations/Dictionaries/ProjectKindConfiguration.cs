@@ -1,4 +1,5 @@
-﻿using ATMS.Project.Data.Entities.Dictionaries;
+﻿using ATMS.Data.Enums;
+using ATMS.Project.Data.Entities.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,10 +24,10 @@ public class ProjectKindConfiguration : IEntityTypeConfiguration<ProjectKind>
 
 
         builder.HasData(
-            new { Id = 1, Code = "Support" },
-            new { Id = 2, Code = "External" },
-            new { Id = 3, Code = "Internal" },
-            new { Id = 4, Code = "OneTime" }
+            new { Id = (int)ProjectKindEnum.Support, Code = "Support" },
+            new { Id = (int)ProjectKindEnum.External, Code = "External" },
+            new { Id = (int)ProjectKindEnum.Internal, Code = "Internal" },
+            new { Id = (int)ProjectKindEnum.OneTime, Code = "OneTime" }
         );
     }
 }
@@ -49,21 +50,21 @@ public class ProjectKindTranslationConfiguration : IEntityTypeConfiguration<Proj
 
         builder.HasData(
             // Support
-            new { Id = 1, ProjectKindId = 1, Language = "en", Name = "Support" },
-            new { Id = 2, ProjectKindId = 1, Language = "ru", Name = "Поддержка" },
-            new { Id = 3, ProjectKindId = 1, Language = "az", Name = "Dəstək" },
+            new { Id = 1, ProjectKindId = (int)ProjectKindEnum.Support, Language = "en", Name = "Support" },
+            new { Id = 2, ProjectKindId = (int)ProjectKindEnum.Support, Language = "ru", Name = "Поддержка" },
+            new { Id = 3, ProjectKindId = (int)ProjectKindEnum.Support, Language = "az", Name = "Dəstək" },
             // External
-            new { Id = 4, ProjectKindId = 2, Language = "en", Name = "External" },
-            new { Id = 5, ProjectKindId = 2, Language = "ru", Name = "Внешний" },
-            new { Id = 6, ProjectKindId = 2, Language = "az", Name = "Xarici" },
+            new { Id = 4, ProjectKindId = (int)ProjectKindEnum.External, Language = "en", Name = "External" },
+            new { Id = 5, ProjectKindId = (int)ProjectKindEnum.External, Language = "ru", Name = "Внешний" },
+            new { Id = 6, ProjectKindId = (int)ProjectKindEnum.External, Language = "az", Name = "Xarici" },
             // Internal
-            new { Id = 7, ProjectKindId = 3, Language = "en", Name = "Internal" },
-            new { Id = 8, ProjectKindId = 3, Language = "ru", Name = "Внутренний" },
-            new { Id = 9, ProjectKindId = 3, Language = "az", Name = "Daxili" },
+            new { Id = 7, ProjectKindId = (int)ProjectKindEnum.Internal, Language = "en", Name = "Internal" },
+            new { Id = 8, ProjectKindId = (int)ProjectKindEnum.Internal, Language = "ru", Name = "Внутренний" },
+            new { Id = 9, ProjectKindId = (int)ProjectKindEnum.Internal, Language = "az", Name = "Daxili" },
             // OneTime
-            new { Id = 10, ProjectKindId = 4, Language = "en", Name = "One Time" },
-            new { Id = 11, ProjectKindId = 4, Language = "ru", Name = "Разовый" },
-            new { Id = 12, ProjectKindId = 4, Language = "az", Name = "Birdəfəlik" }
+            new { Id = 10, ProjectKindId = (int)ProjectKindEnum.OneTime, Language = "en", Name = "One Time" },
+            new { Id = 11, ProjectKindId = (int)ProjectKindEnum.OneTime, Language = "ru", Name = "Разовый" },
+            new { Id = 12, ProjectKindId = (int)ProjectKindEnum.OneTime, Language = "az", Name = "Birdəfəlik" }
         );
     }
 }

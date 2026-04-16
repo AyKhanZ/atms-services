@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Data.Entities.Dictionaries;
+using ATMS.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,9 +24,9 @@ public class UserTypeConfiguration : IEntityTypeConfiguration<UserType>
 
         
         builder.HasData(
-            new { Id = 1, Code = "Agent" },
-            new { Id = 2, Code = "Client" },
-            new { Id = 3, Code = "ClientManager" }
+            new { Id = (int)UserTypeEnum.Agent, Code = "Agent" },
+            new { Id = (int)UserTypeEnum.Client, Code = "Client" },
+            new { Id = (int)UserTypeEnum.ClientManager, Code = "ClientManager" }
         );
     }
 }
@@ -48,17 +49,17 @@ public class UserTypeTranslationConfiguration : IEntityTypeConfiguration<UserTyp
 
         builder.HasData(
             // Agent
-            new { Id = 1, UserTypeId = 1, Language = "en", Name = "Agent" },
-            new { Id = 2, UserTypeId = 1, Language = "ru", Name = "Агент" },
-            new { Id = 3, UserTypeId = 1, Language = "az", Name = "Agent" },
+            new { Id = 1, UserTypeId = (int)UserTypeEnum.Agent, Language = "en", Name = "Agent" },
+            new { Id = 2, UserTypeId = (int)UserTypeEnum.Agent, Language = "ru", Name = "Агент" },
+            new { Id = 3, UserTypeId = (int)UserTypeEnum.Agent, Language = "az", Name = "Agent" },
             // Client
-            new { Id = 4, UserTypeId = 2, Language = "en", Name = "Client" },
-            new { Id = 5, UserTypeId = 2, Language = "ru", Name = "Клиент" },
-            new { Id = 6, UserTypeId = 2, Language = "az", Name = "Müştəri" },
+            new { Id = 4, UserTypeId = (int)UserTypeEnum.Client, Language = "en", Name = "Client" },
+            new { Id = 5, UserTypeId = (int)UserTypeEnum.Client, Language = "ru", Name = "Клиент" },
+            new { Id = 6, UserTypeId = (int)UserTypeEnum.Client, Language = "az", Name = "Müştəri" },
             // Client Manager
-            new { Id = 4, UserTypeId = 2, Language = "en", Name = "Client Manager" },
-            new { Id = 5, UserTypeId = 2, Language = "ru", Name = "Менеджер клиентов" },
-            new { Id = 6, UserTypeId = 2, Language = "az", Name = "Müştəri meneceri" }
+            new { Id = 7, UserTypeId = (int)UserTypeEnum.ClientManager, Language = "en", Name = "Client Manager" },
+            new { Id = 8, UserTypeId = (int)UserTypeEnum.ClientManager, Language = "ru", Name = "Менеджер клиентов" },
+            new { Id = 9, UserTypeId = (int)UserTypeEnum.ClientManager, Language = "az", Name = "Müştəri meneceri" }
         );
     }
 }

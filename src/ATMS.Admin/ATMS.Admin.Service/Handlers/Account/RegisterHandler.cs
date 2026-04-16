@@ -1,5 +1,4 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
-using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -9,6 +8,7 @@ using ATMS.Email.Services.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Constants;
+using ATMS.Data.Enums;
 using ATMS.Infrastructure.Options;
 using AutoMapper;
 using MediatR;

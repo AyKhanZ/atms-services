@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddDefaultRoles : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -417,7 +417,8 @@ namespace ATMS.Admin.Data.Migrations
                 values: new object[,]
                 {
                     { 1, "Agent" },
-                    { 2, "Client" }
+                    { 2, "Client" },
+                    { 3, "ClientManager" }
                 });
 
             migrationBuilder.InsertData(
@@ -487,24 +488,24 @@ namespace ATMS.Admin.Data.Migrations
                     { 25, "en", "Project delete", 9 },
                     { 26, "ru", "Удаление проектов", 9 },
                     { 27, "az", "Layihəni sil", 9 },
-                    { 28, "en", "Comment view", 10 },
-                    { 29, "ru", "Просмотр комментариев", 10 },
-                    { 30, "az", "Şərhə baxış", 10 },
-                    { 31, "en", "Comment edit", 11 },
-                    { 32, "ru", "Редактирование комментариев", 11 },
-                    { 33, "az", "Şərhi redaktə", 11 },
-                    { 34, "en", "Comment delete", 12 },
-                    { 35, "ru", "Удаление комментариев", 12 },
-                    { 36, "az", "Şərhi sil", 12 },
-                    { 37, "en", "Notification view", 13 },
-                    { 38, "ru", "Просмотр уведомлений", 13 },
-                    { 39, "az", "Bildirişə baxış", 13 },
-                    { 40, "en", "Notification edit", 14 },
-                    { 41, "ru", "Редактирование уведомлений", 14 },
-                    { 42, "az", "Bildirişi redaktə", 14 },
-                    { 43, "en", "Notification delete", 15 },
-                    { 44, "ru", "Удаление уведомлений", 15 },
-                    { 45, "az", "Bildirişi sil", 15 }
+                    { 28, "en", "Comment view", 13 },
+                    { 29, "ru", "Просмотр комментариев", 13 },
+                    { 30, "az", "Şərhə baxış", 13 },
+                    { 31, "en", "Comment edit", 14 },
+                    { 32, "ru", "Редактирование комментариев", 14 },
+                    { 33, "az", "Şərhi redaktə", 14 },
+                    { 34, "en", "Comment delete", 15 },
+                    { 35, "ru", "Удаление комментариев", 15 },
+                    { 36, "az", "Şərhi sil", 15 },
+                    { 37, "en", "Notification view", 10 },
+                    { 38, "ru", "Просмотр уведомлений", 10 },
+                    { 39, "az", "Bildirişə baxış", 10 },
+                    { 40, "en", "Notification edit", 11 },
+                    { 41, "ru", "Редактирование уведомлений", 11 },
+                    { 42, "az", "Bildirişi redaktə", 11 },
+                    { 43, "en", "Notification delete", 12 },
+                    { 44, "ru", "Удаление уведомлений", 12 },
+                    { 45, "az", "Bildirişi sil", 12 }
                 });
 
             migrationBuilder.InsertData(
@@ -560,7 +561,10 @@ namespace ATMS.Admin.Data.Migrations
                     { 3, "az", "Agent", 1 },
                     { 4, "en", "Client", 2 },
                     { 5, "ru", "Клиент", 2 },
-                    { 6, "az", "Müştəri", 2 }
+                    { 6, "az", "Müştəri", 2 },
+                    { 7, "en", "Client Manager", 3 },
+                    { 8, "ru", "Менеджер клиентов", 3 },
+                    { 9, "az", "Müştəri meneceri", 3 }
                 });
 
             migrationBuilder.CreateIndex(

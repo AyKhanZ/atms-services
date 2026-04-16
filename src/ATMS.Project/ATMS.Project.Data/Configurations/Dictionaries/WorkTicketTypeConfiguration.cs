@@ -1,4 +1,5 @@
-﻿using ATMS.Project.Data.Entities.Dictionaries;
+﻿using ATMS.Data.Enums;
+using ATMS.Project.Data.Entities.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,9 +24,9 @@ public class WorkTicketTypeConfiguration : IEntityTypeConfiguration<WorkTicketTy
 
         
         builder.HasData(
-            new { Id = 1, Code = "Bug" },
-            new { Id = 2, Code = "Feature" },
-            new { Id = 3, Code = "Task" }
+            new { Id = (int)WorkTicketTypeEnum.Bug, Code = "Bug" },
+            new { Id = (int)WorkTicketTypeEnum.Feature, Code = "Feature" },
+            new { Id = (int)WorkTicketTypeEnum.Task, Code = "Task" }
         );
     }
 }
@@ -48,17 +49,17 @@ public class WorkTicketTypeTranslationConfiguration : IEntityTypeConfiguration<W
         
         builder.HasData(
             // Bug
-            new { Id = 1, WorkTicketTypeId = 1, Language = "en", Name = "Bug" },
-            new { Id = 2, WorkTicketTypeId = 1, Language = "ru", Name = "Ошибка" },
-            new { Id = 3, WorkTicketTypeId = 1, Language = "az", Name = "Xəta" },
+            new { Id = 1, WorkTicketTypeId = (int)WorkTicketTypeEnum.Bug, Language = "en", Name = "Bug" },
+            new { Id = 2, WorkTicketTypeId = (int)WorkTicketTypeEnum.Bug, Language = "ru", Name = "Ошибка" },
+            new { Id = 3, WorkTicketTypeId = (int)WorkTicketTypeEnum.Bug, Language = "az", Name = "Xəta" },
             // Feature
-            new { Id = 4, WorkTicketTypeId = 2, Language = "en", Name = "Feature" },
-            new { Id = 5, WorkTicketTypeId = 2, Language = "ru", Name = "Новая функция" },
-            new { Id = 6, WorkTicketTypeId = 2, Language = "az", Name = "Təzə Funksiya" },
+            new { Id = 4, WorkTicketTypeId = (int)WorkTicketTypeEnum.Feature, Language = "en", Name = "Feature" },
+            new { Id = 5, WorkTicketTypeId = (int)WorkTicketTypeEnum.Feature, Language = "ru", Name = "Новая функция" },
+            new { Id = 6, WorkTicketTypeId = (int)WorkTicketTypeEnum.Feature, Language = "az", Name = "Təzə Funksiya" },
             // Task
-            new { Id = 7, WorkTicketTypeId = 3, Language = "en", Name = "Task" },
-            new { Id = 8, WorkTicketTypeId = 3, Language = "ru", Name = "Задача" },
-            new { Id = 9, WorkTicketTypeId = 3, Language = "az", Name = "Tapşırıq" }
+            new { Id = 7, WorkTicketTypeId = (int)WorkTicketTypeEnum.Task, Language = "en", Name = "Task" },
+            new { Id = 8, WorkTicketTypeId = (int)WorkTicketTypeEnum.Task, Language = "ru", Name = "Задача" },
+            new { Id = 9, WorkTicketTypeId = (int)WorkTicketTypeEnum.Task, Language = "az", Name = "Tapşırıq" }
         );
     }
 }

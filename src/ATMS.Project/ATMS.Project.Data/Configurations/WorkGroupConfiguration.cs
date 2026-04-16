@@ -1,4 +1,5 @@
 ﻿using ATMS.Data.Constants;
+using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -35,7 +36,7 @@ public class WorkGroupConfiguration : IEntityTypeConfiguration<WorkGroup>
             
             
         builder.Property(u => u.StatusId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .HasDefaultValue((int)WorkGroupStatusEnum.Planned)
             .IsRequired();
             
         builder.ToTable(t =>

@@ -1,4 +1,5 @@
-﻿using ATMS.Project.Data.Entities.Dictionaries;
+﻿using ATMS.Data.Enums;
+using ATMS.Project.Data.Entities.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,10 +23,10 @@ public class ProjectStatusConfiguration : IEntityTypeConfiguration<ProjectStatus
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasData(
-            new { Id = 1, Code = "Draft" },
-            new { Id = 2, Code = "Active" },
-            new { Id = 3, Code = "OnReview" },
-            new { Id = 4, Code = "Closed" }
+            new { Id = (int)ProjectStatusEnum.Draft, Code = "Draft" },
+            new { Id = (int)ProjectStatusEnum.Active, Code = "Active" },
+            new { Id = (int)ProjectStatusEnum.OnReview, Code = "OnReview" },
+            new { Id = (int)ProjectStatusEnum.Closed, Code = "Closed" }
         );
     }
 }
@@ -48,21 +49,21 @@ public class ProjectStatusTranslationConfiguration : IEntityTypeConfiguration<Pr
 
         builder.HasData(
             // Draft
-            new { Id = 1, ProjectStatusId = 1, Language = "en", Name = "Draft" },
-            new { Id = 2, ProjectStatusId = 1, Language = "ru", Name = "Черновик" },
-            new { Id = 3, ProjectStatusId = 1, Language = "az", Name = "Qaralama" },
+            new { Id = 1, ProjectStatusId = (int)ProjectStatusEnum.Draft, Language = "en", Name = "Draft" },
+            new { Id = 2, ProjectStatusId = (int)ProjectStatusEnum.Draft, Language = "ru", Name = "Черновик" },
+            new { Id = 3, ProjectStatusId = (int)ProjectStatusEnum.Draft, Language = "az", Name = "Qaralama" },
             // Active
-            new { Id = 4, ProjectStatusId = 2, Language = "en", Name = "Active" },
-            new { Id = 5, ProjectStatusId = 2, Language = "ru", Name = "Активный" },
-            new { Id = 6, ProjectStatusId = 2, Language = "az", Name = "Aktiv" },
+            new { Id = 4, ProjectStatusId = (int)ProjectStatusEnum.Active, Language = "en", Name = "Active" },
+            new { Id = 5, ProjectStatusId = (int)ProjectStatusEnum.Active, Language = "ru", Name = "Активный" },
+            new { Id = 6, ProjectStatusId = (int)ProjectStatusEnum.Active, Language = "az", Name = "Aktiv" },
             // InReview
-            new { Id = 7, ProjectStatusId = 3, Language = "en", Name = "In Review" },
-            new { Id = 8, ProjectStatusId = 3, Language = "ru", Name = "На проверке" },
-            new { Id = 9, ProjectStatusId = 3, Language = "az", Name = "Yoxlamada" },
+            new { Id = 7, ProjectStatusId = (int)ProjectStatusEnum.OnReview, Language = "en", Name = "In Review" },
+            new { Id = 8, ProjectStatusId = (int)ProjectStatusEnum.OnReview, Language = "ru", Name = "На проверке" },
+            new { Id = 9, ProjectStatusId = (int)ProjectStatusEnum.OnReview, Language = "az", Name = "Yoxlamada" },
             // Closed
-            new { Id = 10, ProjectStatusId = 4, Language = "en", Name = "Closed" },
-            new { Id = 11, ProjectStatusId = 4, Language = "ru", Name = "Закрыт" },
-            new { Id = 12, ProjectStatusId = 4, Language = "az", Name = "Bağlanıb" }
+            new { Id = 10, ProjectStatusId = (int)ProjectStatusEnum.Closed, Language = "en", Name = "Closed" },
+            new { Id = 11, ProjectStatusId = (int)ProjectStatusEnum.Closed, Language = "ru", Name = "Закрыт" },
+            new { Id = 12, ProjectStatusId = (int)ProjectStatusEnum.Closed, Language = "az", Name = "Bağlanıb" }
         );
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ATMS.Data.Constants;
+using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -35,15 +36,12 @@ public class WorkProjectConfiguration : IEntityTypeConfiguration<WorkProject>
 
             
         builder.Property(u => u.ProjectTypeId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
             .IsRequired();
             
         builder.Property(u => u.ProjectKindId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
             .IsRequired();
 
         builder.Property(u => u.ProjectStatusId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
             .IsRequired();
             
             

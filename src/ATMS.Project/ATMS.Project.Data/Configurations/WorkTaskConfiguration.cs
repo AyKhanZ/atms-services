@@ -1,4 +1,5 @@
 ﻿using ATMS.Data.Constants;
+using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -25,11 +26,11 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
             .HasMaxLength(4000);
 
         builder.Property(e => e.StatusId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .HasDefaultValue((int)WorkTaskStatusEnum.New)
             .IsRequired();
 
         builder.Property(e => e.PriorityId)
-            .HasDefaultValue(DefaultValues.DictionaryDefaultId)
+            .HasDefaultValue((int)WorkItemPriorityEnum.Low)
             .IsRequired();
 
         builder.Property(e => e.Level)

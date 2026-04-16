@@ -1,4 +1,5 @@
-﻿using ATMS.Project.Data.Entities.Dictionaries;
+﻿using ATMS.Data.Enums;
+using ATMS.Project.Data.Entities.Dictionaries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,9 +23,9 @@ public class WorkItemPriorityConfiguration : IEntityTypeConfiguration<WorkItemPr
 
 
         builder.HasData(
-            new { Id = 1, Code = "Low" },
-            new { Id = 2, Code = "Medium" },
-            new { Id = 3, Code = "High" }
+            new { Id = (int)WorkItemPriorityEnum.Low, Code = "Low" },
+            new { Id = (int)WorkItemPriorityEnum.Medium, Code = "Medium" },
+            new { Id = (int)WorkItemPriorityEnum.High, Code = "High" }
         );
     }
 }
@@ -47,17 +48,17 @@ public class WorkItemPriorityTranslationConfiguration : IEntityTypeConfiguration
 
         builder.HasData(
             // Low
-            new { Id = 1, WorkItemPriorityId = 1, Language = "en", Name = "Low" },
-            new { Id = 2, WorkItemPriorityId = 1, Language = "ru", Name = "Низкий" },
-            new { Id = 3, WorkItemPriorityId = 1, Language = "az", Name = "Aşağı" },
+            new { Id = 1, WorkItemPriorityId = (int)WorkItemPriorityEnum.Low, Language = "en", Name = "Low" },
+            new { Id = 2, WorkItemPriorityId = (int)WorkItemPriorityEnum.Low, Language = "ru", Name = "Низкий" },
+            new { Id = 3, WorkItemPriorityId = (int)WorkItemPriorityEnum.Low, Language = "az", Name = "Aşağı" },
             // Medium
-            new { Id = 4, WorkItemPriorityId = 2, Language = "en", Name = "Medium" },
-            new { Id = 5, WorkItemPriorityId = 2, Language = "ru", Name = "Средний" },
-            new { Id = 6, WorkItemPriorityId = 2, Language = "az", Name = "Orta" },
+            new { Id = 4, WorkItemPriorityId = (int)WorkItemPriorityEnum.Medium, Language = "en", Name = "Medium" },
+            new { Id = 5, WorkItemPriorityId = (int)WorkItemPriorityEnum.Medium, Language = "ru", Name = "Средний" },
+            new { Id = 6, WorkItemPriorityId = (int)WorkItemPriorityEnum.Medium, Language = "az", Name = "Orta" },
             // High
-            new { Id = 7, WorkItemPriorityId = 3, Language = "en", Name = "High" },
-            new { Id = 8, WorkItemPriorityId = 3, Language = "ru", Name = "Высокий" },
-            new { Id = 9, WorkItemPriorityId = 3, Language = "az", Name = "Yüksək" }
+            new { Id = 7, WorkItemPriorityId = (int)WorkItemPriorityEnum.High, Language = "en", Name = "High" },
+            new { Id = 8, WorkItemPriorityId = (int)WorkItemPriorityEnum.High, Language = "ru", Name = "Высокий" },
+            new { Id = 9, WorkItemPriorityId = (int)WorkItemPriorityEnum.High, Language = "az", Name = "Yüksək" }
         );
     }
 }
