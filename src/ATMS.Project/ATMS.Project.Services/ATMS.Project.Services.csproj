@@ -12,6 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Messaging\ATMS.Messaging.csproj" />
       <ProjectReference Include="..\ATMS.Project.Contracts\ATMS.Project.Contracts.csproj" />
       <ProjectReference Include="..\ATMS.Project.Data\ATMS.Project.Data.csproj" />
     </ItemGroup>

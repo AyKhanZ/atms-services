@@ -170,6 +170,8 @@ namespace ATMS.Project.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     OrganizationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    AvatarPath = table.Column<string>(type: "text", nullable: false),
+                    UserType = table.Column<int>(type: "integer", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedById = table.Column<Guid>(type: "uuid", nullable: true),
@@ -1194,6 +1196,11 @@ namespace ATMS.Project.Data.Migrations
                 name: "IX_Users_OrganizationId",
                 table: "Users",
                 column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserType",
+                table: "Users",
+                column: "UserType");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkGroups_Code",

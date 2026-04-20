@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ATMS.Admin.API.Controllers.v1;
 
 [Route("api/v1/auth")]
-public class AuthenticationController(IMediator mediator) : AdminControllerBase
+public class AuthenticationController(IMediator mediator) : ControllerBase
 {
 
     /// <summary>
@@ -96,7 +96,6 @@ public class AuthenticationController(IMediator mediator) : AdminControllerBase
         [FromBody] LogoutCommand command,
         CancellationToken cancellationToken)
     {
-        command.UserId = GetUserId();
         await mediator.Send(command, cancellationToken);
         
         return NoContent();

@@ -10,6 +10,10 @@ public class User : UserBase, ISoftDeletable
     public Organization? Organization { get; set; }
     
     
+    public string AvatarPath { get; set; }
+    
+    public int UserType { get; set; }
+    
     public bool IsDeleted { get; set; }
     
     public DateTime? DeletedAt { get; set; }

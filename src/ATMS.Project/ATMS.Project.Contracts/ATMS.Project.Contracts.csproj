@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Contracts\ATMS.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

@@ -9,7 +9,7 @@ namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/dictionary")]
-public class DictionaryController(IMediator mediator) : AdminControllerBase
+public class DictionaryController(IMediator mediator) : ControllerBase
 {
     
     /// <summary>

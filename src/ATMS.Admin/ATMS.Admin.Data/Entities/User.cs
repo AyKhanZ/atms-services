@@ -31,8 +31,10 @@ public class User : UserBase
 
     
     public string Language { get; set; }
-
     
+    
+    
+    public Guid? OrganizationId { get; set; }
     
     public Guid? InvitedById { get; set; }
     

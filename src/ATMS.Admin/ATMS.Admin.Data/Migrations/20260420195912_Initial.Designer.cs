@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20260416160428_Initial")]
+    [Migration("20260420195912_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -919,16 +919,26 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("UserType")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
+
+                    b.HasIndex("UserType");
 
                     b.ToTable("Roles");
 
@@ -937,19 +947,25 @@ namespace ATMS.Admin.Data.Migrations
                         {
                             Id = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5"),
                             Description = "Client Manager Role",
-                            Name = "Client Manager"
+                            IsSystem = true,
+                            Name = "Client Manager",
+                            UserType = 1
                         },
                         new
                         {
                             Id = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8"),
                             Description = "Client Role",
-                            Name = "Client"
+                            IsSystem = true,
+                            Name = "Client",
+                            UserType = 1
                         },
                         new
                         {
                             Id = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53"),
                             Description = "Agent Role",
-                            Name = "Agent"
+                            IsSystem = true,
+                            Name = "Agent",
+                            UserType = 2
                         });
                 });
 
@@ -1157,7 +1173,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<bool>("HasCompletedSurvey")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("InvitedById")
+                    b.Property<Guid?>("InvitedById")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Language")
@@ -1180,6 +1196,9 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("OrganizationId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -1337,9 +1356,7 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.HasOne("ATMS.Admin.Data.Entities.User", "InvitedBy")
                         .WithMany()
-                        .HasForeignKey("InvitedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("InvitedById");
 
                     b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", "MaritalStatus")
                         .WithMany()

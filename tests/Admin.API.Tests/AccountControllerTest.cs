@@ -1,59 +1,37 @@
 ﻿using ATMS.Admin.API.Controllers.v1;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
-using Bogus;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace Admin.API.Tests;
 
-public class AccountControllerTest
+public class AccountControllerTest : BaseControllerTest
 {
-    private readonly Faker _faker;
-    private readonly Mock<IMediator> _mediatorMock;
-    private readonly IConfiguration _configuration;
     private readonly AccountController _controller;
 
     public AccountControllerTest()
     {
-        _faker = new Faker();
-        _mediatorMock = new Mock<IMediator>();
-        _configuration = BuildConfiguration();
-        _controller = new AccountController(_mediatorMock.Object, _configuration);
+        var configuration = BuildConfiguration();
+        _controller = new AccountController(MediatorMock.Object, configuration);
     }
-    
-    private static IConfiguration BuildConfiguration()
-    {
-        var settings = new Dictionary<string, string?>
-        {
-            ["RedirectUrlOptions:BaseUrl"] = "https://",
-            ["RedirectUrlOptions:ResetPasswordPage"] = "https://reset",
-            ["RedirectUrlOptions:EmailConfirmedPage"] = "https://ok",
-            ["RedirectUrlOptions:EmailConfirmFailedPage"] = "https://fail"
-        };
 
-        return new ConfigurationBuilder()
-            .AddInMemoryCollection(settings)
-            .Build();
-    }
-    
     [Fact]
     public async Task Register_ShouldReturnCreatedAtAction()
     {
         // Arrange
         var command = new RegisterCommand
         {
-            Email = _faker.Internet.Email(),
-            Surname = _faker.Name.FirstName(),
-            Name = _faker.Name.LastName(),
-            RoleId = _faker.Random.Guid(),
+            Email = Faker.Internet.Email(),
+            Surname = Faker.Name.FirstName(),
+            Name = Faker.Name.LastName(),
+            RoleId = Faker.Random.Guid(),
         };
         var user = new UserModel { Id = Guid.NewGuid() };
 
-        _mediatorMock
-            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
+        MediatorMock
+            .Setup(m => m.Send(command,
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
@@ -62,25 +40,26 @@ public class AccountControllerTest
         // Assert
         Assert.IsType<CreatedAtActionResult>(result.Result);
 
-        _mediatorMock.Verify(
+        MediatorMock.Verify(
             m => m.Send(command, It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     [Fact]
     public async Task ConfirmEmail_ShouldRedirectToSuccessWhenConfirmed()
     {
         // Arrange
         var expectedPage = "https://ok";
-        _mediatorMock
-            .Setup(m => m.Send(It.IsAny<ConfirmEmailCommand>(), It.IsAny<CancellationToken>()))
+        MediatorMock
+            .Setup(m => m.Send(It.IsAny<ConfirmEmailCommand>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
         // Act
-        var result = await _controller.ConfirmEmail(_faker.Internet.Url(), CancellationToken.None);
+        var result = await _controller.ConfirmEmail(Faker.Internet.Url(), CancellationToken.None);
 
         // Assert
-        
+
         var redirect = Assert.IsType<RedirectResult>(result);
         Assert.Equal(expectedPage, redirect.Url);
     }
@@ -91,12 +70,13 @@ public class AccountControllerTest
         // Arrange
         var expectedPage = "https://fail";
 
-        _mediatorMock
-            .Setup(m => m.Send(It.IsAny<ConfirmEmailCommand>(), It.IsAny<CancellationToken>()))
+        MediatorMock
+            .Setup(m => m.Send(It.IsAny<ConfirmEmailCommand>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
         // Act
-        var result = await _controller.ConfirmEmail(_faker.Internet.Url(), CancellationToken.None);
+        var result = await _controller.ConfirmEmail(Faker.Internet.Url(), CancellationToken.None);
 
         // Assert
         var redirect = Assert.IsType<RedirectResult>(result);
@@ -109,11 +89,12 @@ public class AccountControllerTest
         // Arrange
         var command = new ResendEmailConfirmationCommand
         {
-            Email = _faker.Internet.Email()
+            Email = Faker.Internet.Email()
         };
 
-        _mediatorMock
-            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
+        MediatorMock
+            .Setup(m => m.Send(command,
+                It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -122,24 +103,26 @@ public class AccountControllerTest
         // Assert
         Assert.IsType<AcceptedResult>(result);
 
-        _mediatorMock.Verify(
-            m => m.Send(command, It.IsAny<CancellationToken>()),
+        MediatorMock.Verify(
+            m => m.Send(command,
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     [Fact]
     public async Task ChangePassword_ShouldReturnNoContent()
     {
         // Arrange
         var command = new ChangePasswordCommand
         {
-            Email = _faker.Internet.Email(),
-            NewPassword = _faker.Internet.Password(),
-            OldPassword = _faker.Internet.Password()
+            Email = Faker.Internet.Email(),
+            NewPassword = Faker.Internet.Password(),
+            OldPassword = Faker.Internet.Password()
         };
 
-        _mediatorMock
-            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
+        MediatorMock
+            .Setup(m => m.Send(command,
+                It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -148,22 +131,23 @@ public class AccountControllerTest
         // Assert
         Assert.IsType<NoContentResult>(result);
 
-        _mediatorMock.Verify(
+        MediatorMock.Verify(
             m => m.Send(command, It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     [Fact]
     public async Task ForgotPassword_ShouldReturnAccepted()
     {
         // Arrange
         var command = new ForgotPasswordCommand
         {
-            Email = _faker.Internet.Email()
+            Email = Faker.Internet.Email()
         };
 
-        _mediatorMock
-            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
+        MediatorMock
+            .Setup(m => m.Send(command,
+                It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -172,24 +156,25 @@ public class AccountControllerTest
         // Assert
         Assert.IsType<AcceptedResult>(result);
 
-        _mediatorMock.Verify(
+        MediatorMock.Verify(
             m => m.Send(command, It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     [Fact]
     public async Task ResetPassword_ShouldReturnNoContent()
     {
         // Arrange
         var command = new ResetPasswordCommand
         {
-            ConfirmPassword = _faker.Internet.Password(),
-            Password = _faker.Internet.Password(),
-            Token = _faker.Internet.Url()
+            ConfirmPassword = Faker.Internet.Password(),
+            Password = Faker.Internet.Password(),
+            Token = Faker.Internet.Url()
         };
 
-        _mediatorMock
-            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
+        MediatorMock
+            .Setup(m => m.Send(command,
+                It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -198,7 +183,7 @@ public class AccountControllerTest
         // Assert
         Assert.IsType<NoContentResult>(result);
 
-        _mediatorMock.Verify(
+        MediatorMock.Verify(
             m => m.Send(command, It.IsAny<CancellationToken>()),
             Times.Once);
     }

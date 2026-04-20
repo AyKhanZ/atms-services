@@ -9,7 +9,7 @@ namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/migrations")]
-public class MigrationController(IMediator mediator) : AdminControllerBase
+public class MigrationController(IMediator mediator) : ControllerBase
 {
     
     /// <summary>

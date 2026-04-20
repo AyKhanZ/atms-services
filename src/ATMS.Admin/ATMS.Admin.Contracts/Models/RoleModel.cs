@@ -8,5 +8,9 @@ public class RoleModel
     public string Name { get; set; }
     public string Description { get; set; }
     
+    public bool IsSystem { get; set; }
+    
+    public int UserType { get; set; }
+    
     public DictionaryModel[] Permissions { get; set; }
 }

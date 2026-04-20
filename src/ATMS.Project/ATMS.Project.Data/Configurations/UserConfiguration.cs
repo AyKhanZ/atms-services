@@ -10,6 +10,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.HasIndex(e => e.Email)
             .IsUnique();
+        
+        builder.HasIndex(e => e.UserType);
 
         builder.Property(e => e.Email)
             .IsRequired();
@@ -18,6 +20,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
             
         builder.Property(e => e.Surname)
+            .IsRequired();
+        
+        builder.Property(e => e.UserType)
             .IsRequired();
     }
 }

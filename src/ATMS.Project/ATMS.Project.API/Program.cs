@@ -38,4 +38,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+await app.InitializeEventBusAsync();
+
 app.Run();

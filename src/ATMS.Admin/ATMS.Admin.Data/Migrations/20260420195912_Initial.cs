@@ -59,8 +59,10 @@ namespace ATMS.Admin.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    IsSystem = table.Column<bool>(type: "boolean", nullable: false),
+                    UserType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -184,7 +186,8 @@ namespace ATMS.Admin.Data.Migrations
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
                     RefreshTokenExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Language = table.Column<string>(type: "text", nullable: false, defaultValue: "en"),
-                    InvitedById = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    InvitedById = table.Column<Guid>(type: "uuid", nullable: true),
                     LastLogin = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UserStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     MaritalStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
@@ -218,8 +221,7 @@ namespace ATMS.Admin.Data.Migrations
                         name: "FK_Users_Users_InvitedById",
                         column: x => x.InvitedById,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -352,12 +354,12 @@ namespace ATMS.Admin.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Roles",
-                columns: new[] { "Id", "Description", "Name" },
+                columns: new[] { "Id", "Description", "IsSystem", "Name", "UserType" },
                 values: new object[,]
                 {
-                    { new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5"), "Client Manager Role", "Client Manager" },
-                    { new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53"), "Agent Role", "Agent" },
-                    { new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8"), "Client Role", "Client" }
+                    { new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5"), "Client Manager Role", true, "Client Manager", 1 },
+                    { new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53"), "Agent Role", true, "Agent", 2 },
+                    { new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8"), "Client Role", true, "Client", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -573,6 +575,11 @@ namespace ATMS.Admin.Data.Migrations
                 table: "Roles",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Roles_UserType",
+                table: "Roles",
+                column: "UserType");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",

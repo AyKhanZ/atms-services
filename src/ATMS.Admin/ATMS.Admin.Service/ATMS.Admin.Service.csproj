@@ -12,6 +12,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+		<ProjectReference Include="..\..\ATMS.Shared\ATMS.Messaging\ATMS.Messaging.csproj" />
 		<ProjectReference Include="..\ATMS.Admin.Contracts\ATMS.Admin.Contracts.csproj" />
 		<ProjectReference Include="..\ATMS.Admin.Data\ATMS.Admin.Data.csproj" />
 	</ItemGroup>
@@ -52,6 +53,18 @@
 	  <EmbeddedResource Update="Resources\RoleMessages.az.resx">
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>RoleMessages.az.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\ProfileMessages.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ProfileMessages.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\ProfileMessages.az.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ProfileMessages.az.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\ProfileMessages.ru.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ProfileMessages.ru.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	</ItemGroup>
 
@@ -100,6 +113,21 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>RoleMessages.az.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\ProfileMessages.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ProfileMessages.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\ProfileMessages.az.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ProfileMessages.az.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Resources\ProfileMessages.ru.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ProfileMessages.ru.resx</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 

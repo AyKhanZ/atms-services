@@ -8,9 +8,10 @@ using ATMS.Email.Services.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
-using ATMS.Data.Constants;
-using ATMS.Data.Enums;
+using ATMS.Contracts.Events.Users;
 using ATMS.Infrastructure.Options;
+using ATMS.Messaging.Configuration;
+using ATMS.Messaging.Interfaces;
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,7 @@ public class RegisterHandler(
     IPasswordHasherService passwordHasherService,
     IEmailConfirmationTokenService emailConfirmationTokenService,
     IEmailSender emailSender,
+    IMessagePublisher messagePublisher,
     IConfiguration configuration)
     : IRequestHandler<RegisterCommand, UserModel>
 {
@@ -44,7 +46,7 @@ public class RegisterHandler(
                 ConfigurationErrorType.MissingSeedData,
                 string.Format(ExceptionMessages.MissingSeedData, command.RoleId));
         }
-
+        
         var entity = mapper.Map<User>(command);
         entity.Id = Guid.NewGuid();
 
@@ -55,6 +57,8 @@ public class RegisterHandler(
         };
         entity.UserRoles = [userRole];
         entity.InvitedById = currentUser.Id;
+        entity.OrganizationId = command.OrganizationId;
+        
 
         var rndPassword = passwordService.GenerateRandomPassword();
         entity.PasswordHash = passwordHasherService.Hash(rndPassword);
@@ -74,6 +78,20 @@ public class RegisterHandler(
                 Link = link,
                 DeadlineOfToken = emailConfirmationTokenResult.ExpiresInHours
             }, cancellationToken);
+        
+        var @event = new UserCreatedEvent(
+            entity.Id,
+            entity.Email,
+            entity.Name,
+            entity.Surname,
+            role.UserType,
+            entity.OrganizationId);
+        
+        await messagePublisher.PublishAsync(
+            MessagingConstants.Exchanges.UserEvents,
+            MessagingConstants.RoutingKeys.UserCreated,
+            @event,
+            cancellationToken);
 
         return mapper.Map<UserModel>(entity);
     }

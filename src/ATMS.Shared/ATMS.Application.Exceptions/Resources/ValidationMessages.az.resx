@@ -51,4 +51,7 @@
     <data name="TitleShouldBeLessThan" xml:space="preserve">
         <value>Başlıq {0} simvoldan çox olmamalıdır.</value>
     </data>
+    <data name="IdRequired" xml:space="preserve">
+        <value>Identifikator tələb olunur.</value>
+    </data>
 </root>

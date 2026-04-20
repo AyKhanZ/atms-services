@@ -17,16 +17,13 @@ public class RoleValidator : AbstractValidator<RoleCommand>
         _permissionRepository = permissionRepository;
         
         RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
-            .NotEmpty()
-            .WithMessage(ValidationMessages.NameRequired)
-            .MaximumLength(30)
-            .WithMessage(_ => string.Format(ValidationMessages.NameShouldBeLessThan, 30))
-            .MustAsync(CheckRoleExistAsync)
-            .WithMessage(RoleMessages.AlreadyExists);
+            .NotEmpty().WithMessage(ValidationMessages.NameRequired)
+            .MaximumLength(30).WithMessage(_ => string.Format(ValidationMessages.NameShouldBeLessThan, 30))
+            .MustAsync(CheckRoleExistAsync).WithMessage(RoleMessages.AlreadyExists);
 
         RuleFor(x => x.Description)
-            .MaximumLength(100)
-            .WithMessage(x => string.Format(ValidationMessages.DescriptionShouldBeLessThan, 100));
+            .MaximumLength(200)
+            .WithMessage(x => string.Format(ValidationMessages.DescriptionShouldBeLessThan, 200));
         
         RuleFor(x => x.PermissionIds).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(RoleMessages.PermissionsRequired)

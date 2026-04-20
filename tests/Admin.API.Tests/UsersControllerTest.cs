@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.API.Controllers.v1;
+using ATMS.Admin.Contracts.Commands.Users;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using MediatR;
@@ -7,15 +8,13 @@ using Moq;
 
 namespace Admin.API.Tests;
 
-public class UsersControllerTest
+public class UsersControllerTest : BaseControllerTest
 {
-    private readonly Mock<IMediator> _mediatorMock;
     private readonly UsersController _controller;
 
     public UsersControllerTest()
     {
-        _mediatorMock = new Mock<IMediator>();
-        _controller = new UsersController(_mediatorMock.Object);
+        _controller = new UsersController(MediatorMock.Object);
     }
     
     [Fact]
@@ -30,7 +29,7 @@ public class UsersControllerTest
             new UserListItemModel { Id = Guid.NewGuid(), Name = "User test4" },
         };
         
-        _mediatorMock
+        MediatorMock
             .Setup(m => m.Send(It.IsAny<GetUsersRequest>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(users);
@@ -57,7 +56,7 @@ public class UsersControllerTest
             new UserModel { Id = Guid.NewGuid(), Name = "User test4" },
         };
         
-        _mediatorMock
+        MediatorMock
             .Setup(m => m.Send(It.IsAny<GetUserRequest>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(users[0]);
@@ -68,5 +67,27 @@ public class UsersControllerTest
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(users[0], okResult.Value);
+    }
+    
+    [Fact]
+    public async Task UpdateUserStatus_ReturnsNoContent()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var command = new UpdateUserStatusCommand { Id = userId, UserStatusId = 1 };
+
+        MediatorMock
+            .Setup(m => m.Send(It.IsAny<UpdateUserStatusCommand>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _controller.UpdateUserStatus(userId, command, CancellationToken.None);
+
+        // Assert
+        Assert.IsType<NoContentResult>(result);
+        MediatorMock.Verify(m => m.Send(
+            It.Is<UpdateUserStatusCommand>(c => c.Id == userId),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 }

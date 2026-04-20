@@ -13,7 +13,7 @@ public class GetMeHandlerTest : BaseHandlerTest
  
     public GetMeHandlerTest()
     {
-        _handler = new GetMeHandler(UserRepositoryMock.Object, СurrentUserMock.Object, MapperMock.Object);
+        _handler = new GetMeHandler(UserRepositoryMock.Object, CurrentUserMock.Object, MapperMock.Object);
     }
     
     [Fact]
@@ -26,7 +26,7 @@ public class GetMeHandlerTest : BaseHandlerTest
         var user = new User { Id = userId };
         var expected = new MeModel();
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
 
@@ -53,7 +53,7 @@ public class GetMeHandlerTest : BaseHandlerTest
         var request = new GetMeRequest();
         var userId = Guid.NewGuid();
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
 
@@ -77,7 +77,7 @@ public class GetMeHandlerTest : BaseHandlerTest
         var request = new GetMeRequest();
         var userId = Guid.NewGuid();
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
 
@@ -109,7 +109,7 @@ public class GetMeHandlerTest : BaseHandlerTest
 
         var user = new User { Id = userId };
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
 

@@ -27,24 +27,24 @@ services:
     volumes:
       - atms.project.db.data:/var/lib/postgresql/data
     restart: unless-stopped
+    
+  atms.rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: atms.rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: p@ssw0rd!
+      RABBITMQ_DEFAULT_VHOST: atms
+    ports:
+      - "5672:5672"    # AMQP protocol (для микросервисов)
+      - "15672:15672"  # Management UI (http://localhost:15672)
+    volumes:
+      - atms.rabbitmq.data:/var/lib/rabbitmq
+    restart: unless-stopped
 
-
-#  atms.mongo.db:
-#    image: mongo:7
-#    container_name: atms.mongo.db
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: admin
-#      MONGO_INITDB_ROOT_PASSWORD: p@ssw0rd!
-#      MONGO_INITDB_DATABASE: atms_admin
-#    ports:
-#      - "27017:27017"
-#    volumes:
-#      - atms.mongo.db.data:/var/lib/mongo/data
-#      # - atms.mongo.db.data:/data/db      # ← исправлен путь!CLAude
-#    restart: unless-stopped
 
 
 volumes:
   atms.admin.db.data:
   atms.project.db.data:
-  atms.mongo.db.data:
+  atms.rabbitmq.data:

@@ -78,6 +78,15 @@ namespace ATMS.Application.Exceptions.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Identifikator tələb olunur..
+        /// </summary>
+        public static string IdRequired {
+            get {
+                return ResourceManager.GetString("IdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Düzgün e-poçt daxil edin (məsələn: user@example.com)..
         /// </summary>
         public static string InvalidEmailFormat {

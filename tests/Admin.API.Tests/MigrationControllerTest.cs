@@ -1,21 +1,18 @@
 ﻿using ATMS.Admin.API.Controllers.v1;
 using ATMS.Admin.Contracts.Commands.Migration;
 using ATMS.Admin.Contracts.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace Admin.API.Tests;
 
-public class MigrationControllerTest
+public class MigrationControllerTest : BaseControllerTest
 {
-    private readonly Mock<IMediator> _mediatorMock;
     private readonly MigrationController _controller;
 
     public MigrationControllerTest()
     {
-        _mediatorMock = new Mock<IMediator>();
-        _controller = new MigrationController(_mediatorMock.Object);
+        _controller = new MigrationController(MediatorMock.Object);
     }
     
     [Fact]
@@ -25,7 +22,7 @@ public class MigrationControllerTest
         var command = new ApplyMigrationsCommand();
         var expected = new MigrationModel();
 
-        _mediatorMock
+        MediatorMock
             .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
@@ -36,7 +33,7 @@ public class MigrationControllerTest
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expected, okResult.Value);
 
-        _mediatorMock.Verify(
+        MediatorMock.Verify(
             m => m.Send(command, It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -48,7 +45,7 @@ public class MigrationControllerTest
         var command = new DownMigrationCommand();
         var expected = new MigrationModel();
 
-        _mediatorMock
+        MediatorMock
             .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
@@ -59,7 +56,7 @@ public class MigrationControllerTest
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expected, okResult.Value);
 
-        _mediatorMock.Verify(
+        MediatorMock.Verify(
             m => m.Send(command, It.IsAny<CancellationToken>()),
             Times.Once);
     }

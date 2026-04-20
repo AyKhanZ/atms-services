@@ -58,4 +58,8 @@
     <data name="DescriptionShouldBeLessThan" xml:space="preserve">
         <value>Description must me less than {0} symbols.</value>
     </data>
+    
+    <data name="IdRequired" xml:space="preserve">
+        <value>ID is required.</value>
+    </data>
 </root>

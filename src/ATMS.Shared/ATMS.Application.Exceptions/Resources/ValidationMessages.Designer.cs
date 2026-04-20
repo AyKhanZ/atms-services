@@ -78,6 +78,15 @@ namespace ATMS.Application.Exceptions.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ID is required..
+        /// </summary>
+        public static string IdRequired {
+            get {
+                return ResourceManager.GetString("IdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter a valid email (e.g. user@example.com)..
         /// </summary>
         public static string InvalidEmailFormat {

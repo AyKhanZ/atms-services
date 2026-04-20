@@ -1,4 +1,5 @@
 using ATMS.Admin.Service.Infrastructure.Interfaces;
+using ATMS.Messaging.Infrastructure;
 
 namespace ATMS.Admin.API.Extensions;
 
@@ -9,5 +10,12 @@ public static class ApplicationExtensions
         using var scope = app.Services.CreateScope();
         var initializer = scope.ServiceProvider.GetRequiredService<IDataInitializer>();
         await initializer.InitializeAsync();
+    }
+    
+    public static async Task InitializeEventBusAsync(this IHost app)
+    {
+        var messagingConstantsInitializer = app.Services
+            .GetRequiredService<MessagingConstantsInitializer>();
+        await messagingConstantsInitializer.InitializeAsync();
     }
 }

@@ -11,6 +11,7 @@ public static class ProjectServicesModule
     public static IServiceCollection AddProjectServices(
         this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddMessageServices(configuration);
         services.AddCurrentUser();
         services.AddValidationServices();
         services.AddProjectData(configuration);

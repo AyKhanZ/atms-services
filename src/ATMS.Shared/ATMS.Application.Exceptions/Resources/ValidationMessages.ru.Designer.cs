@@ -78,6 +78,15 @@ namespace ATMS.Application.Exceptions.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Идентификатор обязателен..
+        /// </summary>
+        public static string IdRequired {
+            get {
+                return ResourceManager.GetString("IdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Введите корректный email (например: user@example.com)..
         /// </summary>
         public static string InvalidEmailFormat {

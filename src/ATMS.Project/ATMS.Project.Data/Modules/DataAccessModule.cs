@@ -23,6 +23,8 @@ public static class DataAccessModule
 
         services.AddScoped<IDictionariesRepository, DictionariesRepository>();
         
+        services.AddScoped<IUserRepository, UserRepository>();
+        
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
         
         return services;

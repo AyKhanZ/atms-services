@@ -8,6 +8,10 @@ public class Role : BaseEntity
     
     public string Description { get; set; }
     
+    public bool IsSystem { get; set; }
+    
+    public int UserType { get; set; }
+    
     
     public List<UserRole> UserRoles { get; set; } = [];
     
