@@ -85,6 +85,7 @@ public class RegisterHandler(
             entity.Name,
             entity.Surname,
             role.UserType,
+            entity.AvatarPath,
             entity.OrganizationId);
         
         await messagePublisher.PublishAsync(

@@ -20,13 +20,16 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.Email)
             .IsRequired();
         
-        
         builder.Property(e => e.AvatarPath)
             .HasDefaultValue(DefaultValues.UserAvatar);
         
         builder.Property(e => e.Language)
             .HasDefaultValue(DefaultValues.Language);
 
+        
+        builder.Property(u => u.IsAdmin)
+            .HasDefaultValue(false)
+            .IsRequired();
         
         builder.Property(u => u.MaritalStatusId)
             .HasDefaultValue((int)MaritalStatusEnum.NotSpecified)

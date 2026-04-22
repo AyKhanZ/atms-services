@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Data.Criterias;
 
 namespace ATMS.Admin.Data.Repositories;
 
@@ -15,12 +16,37 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<PagedResult<User>> GetAsync(
+        ACriteria<User> filterCriteria,
+        PaginationCriteria<User> pagination,
+        CancellationToken cancellationToken)
+    {
+        var query = context.Users
+            .Include(u => u.UserStatus).ThenInclude(s => s.Translations)
+            .AsNoTracking()
+            .AsSplitQuery();
+        
+        query = filterCriteria.Apply(query);
+        
+        var totalCount = await query.CountAsync(cancellationToken);
+        
+        var users = await pagination.Apply(query).ToListAsync(cancellationToken);
+        
+        return new PagedResult<User>
+        {
+            Items      = users.ToArray(),
+            TotalCount = totalCount,
+            Page       = pagination.Page,
+            PageSize   = pagination.PageSize
+        };
+    }
+
     public Task<User?> FindAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken)
     {
         return context.Users
             .FirstOrDefaultAsync(predicate, cancellationToken);
     }
-    
+
     public Task<User?> GetMeAsync(Guid id, CancellationToken cancellationToken)
     {
         return context.Users
@@ -70,14 +96,8 @@ public class UserRepository(AdminDbContext context) : IUserRepository
     }
 
     public Task<bool> IsExistAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken)
-    {
-        return context.Users
-            .AsNoTracking()
-            .AnyAsync(predicate, cancellationToken);
-    }
+        => context.Users.AnyAsync(predicate, cancellationToken);
 
-    public Task SaveAsync(CancellationToken cancellationToken)
-    {
-        return context.SaveChangesAsync(cancellationToken);
-    }
+
+    public Task SaveAsync(CancellationToken cancellationToken) => context.SaveChangesAsync(cancellationToken);
 }

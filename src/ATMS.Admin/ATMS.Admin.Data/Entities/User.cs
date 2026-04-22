@@ -36,6 +36,8 @@ public class User : UserBase
     
     public Guid? OrganizationId { get; set; }
     
+    public bool IsAdmin { get; set; }
+    
     public Guid? InvitedById { get; set; }
     
     public User? InvitedBy { get; set; }

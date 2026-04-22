@@ -44,6 +44,8 @@ public sealed class DataInitializer(
             Id = Guid.NewGuid(),
             Name = _adminOptions.RoleName,
             Description = "Super administrator with all permissions",
+            IsSystem = true,
+            IsAdmin = true,
             RolePermissions = permissionIds.Select(id => new RolePermission
             {
                 PermissionId = id

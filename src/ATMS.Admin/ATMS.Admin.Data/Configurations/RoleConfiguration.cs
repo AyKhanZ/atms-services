@@ -27,6 +27,10 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         
         builder.Property(e => e.IsSystem)
             .IsRequired();
+        
+        builder.Property(e => e.IsAdmin)
+            .HasDefaultValue(false)
+            .IsRequired();
 
         builder.HasData(
             new

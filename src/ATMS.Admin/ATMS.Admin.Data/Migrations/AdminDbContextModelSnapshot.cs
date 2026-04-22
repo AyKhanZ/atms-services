@@ -915,9 +915,13 @@ namespace ATMS.Admin.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsAdmin")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<bool>("IsSystem")
                         .HasColumnType("boolean");
@@ -1172,6 +1176,11 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<Guid?>("InvitedById")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("IsAdmin")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Language")
                         .IsRequired()

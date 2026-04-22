@@ -6,4 +6,5 @@ public sealed record UserCreatedEvent(
     string Name,
     string Surname,
     int UserType,
+    string AvatarPath,
     Guid? OrganizationId);

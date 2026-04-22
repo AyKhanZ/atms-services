@@ -33,6 +33,7 @@ public sealed class UserCreatedConsumer(
             Name = message.Name,
             Surname = message.Surname,
             UserType = message.UserType,
+            AvatarPath = message.AvatarPath,
             OrganizationId = message.OrganizationId
         };
 
