@@ -35,6 +35,19 @@ public class UpdateRoleValidatorTest
             .ReturnsAsync([1, 2, 3]);
     }
     
+    [Fact]
+    public async Task Validate_WhenIdIsEmpty_ReturnsFailure()
+    {
+        var command = GetCommand();
+        command.Id = Guid.Empty;
+    
+        var result = await _validator.ValidateAsync(command);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors,
+            e => e.ErrorMessage == ValidationMessages.IdRequired);
+    }
+    
     private UpdateRoleCommand GetCommand(string? name = null, string? desc = null, int[]? permissionIds = null)
     {
         return new UpdateRoleCommand {
@@ -94,12 +107,12 @@ public class UpdateRoleValidatorTest
     [Fact]
     public async Task Validate_WhenDescriptionTooLong_ReturnsFailure()
     {
-        var command = GetCommand(desc: new string('a', 101));
+        var command = GetCommand(desc: new string('a', 201));
         var result = await _validator.ValidateAsync(command);
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors,
-            e => e.ErrorMessage == string.Format(ValidationMessages.DescriptionShouldBeLessThan, 100));
+            e => e.ErrorMessage == string.Format(ValidationMessages.DescriptionShouldBeLessThan, 200));
     }
 
     [Fact]

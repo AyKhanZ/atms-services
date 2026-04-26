@@ -1,0 +1,11 @@
+﻿namespace ATMS.Data.Enums;
+
+public enum WorkTicketStatusEnum
+{
+    New = 1,
+    InProgress,
+    InReview,
+    Testing,
+    Closed,
+    Rejected
+}

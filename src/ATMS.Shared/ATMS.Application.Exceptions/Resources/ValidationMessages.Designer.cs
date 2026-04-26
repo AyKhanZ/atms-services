@@ -78,6 +78,15 @@ namespace ATMS.Application.Exceptions.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ID is required..
+        /// </summary>
+        public static string IdRequired {
+            get {
+                return ResourceManager.GetString("IdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter a valid email (e.g. user@example.com)..
         /// </summary>
         public static string InvalidEmailFormat {
@@ -110,6 +119,33 @@ namespace ATMS.Application.Exceptions.Resources {
         public static string RoleIdRequired {
             get {
                 return ResourceManager.GetString("RoleIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title already exists ..
+        /// </summary>
+        public static string TitleAlreadyExists {
+            get {
+                return ResourceManager.GetString("TitleAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title is required..
+        /// </summary>
+        public static string TitleRequired {
+            get {
+                return ResourceManager.GetString("TitleRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title must me less than {0} symbols..
+        /// </summary>
+        public static string TitleShouldBeLessThan {
+            get {
+                return ResourceManager.GetString("TitleShouldBeLessThan", resourceCulture);
             }
         }
     }

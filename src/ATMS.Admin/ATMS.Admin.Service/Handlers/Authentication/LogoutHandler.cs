@@ -3,12 +3,14 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Interfaces;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Authentication;
 
 public class LogoutHandler(
     IUserRepository userRepository,
+    ICurrentUser currentUser,
     IBlackListService blackListService) : IRequestHandler<LogoutCommand>
 {
     public async Task Handle(LogoutCommand command, CancellationToken cancellationToken)
@@ -18,7 +20,7 @@ public class LogoutHandler(
             throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
         }
         
-        var user = await userRepository.FindAsync(u => u.Id == command.UserId, cancellationToken);
+        var user = await userRepository.FindAsync(u => u.Id == currentUser.Id, cancellationToken);
         if (user?.RefreshToken is null || user.RefreshTokenExpiresAt is null)
         {
             throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);

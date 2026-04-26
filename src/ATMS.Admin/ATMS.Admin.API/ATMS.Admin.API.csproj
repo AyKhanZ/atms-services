@@ -14,9 +14,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\docker\ATMS.Aspire.ServiceDefaults\ATMS.Aspire.ServiceDefaults.csproj" />
-      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
-      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Exceptions\ATMS.Application.Exceptions.csproj" />
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Swagger\ATMS.Swagger.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
       <ProjectReference Include="..\ATMS.Admin.Service\ATMS.Admin.Service.csproj" />
     </ItemGroup>
 

@@ -14,7 +14,7 @@ public class GetCurrentPermissionsHandlerTest : BaseHandlerTest
 
     public GetCurrentPermissionsHandlerTest()
     {
-        _handler = new GetCurrentPermissionsHandler(UserRepositoryMock.Object, СurrentUserMock.Object);
+        _handler = new GetCurrentPermissionsHandler(UserRepositoryMock.Object, CurrentUserMock.Object);
     }
  
     [Fact]
@@ -24,7 +24,7 @@ public class GetCurrentPermissionsHandlerTest : BaseHandlerTest
         var request = new GetCurrentPermissionsRequest();
         var userId = Guid.NewGuid();
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
         var permissions = new List<Permission>
@@ -73,7 +73,7 @@ public class GetCurrentPermissionsHandlerTest : BaseHandlerTest
         var request = new GetCurrentPermissionsRequest();
         var userId = Guid.NewGuid();
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
 
@@ -105,7 +105,7 @@ public class GetCurrentPermissionsHandlerTest : BaseHandlerTest
         var request = new GetCurrentPermissionsRequest();
         var userId = Guid.NewGuid();
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
 

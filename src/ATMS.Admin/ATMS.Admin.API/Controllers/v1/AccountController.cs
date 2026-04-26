@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ATMS.Admin.API.Controllers.v1;
 
 [Route("api/v1/account")]
-public class AccountController(IMediator mediator, IConfiguration configuration) : AdminControllerBase
+public class AccountController(IMediator mediator, IConfiguration configuration) : ControllerBase
 {
 
     private readonly RedirectUrlOptions _redirectUrlOptions =

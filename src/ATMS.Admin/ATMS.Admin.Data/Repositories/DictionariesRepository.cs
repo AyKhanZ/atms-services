@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using ATMS.Admin.Data.DbContexts;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -7,14 +8,6 @@ namespace ATMS.Admin.Data.Repositories;
 
 public class DictionariesRepository(AdminDbContext context) : IDictionariesRepository
 {
-    public Task<List<UserType>> GetUserTypesAsync(CancellationToken cancellationToken = default)
-    {
-        return context.UserTypes
-            .Include(p => p.Translations)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
-
     public Task<List<Gender>> GetGendersAsync(CancellationToken cancellationToken = default)
     {
         return context.Genders
@@ -37,5 +30,26 @@ public class DictionariesRepository(AdminDbContext context) : IDictionariesRepos
             .Include(p => p.Translations)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+    }
+
+    public Task<bool> IsUserStatusExistAsync(
+        Expression<Func<UserStatus, bool>> predicate,
+        CancellationToken cancellationToken = default)
+    {
+        return context.UserStatuses.AnyAsync(predicate, cancellationToken);
+    }
+
+    public Task<bool> IsMaritalStatusExistAsync(
+        Expression<Func<MaritalStatus, bool>> predicate,
+        CancellationToken cancellationToken = default)
+    {
+        return context.MaritalStatuses.AnyAsync(predicate, cancellationToken);
+    }
+
+    public Task<bool> IsGenderExistAsync(
+        Expression<Func<Gender, bool>> predicate,
+        CancellationToken cancellationToken = default)
+    {
+        return context.Genders.AnyAsync(predicate, cancellationToken);
     }
 }

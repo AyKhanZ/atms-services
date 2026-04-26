@@ -10,7 +10,7 @@ namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/roles")]
-public class RolesController(IMediator mediator) : AdminControllerBase
+public class RolesController(IMediator mediator) : ControllerBase
 {
     
     /// <summary>
@@ -68,38 +68,38 @@ public class RolesController(IMediator mediator) : AdminControllerBase
     }
 
     
-    /// <summary>
-    /// Creates a new role.
-    /// </summary>
-    /// <remarks>
-    /// Adds a new role to the system with the specified details.
-    /// Returns the created role and a route to retrieve it.
-    /// </remarks>
-    /// <param name="command">Command containing role details.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="201">Role successfully created.</response>
-    /// <response code="400">Validation error, e.g., missing fields or invalid data.</response>
-    /// <response code="401">Unauthorized, user is not authenticated.</response>
-    /// <response code="403">Resource forbidden.</response>
-    /// <response code="500">Unexpected server error.</response>
-    [HttpPost]
-    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create(
-        [FromBody] CreateRoleCommand command,
-        CancellationToken cancellationToken)
-    {
-        var id = await mediator.Send(command, cancellationToken);
-
-        return CreatedAtAction(
-            actionName: nameof(Get),
-            controllerName: "Roles",
-            routeValues: new { id },
-            value: id);
-    }
+    // /// <summary>
+    // /// Creates a new role.
+    // /// </summary>
+    // /// <remarks>
+    // /// Adds a new role to the system with the specified details.
+    // /// Returns the created role and a route to retrieve it.
+    // /// </remarks>
+    // /// <param name="command">Command containing role details.</param>
+    // /// <param name="cancellationToken">Cancellation token.</param>
+    // /// <response code="201">Role successfully created.</response>
+    // /// <response code="400">Validation error, e.g., missing fields or invalid data.</response>
+    // /// <response code="401">Unauthorized, user is not authenticated.</response>
+    // /// <response code="403">Resource forbidden.</response>
+    // /// <response code="500">Unexpected server error.</response>
+    // [HttpPost]
+    // [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+    // [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    // [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    // [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    // [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    // public async Task<IActionResult> Create(
+    //     [FromBody] CreateRoleCommand command,
+    //     CancellationToken cancellationToken)
+    // {
+    //     var id = await mediator.Send(command, cancellationToken);
+    //
+    //     return CreatedAtAction(
+    //         actionName: nameof(Get),
+    //         controllerName: "Roles",
+    //         routeValues: new { id },
+    //         value: id);
+    // }
 
 
     /// <summary>
@@ -131,36 +131,36 @@ public class RolesController(IMediator mediator) : AdminControllerBase
 
         return NoContent();
     }
-
-
-    /// <summary>
-    /// Deletes an existing role.
-    /// </summary>
-    /// <remarks>
-    /// Removes a role from the system by ID. 
-    /// Use with caution, as deleting a role may affect user permissions.
-    /// </remarks>
-    /// <param name="id">Role ID to delete.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="204">Role successfully deleted.</response>
-    /// <response code="400">Validation error.</response>
-    /// <response code="401">Unauthorized, user is not authenticated.</response>
-    /// <response code="403">Resource forbidden.</response>
-    /// <response code="404">Role with specified ID not found.</response>
-    /// <response code="500">Unexpected server error.</response>
-    [HttpDelete("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Delete(
-        Guid id,
-        CancellationToken cancellationToken)
-    {
-        await mediator.Send(new DeleteRoleCommand{ Id = id }, cancellationToken);
-
-        return NoContent();
-    }
+    
+    
+    // /// <summary>
+    // /// Deletes an existing role.
+    // /// </summary>
+    // /// <remarks>
+    // /// Removes a role from the system by ID. 
+    // /// Use with caution, as deleting a role may affect user permissions.
+    // /// </remarks>
+    // /// <param name="id">Role ID to delete.</param>
+    // /// <param name="cancellationToken">Cancellation token.</param>
+    // /// <response code="204">Role successfully deleted.</response>
+    // /// <response code="400">Validation error.</response>
+    // /// <response code="401">Unauthorized, user is not authenticated.</response>
+    // /// <response code="403">Resource forbidden.</response>
+    // /// <response code="404">Role with specified ID not found.</response>
+    // /// <response code="500">Unexpected server error.</response>
+    // [HttpDelete("{id:guid}")]
+    // [ProducesResponseType(StatusCodes.Status204NoContent)]
+    // [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    // [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    // [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    // [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    // [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    // public async Task<IActionResult> Delete(
+    //     Guid id,
+    //     CancellationToken cancellationToken)
+    // {
+    //     await mediator.Send(new DeleteRoleCommand{ Id = id }, cancellationToken);
+    //
+    //     return NoContent();
+    // }
 }

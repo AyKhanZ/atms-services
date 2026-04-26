@@ -132,6 +132,24 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Organization does not exist ..
+        /// </summary>
+        public static string OrganizationIdNotExist {
+            get {
+                return ResourceManager.GetString("OrganizationIdNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OrganizationId is required ..
+        /// </summary>
+        public static string OrganizationIdRequired {
+            get {
+                return ResourceManager.GetString("OrganizationIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password must include uppercase, number, special char (!@#$%^&amp;*()-_=+), no spaces ..
         /// </summary>
         public static string PasswordInvalidFormat {

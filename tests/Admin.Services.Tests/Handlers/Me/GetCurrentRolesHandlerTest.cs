@@ -14,7 +14,7 @@ public class GetCurrentRolesHandlerTest : BaseHandlerTest
  
     public GetCurrentRolesHandlerTest()
     {
-        _handler = new GetCurrentRolesHandler(UserRepositoryMock.Object, СurrentUserMock.Object, MapperMock.Object);
+        _handler = new GetCurrentRolesHandler(UserRepositoryMock.Object, CurrentUserMock.Object, MapperMock.Object);
     }
  
     [Fact]
@@ -25,7 +25,7 @@ public class GetCurrentRolesHandlerTest : BaseHandlerTest
         var expectedModels = new[] { new DictionaryModel<Guid> { Id = roles[0].Id, Name = roles[0].Name } };
         var userId = Guid.NewGuid();
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
  
@@ -72,7 +72,7 @@ public class GetCurrentRolesHandlerTest : BaseHandlerTest
         var request = new GetCurrentRolesRequest();
         var userId = Guid.NewGuid();
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
 
@@ -108,7 +108,7 @@ public class GetCurrentRolesHandlerTest : BaseHandlerTest
         var request = new GetCurrentRolesRequest();
         var userId = Guid.NewGuid();
 
-        СurrentUserMock
+        CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
 

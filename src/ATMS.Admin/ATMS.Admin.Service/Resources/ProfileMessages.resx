@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="LanguageRequired" xml:space="preserve">
+        <value>Language field is required.</value>
+    </data>
+    <data name="LanguageLength" xml:space="preserve">
+        <value>Language length must be {0} characters.</value>
+    </data>
+    <data name="FileNameRequired" xml:space="preserve">
+        <value>File name is required.</value>
+    </data>
+    <data name="FileNameMaxLength" xml:space="preserve">
+        <value>Maximum length must be {0} characters.</value>
+    </data>
+    <data name="MaritalStatusRequired" xml:space="preserve">
+        <value>Marital status field is required.</value>
+    </data>
+    <data name="MaritalStatusNotSupported" xml:space="preserve">
+        <value>The entered marital status is not exist.</value>
+    </data>
+    <data name="GenderNotSupported" xml:space="preserve">
+        <value>The entered gender does not exist.</value>
+    </data>
+    <data name="GenderRequired" xml:space="preserve">
+        <value>Gender field is required.</value>
+    </data>
+    <data name="BirthDateRequired" xml:space="preserve">
+        <value>Birth date field is required.</value>
+    </data>
+    <data name="BirthDateMinValue" xml:space="preserve">
+        <value>Birth date cannot be earlier than January 1, 1900.</value>
+    </data>
+    <data name="BirthDateMaxValue" xml:space="preserve">
+        <value>Birth date cannot be in the future.</value>
+    </data>
+    <data name="BirthDateValidValue" xml:space="preserve">
+        <value>User must be at least 18 years old.</value>
+    </data>
+    <data name="PositionRequired" xml:space="preserve">
+        <value>Position field is required.</value>
+    </data>
+    <data name="PositionMaxLength" xml:space="preserve">
+        <value>Position cannot exceed {0} characters.</value>
+    </data>
+    <data name="PhoneNumberRequired" xml:space="preserve">
+        <value>Phone number field is required.</value>
+    </data>
+    <data name="PhoneNumberValidValue" xml:space="preserve">
+        <value>Phone number is not valid. Please include the country code (e.g. +994501234567).</value>
+    </data>
+</root>

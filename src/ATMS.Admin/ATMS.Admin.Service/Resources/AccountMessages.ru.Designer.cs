@@ -21,7 +21,7 @@ namespace ATMS.Admin.Service.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class AccountMessages_ru {
+    public class AccountMessages_ru {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -35,7 +35,7 @@ namespace ATMS.Admin.Service.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ATMS.Admin.Service.Resources.AccountMessages.ru", typeof(AccountMessages_ru).Assembly);
@@ -50,7 +50,7 @@ namespace ATMS.Admin.Service.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -62,7 +62,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Подтверждение пароля обязательно..
         /// </summary>
-        internal static string ConfirmPasswordRequired {
+        public static string ConfirmPasswordRequired {
             get {
                 return ResourceManager.GetString("ConfirmPasswordRequired", resourceCulture);
             }
@@ -71,7 +71,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Email уже подтверждён..
         /// </summary>
-        internal static string EmailAlreadyConfirmed {
+        public static string EmailAlreadyConfirmed {
             get {
                 return ResourceManager.GetString("EmailAlreadyConfirmed", resourceCulture);
             }
@@ -80,7 +80,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Email обязателен..
         /// </summary>
-        internal static string EmailRequired {
+        public static string EmailRequired {
             get {
                 return ResourceManager.GetString("EmailRequired", resourceCulture);
             }
@@ -89,7 +89,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Недействительный или истёкший токен сброса пароля..
         /// </summary>
-        internal static string InvalidPasswordResetToken {
+        public static string InvalidPasswordResetToken {
             get {
                 return ResourceManager.GetString("InvalidPasswordResetToken", resourceCulture);
             }
@@ -98,7 +98,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Имя обязательно..
         /// </summary>
-        internal static string NameRequired {
+        public static string NameRequired {
             get {
                 return ResourceManager.GetString("NameRequired", resourceCulture);
             }
@@ -107,7 +107,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Имя должно содержать не более {0} символов..
         /// </summary>
-        internal static string NameShouldBeLessThan {
+        public static string NameShouldBeLessThan {
             get {
                 return ResourceManager.GetString("NameShouldBeLessThan", resourceCulture);
             }
@@ -116,7 +116,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Новый пароль обязателен..
         /// </summary>
-        internal static string NewPasswordRequired {
+        public static string NewPasswordRequired {
             get {
                 return ResourceManager.GetString("NewPasswordRequired", resourceCulture);
             }
@@ -125,16 +125,34 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Старый пароль обязателен..
         /// </summary>
-        internal static string OldPasswordRequired {
+        public static string OldPasswordRequired {
             get {
                 return ResourceManager.GetString("OldPasswordRequired", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Организация не найдена..
+        /// </summary>
+        public static string OrganizationIdNotExist {
+            get {
+                return ResourceManager.GetString("OrganizationIdNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Организация не обязательна..
+        /// </summary>
+        public static string OrganizationIdRequired {
+            get {
+                return ResourceManager.GetString("OrganizationIdRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Пароль должен содержать заглавную букву, цифру, специальный символ (!@#$%^&amp;*()-_=+) и не содержать пробелов..
         /// </summary>
-        internal static string PasswordInvalidFormat {
+        public static string PasswordInvalidFormat {
             get {
                 return ResourceManager.GetString("PasswordInvalidFormat", resourceCulture);
             }
@@ -143,7 +161,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Пароль обязателен..
         /// </summary>
-        internal static string PasswordRequired {
+        public static string PasswordRequired {
             get {
                 return ResourceManager.GetString("PasswordRequired", resourceCulture);
             }
@@ -152,7 +170,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Пароль и подтверждение пароля не совпадают..
         /// </summary>
-        internal static string PasswordsNotMatches {
+        public static string PasswordsNotMatches {
             get {
                 return ResourceManager.GetString("PasswordsNotMatches", resourceCulture);
             }
@@ -161,7 +179,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Пароль должен содержать не более {0} символов..
         /// </summary>
-        internal static string PasswordTooLong {
+        public static string PasswordTooLong {
             get {
                 return ResourceManager.GetString("PasswordTooLong", resourceCulture);
             }
@@ -170,7 +188,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Пароль должен содержать не менее {0} символов..
         /// </summary>
-        internal static string PasswordTooShort {
+        public static string PasswordTooShort {
             get {
                 return ResourceManager.GetString("PasswordTooShort", resourceCulture);
             }
@@ -179,7 +197,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Фамилия обязательна..
         /// </summary>
-        internal static string SurnameRequired {
+        public static string SurnameRequired {
             get {
                 return ResourceManager.GetString("SurnameRequired", resourceCulture);
             }
@@ -188,7 +206,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Фамилия должна содержать не более {0} символов..
         /// </summary>
-        internal static string SurnameShouldBeLessThan {
+        public static string SurnameShouldBeLessThan {
             get {
                 return ResourceManager.GetString("SurnameShouldBeLessThan", resourceCulture);
             }
@@ -197,7 +215,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Токен обязателен..
         /// </summary>
-        internal static string TokenRequired {
+        public static string TokenRequired {
             get {
                 return ResourceManager.GetString("TokenRequired", resourceCulture);
             }
@@ -206,7 +224,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Пользователь с таким email уже существует..
         /// </summary>
-        internal static string UserAlreadyExists {
+        public static string UserAlreadyExists {
             get {
                 return ResourceManager.GetString("UserAlreadyExists", resourceCulture);
             }
@@ -215,7 +233,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Пользователь не найден..
         /// </summary>
-        internal static string UserNotFound {
+        public static string UserNotFound {
             get {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
             }

@@ -13,14 +13,13 @@ public class LogoutHandlerTest : BaseHandlerTest
  
     public LogoutHandlerTest()
     {
-        _handler = new LogoutHandler(UserRepositoryMock.Object, BlackListServiceMock.Object);
+        _handler = new LogoutHandler(UserRepositoryMock.Object, CurrentUserMock.Object, BlackListServiceMock.Object);
     }
 
     private LogoutCommand CreateCommand(Guid? userId = null, string? refreshToken = null)
     {
         return new LogoutCommand
         {
-            UserId = userId ?? Guid.NewGuid(),
             RefreshToken = refreshToken ?? "valid-refresh-token"
         };
     }
@@ -31,7 +30,6 @@ public class LogoutHandlerTest : BaseHandlerTest
         var command = CreateCommand();
         var user = new User
         {
-            Id = command.UserId,
             RefreshToken = command.RefreshToken,
             RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7)
         };
@@ -56,7 +54,6 @@ public class LogoutHandlerTest : BaseHandlerTest
     {
         var command = CreateCommand();
         var user = new User {
-            Id = command.UserId,
             RefreshToken = command.RefreshToken,
             RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7)
         };
@@ -86,7 +83,6 @@ public class LogoutHandlerTest : BaseHandlerTest
         var command = CreateCommand();
         var user = new User
         {
-            Id = command.UserId,
             RefreshToken = null,
             RefreshTokenExpiresAt = null
         };

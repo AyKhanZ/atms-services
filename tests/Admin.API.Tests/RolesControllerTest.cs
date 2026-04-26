@@ -2,22 +2,19 @@
 using ATMS.Admin.Contracts.Commands.Role;
 using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Contracts.Requests.Roles;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace Admin.API.Tests;
 
-public class RolesControllerTest
+public class RolesControllerTest : BaseControllerTest
 {
-    private readonly Mock<IMediator> _mediatorMock;
     private readonly RolesController _controller;
-    
+
     public RolesControllerTest()
     {
-        _mediatorMock = new Mock<IMediator>();
-        _controller = new RolesController(_mediatorMock.Object);
+        _controller = new RolesController(MediatorMock.Object);
     }
 
     [Fact]
@@ -26,15 +23,15 @@ public class RolesControllerTest
         // Arrange
         var roles = new[]
         {
-            new RoleModel { Id = Guid.NewGuid(), Name = "Admin" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "User" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "SuperAdmin" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "Moderator" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "Manager" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "Guest" }
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = true, Name = "Admin" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = true, Name = "User" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = false, Name = "SuperAdmin" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = false, Name = "Moderator" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = false, Name = "Manager" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = false, Name = "Guest" }
         };
-        
-        _mediatorMock
+
+        MediatorMock
             .Setup(m => m.Send(It.IsAny<GetRolesRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(roles);
 
@@ -47,23 +44,24 @@ public class RolesControllerTest
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(roles, okResult.Value);
     }
-    
+
     [Fact]
     public async Task Get_ReturnsOkWithRole()
     {
         // Arrange
         var roles = new[]
         {
-            new RoleModel { Id = Guid.NewGuid(), Name = "Admin" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "User" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "SuperAdmin" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "Moderator" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "Manager" },
-            new RoleModel { Id = Guid.NewGuid(), Name = "Guest" }
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = true, Name = "Admin" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = true, Name = "User" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = false, Name = "SuperAdmin" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = false, Name = "Moderator" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = false, Name = "Manager" },
+            new RoleModel { Id = Guid.NewGuid(), UserType = 1, IsSystem = false, Name = "Guest" }
         };
-        
-        _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetRoleRequest>(), It.IsAny<CancellationToken>()))
+
+        MediatorMock
+            .Setup(m => m.Send(It.IsAny<GetRoleRequest>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(roles[0]);
 
         // Act
@@ -75,33 +73,10 @@ public class RolesControllerTest
     }
 
     [Fact]
-    public async Task Create_ReturnsCreatedAtAction()
-    {
-        var role = new RoleModel { Id = Guid.NewGuid(), Name = "NewAdmin" };
-        
-        _mediatorMock
-            .Setup(m => m.Send(
-                It.IsAny<CreateRoleCommand>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(role.Id);
-        
-        var command = new CreateRoleCommand { Name = "NewAdmin", PermissionIds = [1, 2, 3] };
-        
-        // Act
-        var result = await _controller.Create(command, CancellationToken.None);
-
-        // Assert
-        var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-        
-        Assert.Equal(nameof(RolesController.Get), createdResult.ActionName);
-        Assert.Equal(createdResult.StatusCode, StatusCodes.Status201Created);
-    }
-    
-    [Fact]
     public async Task Update_ReturnsNoContent()
     {
         // Arrange
-        _mediatorMock
+        MediatorMock
             .Setup(m => m.Send(It.IsAny<UpdateRoleCommand>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult(0));
 
@@ -109,22 +84,6 @@ public class RolesControllerTest
 
         // Act
         var result = await _controller.Update(command, CancellationToken.None);
-
-        // Assert
-        var noContentResult = Assert.IsType<NoContentResult>(result);
-        Assert.Equal(StatusCodes.Status204NoContent, noContentResult.StatusCode);
-    }
-
-    [Fact]
-    public async Task Delete_ReturnsNoContent()
-    {
-        // Arrange
-        _mediatorMock
-            .Setup(m => m.Send(It.IsAny<DeleteRoleCommand>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult(0));
-
-        // Act
-        var result = await _controller.Delete(Guid.NewGuid(), CancellationToken.None);
 
         // Assert
         var noContentResult = Assert.IsType<NoContentResult>(result);

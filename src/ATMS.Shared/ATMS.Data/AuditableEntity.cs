@@ -1,10 +1,10 @@
-﻿namespace ATMS.Data;
+﻿using ATMS.Data.Interfaces;
 
-public abstract class AuditableEntity : BaseEntity
+namespace ATMS.Data;
+
+public abstract class AuditableEntity : BaseEntity, IAuditable
 {
-    public DateTime CreatedAt { get; set; }
-    
-    public DateTime? UpdatedAt { get; set; }
-    
     public Guid CreatedById { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }

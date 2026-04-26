@@ -41,6 +41,148 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "ProjectView"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "ProjectEdit"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "ProjectDelete"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "TicketView"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = "TicketEdit"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Code = "TicketDelete"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Code = "TaskView"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Code = "TaskEdit"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Code = "TaskDelete"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Code = "CommentView"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Code = "CommentEdit"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Code = "CommentDelete"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Code = "NotificationView"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Code = "NotificationEdit"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Code = "NotificationDelete"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Code = "GroupView"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Code = "GroupEdit"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Code = "GroupDelete"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Code = "DictionaryView"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Code = "DictionaryEdit"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Code = "DictionaryDelete"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Code = "OrganizationView"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Code = "OrganizationEdit"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Code = "OrganizationDelete"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Code = "UserView"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Code = "UserEdit"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Code = "UserDelete"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Code = "UserInvite"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.PermissionTranslation", b =>
@@ -53,8 +195,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -69,7 +211,576 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("PermissionId", "Language")
                         .IsUnique();
 
-                    b.ToTable("PermissionTranslations");
+                    b.ToTable("PermissionTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "Project view",
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Просмотр проектов",
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Layihəyə baxış",
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "Project edit",
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "Редактирование проектов",
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "Layihəni redaktə et",
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "Project delete",
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Удаление проектов",
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Layihəni sil",
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Language = "en",
+                            Name = "Ticket view",
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Language = "ru",
+                            Name = "Просмотр тикетов",
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Language = "az",
+                            Name = "Tiketi baxış",
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Language = "en",
+                            Name = "Ticket edit",
+                            PermissionId = 5
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Language = "ru",
+                            Name = "Редактирование тикетов",
+                            PermissionId = 5
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Language = "az",
+                            Name = "Tiketi redaktə et",
+                            PermissionId = 5
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Language = "en",
+                            Name = "Ticket delete",
+                            PermissionId = 6
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Language = "ru",
+                            Name = "Удаление тикетов",
+                            PermissionId = 6
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Language = "az",
+                            Name = "Tiketi sil",
+                            PermissionId = 6
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Language = "en",
+                            Name = "Task view",
+                            PermissionId = 7
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Language = "ru",
+                            Name = "Просмотр задач",
+                            PermissionId = 7
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Language = "az",
+                            Name = "Tapşırığa baxış",
+                            PermissionId = 7
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Language = "en",
+                            Name = "Task edit",
+                            PermissionId = 8
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Language = "ru",
+                            Name = "Редактирование задач",
+                            PermissionId = 8
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Language = "az",
+                            Name = "Tapşırığı redaktə et",
+                            PermissionId = 8
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Language = "en",
+                            Name = "Task delete",
+                            PermissionId = 9
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Language = "ru",
+                            Name = "Удаление задач",
+                            PermissionId = 9
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Language = "az",
+                            Name = "Tapşırığı sil",
+                            PermissionId = 9
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Language = "en",
+                            Name = "Comment view",
+                            PermissionId = 10
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Language = "ru",
+                            Name = "Просмотр комментариев",
+                            PermissionId = 10
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Language = "az",
+                            Name = "Şərhə baxış",
+                            PermissionId = 10
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Language = "en",
+                            Name = "Comment edit",
+                            PermissionId = 11
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Language = "ru",
+                            Name = "Редактирование комментариев",
+                            PermissionId = 11
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Language = "az",
+                            Name = "Şərhi redaktə et",
+                            PermissionId = 11
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Language = "en",
+                            Name = "Comment delete",
+                            PermissionId = 12
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Language = "ru",
+                            Name = "Удаление комментариев",
+                            PermissionId = 12
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Language = "az",
+                            Name = "Şərhi sil",
+                            PermissionId = 12
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Language = "en",
+                            Name = "Notification view",
+                            PermissionId = 13
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Language = "ru",
+                            Name = "Просмотр уведомлений",
+                            PermissionId = 13
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Language = "az",
+                            Name = "Bildirişə baxış",
+                            PermissionId = 13
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Language = "en",
+                            Name = "Notification edit",
+                            PermissionId = 14
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Language = "ru",
+                            Name = "Редактирование уведомлений",
+                            PermissionId = 14
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Language = "az",
+                            Name = "Bildirişi redaktə et",
+                            PermissionId = 14
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Language = "en",
+                            Name = "Notification delete",
+                            PermissionId = 15
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Language = "ru",
+                            Name = "Удаление уведомлений",
+                            PermissionId = 15
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Language = "az",
+                            Name = "Bildirişi sil",
+                            PermissionId = 15
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Language = "en",
+                            Name = "Group view",
+                            PermissionId = 16
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Language = "ru",
+                            Name = "Просмотр групп",
+                            PermissionId = 16
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Language = "az",
+                            Name = "Qrupa baxış",
+                            PermissionId = 16
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Language = "en",
+                            Name = "Group edit",
+                            PermissionId = 17
+                        },
+                        new
+                        {
+                            Id = 50,
+                            Language = "ru",
+                            Name = "Редактирование групп",
+                            PermissionId = 17
+                        },
+                        new
+                        {
+                            Id = 51,
+                            Language = "az",
+                            Name = "Qrupu redaktə et",
+                            PermissionId = 17
+                        },
+                        new
+                        {
+                            Id = 52,
+                            Language = "en",
+                            Name = "Group delete",
+                            PermissionId = 18
+                        },
+                        new
+                        {
+                            Id = 53,
+                            Language = "ru",
+                            Name = "Удаление групп",
+                            PermissionId = 18
+                        },
+                        new
+                        {
+                            Id = 54,
+                            Language = "az",
+                            Name = "Qrupu sil",
+                            PermissionId = 18
+                        },
+                        new
+                        {
+                            Id = 55,
+                            Language = "en",
+                            Name = "Dictionary view",
+                            PermissionId = 19
+                        },
+                        new
+                        {
+                            Id = 56,
+                            Language = "ru",
+                            Name = "Просмотр справочников",
+                            PermissionId = 19
+                        },
+                        new
+                        {
+                            Id = 57,
+                            Language = "az",
+                            Name = "Lüğətə baxış",
+                            PermissionId = 19
+                        },
+                        new
+                        {
+                            Id = 58,
+                            Language = "en",
+                            Name = "Dictionary edit",
+                            PermissionId = 20
+                        },
+                        new
+                        {
+                            Id = 59,
+                            Language = "ru",
+                            Name = "Редактирование справочников",
+                            PermissionId = 20
+                        },
+                        new
+                        {
+                            Id = 60,
+                            Language = "az",
+                            Name = "Lüğəti redaktə et",
+                            PermissionId = 20
+                        },
+                        new
+                        {
+                            Id = 61,
+                            Language = "en",
+                            Name = "Dictionary delete",
+                            PermissionId = 21
+                        },
+                        new
+                        {
+                            Id = 62,
+                            Language = "ru",
+                            Name = "Удаление справочников",
+                            PermissionId = 21
+                        },
+                        new
+                        {
+                            Id = 63,
+                            Language = "az",
+                            Name = "Lüğəti sil",
+                            PermissionId = 21
+                        },
+                        new
+                        {
+                            Id = 64,
+                            Language = "en",
+                            Name = "Organization view",
+                            PermissionId = 22
+                        },
+                        new
+                        {
+                            Id = 65,
+                            Language = "ru",
+                            Name = "Просмотр организаций",
+                            PermissionId = 22
+                        },
+                        new
+                        {
+                            Id = 66,
+                            Language = "az",
+                            Name = "Təşkilata baxış",
+                            PermissionId = 22
+                        },
+                        new
+                        {
+                            Id = 67,
+                            Language = "en",
+                            Name = "Organization edit",
+                            PermissionId = 23
+                        },
+                        new
+                        {
+                            Id = 68,
+                            Language = "ru",
+                            Name = "Редактирование организаций",
+                            PermissionId = 23
+                        },
+                        new
+                        {
+                            Id = 69,
+                            Language = "az",
+                            Name = "Təşkilatı redaktə et",
+                            PermissionId = 23
+                        },
+                        new
+                        {
+                            Id = 70,
+                            Language = "en",
+                            Name = "Organization delete",
+                            PermissionId = 24
+                        },
+                        new
+                        {
+                            Id = 71,
+                            Language = "ru",
+                            Name = "Удаление организаций",
+                            PermissionId = 24
+                        },
+                        new
+                        {
+                            Id = 72,
+                            Language = "az",
+                            Name = "Təşkilatı sil",
+                            PermissionId = 24
+                        },
+                        new
+                        {
+                            Id = 73,
+                            Language = "en",
+                            Name = "User view",
+                            PermissionId = 25
+                        },
+                        new
+                        {
+                            Id = 74,
+                            Language = "ru",
+                            Name = "Просмотр пользователей",
+                            PermissionId = 25
+                        },
+                        new
+                        {
+                            Id = 75,
+                            Language = "az",
+                            Name = "İstifadəçiyə baxış",
+                            PermissionId = 25
+                        },
+                        new
+                        {
+                            Id = 76,
+                            Language = "en",
+                            Name = "User edit",
+                            PermissionId = 26
+                        },
+                        new
+                        {
+                            Id = 77,
+                            Language = "ru",
+                            Name = "Редактирование польз.",
+                            PermissionId = 26
+                        },
+                        new
+                        {
+                            Id = 78,
+                            Language = "az",
+                            Name = "İstifadəçini redaktə",
+                            PermissionId = 26
+                        },
+                        new
+                        {
+                            Id = 79,
+                            Language = "en",
+                            Name = "User delete",
+                            PermissionId = 27
+                        },
+                        new
+                        {
+                            Id = 80,
+                            Language = "ru",
+                            Name = "Удаление пользователей",
+                            PermissionId = 27
+                        },
+                        new
+                        {
+                            Id = 81,
+                            Language = "az",
+                            Name = "İstifadəçини sil",
+                            PermissionId = 27
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.ProjectKind", b =>
@@ -91,6 +802,28 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("ProjectKinds");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "Support"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "External"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "Internal"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "OneTime"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.ProjectKindTranslation", b =>
@@ -103,8 +836,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -119,7 +852,93 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("ProjectKindId", "Language")
                         .IsUnique();
 
-                    b.ToTable("ProjectKindTranslations");
+                    b.ToTable("ProjectKindTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "Support",
+                            ProjectKindId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Поддержка",
+                            ProjectKindId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Dəstək",
+                            ProjectKindId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "External",
+                            ProjectKindId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "Внешний",
+                            ProjectKindId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "Xarici",
+                            ProjectKindId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "Internal",
+                            ProjectKindId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Внутренний",
+                            ProjectKindId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Daxili",
+                            ProjectKindId = 3
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Language = "en",
+                            Name = "One Time",
+                            ProjectKindId = 4
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Language = "ru",
+                            Name = "Разовый",
+                            ProjectKindId = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Language = "az",
+                            Name = "Birdəfəlik",
+                            ProjectKindId = 4
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.ProjectStatus", b =>
@@ -141,6 +960,28 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("ProjectStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "Draft"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "Active"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "OnReview"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "Closed"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.ProjectStatusTranslation", b =>
@@ -153,8 +994,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -169,7 +1010,93 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("ProjectStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("ProjectStatusTranslations");
+                    b.ToTable("ProjectStatusTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "Draft",
+                            ProjectStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Черновик",
+                            ProjectStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Qaralama",
+                            ProjectStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "Active",
+                            ProjectStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "Активный",
+                            ProjectStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "Aktiv",
+                            ProjectStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "In Review",
+                            ProjectStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "На проверке",
+                            ProjectStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Yoxlamada",
+                            ProjectStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Language = "en",
+                            Name = "Closed",
+                            ProjectStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Language = "ru",
+                            Name = "Закрыт",
+                            ProjectStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Language = "az",
+                            Name = "Bağlanıb",
+                            ProjectStatusId = 4
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.ProjectType", b =>
@@ -191,6 +1118,23 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("ProjectTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "Standard"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "Optimal"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "Premium"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.ProjectTypeTranslation", b =>
@@ -203,8 +1147,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -219,7 +1163,72 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("ProjectTypeId", "Language")
                         .IsUnique();
 
-                    b.ToTable("ProjectTypeTranslations");
+                    b.ToTable("ProjectTypeTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "Standard",
+                            ProjectTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Стандартный",
+                            ProjectTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Standart",
+                            ProjectTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "Optimal",
+                            ProjectTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "Оптимальный",
+                            ProjectTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "Optimal",
+                            ProjectTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "Premium",
+                            ProjectTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Премиум",
+                            ProjectTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Premium",
+                            ProjectTypeId = 3
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkGroupStatus", b =>
@@ -241,6 +1250,23 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("WorkGroupStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "Planned"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "Active"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "Done"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkGroupStatusTranslation", b =>
@@ -253,8 +1279,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -269,7 +1295,72 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkGroupStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkGroupStatusTranslations");
+                    b.ToTable("WorkGroupStatusTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "Planned",
+                            WorkGroupStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Запланировано",
+                            WorkGroupStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Planlaşdırılıb",
+                            WorkGroupStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "Active",
+                            WorkGroupStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "Активный",
+                            WorkGroupStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "Aktiv",
+                            WorkGroupStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "Done",
+                            WorkGroupStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Завершено",
+                            WorkGroupStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Bitdi",
+                            WorkGroupStatusId = 3
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkItemPriority", b =>
@@ -291,6 +1382,23 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("WorkItemPriorities");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "Low"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "Medium"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "High"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkItemPriorityTranslation", b =>
@@ -303,8 +1411,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -319,7 +1427,72 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkItemPriorityId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkItemPriorityTranslations");
+                    b.ToTable("WorkItemPriorityTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "Low",
+                            WorkItemPriorityId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Низкий",
+                            WorkItemPriorityId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Aşağı",
+                            WorkItemPriorityId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "Medium",
+                            WorkItemPriorityId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "Средний",
+                            WorkItemPriorityId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "Orta",
+                            WorkItemPriorityId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "High",
+                            WorkItemPriorityId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Высокий",
+                            WorkItemPriorityId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Yüksək",
+                            WorkItemPriorityId = 3
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkTaskStatus", b =>
@@ -341,6 +1514,23 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("WorkTaskStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "New"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "InProgress"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "Done"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkTaskStatusTranslation", b =>
@@ -353,8 +1543,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -369,7 +1559,72 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkTaskStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkTaskStatusTranslations");
+                    b.ToTable("WorkTaskStatusTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "New",
+                            WorkTaskStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Новый",
+                            WorkTaskStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Yeni",
+                            WorkTaskStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "In Progress",
+                            WorkTaskStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "В работе",
+                            WorkTaskStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "İşdə",
+                            WorkTaskStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "Done",
+                            WorkTaskStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Выполнено",
+                            WorkTaskStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Hazır",
+                            WorkTaskStatusId = 3
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkTicketStatus", b =>
@@ -391,6 +1646,38 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("WorkTicketStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "New"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "InProgress"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "InReview"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "Testing"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = "Closed"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Code = "Rejected"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkTicketStatusTranslation", b =>
@@ -403,8 +1690,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -419,7 +1706,135 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkTicketStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkTicketStatusTranslations");
+                    b.ToTable("WorkTicketStatusTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "New",
+                            WorkTicketStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Новый",
+                            WorkTicketStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Yeni",
+                            WorkTicketStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "In Progress",
+                            WorkTicketStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "В работе",
+                            WorkTicketStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "İşdə",
+                            WorkTicketStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "In Review",
+                            WorkTicketStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "На проверке",
+                            WorkTicketStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Yoxlamada",
+                            WorkTicketStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Language = "en",
+                            Name = "Testing",
+                            WorkTicketStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Language = "ru",
+                            Name = "Тестирование",
+                            WorkTicketStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Language = "az",
+                            Name = "Test mərhələsində",
+                            WorkTicketStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Language = "en",
+                            Name = "Closed",
+                            WorkTicketStatusId = 5
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Language = "ru",
+                            Name = "Закрыт",
+                            WorkTicketStatusId = 5
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Language = "az",
+                            Name = "Bağlandı",
+                            WorkTicketStatusId = 5
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Language = "en",
+                            Name = "Rejected",
+                            WorkTicketStatusId = 6
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Language = "ru",
+                            Name = "Отклонён",
+                            WorkTicketStatusId = 6
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Language = "az",
+                            Name = "Rədd edildi",
+                            WorkTicketStatusId = 6
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkTicketType", b =>
@@ -441,6 +1856,23 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("WorkTicketTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "Bug"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "Feature"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "Task"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkTicketTypeTranslation", b =>
@@ -453,8 +1885,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -469,7 +1901,72 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkTicketTypeId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkTicketTypeTranslations");
+                    b.ToTable("WorkTicketTypeTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "Bug",
+                            WorkTicketTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Ошибка",
+                            WorkTicketTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Xəta",
+                            WorkTicketTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "Feature",
+                            WorkTicketTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "Новая функция",
+                            WorkTicketTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "Təzə Funksiya",
+                            WorkTicketTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "Task",
+                            WorkTicketTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Задача",
+                            WorkTicketTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Tapşırıq",
+                            WorkTicketTypeId = 3
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Organization", b =>
@@ -490,7 +1987,7 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<string>("LogoPath")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
-                        .HasDefaultValue("logo path");
+                        .HasDefaultValue("default-org.png");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -526,11 +2023,12 @@ namespace ATMS.Project.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -542,21 +2040,380 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890"),
+                            Description = "Project Manager Role",
+                            Name = "Project Manager"
+                        },
+                        new
+                        {
+                            Id = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca"),
+                            Description = "Business Consultant Role",
+                            Name = "Business Consultant"
+                        },
+                        new
+                        {
+                            Id = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a"),
+                            Description = "Developer Role",
+                            Name = "Developer"
+                        },
+                        new
+                        {
+                            Id = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346"),
+                            Description = "Client Manager Role",
+                            Name = "Client Manager"
+                        },
+                        new
+                        {
+                            Id = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266"),
+                            Description = "Client Viewer Role",
+                            Name = "Client Viewer"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.RolePermission", b =>
                 {
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("PermissionId")
                         .HasColumnType("integer");
 
-                    b.HasKey("RoleId", "PermissionId");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("PermissionId");
+                    b.HasKey("PermissionId", "RoleId");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("RolePermissions");
+
+                    b.HasData(
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 2,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 3,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 17,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 18,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 5,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 6,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 8,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 9,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 2,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 3,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 17,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 18,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 5,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 6,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 8,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 9,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 2,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 3,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 17,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 18,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 5,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 6,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 8,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 9,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 28,
+                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 16,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.User", b =>
@@ -564,6 +2421,10 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("AvatarPath")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -598,6 +2459,8 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("UserType");
 
                     b.ToTable("Users");
                 });
@@ -696,6 +2559,9 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -703,23 +2569,21 @@ namespace ATMS.Project.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<int>("ProjectKindId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProjectStatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProjectTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -817,8 +2681,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1104,7 +2968,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasOne("ATMS.Project.Data.Entities.Organization", "Organization")
                         .WithMany("Users")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Organization");
                 });
@@ -1125,7 +2989,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasOne("ATMS.Project.Data.Entities.WorkProject", "WorkProject")
                         .WithMany("WorkGroups")
                         .HasForeignKey("WorkProjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ParentWorkGroup");
@@ -1140,7 +3004,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasOne("ATMS.Project.Data.Entities.Organization", "Organization")
                         .WithMany("WorkProjects")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ATMS.Project.Data.Entities.Dictionaries.ProjectKind", "ProjectKind")
                         .WithMany()
@@ -1174,13 +3038,13 @@ namespace ATMS.Project.Data.Migrations
                     b.HasOne("ATMS.Project.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ATMS.Project.Data.Entities.WorkProject", "WorkProject")
                         .WithMany("WorkProjectParticipants")
                         .HasForeignKey("WorkProjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -1193,13 +3057,13 @@ namespace ATMS.Project.Data.Migrations
                     b.HasOne("ATMS.Project.Data.Entities.Role", "Role")
                         .WithMany("WorkProjectParticipantRoles")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ATMS.Project.Data.Entities.WorkProjectParticipant", "WorkProjectParticipant")
                         .WithMany("WorkProjectParticipantRoles")
                         .HasForeignKey("WorkProjectParticipantId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Role");

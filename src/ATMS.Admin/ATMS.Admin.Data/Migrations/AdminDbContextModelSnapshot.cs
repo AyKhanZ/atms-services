@@ -41,6 +41,28 @@ namespace ATMS.Admin.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Genders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "NotSpecified"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "Male"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "Female"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "Other"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.GenderTranslation", b =>
@@ -56,8 +78,8 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -69,7 +91,93 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("GenderId", "Language")
                         .IsUnique();
 
-                    b.ToTable("GenderTranslations");
+                    b.ToTable("GenderTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            GenderId = 1,
+                            Language = "en",
+                            Name = "Not specified"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            GenderId = 1,
+                            Language = "ru",
+                            Name = "Не указано"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            GenderId = 1,
+                            Language = "az",
+                            Name = "Göstərilməyib"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            GenderId = 2,
+                            Language = "en",
+                            Name = "Male"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            GenderId = 2,
+                            Language = "ru",
+                            Name = "Мужской"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            GenderId = 2,
+                            Language = "az",
+                            Name = "Kişi"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            GenderId = 3,
+                            Language = "en",
+                            Name = "Female"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            GenderId = 3,
+                            Language = "ru",
+                            Name = "Женский"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            GenderId = 3,
+                            Language = "az",
+                            Name = "Qadın"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            GenderId = 4,
+                            Language = "en",
+                            Name = "Other"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            GenderId = 4,
+                            Language = "ru",
+                            Name = "Другое"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            GenderId = 4,
+                            Language = "az",
+                            Name = "Digər"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", b =>
@@ -91,6 +199,23 @@ namespace ATMS.Admin.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("MaritalStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "NotSpecified"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "Single"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "Married"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatusTranslation", b =>
@@ -103,8 +228,8 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<int>("MaritalStatusId")
                         .HasColumnType("integer");
@@ -119,7 +244,72 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("MaritalStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("MaritalStatusTranslations");
+                    b.ToTable("MaritalStatusTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            MaritalStatusId = 1,
+                            Name = "Not specified"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            MaritalStatusId = 1,
+                            Name = "Не указано"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            MaritalStatusId = 1,
+                            Name = "Göstərilməyib"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            MaritalStatusId = 2,
+                            Name = "Single"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            MaritalStatusId = 2,
+                            Name = "Холост"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            MaritalStatusId = 2,
+                            Name = "Subay"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            MaritalStatusId = 3,
+                            Name = "Married"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            MaritalStatusId = 3,
+                            Name = "Женат"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            MaritalStatusId = 3,
+                            Name = "Evli"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.Permission", b =>
@@ -146,6 +336,98 @@ namespace ATMS.Admin.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "RoleView",
+                            Module = "Role"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "RoleEdit",
+                            Module = "Role"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "RoleDelete",
+                            Module = "Role"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "UserView",
+                            Module = "User"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = "UserEdit",
+                            Module = "User"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Code = "UserDelete",
+                            Module = "User"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Code = "ProjectView",
+                            Module = "Project"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Code = "ProjectEdit",
+                            Module = "Project"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Code = "ProjectDelete",
+                            Module = "Project"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Code = "NotificationView",
+                            Module = "Notification"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Code = "NotificationEdit",
+                            Module = "Notification"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Code = "NotificationDelete",
+                            Module = "Notification"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Code = "CommentView",
+                            Module = "Comment"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Code = "CommentEdit",
+                            Module = "Comment"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Code = "CommentDelete",
+                            Module = "Comment"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.PermissionTranslation", b =>
@@ -158,8 +440,8 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -174,7 +456,324 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("PermissionId", "Language")
                         .IsUnique();
 
-                    b.ToTable("PermissionTranslations");
+                    b.ToTable("PermissionTranslation");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "Role View",
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Просмотр ролей",
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Rola baxış",
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "Role edit",
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "Редактирование ролей",
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "Rolu redaktə et",
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "Role delete",
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Удаление ролей",
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Rolu sil",
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Language = "en",
+                            Name = "User view",
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Language = "ru",
+                            Name = "Просмотр пользователей",
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Language = "az",
+                            Name = "İstifadəçiyə baxış",
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Language = "en",
+                            Name = "User edit",
+                            PermissionId = 5
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Language = "ru",
+                            Name = "Редактирование пользователей",
+                            PermissionId = 5
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Language = "az",
+                            Name = "İstifadəçini redaktə",
+                            PermissionId = 5
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Language = "en",
+                            Name = "User delete",
+                            PermissionId = 6
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Language = "ru",
+                            Name = "Удаление пользователей",
+                            PermissionId = 6
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Language = "az",
+                            Name = "İstifadəçini sil",
+                            PermissionId = 6
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Language = "en",
+                            Name = "Project view",
+                            PermissionId = 7
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Language = "ru",
+                            Name = "Просмотр проектов",
+                            PermissionId = 7
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Language = "az",
+                            Name = "Layihəyə baxış",
+                            PermissionId = 7
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Language = "en",
+                            Name = "Project edit",
+                            PermissionId = 8
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Language = "ru",
+                            Name = "Редактирование проектов",
+                            PermissionId = 8
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Language = "az",
+                            Name = "Layihəni redaktə",
+                            PermissionId = 8
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Language = "en",
+                            Name = "Project delete",
+                            PermissionId = 9
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Language = "ru",
+                            Name = "Удаление проектов",
+                            PermissionId = 9
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Language = "az",
+                            Name = "Layihəni sil",
+                            PermissionId = 9
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Language = "en",
+                            Name = "Comment view",
+                            PermissionId = 13
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Language = "ru",
+                            Name = "Просмотр комментариев",
+                            PermissionId = 13
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Language = "az",
+                            Name = "Şərhə baxış",
+                            PermissionId = 13
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Language = "en",
+                            Name = "Comment edit",
+                            PermissionId = 14
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Language = "ru",
+                            Name = "Редактирование комментариев",
+                            PermissionId = 14
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Language = "az",
+                            Name = "Şərhi redaktə",
+                            PermissionId = 14
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Language = "en",
+                            Name = "Comment delete",
+                            PermissionId = 15
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Language = "ru",
+                            Name = "Удаление комментариев",
+                            PermissionId = 15
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Language = "az",
+                            Name = "Şərhi sil",
+                            PermissionId = 15
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Language = "en",
+                            Name = "Notification view",
+                            PermissionId = 10
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Language = "ru",
+                            Name = "Просмотр уведомлений",
+                            PermissionId = 10
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Language = "az",
+                            Name = "Bildirişə baxış",
+                            PermissionId = 10
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Language = "en",
+                            Name = "Notification edit",
+                            PermissionId = 11
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Language = "ru",
+                            Name = "Редактирование уведомлений",
+                            PermissionId = 11
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Language = "az",
+                            Name = "Bildirişi redaktə",
+                            PermissionId = 11
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Language = "en",
+                            Name = "Notification delete",
+                            PermissionId = 12
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Language = "ru",
+                            Name = "Удаление уведомлений",
+                            PermissionId = 12
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Language = "az",
+                            Name = "Bildirişi sil",
+                            PermissionId = 12
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserStatus", b =>
@@ -196,6 +795,23 @@ namespace ATMS.Admin.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("UserStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "Active"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "Inactive"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "Locked"
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserStatusTranslation", b =>
@@ -208,8 +824,8 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<string>("Language")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -224,57 +840,72 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("UserStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("UserStatusTranslations");
-                });
+                    b.ToTable("UserStatusTranslation");
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("UserTypes");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserTypeTranslation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("UserTypeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserTypeId", "Language")
-                        .IsUnique();
-
-                    b.ToTable("UserTypeTranslations");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Language = "en",
+                            Name = "Active",
+                            UserStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Language = "ru",
+                            Name = "Активный",
+                            UserStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Language = "az",
+                            Name = "Aktiv",
+                            UserStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Language = "en",
+                            Name = "Inactive",
+                            UserStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Language = "ru",
+                            Name = "Неактивный",
+                            UserStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Language = "az",
+                            Name = "Qeyri-aktiv",
+                            UserStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Language = "en",
+                            Name = "Locked",
+                            UserStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Language = "ru",
+                            Name = "Заблокирован",
+                            UserStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Language = "az",
+                            Name = "Bloklanmış",
+                            UserStatusId = 3
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Role", b =>
@@ -284,19 +915,59 @@ namespace ATMS.Admin.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsAdmin")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("UserType")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
+                    b.HasIndex("UserType");
+
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5"),
+                            Description = "Client Manager Role",
+                            IsSystem = true,
+                            Name = "Client Manager",
+                            UserType = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8"),
+                            Description = "Client Role",
+                            IsSystem = true,
+                            Name = "Client",
+                            UserType = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53"),
+                            Description = "Agent Role",
+                            IsSystem = true,
+                            Name = "Agent",
+                            UserType = 2
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.RolePermission", b =>
@@ -314,6 +985,108 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("RolePermissions");
+
+                    b.HasData(
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 14,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 15,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 8,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 14,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 15,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        });
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.PasswordResetToken", b =>
@@ -378,9 +1151,12 @@ namespace ATMS.Admin.Data.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
-                        .HasDefaultValue("test.png");
+                        .HasDefaultValue("default-avatar.png");
 
                     b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
@@ -401,8 +1177,13 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<bool>("HasCompletedSurvey")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("InvitedById")
+                    b.Property<Guid?>("InvitedById")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("IsAdmin")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Language")
                         .IsRequired()
@@ -425,6 +1206,9 @@ namespace ATMS.Admin.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("OrganizationId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -445,15 +1229,17 @@ namespace ATMS.Admin.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("UserStatusId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(1);
 
-                    b.Property<int>("UserTypeId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -468,8 +1254,6 @@ namespace ATMS.Admin.Data.Migrations
                         .IsUnique();
 
                     b.HasIndex("UserStatusId");
-
-                    b.HasIndex("UserTypeId");
 
                     b.ToTable("Users");
                 });
@@ -535,17 +1319,6 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("UserStatus");
                 });
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserTypeTranslation", b =>
-                {
-                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.UserType", "UserType")
-                        .WithMany("Translations")
-                        .HasForeignKey("UserTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserType");
-                });
-
             modelBuilder.Entity("ATMS.Admin.Data.Entities.RolePermission", b =>
                 {
                     b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Permission", "Permission")
@@ -597,9 +1370,7 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.HasOne("ATMS.Admin.Data.Entities.User", "InvitedBy")
                         .WithMany()
-                        .HasForeignKey("InvitedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("InvitedById");
 
                     b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", "MaritalStatus")
                         .WithMany()
@@ -613,12 +1384,6 @@ namespace ATMS.Admin.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.UserType", "UserType")
-                        .WithMany()
-                        .HasForeignKey("UserTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Gender");
 
                     b.Navigation("InvitedBy");
@@ -626,8 +1391,6 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("MaritalStatus");
 
                     b.Navigation("UserStatus");
-
-                    b.Navigation("UserType");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.UserRole", b =>
@@ -667,11 +1430,6 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserStatus", b =>
-                {
-                    b.Navigation("Translations");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.UserType", b =>
                 {
                     b.Navigation("Translations");
                 });

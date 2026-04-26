@@ -8,5 +8,7 @@ public enum ConfigurationErrorType
     ImagesSectionNotFound,
     QueueSectionNotFound,
     RedirectUrlSectionNotFound,
+    ProviderSectionNotFound,
     DatabaseSectionNotFound,
+    MissingSeedData
 }

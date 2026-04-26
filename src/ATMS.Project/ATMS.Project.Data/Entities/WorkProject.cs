@@ -19,8 +19,15 @@ public class WorkProject : AuditableEntity, ISoftDeletable
     public Organization Organization { get; set; }
 
 
+
+    public DateTime? StartDate { get; set; }
+
+    public DateTime? EndDate { get; set; }
+
+
+
     #region Dictionaries
-    
+
     public ProjectType ProjectType { get; set; }
     
     public int ProjectTypeId { get; set; }

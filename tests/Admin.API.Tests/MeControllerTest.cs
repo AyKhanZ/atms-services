@@ -2,31 +2,27 @@
 using ATMS.Admin.Contracts.Models.Me;
 using ATMS.Admin.Contracts.Requests.Me;
 using ATMS.Application.Models;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace Admin.API.Tests;
 
-public class MeControllerTest
+public class MeControllerTest : BaseControllerTest
 {
-
-    private readonly Mock<IMediator> _mediatorMock;
     private readonly MeController _controller;
-    
+
     public MeControllerTest()
     {
-        _mediatorMock = new Mock<IMediator>();
-        _controller = new MeController(_mediatorMock.Object);
+        _controller = new MeController(MediatorMock.Object);
     }
-    
+
     [Fact]
     public async Task GetMeAsync_Should_Return_Ok_With_MeModel()
     {
         // Arrange
         var expected = new MeModel();
 
-        _mediatorMock
+        MediatorMock
             .Setup(m => m.Send(
                 It.IsAny<GetMeRequest>(),
                 It.IsAny<CancellationToken>()))
@@ -39,19 +35,19 @@ public class MeControllerTest
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expected, okResult.Value);
 
-        _mediatorMock.Verify(m => m.Send(
+        MediatorMock.Verify(m => m.Send(
                 It.IsAny<GetMeRequest>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     [Fact]
     public async Task GetPermissionsAsync_Should_Return_Ok_With_StringArray()
     {
         // Arrange
         var expected = new[] { "perm.read", "perm.write" };
 
-        _mediatorMock
+        MediatorMock
             .Setup(m => m.Send(
                 It.IsAny<GetCurrentPermissionsRequest>(),
                 It.IsAny<CancellationToken>()))
@@ -64,7 +60,7 @@ public class MeControllerTest
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expected, okResult.Value);
 
-        _mediatorMock.Verify(m => m.Send(
+        MediatorMock.Verify(m => m.Send(
                 It.IsAny<GetCurrentPermissionsRequest>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
@@ -80,7 +76,7 @@ public class MeControllerTest
             new DictionaryModel<Guid> { Id = Guid.NewGuid(), Name = "User" }
         };
 
-        _mediatorMock
+        MediatorMock
             .Setup(m => m.Send(
                 It.IsAny<GetCurrentRolesRequest>(),
                 It.IsAny<CancellationToken>()))
@@ -93,7 +89,7 @@ public class MeControllerTest
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expected, okResult.Value);
 
-        _mediatorMock.Verify(m => m.Send(
+        MediatorMock.Verify(m => m.Send(
                 It.IsAny<GetCurrentRolesRequest>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);

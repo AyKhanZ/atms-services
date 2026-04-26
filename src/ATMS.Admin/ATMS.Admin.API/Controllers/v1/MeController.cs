@@ -9,7 +9,7 @@ namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/me")]
-public class MeController(IMediator mediator) : AdminControllerBase
+public class MeController(IMediator mediator) : ControllerBase
 {
 
     /// <summary>

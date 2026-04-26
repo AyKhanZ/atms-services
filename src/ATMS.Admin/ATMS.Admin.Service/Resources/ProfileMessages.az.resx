@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="LanguageRequired" xml:space="preserve">
+        <value>Dil sahəsi tələb olunur.</value>
+    </data>
+    <data name="LanguageLength" xml:space="preserve">
+        <value>Dilin uzunluğu {0} simvol olmalıdır.</value>
+    </data>
+    <data name="FileNameRequired" xml:space="preserve">
+        <value>Fayl adı tələb olunur.</value>
+    </data>
+    <data name="FileNameMaxLength" xml:space="preserve">
+        <value>Maksimum uzunluq {0} simvol olmalıdır.</value>
+    </data>
+    <data name="MaritalStatusRequired" xml:space="preserve">
+        <value>Ailə vəziyyəti sahəsi tələb olunur.</value>
+    </data>
+    <data name="MaritalStatusNotSupported" xml:space="preserve">
+        <value>Daxil edilən ailə vəziyyəti mövcud deyil.</value>
+    </data>
+    <data name="GenderRequired" xml:space="preserve">
+        <value>Cinsiyyət sahəsi tələb olunur.</value>
+    </data>
+    <data name="GenderNotSupported" xml:space="preserve">
+        <value>Daxil edilən cinsiyyət mövcud deyil.</value>
+    </data>
+    <data name="BirthDateRequired" xml:space="preserve">
+        <value>Doğum tarixi sahəsi tələb olunur.</value>
+    </data>
+    <data name="BirthDateMinValue" xml:space="preserve">
+        <value>Doğum tarixi 1 yanvar 1900-dən əvvəl ola bilməz.</value>
+    </data>
+    <data name="BirthDateMaxValue" xml:space="preserve">
+        <value>Doğum tarixi gələcəkdə ola bilməz.</value>
+    </data>
+    <data name="BirthDateValidValue" xml:space="preserve">
+        <value>İstifadəçi ən azı 18 yaşında olmalıdır.</value>
+    </data>
+    <data name="PositionRequired" xml:space="preserve">
+        <value>Vəzifə sahəsi tələb olunur.</value>
+    </data>
+    <data name="PositionMaxLength" xml:space="preserve">
+        <value>Vəzifə {0} simvoldan artıq ola bilməz.</value>
+    </data>
+    <data name="PhoneNumberRequired" xml:space="preserve">
+        <value>Telefon nömrəsi sahəsi tələb olunur.</value>
+    </data>
+    <data name="PhoneNumberValidValue" xml:space="preserve">
+        <value>Telefon nömrəsi etibarlı deyil. Zəhmət olmasa ölkə kodunu daxil edin (məsələn, +994501234567).</value>
+    </data>
+</root>

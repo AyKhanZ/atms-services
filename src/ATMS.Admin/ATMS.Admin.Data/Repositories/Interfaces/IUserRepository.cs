@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
+using ATMS.Data.Criterias;
 
 namespace ATMS.Admin.Data.Repositories.Interfaces;
 
@@ -8,7 +9,7 @@ public interface IUserRepository
 {
     Task CreateAsync(User user, CancellationToken cancellationToken);
 
-    
+    Task<PagedResult<User>> GetAsync(ACriteria<User> filterCriteria, PaginationCriteria<User> pagination, CancellationToken cancellationToken);
     Task<List<User>> GetAsync(CancellationToken cancellationToken);
 
     

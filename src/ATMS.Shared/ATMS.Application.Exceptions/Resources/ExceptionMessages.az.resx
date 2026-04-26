@@ -27,4 +27,7 @@
     <data name="ConfigSectionNotFound" xml:space="preserve">
         <value>Configuration for section '{0}' is not found or could not be loaded.</value>
     </data>
+    <data name="MissingSeedData" xml:space="preserve">
+        <value>"Required role '{0}' was not found in database."</value>
+    </data>
 </root>

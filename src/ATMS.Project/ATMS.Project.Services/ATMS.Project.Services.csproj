@@ -8,12 +8,46 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Dispatcher\ATMS.Application.Dispatcher.csproj" />
-      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Email\ATMS.Email.csproj" />
-      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Infrastructure\ATMS.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Messaging\ATMS.Messaging.csproj" />
       <ProjectReference Include="..\ATMS.Project.Contracts\ATMS.Project.Contracts.csproj" />
       <ProjectReference Include="..\ATMS.Project.Data\ATMS.Project.Data.csproj" />
-      <ProjectReference Include="..\ATMS.Project.Data\ATMS.Project.Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\OrganizationMessages.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>OrganizationMessages.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\OrganizationMessages.ru.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>OrganizationMessages.ru.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\OrganizationMessages.az.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>OrganizationMessages.az.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\OrganizationMessages.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>OrganizationMessages.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\OrganizationMessages.ru.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>OrganizationMessages.ru.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\OrganizationMessages.az.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>OrganizationMessages.az.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

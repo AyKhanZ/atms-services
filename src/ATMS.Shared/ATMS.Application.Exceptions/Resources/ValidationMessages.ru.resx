@@ -44,4 +44,16 @@
     <data name="InvalidEmailFormat" xml:space="preserve">
         <value>Введите корректный email (например: user@example.com).</value>
     </data>
+    <data name="TitleAlreadyExists" xml:space="preserve">
+        <value>Название уже существует.</value>
+    </data>
+    <data name="TitleRequired" xml:space="preserve">
+        <value>Название обязательно.</value>
+    </data>
+    <data name="TitleShouldBeLessThan" xml:space="preserve">
+        <value>Длина названия не должна превышать {0} символов.</value>
+    </data>
+    <data name="IdRequired" xml:space="preserve">
+        <value>Идентификатор обязателен.</value>
+    </data>
 </root>

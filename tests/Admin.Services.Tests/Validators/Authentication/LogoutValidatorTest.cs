@@ -9,13 +9,11 @@ public class LogoutValidatorTest
 {
     private readonly LogoutValidator _validator = new();
     private readonly Faker _faker = new();
-    private readonly Guid _userId = Guid.NewGuid();
 
     private LogoutCommand GetCommand(string? refreshToken = null)
     {
         return new LogoutCommand
         {
-            UserId =  _userId,
             RefreshToken = refreshToken ?? _faker.Random.AlphaNumeric(32)
         };
     }

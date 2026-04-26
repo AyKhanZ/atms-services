@@ -4,6 +4,7 @@ using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Interfaces;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Infrastructure.Options;
+using ATMS.Messaging.Interfaces;
 using AutoMapper;
 using Bogus;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,7 @@ public abstract class BaseHandlerTest
     protected readonly Mock<IMapper> MapperMock = new();
     
     
-    protected readonly Mock<ICurrentUser> СurrentUserMock = new();
+    protected readonly Mock<ICurrentUser> CurrentUserMock = new();
     
     protected readonly Mock<IUserRepository> UserRepositoryMock = new();
     protected readonly Mock<IRoleRepository> RoleRepositoryMock = new();
@@ -31,6 +32,9 @@ public abstract class BaseHandlerTest
     protected readonly Mock<IPasswordHasherService> PasswordHasherServiceMock = new();
     protected readonly Mock<IResetPasswordTokenService> ResetPasswordTokenServiceMock = new();
     protected readonly Mock<IMigrationRunner> MigrationRunnerMock = new();
+    
+    
+    protected readonly Mock<IMessagePublisher> MessagePublisherMock = new();
     
     
     protected readonly Mock<IEmailConfirmationTokenService> EmailConfirmationTokenServiceMock = new();
