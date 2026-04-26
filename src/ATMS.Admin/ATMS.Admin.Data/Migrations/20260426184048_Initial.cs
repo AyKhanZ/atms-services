@@ -60,7 +60,8 @@ namespace ATMS.Admin.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    IsAdmin = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     IsSystem = table.Column<bool>(type: "boolean", nullable: false),
                     UserType = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -187,8 +188,11 @@ namespace ATMS.Admin.Data.Migrations
                     RefreshTokenExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Language = table.Column<string>(type: "text", nullable: false, defaultValue: "en"),
                     OrganizationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    IsAdmin = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     InvitedById = table.Column<Guid>(type: "uuid", nullable: true),
                     LastLogin = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UserStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     MaritalStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     GenderId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
@@ -590,6 +594,11 @@ namespace ATMS.Admin.Data.Migrations
                 name: "IX_UserRoles_UserId",
                 table: "UserRoles",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_CreatedAt",
+                table: "Users",
+                column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",

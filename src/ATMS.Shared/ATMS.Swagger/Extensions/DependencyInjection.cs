@@ -78,9 +78,10 @@ public static class DependencyInjection
     {
         services.AddSwaggerGen(options =>
         {
-            //var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlFilename = $"{Assembly.GetEntryAssembly()!.GetName().Name}.xml";
-            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "ATMS.*.xml");
+            foreach (var xmlFile in xmlFiles) {
+                options.IncludeXmlComments(xmlFile);
+            }
             options.SwaggerDoc(SwaggerConstants.ApiVersion, new OpenApiInfo
             {
                 Title = title,

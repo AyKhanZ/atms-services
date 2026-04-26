@@ -16,8 +16,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(e => e.RefreshToken)
             .IsUnique();
         
+        builder.HasIndex(u => u.UserStatusId);
+        
+        builder.HasIndex(u => u.CreatedAt);
         
         builder.Property(e => e.Email)
+            .IsRequired();
+        
+        builder.Property(e => e.CreatedAt)
             .IsRequired();
         
         builder.Property(e => e.AvatarPath)

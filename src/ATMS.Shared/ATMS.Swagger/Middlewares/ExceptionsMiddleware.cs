@@ -7,6 +7,7 @@ using ATMS.Application.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 
 namespace ATMS.Swagger.Middlewares;
 
@@ -99,7 +100,8 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         logger.LogCritical(exception, "Configuration error on {Path} {Method}: {Message}",
             context.Request.Path, context.Request.Method, exception.Message);
 
-        var result = JsonConvert.SerializeObject(new { error = "System is not properly initialized. Please contact support." });
+        var result = JsonConvert.SerializeObject(new
+            { error = "System is not properly initialized. Please contact support." });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
@@ -108,13 +110,42 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        logger.LogCritical(exception, "Unexpected exception: {Message}", exception.Message);
+        // Разделяем — ошибка БД это не то же самое что NullReferenceException
+        if (exception is NpgsqlException or TimeoutException)
+        {
+            logger.LogError(exception,
+                "Infrastructure error. RequestId: {RequestId}, Path: {Path}, Message: {Message}",
+                context.TraceIdentifier,
+                context.Request.Path,
+                exception.Message);
 
-        var result = JsonConvert.SerializeObject(new { error = "Internal server error" });
+            var result = JsonConvert.SerializeObject(new
+            {
+                error = "Service temporarily unavailable, please try again",
+                requestId = context.TraceIdentifier
+            });
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.ServiceUnavailable; // 503
+            return context.Response.WriteAsync(result);
+        }
+
+        // Unexpected exception — unhandled case, needs immediate investigation 500
+        logger.LogCritical(exception,
+            "Unexpected exception. RequestId: {RequestId}, Path: {Path}, Method: {Method}, Message: {Message}",
+            context.TraceIdentifier,
+            context.Request.Path,
+            context.Request.Method,
+            exception.Message);
+
+        var errorResult = JsonConvert.SerializeObject(new
+        {
+            error = "Internal server error",
+            requestId = context.TraceIdentifier
+        });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-        return context.Response.WriteAsync(result);
+        return context.Response.WriteAsync(errorResult);
     }
 
     private Task HandleExceptionAsync(HttpContext context, ValidationException exception)

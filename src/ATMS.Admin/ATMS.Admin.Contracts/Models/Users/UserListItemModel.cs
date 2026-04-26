@@ -15,6 +15,7 @@ public class UserListItemModel
 
     public DictionaryModel? UserStatus { get; set; }
     
+    public DateTime CreatedAt { get; set; }
     
     public string AvatarPath { get; set; }
     

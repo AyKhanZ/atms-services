@@ -2,7 +2,7 @@
 using ATMS.Admin.Contracts.Commands.Users;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
-using MediatR;
+using ATMS.Data.Criterias;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -18,30 +18,34 @@ public class UsersControllerTest : BaseControllerTest
     }
     
     [Fact]
-    public async Task Index_ReturnsOkWithUsers()
+    public async Task Index_ReturnsOkWithPagedResult()
     {
         // Arrange
-        var users = new[]
+        var pagedResult = new PagedResult<UserListItemModel>
         {
-            new UserListItemModel { Id = Guid.NewGuid(), Name = "User test1" },
-            new UserListItemModel { Id = Guid.NewGuid(), Name = "User test2" },
-            new UserListItemModel { Id = Guid.NewGuid(), Name = "User test3" },
-            new UserListItemModel { Id = Guid.NewGuid(), Name = "User test4" },
+            Items =
+            [
+                new UserListItemModel { Id = Guid.NewGuid(), Name = "User test1" },
+                new UserListItemModel { Id = Guid.NewGuid(), Name = "User test2" }
+            ],
+            TotalCount = 2,
+            Page = 1,
+            PageSize = 20
         };
-        
+
         MediatorMock
             .Setup(m => m.Send(It.IsAny<GetUsersRequest>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(users);
-
-        var request = new GetUsersRequest();
+            .ReturnsAsync(pagedResult);
 
         // Act
-        var result = await _controller.Index(request, CancellationToken.None);
+        var result = await _controller.Index(new GetUsersRequest(), CancellationToken.None);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
-        Assert.Equal(users, okResult.Value);
+        var value = Assert.IsType<PagedResult<UserListItemModel>>(okResult.Value);
+        Assert.Equal(2, value.TotalCount);
+        Assert.Equal(2, value.Items.Length);
     }
     
     [Fact]
