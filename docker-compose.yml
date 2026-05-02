@@ -43,6 +43,23 @@ services:
     restart: unless-stopped
 
 
+  redis:
+    image: redis:7.2-alpine
+    container_name: atms-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --maxmemory 128mb
+      --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # На VPS убери ports — сервисы общаются внутри docker network
+    ports:
+      - "6379:6379"  # только для локальной разработки
+
 
 volumes:
   atms.admin.db.data:

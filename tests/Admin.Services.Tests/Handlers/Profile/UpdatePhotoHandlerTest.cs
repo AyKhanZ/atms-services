@@ -13,7 +13,10 @@ public class UpdatePhotoHandlerTest : BaseHandlerTest
 
     public UpdatePhotoHandlerTest()
     {
-        _handler = new UpdatePhotoHandler(UserRepositoryMock.Object);
+        _handler = new UpdatePhotoHandler(
+            UserRepositoryMock.Object,
+            MessagePublisherMock.Object,
+            CacheServiceMock.Object);
     }
 
     private User CreateUser() => new() { Id = Guid.NewGuid(), AvatarPath = "old-photo.jpg" };

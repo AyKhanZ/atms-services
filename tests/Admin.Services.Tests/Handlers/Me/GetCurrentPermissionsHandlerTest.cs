@@ -14,9 +14,12 @@ public class GetCurrentPermissionsHandlerTest : BaseHandlerTest
 
     public GetCurrentPermissionsHandlerTest()
     {
-        _handler = new GetCurrentPermissionsHandler(UserRepositoryMock.Object, CurrentUserMock.Object);
+        _handler = new GetCurrentPermissionsHandler(
+            UserRepositoryMock.Object,
+            CurrentUserMock.Object,
+            CacheServiceMock.Object);
     }
- 
+
     [Fact]
     public async Task Handle_WhenUserExists_ReturnsPermissionCodes()
     {
@@ -24,48 +27,58 @@ public class GetCurrentPermissionsHandlerTest : BaseHandlerTest
         var request = new GetCurrentPermissionsRequest();
         var userId = Guid.NewGuid();
 
-        CurrentUserMock
-            .Setup(c => c.Id)
-            .Returns(userId);
         var permissions = new List<Permission>
         {
             new() { Code = "users.read" },
             new() { Code = "users.write" }
         };
- 
+        
+        CurrentUserMock
+            .Setup(c => c.Id)
+            .Returns(userId);
+        
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<string[]>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<string[]>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
+
         UserRepositoryMock
             .Setup(r => r.IsExistAsync(
                 It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
- 
+
         UserRepositoryMock
             .Setup(r => r.GetPermissionsAsync(userId,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(permissions);
- 
+
         var result = await _handler.Handle(request, CancellationToken.None);
- 
+
         Assert.Equal(expected, result);
     }
- 
+
     [Fact]
     public async Task Handle_WhenUserNotFound_ThrowsEntityException()
     {
         var request = new GetCurrentPermissionsRequest();
- 
+
         UserRepositoryMock
             .Setup(r => r.IsExistAsync(
                 It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
- 
+
         var exception = await Assert.ThrowsAsync<AuthException>(() =>
             _handler.Handle(request, CancellationToken.None));
 
         Assert.Equal(AuthErrorType.InvalidCredentials, exception.AuthErrorType);
     }
-    
+
     [Fact]
     public async Task Handle_Should_Use_CurrentUser_Id_For_GetPermissions()
     {
@@ -76,6 +89,15 @@ public class GetCurrentPermissionsHandlerTest : BaseHandlerTest
         CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
+        
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<string[]>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<string[]>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
 
         UserRepositoryMock
             .Setup(r => r.IsExistAsync(
@@ -97,7 +119,7 @@ public class GetCurrentPermissionsHandlerTest : BaseHandlerTest
                 r.GetPermissionsAsync(userId, It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     [Fact]
     public async Task Handle_WhenNoPermissions_ReturnsEmptyArray()
     {

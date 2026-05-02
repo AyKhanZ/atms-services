@@ -10,12 +10,16 @@ namespace Admin.Services.Tests.Handlers.Me;
 public class GetMeHandlerTest : BaseHandlerTest
 {
     private readonly GetMeHandler _handler;
- 
+
     public GetMeHandlerTest()
     {
-        _handler = new GetMeHandler(UserRepositoryMock.Object, CurrentUserMock.Object, MapperMock.Object);
+        _handler = new GetMeHandler(
+            UserRepositoryMock.Object,
+            CurrentUserMock.Object,
+            MapperMock.Object,
+            CacheServiceMock.Object);
     }
-    
+
     [Fact]
     public async Task Handle_WhenUserExists_ReturnsMappedModel()
     {
@@ -26,6 +30,15 @@ public class GetMeHandlerTest : BaseHandlerTest
         var user = new User { Id = userId };
         var expected = new MeModel();
 
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<MeModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<MeModel>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
+        
         CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
@@ -45,7 +58,7 @@ public class GetMeHandlerTest : BaseHandlerTest
         // Assert
         Assert.Equal(expected, result);
     }
-    
+
     [Fact]
     public async Task Handle_WhenUserNotFound_ThrowsAuthException()
     {
@@ -69,7 +82,7 @@ public class GetMeHandlerTest : BaseHandlerTest
         // Assert
         Assert.Equal(AuthErrorType.InvalidCredentials, exception.AuthErrorType);
     }
-    
+
     [Fact]
     public async Task Handle_Should_Use_CurrentUser_Id()
     {
@@ -77,6 +90,15 @@ public class GetMeHandlerTest : BaseHandlerTest
         var request = new GetMeRequest();
         var userId = Guid.NewGuid();
 
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<MeModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<MeModel>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
+        
         CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
@@ -99,7 +121,7 @@ public class GetMeHandlerTest : BaseHandlerTest
                 r.GetMeAsync(userId, It.IsAny<CancellationToken>()),
             Times.Once);
     }
-    
+
     [Fact]
     public async Task Handle_Should_Call_Mapper_With_User()
     {
@@ -108,6 +130,15 @@ public class GetMeHandlerTest : BaseHandlerTest
         var userId = Guid.NewGuid();
 
         var user = new User { Id = userId };
+        
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<MeModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<MeModel>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
 
         CurrentUserMock
             .Setup(c => c.Id)

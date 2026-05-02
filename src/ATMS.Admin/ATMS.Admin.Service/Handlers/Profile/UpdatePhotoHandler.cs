@@ -2,11 +2,20 @@ using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Localization;
+using ATMS.Caching.Constants;
+using ATMS.Caching.Services.Interfaces;
+using ATMS.Contracts.Events.Users;
+using ATMS.Messaging.Configuration;
+using ATMS.Messaging.Interfaces;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Profile;
 
-public class UpdatePhotoHandler(IUserRepository userRepository) : IRequestHandler<UpdatePhotoCommand>
+public class UpdatePhotoHandler(
+    IUserRepository userRepository,
+    IMessagePublisher messagePublisher,
+    ICacheService cache) : IRequestHandler<UpdatePhotoCommand>
 {
     public async Task Handle(UpdatePhotoCommand command, CancellationToken cancellationToken)
     {
@@ -19,5 +28,31 @@ public class UpdatePhotoHandler(IUserRepository userRepository) : IRequestHandle
         entity.AvatarPath = command.FileName;
         
         await userRepository.SaveAsync(cancellationToken);
+        
+        var @event = new UserUpdatedEvent(
+            entity.Id,
+            entity.Name,
+            entity.Surname,
+            entity.AvatarPath);
+
+        await messagePublisher.PublishAsync(
+            MessagingConstants.Exchanges.UserEvents,
+            MessagingConstants.RoutingKeys.UserUpdated,
+            @event,
+            cancellationToken);
+        
+        await InvalidateUserCacheAsync(command, cancellationToken);
+    }
+    
+    private async Task InvalidateUserCacheAsync(
+        UpdatePhotoCommand command,
+        CancellationToken cancellationToken)
+    {
+        foreach (var language in SupportedLanguages.All)
+        {
+            await cache.RemoveAsync(CacheKeys.Admin.UserById(command.Id, language), cancellationToken);
+        }
+
+        await cache.RemoveAsync(CacheKeys.Admin.MeById(command.Id), cancellationToken);
     }
 }

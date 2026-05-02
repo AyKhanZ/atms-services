@@ -1,4 +1,5 @@
 using ATMS.Application.Modules;
+using ATMS.Caching.Modules;
 using ATMS.Email.Modules;
 using ATMS.Project.Data.Modules;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ public static class ProjectServicesModule
         this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMessageServices(configuration);
+        services.AddRedisCache(configuration);
         services.AddCurrentUser();
         services.AddValidationServices();
         services.AddProjectData(configuration);

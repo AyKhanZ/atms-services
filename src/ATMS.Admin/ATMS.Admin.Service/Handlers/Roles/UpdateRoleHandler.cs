@@ -3,12 +3,15 @@ using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Caching.Constants;
+using ATMS.Caching.Services.Interfaces;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Roles;
 
 public class UpdateRoleHandler(
-    IRoleRepository roleRepository) : IRequestHandler<UpdateRoleCommand>
+    IRoleRepository roleRepository,
+    ICacheService cache) : IRequestHandler<UpdateRoleCommand>
 {
     public async Task Handle(UpdateRoleCommand command, CancellationToken cancellationToken)
     {
@@ -32,5 +35,13 @@ public class UpdateRoleHandler(
         role.RolePermissions.AddRange(toAdd);
 
         await roleRepository.SaveAsync(cancellationToken);
+        
+        await InvalidateRoleCacheAsync(command, cancellationToken);
+    }
+
+    private async Task InvalidateRoleCacheAsync(UpdateRoleCommand command, CancellationToken cancellationToken)
+    {
+        await cache.RemoveAsync(CacheKeys.Admin.RoleById(command.Id), cancellationToken);
+        await cache.RemoveAsync(CacheKeys.Admin.AllRoles, cancellationToken);
     }
 }

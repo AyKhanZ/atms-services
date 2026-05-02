@@ -2,6 +2,7 @@ using ATMS.Admin.Data.Infrastructure.Migrations;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Interfaces;
+using ATMS.Caching.Services.Interfaces;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Interfaces;
@@ -20,6 +21,7 @@ public abstract class BaseHandlerTest
     
     
     protected readonly Mock<ICurrentUser> CurrentUserMock = new();
+    protected readonly Mock<ICacheService> CacheServiceMock = new();
     
     protected readonly Mock<IUserRepository> UserRepositoryMock = new();
     protected readonly Mock<IRoleRepository> RoleRepositoryMock = new();

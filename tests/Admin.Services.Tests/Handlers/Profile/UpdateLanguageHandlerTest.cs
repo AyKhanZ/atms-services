@@ -13,7 +13,9 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
 
     public UpdateLanguageHandlerTest()
     {
-        _handler = new UpdateLanguageHandler(UserRepositoryMock.Object);
+        _handler = new UpdateLanguageHandler(
+            UserRepositoryMock.Object,
+            CacheServiceMock.Object);
     }
 
     private User CreateUser() => new User { Id = Guid.NewGuid(), Language = "en" };

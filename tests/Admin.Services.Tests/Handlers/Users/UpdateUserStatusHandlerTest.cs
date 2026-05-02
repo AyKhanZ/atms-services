@@ -13,7 +13,9 @@ public class UpdateUserStatusHandlerTest : BaseHandlerTest
 
     public UpdateUserStatusHandlerTest()
     {
-        _handler = new UpdateUserStatusHandler(UserRepositoryMock.Object);
+        _handler = new UpdateUserStatusHandler(
+            UserRepositoryMock.Object,
+            CacheServiceMock.Object);
     }
 
     private User CreateUser() => new() { Id = Guid.NewGuid(), UserStatusId = 1 };
