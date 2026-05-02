@@ -2,6 +2,9 @@ using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Localization;
+using ATMS.Caching.Constants;
+using ATMS.Caching.Services.Interfaces;
 using ATMS.Contracts.Events.Users;
 using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Interfaces;
@@ -11,7 +14,8 @@ namespace ATMS.Admin.Service.Handlers.Profile;
 
 public class UpdateSettingsHandler(
     IUserRepository userRepository,
-    IMessagePublisher messagePublisher) : IRequestHandler<UpdateSettingsCommand>
+    IMessagePublisher messagePublisher,
+    ICacheService cache) : IRequestHandler<UpdateSettingsCommand>
 {
     public async Task Handle(UpdateSettingsCommand command, CancellationToken cancellationToken)
     {
@@ -42,5 +46,19 @@ public class UpdateSettingsHandler(
             MessagingConstants.RoutingKeys.UserUpdated,
             @event,
             cancellationToken);
+        
+        await InvalidateUserCacheAsync(command, cancellationToken);
+    }
+    
+    private async Task InvalidateUserCacheAsync(
+        UpdateSettingsCommand command,
+        CancellationToken cancellationToken)
+    {
+        foreach (var language in SupportedLanguages.All)
+        {
+            await cache.RemoveAsync(CacheKeys.Admin.UserById(command.Id, language), cancellationToken);
+        }
+
+        await cache.RemoveAsync(CacheKeys.Admin.MeById(command.Id), cancellationToken);
     }
 }

@@ -5,6 +5,8 @@ using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Localization;
 using ATMS.Application.Models;
+using ATMS.Caching.Constants;
+using ATMS.Caching.Services.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -12,21 +14,26 @@ namespace ATMS.Admin.Service.Handlers.Users;
 
 public class GetUserHandler(
     IUserRepository userRepository,
-    IMapper mapper
+    IMapper mapper,
+    ICacheService cache
     ) : IRequestHandler<GetUserRequest, UserModel>
 {
     public async Task<UserModel> Handle(GetUserRequest request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetAsync(request.Id, cancellationToken);
+        return await cache.GetOrSetAsync(
+                   key: CacheKeys.Admin.UserById(request.Id, CultureHelper.CurrentLanguage),
+                   factory: () => GetFromDb(request.Id, CultureHelper.CurrentLanguage, cancellationToken),
+                   ttl: CacheTtl.Entity,
+                   cancellationToken)
+               ?? throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+    }
+    
+    private async Task<UserModel> GetFromDb(Guid id, string language, CancellationToken cancellationToken)
+    {
+        var user = await userRepository.GetAsync(id, cancellationToken)
+                   ?? throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
 
-        if (user is null)
-        {
-            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
-        }
-        
-        var language = CultureHelper.CurrentLanguage;
         var model = mapper.Map<UserModel>(user);
-
         model.Gender = user.Gender.ToDictionaryModel(user.Gender.Translations, language);
         model.MaritalStatus = user.MaritalStatus.ToDictionaryModel(user.MaritalStatus.Translations, language);
         model.UserStatus = user.UserStatus.ToDictionaryModel(user.UserStatus.Translations, language);

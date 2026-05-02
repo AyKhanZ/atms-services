@@ -13,7 +13,9 @@ public class UpdateRoleHandlerTest : BaseHandlerTest
  
     public UpdateRoleHandlerTest()
     {
-        _handler = new UpdateRoleHandler(RoleRepositoryMock.Object);
+        _handler = new UpdateRoleHandler(
+            RoleRepositoryMock.Object,
+            CacheServiceMock.Object);
     }
  
     private UpdateRoleCommand CreateCommand(Guid? id = null) =>

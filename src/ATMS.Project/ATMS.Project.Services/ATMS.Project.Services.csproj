@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application.Dispatcher\ATMS.Application.Dispatcher.csproj" />
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Caching\ATMS.Caching.csproj" />
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Email\ATMS.Email.csproj" />
 	</ItemGroup>
 

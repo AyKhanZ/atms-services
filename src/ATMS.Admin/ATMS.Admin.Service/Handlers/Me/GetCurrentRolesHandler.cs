@@ -4,6 +4,8 @@ using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Models;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
+using ATMS.Caching.Constants;
+using ATMS.Caching.Services.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -12,7 +14,8 @@ namespace ATMS.Admin.Service.Handlers.Me;
 public class GetCurrentRolesHandler(
     IUserRepository userRepository,
     ICurrentUser currentUser,
-    IMapper mapper) : IRequestHandler<GetCurrentRolesRequest, DictionaryModel<Guid>[]>
+    IMapper mapper,
+    ICacheService cache) : IRequestHandler<GetCurrentRolesRequest, DictionaryModel<Guid>[]>
 {
     public async Task<DictionaryModel<Guid>[]> Handle(GetCurrentRolesRequest request, CancellationToken cancellationToken)
     {
@@ -22,8 +25,16 @@ public class GetCurrentRolesHandler(
             throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
         }
         
+        return await cache.GetOrSetAsync(
+            key: CacheKeys.Admin.UserRoles(currentUser.Id),
+            factory: () => GetFromDb(cancellationToken),
+            ttl: CacheTtl.Roles,
+            cancellationToken) ?? [];
+    }
+    
+    private async Task<DictionaryModel<Guid>[]> GetFromDb(CancellationToken cancellationToken)
+    {
         var roles = await userRepository.GetRolesAsync(currentUser.Id, cancellationToken);
-        
         return mapper.Map<DictionaryModel<Guid>[]>(roles);
     }
 }

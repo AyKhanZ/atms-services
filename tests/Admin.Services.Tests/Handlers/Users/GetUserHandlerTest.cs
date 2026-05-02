@@ -15,7 +15,10 @@ public class GetUserHandlerTest : BaseHandlerTest
     
     public GetUserHandlerTest()
     {
-        _handler = new GetUserHandler(UserRepositoryMock.Object, MapperMock.Object);
+        _handler = new GetUserHandler(
+            UserRepositoryMock.Object,
+            MapperMock.Object,
+            CacheServiceMock.Object);
     }
     
     private User CreateUser(Guid? id = null) =>
@@ -48,6 +51,15 @@ public class GetUserHandlerTest : BaseHandlerTest
         var expectedModel = new UserModel { Id = user.Id };
         var request = new GetUserRequest { Id = user.Id };
 
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<UserModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<UserModel>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
+        
         UserRepositoryMock
             .Setup(r => r.GetAsync(
                 user.Id,
@@ -93,6 +105,15 @@ public class GetUserHandlerTest : BaseHandlerTest
 
         var request = new GetUserRequest { Id = user.Id };
 
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<UserModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<UserModel>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
+        
         UserRepositoryMock
             .Setup(r => r.GetAsync(
                 It.IsAny<Guid>(),
@@ -123,6 +144,15 @@ public class GetUserHandlerTest : BaseHandlerTest
 
         var request = new GetUserRequest { Id = user.Id };
 
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<UserModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<UserModel>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
+        
         UserRepositoryMock
             .Setup(r => r.GetAsync(
                 It.IsAny<Guid>(),
@@ -146,7 +176,16 @@ public class GetUserHandlerTest : BaseHandlerTest
         // Arrange
         var user = CreateUser();
         var request = new GetUserRequest { Id = user.Id };
-
+        
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<UserModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<UserModel>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
+        
         UserRepositoryMock
             .Setup(r => r.GetAsync(
                 It.IsAny<Guid>(),

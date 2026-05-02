@@ -12,7 +12,10 @@ public class GetRolesHandlerTest : BaseHandlerTest
  
     public GetRolesHandlerTest()
     {
-        _handler = new GetRolesHandler(RoleRepositoryMock.Object, MapperMock.Object);
+        _handler = new GetRolesHandler(
+            RoleRepositoryMock.Object,
+            MapperMock.Object,
+            CacheServiceMock.Object);
     }
  
     [Fact]
@@ -20,6 +23,15 @@ public class GetRolesHandlerTest : BaseHandlerTest
     {
         var roles = new List<Role> { new(), new() };
         var expectedModels = new RoleModel[] { new(), new() };
+        
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<RoleModel[]>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<RoleModel[]>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
  
         RoleRepositoryMock
             .Setup(r => r.GetAsync(It.IsAny<CancellationToken>()))

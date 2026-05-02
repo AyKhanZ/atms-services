@@ -15,7 +15,10 @@ public class UpdateSettingsHandlerTest : BaseHandlerTest
 
     public UpdateSettingsHandlerTest()
     {
-        _handler = new UpdateSettingsHandler(UserRepositoryMock.Object, MessagePublisherMock.Object);
+        _handler = new UpdateSettingsHandler(
+            UserRepositoryMock.Object,
+            MessagePublisherMock.Object,
+            CacheServiceMock.Object);
     }
 
     private User CreateUser() => new()
