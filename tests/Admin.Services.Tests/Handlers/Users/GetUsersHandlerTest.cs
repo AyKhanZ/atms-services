@@ -114,7 +114,7 @@ public class GetUsersHandlerTest : BaseHandlerTest
         var pagedResult = new PagedResult<User>
         {
             Items = users.ToArray(),
-            TotalCount = 100, // всего в БД 100
+            TotalCount = 100, // In total DB contains 100
             Page = 2,
             PageSize = 3
         };

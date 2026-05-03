@@ -20,15 +20,15 @@
 
     <ItemGroup>
       <EmbeddedResource Update="Resources\OrganizationMessages.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
+        <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>OrganizationMessages.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Update="Resources\OrganizationMessages.ru.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
+        <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>OrganizationMessages.ru.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Update="Resources\OrganizationMessages.az.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
+        <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>OrganizationMessages.az.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>

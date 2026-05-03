@@ -7,7 +7,9 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Organizations;
 
-public class DeleteOrganizationHandler(IOrganizationRepository organizationRepository,ICurrentUser currentUser)
+public class DeleteOrganizationHandler(
+    IOrganizationRepository organizationRepository,
+    ICurrentUser currentUser)
     : IRequestHandler<DeleteOrganizationCommand>
 {
     public async Task Handle(DeleteOrganizationCommand command, CancellationToken cancellationToken)

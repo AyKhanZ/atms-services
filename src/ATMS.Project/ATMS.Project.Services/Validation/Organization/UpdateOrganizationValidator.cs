@@ -1,3 +1,4 @@
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Project.Contracts.Commands.Organization;
 using ATMS.Project.Data.Repositories.Interfaces;
 using FluentValidation;
@@ -9,6 +10,9 @@ public class UpdateOrganizationValidator
 {
     public UpdateOrganizationValidator(IOrganizationRepository organizationRepository)
     {
+        RuleFor(x => x.Id)
+            .NotEmpty().WithMessage(ValidationMessages.IdRequired);
+        
         RuleFor(x => x).SetValidator(new OrganizationValidator(organizationRepository));
     }
 }

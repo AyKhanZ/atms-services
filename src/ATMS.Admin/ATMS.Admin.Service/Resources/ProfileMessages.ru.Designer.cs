@@ -202,5 +202,23 @@ namespace ATMS.Admin.Service.Resources {
                 return ResourceManager.GetString("PositionRequired", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Введённый статус пользователя не существует..
+        /// </summary>
+        internal static string UserStatusNotSupported {
+            get {
+                return ResourceManager.GetString("UserStatusNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поле &apos;Статус пользователя&apos; обязательно для заполнения..
+        /// </summary>
+        internal static string UserStatusRequired {
+            get {
+                return ResourceManager.GetString("UserStatusRequired", resourceCulture);
+            }
+        }
     }
 }
