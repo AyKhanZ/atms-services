@@ -1,4 +1,5 @@
 using ATMS.Application.Models;
+using ATMS.Data.Criterias;
 using ATMS.Project.Contracts.Commands.Organization;
 using ATMS.Project.Contracts.Models.Organization;
 using ATMS.Project.Contracts.Requests.Organizations;
@@ -14,24 +15,24 @@ public class OrganizationController(IMediator mediator) : ControllerBase
 {
     
     /// <summary>
-    /// Returns a list of all organizations.
+    /// Returns paginated and filtered list of all organizations.
     /// </summary>
     /// <remarks>
-    /// Retrieves all organizations in the system. 
+    /// Retrieves paginated and filtered organizations in the system. 
     /// Supports optional query parameters for filtering or paging via <see cref="GetOrganizationsRequest"/>.
     /// </remarks>
-    /// <param name="request">Query request containing filters.</param>
+    /// <param name="request">Query parameters for filtering, paging, etc.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Returns an array of organizations.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
     /// <response code="403">Resource forbidden.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(OrganizationModel[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResult<OrganizationModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<OrganizationModel[]>> Index(
+    public async Task<ActionResult<PagedResult<OrganizationModel>>> Index(
         [FromQuery] GetOrganizationsRequest request,
         CancellationToken cancellationToken)
     {

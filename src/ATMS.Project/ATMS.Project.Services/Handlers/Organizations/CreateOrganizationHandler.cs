@@ -15,6 +15,7 @@ public class CreateOrganizationHandler(
     {
         var entity = mapper.Map<Organization>(command);
         entity.Id = Guid.NewGuid();
+        entity.CreatedAt = DateTime.UtcNow;
         
         await organizationRepository.CreateAsync(entity, cancellationToken);
 

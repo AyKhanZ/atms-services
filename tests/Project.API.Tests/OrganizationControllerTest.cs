@@ -1,3 +1,4 @@
+using ATMS.Data.Criterias;
 using ATMS.Project.API.Controllers.v1;
 using ATMS.Project.Contracts.Commands.Organization;
 using ATMS.Project.Contracts.Models.Organization;
@@ -21,7 +22,13 @@ public class OrganizationControllerTest : BaseControllerTest
     [Fact]
     public async Task Index_Returns200_WithResult()
     {
-        var expected = new OrganizationItemModel[] { new(), new() };
+        var expected = new PagedResult<OrganizationItemModel>
+        {
+            Items = [ new OrganizationItemModel(), new OrganizationItemModel() ],
+            TotalCount = 1,
+            Page = 1,
+            PageSize = 10
+        };
         var request = new GetOrganizationsRequest();
 
         MediatorMock
