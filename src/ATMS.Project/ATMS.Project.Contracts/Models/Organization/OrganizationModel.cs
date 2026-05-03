@@ -9,4 +9,6 @@ public class OrganizationModel
     public string Voen { get; set; }
     
     public string LogoPath { get; set; }
+    
+    public DateTime CreatedAt { get; set; }
 }

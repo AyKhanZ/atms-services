@@ -24,7 +24,7 @@ public class GetProjectTypeDictionariesHandler(
     
     private async Task<DictionaryModel[]> GetFromDb(string language, CancellationToken cancellationToken)
     {
-        var genders = await dictionariesRepository.GetProjectTypesAsync(cancellationToken);
-        return genders.Select(g => g.ToDictionaryModel(g.Translations, language)).ToArray();
+        var dictionaries = await dictionariesRepository.GetProjectTypesAsync(cancellationToken);
+        return dictionaries.Select(g => g.ToDictionaryModel(g.Translations, language)).ToArray();
     }
 }

@@ -24,7 +24,7 @@ public class GetWorkItemPriorityDictionariesHandler(
     
     private async Task<DictionaryModel[]> GetFromDb(string language, CancellationToken cancellationToken)
     {
-        var genders = await dictionariesRepository.GetWorkItemPrioritiesAsync(cancellationToken);
-        return genders.Select(g => g.ToDictionaryModel(g.Translations, language)).ToArray();
+        var dictionaries = await dictionariesRepository.GetWorkItemPrioritiesAsync(cancellationToken);
+        return dictionaries.Select(g => g.ToDictionaryModel(g.Translations, language)).ToArray();
     }
 }

@@ -6,6 +6,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Contracts\ATMS.Contracts.csproj" />

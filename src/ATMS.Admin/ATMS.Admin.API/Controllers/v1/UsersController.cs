@@ -15,7 +15,7 @@ public class UsersController(IMediator mediator) : ControllerBase
 {
     
     /// <summary>
-    /// Retrieves a list of users with optional filtering.
+    /// Retrieves paginated and filtered list of users with optional filtering.
     /// </summary>
     /// <param name="request">Query parameters for filtering, paging, etc.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

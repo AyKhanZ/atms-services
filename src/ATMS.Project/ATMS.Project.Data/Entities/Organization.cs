@@ -3,7 +3,7 @@ using ATMS.Data.Interfaces;
 
 namespace ATMS.Project.Data.Entities;
 
-public class Organization : BaseEntity, ISoftDeletable
+public class Organization : BaseEntity, ISoftDeletable, IAuditable
 {
     public string Title { get; set; }
     
@@ -22,4 +22,7 @@ public class Organization : BaseEntity, ISoftDeletable
     public DateTime? DeletedAt { get; set; }
     
     public Guid? DeletedById { get; set; }
+    
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }

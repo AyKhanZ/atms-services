@@ -66,4 +66,10 @@
     <data name="PhoneNumberValidValue" xml:space="preserve">
         <value>Phone number is not valid. Please include the country code (e.g. +994501234567).</value>
     </data>
+    <data name="UserStatusNotSupported" xml:space="preserve">
+        <value>The entered user status is not exist.</value>
+    </data>
+    <data name="UserStatusRequired" xml:space="preserve">
+        <value>'User status' field is required.</value>
+    </data>
 </root>

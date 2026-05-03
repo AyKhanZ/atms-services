@@ -24,7 +24,9 @@ namespace ATMS.Project.Data.Migrations
                     LogoPath = table.Column<string>(type: "text", nullable: true, defaultValue: "default-org.png"),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedById = table.Column<Guid>(type: "uuid", nullable: true)
+                    DeletedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1114,6 +1116,11 @@ namespace ATMS.Project.Data.Migrations
                     { 8, "ru", "Задача", 3 },
                     { 9, "az", "Tapşırıq", 3 }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Organizations_CreatedAt",
+                table: "Organizations",
+                column: "CreatedAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Organizations_Title",

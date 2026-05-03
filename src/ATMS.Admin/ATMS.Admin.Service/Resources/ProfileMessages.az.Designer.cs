@@ -202,5 +202,23 @@ namespace ATMS.Admin.Service.Resources {
                 return ResourceManager.GetString("PositionRequired", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Daxil edilən istifadəçi statusu mövcud deyil..
+        /// </summary>
+        internal static string UserStatusNotSupported {
+            get {
+                return ResourceManager.GetString("UserStatusNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;İstifadəçi statusu&apos; sahəsi doldurulmalıdır..
+        /// </summary>
+        internal static string UserStatusRequired {
+            get {
+                return ResourceManager.GetString("UserStatusRequired", resourceCulture);
+            }
+        }
     }
 }

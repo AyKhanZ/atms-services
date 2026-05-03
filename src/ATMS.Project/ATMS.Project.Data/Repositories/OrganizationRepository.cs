@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using ATMS.Data.Criterias;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -16,11 +17,28 @@ public class OrganizationRepository(ProjectDbContext context) : IOrganizationRep
             .FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
-    public Task<List<Organization>> GetAsync(CancellationToken cancellationToken)
+    public async Task<PagedResult<Organization>> GetAsync(
+        ACriteria<Organization> filterCriteria,
+        PaginationCriteria<Organization> pagination,
+        CancellationToken cancellationToken)
     {
-        return context.Organizations
+        var query = context.Organizations
             .AsNoTracking()
-            .ToListAsync(cancellationToken);
+            .AsSplitQuery();
+        
+        query = filterCriteria.Apply(query);
+        
+        var totalCount = await query.CountAsync(cancellationToken);
+        
+        var result = await pagination.Apply(query).ToListAsync(cancellationToken);
+        
+        return new PagedResult<Organization>
+        {
+            Items      = result.ToArray(),
+            TotalCount = totalCount,
+            Page       = pagination.Page,
+            PageSize   = pagination.PageSize
+        };
     }
 
     public Task<Organization?> FindAsync(Expression<Func<Organization, bool>> predicate, CancellationToken cancellationToken)

@@ -15,6 +15,8 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
         builder.HasIndex(e => e.Voen)
             .IsUnique();
             
+        builder.HasIndex(u => u.CreatedAt);
+        
         
         builder.Property(e => e.Title)
             .IsRequired()
@@ -23,6 +25,9 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
         builder.Property(e => e.Voen)
             .IsRequired()
             .HasMaxLength(20);
+        
+        builder.Property(e => e.CreatedAt)
+            .IsRequired();
 
         builder.Property(e => e.LogoPath)
             .HasDefaultValue(DefaultValues.OrganizationLogo);

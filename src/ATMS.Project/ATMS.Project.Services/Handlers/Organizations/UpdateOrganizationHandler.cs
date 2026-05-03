@@ -21,6 +21,7 @@ public class UpdateOrganizationHandler(IOrganizationRepository organizationRepos
         
         entity.Title = command.Title;
         entity.Voen = command.Voen;
+        entity.UpdatedAt = DateTime.UtcNow;
         if (command.LogoPath != null)
         {
             entity.LogoPath = command.LogoPath;  

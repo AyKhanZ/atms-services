@@ -66,4 +66,10 @@
     <data name="PhoneNumberValidValue" xml:space="preserve">
         <value>Telefon nömrəsi etibarlı deyil. Zəhmət olmasa ölkə kodunu daxil edin (məsələn, +994501234567).</value>
     </data>
+    <data name="UserStatusNotSupported" xml:space="preserve">
+        <value>Daxil edilən istifadəçi statusu mövcud deyil.</value>
+    </data>
+    <data name="UserStatusRequired" xml:space="preserve">
+        <value>'İstifadəçi statusu' sahəsi doldurulmalıdır.</value>
+    </data>
 </root>

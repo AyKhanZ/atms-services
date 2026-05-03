@@ -66,4 +66,10 @@
     <data name="PhoneNumberValidValue" xml:space="preserve">
         <value>Номер телефона недействителен. Пожалуйста, укажите код страны (например, +994501234567).</value>
     </data>
+    <data name="UserStatusNotSupported" xml:space="preserve">
+        <value>Введённый статус пользователя не существует.</value>
+    </data>
+    <data name="UserStatusRequired" xml:space="preserve">
+        <value>Поле 'Статус пользователя' обязательно для заполнения.</value>
+    </data>
 </root>

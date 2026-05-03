@@ -24,7 +24,7 @@ public class GetWorkTicketTypeDictionariesHandler(
     
     private async Task<DictionaryModel[]> GetFromDb(string language, CancellationToken cancellationToken)
     {
-        var genders = await dictionariesRepository.GetWorkTicketTypesAsync(cancellationToken);
-        return genders.Select(g => g.ToDictionaryModel(g.Translations, language)).ToArray();
+        var dictionaries = await dictionariesRepository.GetWorkTicketTypesAsync(cancellationToken);
+        return dictionaries.Select(g => g.ToDictionaryModel(g.Translations, language)).ToArray();
     }
 }
