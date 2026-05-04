@@ -1,7 +1,9 @@
 ﻿using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Contracts.Models.Me;
+using ATMS.Admin.Contracts.Models.UserProgresses;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.UserProgresses;
 using ATMS.Application.Models;
 using AutoMapper;
 
@@ -31,5 +33,9 @@ public class EntityToModelProfile : Profile
             .ForMember(d => d.Roles, opt => opt.Ignore());
         CreateMap<User, UserListItemModel>()
             .ForMember(d => d.UserStatus, opt => opt.Ignore());
+
+        CreateMap<UserProgress, UserProgressModel>();
+        CreateMap<PersonalInfo, PersonalInfoModel>();
+        CreateMap<InvitedUser, InvitedUsersModel>();
     }
 }

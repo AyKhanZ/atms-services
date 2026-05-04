@@ -22,8 +22,7 @@ public class ChangePasswordValidator : AbstractValidator<ChangePasswordCommand>
             .NotEmpty().WithMessage(AccountMessages.NewPasswordRequired)
             .MinimumLength(6).WithMessage(string.Format(AccountMessages.PasswordTooShort, 6))
             .MaximumLength(40).WithMessage(string.Format(AccountMessages.PasswordTooLong, 40))
-            .Must(IsValidPassword)
-            .WithMessage(AccountMessages.PasswordInvalidFormat);
+            .Must(IsValidPassword).WithMessage(AccountMessages.PasswordInvalidFormat);
     }
 
     private bool IsValidPassword(string password)

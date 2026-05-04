@@ -12,7 +12,7 @@ public class UpdateLanguageValidator : AbstractValidator<UpdateLanguageCommand>
         RuleFor(s => s.Id)
             .NotEmpty().WithMessage(ValidationMessages.IdRequired);
 
-        RuleFor(command => command.Language)
+        RuleFor(s => s.Language)
             .NotEmpty().WithMessage(ProfileMessages.LanguageRequired)
             .Length(2).WithMessage(string.Format(ProfileMessages.LanguageLength, 2));
     }

@@ -12,7 +12,7 @@ public class UpdatePhotoValidator : AbstractValidator<UpdatePhotoCommand>
         RuleFor(s => s.Id)
             .NotEmpty().WithMessage(ValidationMessages.IdRequired);
 
-        RuleFor(command => command.FileName)
+        RuleFor(s => s.FileName)
             .NotEmpty().WithMessage(ProfileMessages.FileNameRequired)
             .MaximumLength(50).WithMessage(string.Format(ProfileMessages.FileNameMaxLength, 50));
     }

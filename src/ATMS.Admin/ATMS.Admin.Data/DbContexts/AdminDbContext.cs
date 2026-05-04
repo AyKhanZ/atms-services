@@ -1,6 +1,7 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Entities.Tokens;
+using ATMS.Admin.Data.Entities.UserProgresses;
 using ATMS.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +35,12 @@ public class AdminDbContext: DbContext
     public DbSet<RefreshRevokedToken> RefreshRevokedTokens { get; set; }
     
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+    #endregion
+    
+    #region UserProgresses
+    public DbSet<UserProgress> UserProgresses { get; set; }
+    public DbSet<PersonalInfo> PersonalInfos { get; set; }
+    public DbSet<InvitedUser> InvitedUsers { get; set; }
     #endregion
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

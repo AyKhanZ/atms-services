@@ -10,7 +10,6 @@ public interface IUserRepository
     Task CreateAsync(User user, CancellationToken cancellationToken);
 
     Task<PagedResult<User>> GetAsync(ACriteria<User> filterCriteria, PaginationCriteria<User> pagination, CancellationToken cancellationToken);
-    Task<List<User>> GetAsync(CancellationToken cancellationToken);
 
     
     Task<User?> GetMeAsync(Guid id, CancellationToken cancellationToken);

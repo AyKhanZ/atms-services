@@ -1,7 +1,7 @@
 ﻿using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Data;
 
-namespace ATMS.Admin.Data.Entities.UserProgress;
+namespace ATMS.Admin.Data.Entities.UserProgresses;
 
 public class PersonalInfo : UserBase
 {
