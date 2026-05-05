@@ -4,7 +4,6 @@ public interface ICurrentUser
 {
     Guid Id { get; }
     Guid RoleId { get; }
+    Guid? OrganizationId { get; }
     string UserType { get; }
-    bool HasCompletedSurvey { get; }
-    bool EmailConfirmed { get; }
 }

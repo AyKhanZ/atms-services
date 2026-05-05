@@ -126,6 +126,40 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PersonalInfo",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Position = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Language = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
+                    AvatarPath = table.Column<string>(type: "text", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserProgressId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GenderId = table.Column<int>(type: "integer", nullable: false),
+                    MaritalStatusId = table.Column<int>(type: "integer", nullable: false),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Surname = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PersonalInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PersonalInfo_Genders_GenderId",
+                        column: x => x.GenderId,
+                        principalTable: "Genders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PersonalInfo_MaritalStatuses_MaritalStatusId",
+                        column: x => x.MaritalStatusId,
+                        principalTable: "MaritalStatuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PermissionTranslation",
                 columns: table => new
                 {
@@ -196,7 +230,7 @@ namespace ATMS.Admin.Data.Migrations
                     UserStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     MaritalStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     GenderId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
-                    Email = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Surname = table.Column<string>(type: "text", nullable: false)
                 },
@@ -247,6 +281,29 @@ namespace ATMS.Admin.Data.Migrations
                         principalTable: "UserStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserProgresses",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserProgressType = table.Column<int>(type: "integer", nullable: false),
+                    CurrentStep = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    LastUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PersonalInfoId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserProgresses", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_UserProgresses_PersonalInfo_PersonalInfoId",
+                        column: x => x.PersonalInfoId,
+                        principalTable: "PersonalInfo",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -310,6 +367,27 @@ namespace ATMS.Admin.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InvitedUser",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserProgressId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Surname = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvitedUser", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InvitedUser_UserProgresses_UserProgressId",
+                        column: x => x.UserProgressId,
+                        principalTable: "UserProgresses",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -519,6 +597,17 @@ namespace ATMS.Admin.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_InvitedUser_Email",
+                table: "InvitedUser",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvitedUser_UserProgressId",
+                table: "InvitedUser",
+                column: "UserProgressId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MaritalStatuses_Code",
                 table: "MaritalStatuses",
                 column: "Code",
@@ -554,6 +643,16 @@ namespace ATMS.Admin.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PersonalInfo_GenderId",
+                table: "PersonalInfo",
+                column: "GenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PersonalInfo_MaritalStatusId",
+                table: "PersonalInfo",
+                column: "MaritalStatusId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshRevokedTokens_Token",
                 table: "RefreshRevokedTokens",
                 column: "Token",
@@ -584,6 +683,11 @@ namespace ATMS.Admin.Data.Migrations
                 name: "IX_Roles_UserType",
                 table: "Roles",
                 column: "UserType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserProgresses_PersonalInfoId",
+                table: "UserProgresses",
+                column: "PersonalInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",
@@ -652,6 +756,9 @@ namespace ATMS.Admin.Data.Migrations
                 name: "GenderTranslation");
 
             migrationBuilder.DropTable(
+                name: "InvitedUser");
+
+            migrationBuilder.DropTable(
                 name: "MaritalStatusTranslation");
 
             migrationBuilder.DropTable(
@@ -673,6 +780,9 @@ namespace ATMS.Admin.Data.Migrations
                 name: "UserStatusTranslation");
 
             migrationBuilder.DropTable(
+                name: "UserProgresses");
+
+            migrationBuilder.DropTable(
                 name: "Permissions");
 
             migrationBuilder.DropTable(
@@ -682,13 +792,16 @@ namespace ATMS.Admin.Data.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
+                name: "PersonalInfo");
+
+            migrationBuilder.DropTable(
+                name: "UserStatuses");
+
+            migrationBuilder.DropTable(
                 name: "Genders");
 
             migrationBuilder.DropTable(
                 name: "MaritalStatuses");
-
-            migrationBuilder.DropTable(
-                name: "UserStatuses");
         }
     }
 }

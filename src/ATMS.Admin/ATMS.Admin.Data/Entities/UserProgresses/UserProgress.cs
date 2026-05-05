@@ -6,9 +6,6 @@ public class UserProgress
 {
     public Guid UserId { get; set; }
     
-    public User User { get; set; }
-    
-    
     public Guid RoleId { get; set; }
     
     public UserProgressTypeEnum UserProgressType { get; set; }
@@ -32,4 +29,6 @@ public class UserProgress
 
     // Invite
     public List<InvitedUser>? InvitedUsers { get; set; }
+    
+    public Guid? OrganizationId { get; set; }
 }

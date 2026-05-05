@@ -5,6 +5,4 @@ namespace ATMS.Admin.Data.Entities.UserProgresses;
 public class InvitedUser : UserBase
 {
     public Guid UserProgressId { get; set; }
-    
-    public UserProgress UserProgress { get; set; }
 }

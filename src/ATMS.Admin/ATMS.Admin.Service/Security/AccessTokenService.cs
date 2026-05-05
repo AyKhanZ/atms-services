@@ -11,6 +11,7 @@ using System.Text;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Constants;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Constants;
 
 namespace ATMS.Admin.Service.Security;
 
@@ -37,13 +38,17 @@ public class AccessTokenService(
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Name, user.Name),
             new(CustomClaimTypes.Surname, user.Surname),
-            new(CustomClaimTypes.HasCompletedSurvey, user.HasCompletedSurvey.ToString().ToLower()),
             new(CustomClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
         var role = roles.First();
         claims.Add(new Claim(CustomClaimTypes.RoleId, role.Id.ToString()));
         claims.Add(new Claim(CustomClaimTypes.UserType, role.Name));
+        
+        if (role.Id != RoleIds.Agent && user.OrganizationId != null)
+        {
+            claims.Add(new Claim(CustomClaimTypes.OrganizationId, user.OrganizationId.ToString()!));
+        }
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

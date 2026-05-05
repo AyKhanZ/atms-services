@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using ATMS.Admin.Contracts.Commands.UserProgresses;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Enums;
 using FluentValidation;
@@ -15,9 +16,22 @@ public class UpdateUserProgressValidator : AbstractValidator<UpdateUserProgressC
         IUserRepository userRepository,
         ICurrentUser currentUser)
     {
+        var userProgressType = Enum.Parse<UserProgressTypeEnum>(currentUser.UserType);
+        
         RuleFor(c => c).Cascade(CascadeMode.Stop)
-            .Must(_ => !currentUser.HasCompletedSurvey).WithMessage("You already completed survey.")
-            .Must(_ => currentUser.EmailConfirmed).WithMessage("Your email should be confirmed.");
+            .CustomAsync(async (_, _, cancellationToken) =>
+            {
+                var user = await userRepository.GetAsync(currentUser.Id, cancellationToken);
+                if (user is null)
+                {
+                    throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+                }
+                
+                if (user.HasCompletedSurvey)
+                {
+                    throw new AuthException(AuthErrorType.AccountInactive, AuthMessages.UserProgressAlreadyCompleted);
+                }
+            });
 
         RuleFor(c => c.Password).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(AccountMessages.NewPasswordRequired)
@@ -33,7 +47,11 @@ public class UpdateUserProgressValidator : AbstractValidator<UpdateUserProgressC
         RuleForEach(c => c.InvitedUsersCommand)
             .SetValidator(new InvitedUsersValidator(userRepository))
             .When(c => c.InvitedUsersCommand is { Count: > 0 }
-                       && Enum.Parse<UserProgressTypeEnum>(currentUser.UserType) == UserProgressTypeEnum.ClientManager);
+                       && userProgressType == UserProgressTypeEnum.ClientManager);
+        
+        RuleFor(c => c.OrganizationId)
+            .Must(id => id.HasValue && id.Value != Guid.Empty).WithMessage(AccountMessages.OrganizationIdRequired)
+            .When(_ => userProgressType is UserProgressTypeEnum.ClientManager or UserProgressTypeEnum.Client);
     }
 
     private bool IsValidPassword(string password)

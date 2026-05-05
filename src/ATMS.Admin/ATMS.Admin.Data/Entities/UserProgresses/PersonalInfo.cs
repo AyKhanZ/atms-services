@@ -17,8 +17,6 @@ public class PersonalInfo : UserBase
 
 
     public Guid UserProgressId { get; set; }
-
-    public UserProgress UserProgress { get; set; }
     
     
     public int GenderId { get; set; }

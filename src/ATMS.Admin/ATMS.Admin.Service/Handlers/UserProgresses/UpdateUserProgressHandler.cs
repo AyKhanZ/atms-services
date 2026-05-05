@@ -24,6 +24,7 @@ public class UpdateUserProgressHandler(
             {
                 UserId = currentUser.Id,
                 RoleId = currentUser.RoleId,
+                OrganizationId = currentUser.OrganizationId,
                 UserProgressType = Enum.Parse<UserProgressTypeEnum>(currentUser.UserType),
                 LastUpdated = DateTime.UtcNow
             };
@@ -35,15 +36,15 @@ public class UpdateUserProgressHandler(
             progress.PasswordHash = passwordHasherService.Hash(command.Password);
         }
         
-        await UpdateInvitedUsersAsync(progress, command.InvitedUsersCommand, cancellationToken);
-        await UpdatePersonalInfoAsync(progress, command.PersonalInfoCommand, cancellationToken);
+        UpdateInvitedUsers(progress, command.InvitedUsersCommand);
+        UpdatePersonalInfo(progress, command.PersonalInfoCommand);
         
         UpdateCurrentStep(progress);
         
         await userProgressRepository.SaveAsync(cancellationToken);
     }
 
-    private async Task UpdatePersonalInfoAsync(UserProgress progress, PersonalInfoCommand? personalInfoCommand, CancellationToken cancellationToken)
+    private void UpdatePersonalInfo(UserProgress progress, PersonalInfoCommand? personalInfoCommand)
     {
         if (personalInfoCommand is null) return;
         
@@ -63,28 +64,56 @@ public class UpdateUserProgressHandler(
         progress.PersonalInfo.MaritalStatusId = personalInfoCommand.MaritalStatusId;
     }
 
-    private async Task UpdateInvitedUsersAsync(UserProgress userProgress, List<InvitedUsersCommand>? invitedUsersCommand, CancellationToken cancellationToken)
+    private void UpdateInvitedUsers(UserProgress userProgress, List<InvitedUsersCommand>? invitedUsersCommand)
     {
         if (invitedUsersCommand is null) return;
         
-        // event send to queue
+        userProgress.InvitedUsers?.Clear();
+        
+        userProgress.InvitedUsers = invitedUsersCommand.Select(invitedUser => new InvitedUser
+        {
+            Id = Guid.NewGuid(),
+            Name = invitedUser.Name,
+            Surname = invitedUser.Surname,
+            Email = invitedUser.Email,
+            UserProgressId = userProgress.UserId
+        }).ToList();
     }
     
     private void UpdateCurrentStep(UserProgress userProgress)
     {
-        userProgress.CurrentStep = userProgress switch
+        var hasPersonalInfo = userProgress.PersonalInfo is not null;
+        var hasPassword = userProgress.PasswordHash is not null;
+        var hasInvitedUsers = userProgress.InvitedUsers?.Count > 0;
+
+        var isClientManager = userProgress.UserProgressType == UserProgressTypeEnum.ClientManager;
+
+        // ClientManager — 3/3 steps
+        if (isClientManager)
         {
-            { PersonalInfo: not null, PasswordHash: not null, InvitedUsers.Count: > 0 } => 3,
+            var steps = 0;
 
-            { InvitedUsers.Count: > 0, PasswordHash: not null }
-                or { PersonalInfo: not null, PasswordHash: not null }
-                or { PersonalInfo: not null, InvitedUsers.Count: > 0 } => 2,
+            if (hasPersonalInfo) steps++;
+            if (hasPassword) steps++;
+            if (hasInvitedUsers) steps++;
 
-            { PersonalInfo: not null }
-                or { PasswordHash: not null }
-                or { InvitedUsers.Count: > 0 } => 1,
+            userProgress.CurrentStep = (ushort)steps;
+            return;
+        }
 
-            _ => 0
-        };
+        // Client / Agent
+        if (hasPersonalInfo && hasPassword)
+        {
+            userProgress.CurrentStep = 2;
+        }
+        // Anyone — 1 step
+        else if (hasPersonalInfo || hasPassword)
+        {
+            userProgress.CurrentStep = 1;
+        }
+        else
+        {
+            userProgress.CurrentStep = 0;
+        }
     }
 }

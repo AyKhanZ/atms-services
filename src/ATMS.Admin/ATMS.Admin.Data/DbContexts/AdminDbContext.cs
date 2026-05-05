@@ -39,8 +39,6 @@ public class AdminDbContext: DbContext
     
     #region UserProgresses
     public DbSet<UserProgress> UserProgresses { get; set; }
-    public DbSet<PersonalInfo> PersonalInfos { get; set; }
-    public DbSet<InvitedUser> InvitedUsers { get; set; }
     #endregion
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

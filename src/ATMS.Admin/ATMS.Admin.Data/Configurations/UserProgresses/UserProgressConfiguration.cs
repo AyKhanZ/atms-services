@@ -25,24 +25,5 @@ public class UserProgressConfiguration : IEntityTypeConfiguration<UserProgress>
 
         builder.Property(x => x.LastUpdated)
             .IsRequired();
-
-        // 1:1 with User
-        builder.HasOne(x => x.User)
-            .WithOne()
-            .HasForeignKey<UserProgress>(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // 1:1 with PersonalInfo
-        builder.HasOne(x => x.PersonalInfo)
-            .WithOne(x => x.UserProgress)
-            .HasForeignKey<PersonalInfo>(x => x.UserProgressId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired(false);
-
-        // 1:N with InvitedUsers
-        builder.HasMany(x => x.InvitedUsers)
-            .WithOne(x => x.UserProgress)
-            .HasForeignKey(x => x.UserProgressId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

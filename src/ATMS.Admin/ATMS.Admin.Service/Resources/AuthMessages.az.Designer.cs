@@ -21,7 +21,7 @@ namespace ATMS.Admin.Service.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class AuthMessages_az {
+    public class AuthMessages_az {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -35,7 +35,7 @@ namespace ATMS.Admin.Service.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ATMS.Admin.Service.Resources.AuthMessages.az", typeof(AuthMessages_az).Assembly);
@@ -50,7 +50,7 @@ namespace ATMS.Admin.Service.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -62,7 +62,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Hesab bloklanıb. {0} dəqiqədən sonra yenidən cəhd edin..
         /// </summary>
-        internal static string AccountInactive {
+        public static string AccountInactive {
             get {
                 return ResourceManager.GetString("AccountInactive", resourceCulture);
             }
@@ -71,7 +71,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Hesabınız artıq aktiv deyil. Zəhmət olmasa dəstək xidməti ilə əlaqə saxlayın..
         /// </summary>
-        internal static string AccountLocked {
+        public static string AccountLocked {
             get {
                 return ResourceManager.GetString("AccountLocked", resourceCulture);
             }
@@ -80,7 +80,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Email təsdiqlənməyib..
         /// </summary>
-        internal static string EmailNotConfirmed {
+        public static string EmailNotConfirmed {
             get {
                 return ResourceManager.GetString("EmailNotConfirmed", resourceCulture);
             }
@@ -89,7 +89,7 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Email və ya şifrə yanlışdır..
         /// </summary>
-        internal static string InvalidLoginCredentials {
+        public static string InvalidLoginCredentials {
             get {
                 return ResourceManager.GetString("InvalidLoginCredentials", resourceCulture);
             }
@@ -98,9 +98,27 @@ namespace ATMS.Admin.Service.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Token etibarsızdır..
         /// </summary>
-        internal static string InvalidToken {
+        public static string InvalidToken {
             get {
                 return ResourceManager.GetString("InvalidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Siz artıq anketi tamamlamısınız. Zəhmət olmasa dəstəklə əlaqə saxlayın..
+        /// </summary>
+        public static string UserProgressAlreadyCompleted {
+            get {
+                return ResourceManager.GetString("UserProgressAlreadyCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zəhmət olmasa, göndərməzdən əvvəl bütün mərhələləri tamamlayın..
+        /// </summary>
+        public static string UserProgressNotAllStepsCompleted {
+            get {
+                return ResourceManager.GetString("UserProgressNotAllStepsCompleted", resourceCulture);
             }
         }
     }

@@ -39,6 +39,21 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
         }
     }
     
+    public Guid? OrganizationId
+    {
+        get
+        {
+            var claim = httpContextAccessor.HttpContext?.User
+                .FindFirst(CustomClaimTypes.OrganizationId)?.Value;
+
+            if (claim is null || !Guid.TryParse(claim, out var orgId))
+            {
+                throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
+            }
+            return orgId;
+        }
+    }
+    
     public string UserType
     {
         get
@@ -47,39 +62,6 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
                 .FindFirst(CustomClaimTypes.UserType)?.Value;
 
             return claim ?? throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
-        }
-    }
-
-    
-    public bool HasCompletedSurvey
-    {
-        get
-        {
-            var claim = httpContextAccessor.HttpContext?.User
-                .FindFirst(CustomClaimTypes.HasCompletedSurvey)?.Value;
-
-            if (claim is null || !bool.TryParse(claim, out var hasCompletedSurvey))
-            {
-                throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
-            }
-
-            return hasCompletedSurvey;
-        }
-    }
-    
-    public bool EmailConfirmed
-    {
-        get
-        {
-            var claim = httpContextAccessor.HttpContext?.User
-                .FindFirst(CustomClaimTypes.EmailConfirmed)?.Value;
-
-            if (claim is null || !bool.TryParse(claim, out var emailConfirmed))
-            {
-                throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
-            }
-
-            return emailConfirmed;
         }
     }
 }

@@ -39,4 +39,10 @@
     <data name="InvalidLoginCredentials" xml:space="preserve">
         <value>Invalid email or password .</value>
     </data>
+    <data name="UserProgressAlreadyCompleted" xml:space="preserve">
+        <value>You have already completed the survey. Please contact support.</value>
+    </data>
+    <data name="UserProgressNotAllStepsCompleted" xml:space="preserve">
+        <value>Please complete all required steps before submitting.</value>
+    </data>
 </root>
