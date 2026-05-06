@@ -24,6 +24,20 @@
     Tool 'dotnet-ef' was successfully updated from version '9.0.4' to version '10.0.5'.
 ```
 
+```angular2html
+PS C:\Projects\Learning\.Net\src> dotnet ef database update --project src\ATMS.Admin\ATMS.Admin.Data --startup-project src\ATMS.Admin\ATMS.Admin.API
+Could not execute because the specified command or file was not found.
+Possible reasons for this include:
+  * You misspelled a built-in dotnet command.
+  * You intended to execute a .NET program, but dotnet-ef does not exist.
+  * You intended to run a global tool, but a dotnet-prefixed executable with this name could not be found on the PATH.
+
+dotnet new tool-manifest
+dotnet tool install dotnet-ef
+dotnet tool run dotnet-ef database update --project src\ATMS.Admin\ATMS.Admin.Data --startup-project src\ATMS.Admin\ATMS.Admin.API
+dotnet tool run dotnet-ef database update --project src\ATMS.Project\ATMS.Project.Data --startup-project src\ATMS.Project\ATMS.Project.API
+```
+
 ---
 
 ```aiignore

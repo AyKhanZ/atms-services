@@ -1,3 +1,5 @@
+using ATMS.Admin.Service.Consumers.Users;
+using ATMS.Messaging.Infrastructure;
 using ATMS.Messaging.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +12,9 @@ public static class EventMessagesModule
         this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMessagingServices(configuration);
+        
+        services.AddSingleton<UserInvitedConsumer>();
+        services.AddHostedService<ConsumerHostedService<UserInvitedConsumer>>();
         
         return services;
     }

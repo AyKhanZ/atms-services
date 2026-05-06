@@ -15,7 +15,7 @@ public static class MessagingModule
         
         services.AddSingleton(factory);
         services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
-        services.AddSingleton<MessagingConstantsInitializer>();
+        services.AddSingleton<MessagingInitializer>();
         
         return services;
     }

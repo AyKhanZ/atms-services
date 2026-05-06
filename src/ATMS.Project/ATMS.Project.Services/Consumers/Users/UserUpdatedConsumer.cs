@@ -12,7 +12,7 @@ public class UserUpdatedConsumer(
     IServiceScopeFactory scopeFactory,
     ILogger<UserCreatedConsumer> logger)
     : RabbitMqConsumerBase<UserUpdatedEvent>(connectionFactory, scopeFactory, logger,
-        MessagingConstants.Queues.ProjectUserCreated)
+        MessagingConstants.Queues.ProjectUserUpdated)
 {
     protected override async Task HandleAsync(UserUpdatedEvent message, IServiceProvider serviceProvider,
         CancellationToken cancellationToken)
