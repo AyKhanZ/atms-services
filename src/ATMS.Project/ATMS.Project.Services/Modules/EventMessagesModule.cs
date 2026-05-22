@@ -15,9 +15,9 @@ public static class EventMessagesModule
         
         services.AddSingleton<UserCreatedConsumer>();
         services.AddHostedService<ConsumerHostedService<UserCreatedConsumer>>();
-        //
-        // services.AddSingleton<UserUpdatedConsumer>();
-        // services.AddHostedService<ConsumerHostedService<UserUpdatedConsumer>>();
+        
+        services.AddSingleton<UserUpdatedConsumer>();
+        services.AddHostedService<ConsumerHostedService<UserUpdatedConsumer>>();
         
         return services;
     }

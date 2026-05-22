@@ -53,7 +53,7 @@ public class SubmitUserProgressHandler(
             
             await messagePublisher.PublishAsync(
                 MessagingConstants.Exchanges.UserEvents,
-                MessagingConstants.RoutingKeys.UserCreated,
+                MessagingConstants.RoutingKeys.UserInvited,
                 inviteEvent,
                 cancellationToken);
         }
