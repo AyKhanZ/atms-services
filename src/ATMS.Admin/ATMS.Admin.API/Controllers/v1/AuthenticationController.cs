@@ -57,7 +57,6 @@ public class AuthenticationController(IMediator mediator) : ControllerBase
     /// <response code="400">Validation error, e.g., missing fields or invalid data.</response>
     /// <response code="401">Unauthorized access, no access token provided by a client</response>
     /// <response code="500">Unhandled server error</response>
-    [Authorize]
     [HttpPost("refresh")]
     [ProducesResponseType(typeof(AccessInfoModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]
