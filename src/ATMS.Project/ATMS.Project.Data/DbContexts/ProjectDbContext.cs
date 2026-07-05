@@ -59,7 +59,7 @@ public class ProjectDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5434;Database=atms_project;Username=admin;Password=p@ssw0rd!");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5435;Database=atms_project;Username=admin;Password=p@ssw0rd!");
         }
     }
 

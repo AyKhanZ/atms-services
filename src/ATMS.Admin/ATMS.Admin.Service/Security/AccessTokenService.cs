@@ -45,7 +45,7 @@ public class AccessTokenService(
         claims.Add(new Claim(CustomClaimTypes.RoleId, role.Id.ToString()));
         claims.Add(new Claim(CustomClaimTypes.UserType, role.Name));
         
-        if (role.Id != RoleIds.Agent && user.OrganizationId != null)
+        if (role.Id != RoleIds.Employee && user.OrganizationId != null)
         {
             claims.Add(new Claim(CustomClaimTypes.OrganizationId, user.OrganizationId.ToString()!));
         }

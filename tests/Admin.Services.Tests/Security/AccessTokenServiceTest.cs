@@ -64,13 +64,13 @@ public class AccessTokenServiceTest : BaseServiceTest
     }
     
     [Fact]
-    public async Task GenerateTokenAsync_AddsOrganizationIdClaim_When_NotAgent()
+    public async Task GenerateTokenAsync_AddsOrganizationIdClaim_When_NotEmployee()
     {
         // Arrange
         var user = CreateUser();
         user.OrganizationId = Guid.NewGuid();
 
-        var roleId = Guid.NewGuid(); // не Agent
+        var roleId = Guid.NewGuid(); // not Employee
 
         UserRepositoryMock
             .Setup(r => r.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
@@ -90,14 +90,14 @@ public class AccessTokenServiceTest : BaseServiceTest
     }
     
     [Fact]
-    public async Task GenerateTokenAsync_DoesNotAddOrganizationIdClaim_ForAgent()
+    public async Task GenerateTokenAsync_DoesNotAddOrganizationIdClaim_ForEmployee()
     {
         var user = CreateUser();
         user.OrganizationId = Guid.NewGuid();
 
         UserRepositoryMock
             .Setup(r => r.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(CreateRoles(RoleIds.Agent, "Agent"));
+            .ReturnsAsync(CreateRoles(RoleIds.Employee, "Employee"));
 
         var result = await _accessTokenService.GenerateTokenAsync(user, CancellationToken.None);
 

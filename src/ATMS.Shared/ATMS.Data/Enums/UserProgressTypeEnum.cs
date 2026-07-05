@@ -4,5 +4,5 @@ public enum UserProgressTypeEnum
 {
     Client = 1,
     ClientManager,
-    Agent
+    Employee
 }

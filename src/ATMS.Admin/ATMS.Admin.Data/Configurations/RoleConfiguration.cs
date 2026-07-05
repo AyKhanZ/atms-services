@@ -35,10 +35,20 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         builder.HasData(
             new
             {
+                Id = RoleIds.SuperAdmin,
+                Name = "SuperAdmin",
+                Description = "Technical administrator with all system permissions",
+                IsSystem = true,
+                IsAdmin = true,
+                UserType = (int)UserTypeEnum.SuperAdmin
+            },
+            new
+            {
                 Id = RoleIds.ClientManager,
                 Name = "Client Manager",
                 Description = "Client Manager Role",
                 IsSystem = true,
+                IsAdmin = false,
                 UserType = (int)UserTypeEnum.Client
             },
             new
@@ -47,15 +57,17 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
                 Name = "Client",
                 Description = "Client Role",
                 IsSystem = true,
+                IsAdmin = false,
                 UserType = (int)UserTypeEnum.Client
             },
             new
             {
-                Id = RoleIds.Agent,
-                Name = "Agent",
-                Description = "Agent Role",
+                Id = RoleIds.Employee,
+                Name = "Employee",
+                Description = "BAIM employee role",
                 IsSystem = true,
-                UserType = (int)UserTypeEnum.Agent
+                IsAdmin = false,
+                UserType = (int)UserTypeEnum.Employee
             }
         );
     }

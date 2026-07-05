@@ -45,7 +45,7 @@ public class AdminDbContext: DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=atms_admin;Username=admin;Password=p@ssw0rd!");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5434;Database=atms_admin;Username=admin;Password=p@ssw0rd!");
         }
     }
     

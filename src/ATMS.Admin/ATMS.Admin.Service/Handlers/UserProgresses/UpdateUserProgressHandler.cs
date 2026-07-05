@@ -101,7 +101,7 @@ public class UpdateUserProgressHandler(
             return;
         }
 
-        // Client / Agent
+        // Client / Employee
         if (hasPersonalInfo && hasPassword)
         {
             userProgress.CurrentStep = 2;

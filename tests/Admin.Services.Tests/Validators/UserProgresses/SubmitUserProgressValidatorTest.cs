@@ -95,7 +95,7 @@ public class SubmitUserProgressValidatorTest : BaseValidatorTest
 
     [Theory]
     [InlineData(UserProgressTypeEnum.Client, 2, true)]
-    [InlineData(UserProgressTypeEnum.Agent, 2, true)]
+    [InlineData(UserProgressTypeEnum.Employee, 2, true)]
     [InlineData(UserProgressTypeEnum.ClientManager, 3, true)]
     [InlineData(UserProgressTypeEnum.ClientManager, 2, false)]
     [InlineData(UserProgressTypeEnum.Client, 1, false)]

@@ -2,6 +2,7 @@ namespace ATMS.Data.Enums;
 
 public enum UserTypeEnum
 {
-    Client = 1,
-    Agent
+    SuperAdmin = 1,
+    Employee,
+    Client
 }

@@ -120,10 +120,10 @@ public class UpdateUserProgressHandlerTest : BaseHandlerTest
     [Theory]
     [InlineData(UserProgressTypeEnum.Client, false, false, 0)]
     [InlineData(UserProgressTypeEnum.Client, true, false, 1)]
-    [InlineData(UserProgressTypeEnum.Agent, false, true, 1)]
+    [InlineData(UserProgressTypeEnum.Employee, false, true, 1)]
     [InlineData(UserProgressTypeEnum.Client, true, true, 2)]
-    [InlineData(UserProgressTypeEnum.Agent, true, true, 2)]
-    public async Task Handle_UpdatesCurrentStep_ForClientAndAgent(
+    [InlineData(UserProgressTypeEnum.Employee, true, true, 2)]
+    public async Task Handle_UpdatesCurrentStep_ForClientAndEmployee(
         UserProgressTypeEnum progressType,
         bool hasPersonalInfo,
         bool hasPassword,
