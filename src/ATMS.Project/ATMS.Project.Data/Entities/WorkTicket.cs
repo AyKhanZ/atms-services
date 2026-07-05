@@ -20,4 +20,6 @@ public class WorkTicket : WorkItemEntity
 
     
     public ICollection<WorkTask> WorkTasks { get; set; } = [];
+
+    public ICollection<Meeting> Meetings { get; set; } = [];
 }

@@ -49,6 +49,8 @@ public class WorkProject : AuditableEntity, ISoftDeletable
     public ICollection<WorkProjectParticipant> WorkProjectParticipants { get; set; } = [];
     
     public ICollection<WorkGroup> WorkGroups { get; set; } = [];
+
+    public ICollection<Meeting> Meetings { get; set; } = [];
     
     
     public bool IsDeleted { get; set; }

@@ -8,6 +8,8 @@ public class WorkProjectParticipantConfiguration : IEntityTypeConfiguration<Work
 {
     public void Configure(EntityTypeBuilder<WorkProjectParticipant> builder)
     {
+        builder.ToTable("ProjectParticipants");
+
         builder.HasIndex(e => new { e.WorkProjectId, e.UserId })
             .IsUnique();
 
