@@ -4,6 +4,7 @@ using ATMS.Admin.Service.Infrastructure.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Constants;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 
@@ -13,7 +14,6 @@ public sealed class DataInitializer(
     IConfiguration configuration,
     IUserRepository userRepository,
     IRoleRepository roleRepository,
-    IPermissionRepository permissionRepository,
     IPasswordHasherService passwordHasherService) : IDataInitializer
 {
     
@@ -24,35 +24,7 @@ public sealed class DataInitializer(
     
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        await EnsureSuperAdminRoleAsync(cancellationToken);
         await EnsureSuperAdminUserAsync(cancellationToken);
-    }
-
-    private async Task EnsureSuperAdminRoleAsync(CancellationToken cancellationToken)
-    {
-        var roleExists = await roleRepository.IsExistAsync(
-            r => r.Name == _adminOptions.RoleName, cancellationToken);
-
-        if (roleExists)
-        {
-            return;
-        }
-        var permissionIds = await permissionRepository.GetIdsAsync(cancellationToken);
-
-        var role = new Role
-        {
-            Id = Guid.NewGuid(),
-            Name = _adminOptions.RoleName,
-            Description = "Super administrator with all permissions",
-            IsSystem = true,
-            IsAdmin = true,
-            RolePermissions = permissionIds.Select(id => new RolePermission
-            {
-                PermissionId = id
-            }).ToList()
-        };
-
-        await roleRepository.CreateAsync(role, cancellationToken);
     }
 
     private async Task EnsureSuperAdminUserAsync(CancellationToken cancellationToken)
@@ -64,7 +36,14 @@ public sealed class DataInitializer(
         {
             return;
         }
-        var role = await roleRepository.GetAsync(r => r.Name == _adminOptions.RoleName, cancellationToken);
+        var role = await roleRepository.GetAsync(r => r.Id == RoleIds.SuperAdmin, cancellationToken);
+
+        if (role is null)
+        {
+            throw new ConfigurationException(
+                ConfigurationErrorType.MissingSeedData,
+                string.Format(ExceptionMessages.MissingSeedData, RoleIds.SuperAdmin));
+        }
 
         var userId = Guid.NewGuid();
 
@@ -76,8 +55,9 @@ public sealed class DataInitializer(
             Surname = _adminOptions.Surname,
             PasswordHash = passwordHasherService.Hash(_adminOptions.Password),
             EmailConfirmed = true,
+            IsAdmin = true,
             HasCompletedSurvey = true,
-            UserRoles = [new UserRole { RoleId = role!.Id, UserId = userId }]
+            UserRoles = [new UserRole { RoleId = role.Id, UserId = userId }]
         };
 
         await userRepository.CreateAsync(user, cancellationToken);

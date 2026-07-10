@@ -9,20 +9,21 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Admin.Service.Security.Constants;
+using ATMS.Application.Constants;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Constants;
 
 namespace ATMS.Admin.Service.Security;
 
 public class AccessTokenService(
     IUserRepository userRepository,
     IConfiguration configuration
-    ) : IAccessTokenService
+) : IAccessTokenService
 {
     private readonly JwtOptions _jwtOptions =
         configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
+        ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
+            string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
     public async Task<AccessTokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)
     {
@@ -37,11 +38,17 @@ public class AccessTokenService(
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Name, user.Name),
             new(CustomClaimTypes.Surname, user.Surname),
-            new(CustomClaimTypes.HasCompletedSurvey, user.HasCompletedSurvey.ToString().ToLower()),
             new(CustomClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
-        claims.AddRange(roles.Select(role => new Claim(CustomClaimTypes.Role, role.Name)));
+        var role = roles.First();
+        claims.Add(new Claim(CustomClaimTypes.RoleId, role.Id.ToString()));
+        claims.Add(new Claim(CustomClaimTypes.UserType, role.Name));
+        
+        if (role.Id != RoleIds.Employee && user.OrganizationId != null)
+        {
+            claims.Add(new Claim(CustomClaimTypes.OrganizationId, user.OrganizationId.ToString()!));
+        }
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

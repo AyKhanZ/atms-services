@@ -1,5 +1,4 @@
-﻿using ATMS.Data.Constants;
-using ATMS.Data.Enums;
+﻿using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -10,6 +9,9 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 {
     public void Configure(EntityTypeBuilder<WorkTask> builder)
     {
+        builder.ToTable("Tasks", t =>
+            t.HasCheckConstraint("CK_Tasks_Level", "\"Level\" <= 1"));
+
         builder.HasIndex(e => e.Code)
             .IsUnique();
 
@@ -41,10 +43,6 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 
         builder.Property(e => e.CreatedById)
             .IsRequired();
-
-
-        builder.ToTable(t =>
-            t.HasCheckConstraint("CK_WorkTask_Level", "\"Level\" <= 1"));
 
 
         builder.HasOne(t => t.ParentWorkTask)

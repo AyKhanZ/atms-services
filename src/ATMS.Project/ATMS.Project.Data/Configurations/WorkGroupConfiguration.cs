@@ -1,5 +1,4 @@
-﻿using ATMS.Data.Constants;
-using ATMS.Data.Enums;
+﻿using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -10,6 +9,9 @@ public class WorkGroupConfiguration : IEntityTypeConfiguration<WorkGroup>
 {
     public void Configure(EntityTypeBuilder<WorkGroup> builder)
     {
+        builder.ToTable("ProjectGroups", t =>
+            t.HasCheckConstraint("CK_ProjectGroups_Level", "\"Level\" <= 1"));
+
         builder.HasIndex(e => new { e.WorkProjectId, e.ParentWorkGroupId, e.Title })
             .IsUnique();
             
@@ -39,10 +41,6 @@ public class WorkGroupConfiguration : IEntityTypeConfiguration<WorkGroup>
             .HasDefaultValue((int)WorkGroupStatusEnum.Planned)
             .IsRequired();
             
-        builder.ToTable(t =>
-            t.HasCheckConstraint("CK_WorkGroup_Level", "\"Level\" <= 1"));
-            
-            
         builder.HasOne(g => g.ParentWorkGroup)
             .WithMany(g => g.Children)
             .HasForeignKey(g => g.ParentWorkGroupId)
@@ -51,6 +49,7 @@ public class WorkGroupConfiguration : IEntityTypeConfiguration<WorkGroup>
         builder.HasMany(g => g.WorkTickets)
             .WithOne(t => t.WorkGroup)
             .HasForeignKey(t => t.WorkGroupId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
+
     }
 }

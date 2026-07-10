@@ -946,26 +946,38 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasData(
                         new
                         {
+                            Id = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f"),
+                            Description = "Technical administrator with all system permissions",
+                            IsAdmin = true,
+                            IsSystem = true,
+                            Name = "SuperAdmin",
+                            UserType = 1
+                        },
+                        new
+                        {
                             Id = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5"),
                             Description = "Client Manager Role",
+                            IsAdmin = false,
                             IsSystem = true,
                             Name = "Client Manager",
-                            UserType = 1
+                            UserType = 3
                         },
                         new
                         {
                             Id = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8"),
                             Description = "Client Role",
+                            IsAdmin = false,
                             IsSystem = true,
                             Name = "Client",
-                            UserType = 1
+                            UserType = 3
                         },
                         new
                         {
                             Id = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53"),
-                            Description = "Agent Role",
+                            Description = "BAIM employee role",
+                            IsAdmin = false,
                             IsSystem = true,
-                            Name = "Agent",
+                            Name = "Employee",
                             UserType = 2
                         });
                 });
@@ -987,6 +999,81 @@ namespace ATMS.Admin.Data.Migrations
                     b.ToTable("RolePermissions");
 
                     b.HasData(
+                        new
+                        {
+                            PermissionId = 1,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 2,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 3,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 5,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 6,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 7,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 8,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 9,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 10,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 12,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 13,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 14,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
+                        new
+                        {
+                            PermissionId = 15,
+                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
+                        },
                         new
                         {
                             PermissionId = 1,
@@ -1161,7 +1248,8 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
@@ -1256,6 +1344,137 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("UserStatusId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.InvitedUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UserProgressId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("UserProgressId");
+
+                    b.ToTable("InvitedUser");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.PersonalInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AvatarPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("GenderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
+
+                    b.Property<int>("MaritalStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UserProgressId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GenderId");
+
+                    b.HasIndex("MaritalStatusId");
+
+                    b.ToTable("PersonalInfo");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.UserProgress", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CurrentStep")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("OrganizationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("PersonalInfoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("UserProgressType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("PersonalInfoId");
+
+                    b.ToTable("UserProgresses");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.UserRole", b =>
@@ -1393,6 +1612,43 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("UserStatus");
                 });
 
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.InvitedUser", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.UserProgresses.UserProgress", null)
+                        .WithMany("InvitedUsers")
+                        .HasForeignKey("UserProgressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.PersonalInfo", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Gender", "Gender")
+                        .WithMany()
+                        .HasForeignKey("GenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", "MaritalStatus")
+                        .WithMany()
+                        .HasForeignKey("MaritalStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gender");
+
+                    b.Navigation("MaritalStatus");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.UserProgress", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.UserProgresses.PersonalInfo", "PersonalInfo")
+                        .WithMany()
+                        .HasForeignKey("PersonalInfoId");
+
+                    b.Navigation("PersonalInfo");
+                });
+
             modelBuilder.Entity("ATMS.Admin.Data.Entities.UserRole", b =>
                 {
                     b.HasOne("ATMS.Admin.Data.Entities.Role", "Role")
@@ -1444,6 +1700,11 @@ namespace ATMS.Admin.Data.Migrations
             modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.UserProgress", b =>
+                {
+                    b.Navigation("InvitedUsers");
                 });
 #pragma warning restore 612, 618
         }

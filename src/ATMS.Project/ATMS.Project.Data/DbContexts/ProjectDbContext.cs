@@ -38,6 +38,18 @@ public class ProjectDbContext : DbContext
     public DbSet<WorkTicket> WorkTickets { get; set; }
     
     public DbSet<WorkTask> WorkTasks { get; set; }
+
+    public DbSet<Comment> Comments { get; set; }
+
+    public DbSet<Attachment> Attachments { get; set; }
+
+    public DbSet<Meeting> Meetings { get; set; }
+
+    public DbSet<MeetingParticipant> MeetingParticipants { get; set; }
+
+    public DbSet<MeetingAgendaItem> MeetingAgendaItems { get; set; }
+
+    public DbSet<MeetingMinute> MeetingMinutes { get; set; }
     
     
     public DbSet<WorkProjectParticipant> WorkProjectParticipants { get; set; }
@@ -59,7 +71,7 @@ public class ProjectDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5434;Database=atms_project;Username=admin;Password=p@ssw0rd!");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5435;Database=atms_project;Username=admin;Password=p@ssw0rd!");
         }
     }
 
@@ -82,6 +94,15 @@ public class ProjectDbContext : DbContext
             .HasQueryFilter(t => !t.IsDeleted);
         
         modelBuilder.Entity<WorkTask>()
+            .HasQueryFilter(t => !t.IsDeleted);
+
+        modelBuilder.Entity<Comment>()
+            .HasQueryFilter(t => !t.IsDeleted);
+
+        modelBuilder.Entity<Attachment>()
+            .HasQueryFilter(t => !t.IsDeleted);
+
+        modelBuilder.Entity<Meeting>()
             .HasQueryFilter(t => !t.IsDeleted);
         
         modelBuilder.Entity<User>()

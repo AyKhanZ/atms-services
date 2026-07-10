@@ -19,7 +19,7 @@ public class HostService(IDistributedApplicationBuilder builder)
             .WithEnvironment("POSTGRES_DB", "atms")
             .WithEnvironment("POSTGRES_USER", "atmsuser")
             .WithEnvironment("POSTGRES_PASSWORD", "atmspassword")
-            .WithEndpoint(5432, 5432);
+            .WithEndpoint(5434, 5432);
     }
 
     public IResourceBuilder<ContainerResource> AddMongo()

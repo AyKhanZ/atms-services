@@ -1,22 +1,42 @@
 using ATMS.Admin.Data.Entities;
 using ATMS.Data.Criterias;
 using ATMS.Data.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Criterias.Users;
 
 public class UserFilter : ACriteria<User>
 {
+    public string? Search { get; init; }
+    
     public string? Name { get; init; }
+    
     public string? Surname { get; init; }
+    
     public string? Email { get; init; }
+    
     public DateTime? CreatedFrom { get; init; }
+    
     public DateTime? CreatedTo { get; init; }
+    
     public int? UserStatusId { get; init; }
+    
     public string? SortBy { get; init; }
+    
     public SortDirectionEnum SortDirection { get; init; } = SortDirectionEnum.Asc;
     
     public override IQueryable<User> Apply(IQueryable<User> query)
     {
+        if (!string.IsNullOrWhiteSpace(Search))
+        {
+            var search = Search.Trim();
+            query = query.Where(u =>
+                EF.Functions.ILike(u.Name, $"%{search}%") ||
+                EF.Functions.ILike(u.Surname, $"%{search}%") ||
+                EF.Functions.ILike(u.Email, $"%{search}%") ||
+                EF.Functions.ILike(u.Position ?? string.Empty, $"%{search}%"));
+        }
+
         if (!string.IsNullOrWhiteSpace(Name))
         {
             var name = Name.Trim().ToLower();
@@ -65,6 +85,12 @@ public class UserFilter : ACriteria<User>
                 "email"     => SortDirection == SortDirectionEnum.Asc
                     ? query.OrderBy(u => u.Email)
                     : query.OrderByDescending(u => u.Email),
+                "position" => SortDirection == SortDirectionEnum.Asc
+                    ? query.OrderBy(u => u.Position)
+                    : query.OrderByDescending(u => u.Position),
+                "createdat" => SortDirection == SortDirectionEnum.Asc
+                    ? query.OrderBy(u => u.CreatedAt)
+                    : query.OrderByDescending(u => u.CreatedAt),
                 "userstatus" => SortDirection == SortDirectionEnum.Asc
                     ? query.OrderBy(u => u.UserStatusId)
                     : query.OrderByDescending(u => u.UserStatusId),

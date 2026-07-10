@@ -14,12 +14,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(e => e.UserType);
 
         builder.Property(e => e.Email)
+            .HasMaxLength(256)
             .IsRequired();
             
         builder.Property(e => e.Name)
+            .HasMaxLength(100)
             .IsRequired();
             
         builder.Property(e => e.Surname)
+            .HasMaxLength(100)
             .IsRequired();
         
         builder.Property(e => e.UserType)

@@ -33,4 +33,10 @@
     <data name="InvalidLoginCredentials" xml:space="preserve">
         <value>Неверный email или пароль.</value>
     </data>
+    <data name="UserProgressAlreadyCompleted" xml:space="preserve">
+        <value>Вы уже прошли анкету. Пожалуйста, свяжитесь с поддержкой.</value>
+    </data>
+    <data name="UserProgressNotAllStepsCompleted" xml:space="preserve">
+        <value>Пожалуйста, завершите все обязательные шаги перед отправкой.</value>
+    </data>
 </root>

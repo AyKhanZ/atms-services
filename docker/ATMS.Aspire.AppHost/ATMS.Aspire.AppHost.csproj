@@ -16,6 +16,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\ATMS.Admin\ATMS.Admin.API\ATMS.Admin.API.csproj" />
+		<ProjectReference Include="..\..\src\ATMS.Gateway\ATMS.Gateway\ATMS.Gateway.csproj" />
 		<ProjectReference Include="..\..\src\ATMS.Project\ATMS.Project.API\ATMS.Project.API.csproj" />
 	</ItemGroup>
 

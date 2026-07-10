@@ -25,6 +25,7 @@ public abstract class BaseHandlerTest
     
     protected readonly Mock<IUserRepository> UserRepositoryMock = new();
     protected readonly Mock<IRoleRepository> RoleRepositoryMock = new();
+    protected readonly Mock<IUserProgressRepository> UserProgressRepositoryMock = new();
     protected readonly Mock<IPasswordResetTokenRepository> PasswordResetTokenRepositoryMock = new();
     
     protected readonly Mock<IRefreshTokenService> RefreshTokenServiceMock = new();

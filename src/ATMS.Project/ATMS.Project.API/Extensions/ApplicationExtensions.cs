@@ -7,7 +7,7 @@ public static class ApplicationExtensions
     public static async Task InitializeEventBusAsync(this IHost app)
     {
         var messagingConstantsInitializer = app.Services
-            .GetRequiredService<MessagingConstantsInitializer>();
+            .GetRequiredService<MessagingInitializer>();
         await messagingConstantsInitializer.InitializeAsync();
     }
 }

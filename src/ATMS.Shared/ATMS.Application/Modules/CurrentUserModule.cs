@@ -10,6 +10,7 @@ public static class CurrentUserModule
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
+        services.AddSingleton<IDateTimeDisplayService, DateTimeDisplayService>();
         services.AddTransient<AuthorizationDelegatingHandler>();
         
         return services;

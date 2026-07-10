@@ -28,8 +28,10 @@ public static class DataAccessModule
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IUserProgressRepository, UserProgressRepository>();
         services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
         services.AddScoped<IDictionariesRepository, DictionariesRepository>();
+        services.AddScoped<IHealthRepository, HealthRepository>();
         
         return services;
     }

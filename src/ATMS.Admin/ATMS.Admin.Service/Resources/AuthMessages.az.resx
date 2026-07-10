@@ -33,4 +33,10 @@
     <data name="InvalidLoginCredentials" xml:space="preserve">
         <value>Email və ya şifrə yanlışdır.</value>
     </data>
+    <data name="UserProgressAlreadyCompleted" xml:space="preserve">
+        <value>Siz artıq anketi tamamlamısınız. Zəhmət olmasa dəstəklə əlaqə saxlayın.</value>
+    </data>
+    <data name="UserProgressNotAllStepsCompleted" xml:space="preserve">
+        <value>Zəhmət olmasa, göndərməzdən əvvəl bütün mərhələləri tamamlayın.</value>
+    </data>
 </root>

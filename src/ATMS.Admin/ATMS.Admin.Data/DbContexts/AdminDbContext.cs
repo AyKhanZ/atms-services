@@ -1,6 +1,7 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Entities.Tokens;
+using ATMS.Admin.Data.Entities.UserProgresses;
 using ATMS.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,12 +36,16 @@ public class AdminDbContext: DbContext
     
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
     #endregion
+    
+    #region UserProgresses
+    public DbSet<UserProgress> UserProgresses { get; set; }
+    #endregion
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=atms_admin;Username=admin;Password=p@ssw0rd!");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5434;Database=atms_admin;Username=admin;Password=p@ssw0rd!");
         }
     }
     

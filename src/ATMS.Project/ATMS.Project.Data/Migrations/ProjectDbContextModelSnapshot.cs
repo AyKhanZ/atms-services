@@ -22,6 +22,113 @@ namespace ATMS.Project.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ATMS.Project.Data.Entities.Attachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CommentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("OwnerType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RelativePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentId");
+
+                    b.HasIndex("OwnerType", "OwnerId", "CreatedAt");
+
+                    b.ToTable("Attachments", (string)null);
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("OwnerType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("OwnerType", "OwnerId", "CreatedAt");
+
+                    b.ToTable("Comments", (string)null);
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -1969,6 +2076,159 @@ namespace ATMS.Project.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ATMS.Project.Data.Entities.Meeting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTime?>("EndsAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("MeetingUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("StartsAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("WorkProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("WorkTicketId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkTicketId");
+
+                    b.HasIndex("WorkProjectId", "StartsAt");
+
+                    b.ToTable("Meetings", (string)null);
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingAgendaItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MeetingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Order")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MeetingId", "Order")
+                        .IsUnique();
+
+                    b.ToTable("MeetingAgendaItems", (string)null);
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingMinute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MeetingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Order")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MeetingId", "Order")
+                        .IsUnique();
+
+                    b.ToTable("MeetingMinutes", (string)null);
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingParticipant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MeetingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ParticipantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("MeetingId", "ParticipantId")
+                        .IsUnique();
+
+                    b.ToTable("MeetingParticipants", (string)null);
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.Organization", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2442,21 +2702,24 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Surname")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("UserType")
                         .HasColumnType("integer");
@@ -2535,9 +2798,9 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkProjectId", "ParentWorkGroupId", "Title")
                         .IsUnique();
 
-                    b.ToTable("WorkGroups", t =>
+                    b.ToTable("ProjectGroups", null, t =>
                         {
-                            t.HasCheckConstraint("CK_WorkGroup_Level", "\"Level\" <= 1");
+                            t.HasCheckConstraint("CK_ProjectGroups_Level", "\"Level\" <= 1");
                         });
                 });
 
@@ -2613,7 +2876,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("OrganizationId", "Title")
                         .IsUnique();
 
-                    b.ToTable("WorkProjects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkProjectParticipant", b =>
@@ -2644,7 +2907,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkProjectId", "UserId")
                         .IsUnique();
 
-                    b.ToTable("WorkProjectParticipants");
+                    b.ToTable("ProjectParticipants", (string)null);
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkProjectParticipantRole", b =>
@@ -2675,7 +2938,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkProjectParticipantId", "RoleId")
                         .IsUnique();
 
-                    b.ToTable("WorkProjectParticipantRoles");
+                    b.ToTable("ProjectParticipantRoles", (string)null);
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkTask", b =>
@@ -2761,9 +3024,9 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("WorkTicketId");
 
-                    b.ToTable("WorkTasks", t =>
+                    b.ToTable("Tasks", null, t =>
                         {
-                            t.HasCheckConstraint("CK_WorkTask_Level", "\"Level\" <= 1");
+                            t.HasCheckConstraint("CK_Tasks_Level", "\"Level\" <= 1");
                         });
                 });
 
@@ -2850,7 +3113,27 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("WorkTicketTypeId");
 
-                    b.ToTable("WorkTickets");
+                    b.ToTable("Tickets", (string)null);
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.Attachment", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.Comment", "Comment")
+                        .WithMany("Attachments")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Comment");
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.Comment", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("ParentComment");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.PermissionTranslation", b =>
@@ -2952,6 +3235,65 @@ namespace ATMS.Project.Data.Migrations
                     b.Navigation("WorkTicketType");
                 });
 
+            modelBuilder.Entity("ATMS.Project.Data.Entities.Meeting", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.WorkProject", "WorkProject")
+                        .WithMany("Meetings")
+                        .HasForeignKey("WorkProjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Project.Data.Entities.WorkTicket", "WorkTicket")
+                        .WithMany("Meetings")
+                        .HasForeignKey("WorkTicketId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("WorkProject");
+
+                    b.Navigation("WorkTicket");
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingAgendaItem", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.Meeting", "Meeting")
+                        .WithMany("AgendaItems")
+                        .HasForeignKey("MeetingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Meeting");
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingMinute", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.Meeting", "Meeting")
+                        .WithMany("Minutes")
+                        .HasForeignKey("MeetingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Meeting");
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingParticipant", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.Meeting", "Meeting")
+                        .WithMany("Participants")
+                        .HasForeignKey("MeetingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Project.Data.Entities.WorkProjectParticipant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Meeting");
+
+                    b.Navigation("Participant");
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.RolePermission", b =>
                 {
                     b.HasOne("ATMS.Project.Data.Entities.Dictionaries.Permission", "Permission")
@@ -2997,7 +3339,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasOne("ATMS.Project.Data.Entities.WorkProject", "WorkProject")
                         .WithMany("WorkGroups")
                         .HasForeignKey("WorkProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ParentWorkGroup");
@@ -3052,7 +3394,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasOne("ATMS.Project.Data.Entities.WorkProject", "WorkProject")
                         .WithMany("WorkProjectParticipants")
                         .HasForeignKey("WorkProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -3186,6 +3528,13 @@ namespace ATMS.Project.Data.Migrations
                     b.Navigation("WorkTicketType");
                 });
 
+            modelBuilder.Entity("ATMS.Project.Data.Entities.Comment", b =>
+                {
+                    b.Navigation("Attachments");
+
+                    b.Navigation("Replies");
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
@@ -3233,6 +3582,15 @@ namespace ATMS.Project.Data.Migrations
                     b.Navigation("Translations");
                 });
 
+            modelBuilder.Entity("ATMS.Project.Data.Entities.Meeting", b =>
+                {
+                    b.Navigation("AgendaItems");
+
+                    b.Navigation("Minutes");
+
+                    b.Navigation("Participants");
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.Organization", b =>
                 {
                     b.Navigation("Users");
@@ -3256,6 +3614,8 @@ namespace ATMS.Project.Data.Migrations
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkProject", b =>
                 {
+                    b.Navigation("Meetings");
+
                     b.Navigation("WorkGroups");
 
                     b.Navigation("WorkProjectParticipants");
@@ -3273,6 +3633,8 @@ namespace ATMS.Project.Data.Migrations
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkTicket", b =>
                 {
+                    b.Navigation("Meetings");
+
                     b.Navigation("WorkTasks");
                 });
 #pragma warning restore 612, 618

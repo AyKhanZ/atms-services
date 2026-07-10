@@ -103,5 +103,23 @@ namespace ATMS.Admin.Service.Resources {
                 return ResourceManager.GetString("InvalidToken", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have already completed the survey. Please contact support..
+        /// </summary>
+        public static string UserProgressAlreadyCompleted {
+            get {
+                return ResourceManager.GetString("UserProgressAlreadyCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please complete all required steps before submitting..
+        /// </summary>
+        public static string UserProgressNotAllStepsCompleted {
+            get {
+                return ResourceManager.GetString("UserProgressNotAllStepsCompleted", resourceCulture);
+            }
+        }
     }
 }

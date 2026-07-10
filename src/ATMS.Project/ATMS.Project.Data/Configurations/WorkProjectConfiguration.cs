@@ -1,6 +1,4 @@
-﻿using ATMS.Data.Constants;
-using ATMS.Data.Enums;
-using ATMS.Project.Data.Entities;
+﻿using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,6 +8,8 @@ public class WorkProjectConfiguration : IEntityTypeConfiguration<WorkProject>
 {
     public void Configure(EntityTypeBuilder<WorkProject> builder)
     {
+        builder.ToTable("Projects");
+
         builder.HasIndex(e => new { e.OrganizationId, e.Title })
             .IsUnique();
             
@@ -48,11 +48,16 @@ public class WorkProjectConfiguration : IEntityTypeConfiguration<WorkProject>
         builder.HasMany(p => p.WorkProjectParticipants)
             .WithOne(o => o.WorkProject)
             .HasForeignKey(o => o.WorkProjectId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
             
         builder.HasMany(p => p.WorkGroups)
             .WithOne(o => o.WorkProject)
             .HasForeignKey(o => o.WorkProjectId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasMany(p => p.Meetings)
+            .WithOne(o => o.WorkProject)
+            .HasForeignKey(o => o.WorkProjectId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
