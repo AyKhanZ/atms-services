@@ -55,6 +55,7 @@ public sealed class DataInitializer(
             Surname = _adminOptions.Surname,
             PasswordHash = passwordHasherService.Hash(_adminOptions.Password),
             EmailConfirmed = true,
+            IsAdmin = true,
             HasCompletedSurvey = true,
             UserRoles = [new UserRole { RoleId = role.Id, UserId = userId }]
         };

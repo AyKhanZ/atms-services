@@ -19,10 +19,11 @@ public class GetUsersHandler(
         CancellationToken cancellationToken)
     {
         var filter = mapper.Map<UserFilter>(request);
+        var criteria = filter.And(new NotAdminCriteria());
         
         var pagination = new PaginationCriteria<User>(request.Page, request.PageSize);
         
-        var users = await userRepository.GetAsync(filter, pagination, cancellationToken);
+        var users = await userRepository.GetAsync(criteria, pagination, cancellationToken);
 
         return users.Map(user =>
         {

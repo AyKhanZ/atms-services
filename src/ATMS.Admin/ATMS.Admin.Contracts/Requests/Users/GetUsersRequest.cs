@@ -7,6 +7,11 @@ namespace ATMS.Admin.Contracts.Requests.Users;
 
 public class GetUsersRequest : GetPaginationRequest, IRequest<PagedResult<UserListItemModel>>
 {
+    /// <summary>
+    /// Search text for filtering by name, surname, email or position.
+    /// </summary>
+    public string? Search { get; set; }
+
     /// <summary>Filter by first name (starts with, case-insensitive)</summary>
     public string? Name { get; init; }
 
