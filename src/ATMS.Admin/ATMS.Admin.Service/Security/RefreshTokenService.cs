@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
@@ -16,7 +16,7 @@ public class RefreshTokenService(
     private readonly JwtOptions _jwtOptions =
         configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
+                string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
     
     public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken)

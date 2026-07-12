@@ -1,7 +1,7 @@
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Models.Organization;
 using ATMS.Project.Contracts.Requests.Organizations;
-using ATMS.Project.Data.Criterias.Organizations;
+using ATMS.Project.Data.Criteria.Organizations;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using AutoMapper;

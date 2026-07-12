@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Application.Models;
 using ATMS.Application.Exceptions.Configuration;
@@ -17,7 +17,7 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     private readonly RedirectUrlOptions _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>() 
         ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-            string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
+            string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
 
     /// <summary>
     /// Registers a new user in the system.

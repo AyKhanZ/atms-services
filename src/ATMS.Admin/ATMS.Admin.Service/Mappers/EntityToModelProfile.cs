@@ -1,5 +1,4 @@
-﻿using ATMS.Admin.Contracts.Models;
-using ATMS.Admin.Contracts.Models.Me;
+﻿using ATMS.Admin.Contracts.Models.Me;
 using ATMS.Admin.Contracts.Models.UserProgresses;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;

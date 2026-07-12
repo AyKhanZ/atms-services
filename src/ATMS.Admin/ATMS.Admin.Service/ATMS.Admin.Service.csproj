@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
@@ -31,41 +31,9 @@
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>RoleMessages.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\AuthMessages.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>AuthMessages.ru.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\AuthMessages.az.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>AuthMessages.az.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\AccountMessages.az.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>AccountMessages.az.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\AccountMessages.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>AccountMessages.ru.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\RoleMessages.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>RoleMessages.ru.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\RoleMessages.az.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>RoleMessages.az.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
 	  <EmbeddedResource Update="Resources\ProfileMessages.resx">
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>ProfileMessages.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\ProfileMessages.az.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>ProfileMessages.az.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\ProfileMessages.ru.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>ProfileMessages.ru.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	  <EmbeddedResource Update="Resources\UserProgressMessages.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
@@ -89,50 +57,10 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>RoleMessages.resx</DependentUpon>
 	  </Compile>
-	  <Compile Update="Resources\AuthMessages.ru.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>AuthMessages.ru.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\AuthMessages.az.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>AuthMessages.az.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\AccountMessages.az.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>AccountMessages.az.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\AccountMessages.ru.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>AccountMessages.ru.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\RoleMessages.ru.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>RoleMessages.ru.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\RoleMessages.az.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>RoleMessages.az.resx</DependentUpon>
-	  </Compile>
 	  <Compile Update="Resources\ProfileMessages.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>ProfileMessages.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\ProfileMessages.az.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ProfileMessages.az.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Resources\ProfileMessages.ru.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ProfileMessages.ru.resx</DependentUpon>
 	  </Compile>
 	  <Compile Update="Resources\UserProgressMessages.Designer.cs">
 	    <DesignTime>True</DesignTime>

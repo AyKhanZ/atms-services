@@ -8,5 +8,6 @@ public enum AuthErrorType
     EmailAlreadyConfirmed,
     TokenGenerationFailed,
     AccountLocked,
+    Forbidden,
     AccountInactive
 }

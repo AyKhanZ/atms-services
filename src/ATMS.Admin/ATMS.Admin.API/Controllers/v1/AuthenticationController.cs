@@ -83,13 +83,11 @@ public class AuthenticationController(IMediator mediator) : ControllerBase
     /// <param name="cancellationToken">Cancellation Token</param>
     /// <response code="204">No content, logout successful</response>
     /// <response code="400">Validation error, e.g., missing fields or invalid data.</response>
-    /// <response code="401">Unauthorized access, no access token provided by a client</response>
     /// <response code="500">Unhandled server error</response>
-    [Authorize]
+    [AllowAnonymous]
     [HttpDelete("logout")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> LogoutAsync(
         [FromBody] LogoutCommand command,

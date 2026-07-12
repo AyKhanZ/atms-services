@@ -20,8 +20,16 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         
         builder.HasIndex(u => u.CreatedAt);
         
+        builder.Property(e => e.Name)
+            .HasMaxLength(100)
+            .IsRequired();
+        
+        builder.Property(e => e.Surname)
+            .HasMaxLength(100)
+            .IsRequired();
+        
         builder.Property(e => e.Email)
-            .HasMaxLength(256)
+            .HasMaxLength(100)
             .IsRequired();
         
         builder.Property(e => e.CreatedAt)

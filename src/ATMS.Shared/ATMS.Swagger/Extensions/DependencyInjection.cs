@@ -53,7 +53,7 @@ public static class DependencyInjection
             {
                 var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
                                  ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-                                     string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
+                                     string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
                 options.RequireHttpsMetadata = true;
                 options.MapInboundClaims = false;

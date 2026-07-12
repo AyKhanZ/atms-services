@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Requests.Me;
+using ATMS.Admin.Contracts.Requests.Me;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Resources;
@@ -19,7 +19,7 @@ public class GetCurrentPermissionsHandler(
         var isExist = await userRepository.IsExistAsync(r => r.Id == currentUser.Id, cancellationToken);
         if (!isExist)
         {
-            throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
+            throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
         }
         
         return await cache.GetOrSetAsync(

@@ -16,7 +16,7 @@ public class OrganizationValidator : AbstractValidator<OrganizationCommand>
         
         RuleFor(x => x.Title).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(ValidationMessages.TitleRequired)
-            .MaximumLength(200).WithMessage(_ => string.Format(ValidationMessages.TitleShouldBeLessThan, 200))
+            .MaximumLength(100).WithMessage(_ => string.Format(ValidationMessages.TitleShouldBeLessThan, 100))
             .MustAsync(IsTitleUniqueAsync).WithMessage(ValidationMessages.TitleAlreadyExists);
         
         RuleFor(x => x.Voen).Cascade(CascadeMode.Stop)
@@ -25,13 +25,21 @@ public class OrganizationValidator : AbstractValidator<OrganizationCommand>
             .MustAsync(IsVoenUniqueAsync).WithMessage(OrganizationMessages.VoenAlreadyTaken);
     }
 
-    private async Task<bool> IsTitleUniqueAsync(string title, CancellationToken cancellationToken)
+    private async Task<bool> IsTitleUniqueAsync(OrganizationCommand command, string title, CancellationToken cancellationToken)
     {
-        return !await _organizationRepository.IsExistAsync(o => o.Title == title, cancellationToken);
+        var updateId = (command as UpdateOrganizationCommand)?.Id;
+
+        return !await _organizationRepository.IsExistAsync(
+            o => o.Title == title && (!updateId.HasValue || o.Id != updateId.Value),
+            cancellationToken);
     }
     
-    private async Task<bool> IsVoenUniqueAsync(string voen, CancellationToken cancellationToken)
+    private async Task<bool> IsVoenUniqueAsync(OrganizationCommand command, string voen, CancellationToken cancellationToken)
     {
-        return !await _organizationRepository.IsExistAsync(o => o.Voen == voen, cancellationToken);
+        var updateId = (command as UpdateOrganizationCommand)?.Id;
+
+        return !await _organizationRepository.IsExistAsync(
+            o => o.Voen == voen && (!updateId.HasValue || o.Id != updateId.Value),
+            cancellationToken);
     }
 }

@@ -17,7 +17,7 @@ public static class DataAccessModule
     {
         var dbOptions = configuration.GetSection(nameof(ProjectDatabaseOptions)).Get<ProjectDatabaseOptions>() 
                         ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
-                            string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(ProjectDatabaseOptions)));
+                            string.Format(LogMessages.ConfigSectionNotFound, nameof(ProjectDatabaseOptions)));
         
         services.AddDbContext<ProjectDbContext>(options => options.UseNpgsql(dbOptions.SqlConnection));
 

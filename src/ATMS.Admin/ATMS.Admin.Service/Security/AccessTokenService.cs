@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Exceptions.Configuration;
@@ -23,7 +23,7 @@ public class AccessTokenService(
     private readonly JwtOptions _jwtOptions =
         configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
         ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-            string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
+            string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
     public async Task<AccessTokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)
     {

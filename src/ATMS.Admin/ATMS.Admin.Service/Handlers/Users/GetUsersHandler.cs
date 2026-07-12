@@ -1,10 +1,10 @@
 ﻿using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
-using ATMS.Admin.Data.Criterias.Users;
+using ATMS.Admin.Data.Criteria.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Localization;
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using AutoMapper;
 using MediatR;
 

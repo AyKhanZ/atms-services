@@ -1,5 +1,5 @@
 using ATMS.Application.Models;
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Commands.Organization;
 using ATMS.Project.Contracts.Models.Organization;
 using ATMS.Project.Contracts.Requests.Organizations;
@@ -28,11 +28,11 @@ public class OrganizationController(IMediator mediator) : ControllerBase
     /// <response code="403">Resource forbidden.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(PagedResult<OrganizationModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResult<OrganizationItemModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<PagedResult<OrganizationModel>>> Index(
+    public async Task<ActionResult<PagedResult<OrganizationItemModel>>> Index(
         [FromQuery] GetOrganizationsRequest request,
         CancellationToken cancellationToken)
     {
@@ -84,13 +84,14 @@ public class OrganizationController(IMediator mediator) : ControllerBase
     /// <response code="403">Resource forbidden.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPost]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create(
-        [FromBody] CreateOrganizationCommand command,
+        [FromForm] CreateOrganizationCommand command,
         CancellationToken cancellationToken)
     {
         var id = await mediator.Send(command, cancellationToken);
@@ -118,6 +119,7 @@ public class OrganizationController(IMediator mediator) : ControllerBase
     /// <response code="404">Organization with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPut]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
@@ -125,7 +127,7 @@ public class OrganizationController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update(
-        [FromBody] UpdateOrganizationCommand command,
+        [FromForm] UpdateOrganizationCommand command,
         CancellationToken cancellationToken)
     {
         await mediator.Send(command, cancellationToken);

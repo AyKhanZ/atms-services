@@ -18,7 +18,7 @@ public static class AddProvidersModule
         {
             var providerOptions = configuration.GetSection(nameof(ProviderOptions)).Get<ProviderOptions>()
                                   ?? throw new ConfigurationException(ConfigurationErrorType.ProviderSectionNotFound,
-                                      string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(ProviderOptions)));
+                                      string.Format(LogMessages.ConfigSectionNotFound, nameof(ProviderOptions)));
 
             
             client.BaseAddress = new Uri(providerOptions.ProjectServiceUrl);

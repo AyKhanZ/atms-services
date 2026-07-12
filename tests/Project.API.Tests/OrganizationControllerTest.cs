@@ -1,4 +1,4 @@
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using ATMS.Project.API.Controllers.v1;
 using ATMS.Project.Contracts.Commands.Organization;
 using ATMS.Project.Contracts.Models.Organization;
@@ -69,8 +69,7 @@ public class OrganizationControllerTest : BaseControllerTest
         var command = new CreateOrganizationCommand
         {
             Title = Faker.Company.CompanyName(),
-            Voen = Faker.Random.AlphaNumeric(10),
-            LogoPath = Faker.Random.String(10)
+            Voen = Faker.Random.AlphaNumeric(10)
         };
 
         MediatorMock
@@ -93,8 +92,7 @@ public class OrganizationControllerTest : BaseControllerTest
         {
             Id = Guid.NewGuid(),
             Title = Faker.Company.CompanyName(),
-            Voen = Faker.Random.AlphaNumeric(10),
-            LogoPath = Faker.Random.String(10)
+            Voen = Faker.Random.AlphaNumeric(10)
         };
 
         MediatorMock

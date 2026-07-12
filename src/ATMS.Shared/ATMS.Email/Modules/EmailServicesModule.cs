@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Mail;
 using ATMS.Email.Services;
 using ATMS.Email.Services.Interfaces;
@@ -17,7 +17,7 @@ public static class EmailServicesModule
     {
         var emailOptions = configuration.GetSection(nameof(EmailOptions)).Get<EmailOptions>()
                            ?? throw new ConfigurationException(ConfigurationErrorType.EmailSectionNotFound,
-                               string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(EmailOptions)));
+                               string.Format(LogMessages.ConfigSectionNotFound, nameof(EmailOptions)));
 
         var smtp = new SmtpClient(emailOptions.SmtpServer, emailOptions.Port)
         {

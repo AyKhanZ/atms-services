@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Providers.Interfaces;
 using ATMS.Admin.Service.Resources;
@@ -25,8 +25,8 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
         RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(AccountMessages.NameRequired)
-            .MaximumLength(50)
-            .WithMessage(_ => string.Format(AccountMessages.NameShouldBeLessThan, 50));
+            .MaximumLength(100)
+            .WithMessage(_ => string.Format(AccountMessages.NameShouldBeLessThan, 100));
 
         RuleFor(x => x.Surname).Cascade(CascadeMode.Stop)
             .NotEmpty()
@@ -36,6 +36,7 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 
         RuleFor(x => x.RoleId)
             .NotEmpty().WithMessage(ValidationMessages.RoleIdRequired)
+            .Must(BeAllowedRegistrationRole).WithMessage(RoleMessages.NotFound)
             .MustAsync(IsRoleExistAsync).WithMessage(RoleMessages.NotFound);
 
         RuleFor(x => x.OrganizationId).Cascade(CascadeMode.Stop)
@@ -48,8 +49,15 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
             .WithMessage(AccountMessages.EmailRequired)
             .EmailAddress()
             .WithMessage(ValidationMessages.InvalidEmailFormat)
+            .MaximumLength(100)
+            .WithMessage(_ => string.Format(AccountMessages.EmailShouldBeLessThan, 100))
             .MustAsync(IsEmailUnique)
             .WithMessage(AccountMessages.UserAlreadyExists);
+    }
+
+    private static bool BeAllowedRegistrationRole(Guid roleId)
+    {
+        return roleId == RoleIds.Employee || roleId == RoleIds.ClientManager || roleId == RoleIds.Client;
     }
 
     private async Task<bool> IsOrganizationExistAsync(Guid? organizationId, CancellationToken cancellationToken)

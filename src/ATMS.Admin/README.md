@@ -45,12 +45,12 @@ dotnet tool run dotnet-ef database update --project src\ATMS.Project\ATMS.Projec
         private readonly ImagesOptions _imagesOptions =
             configuration.GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()
                 ?? throw new ConfigurationException(ConfigurationErrorType.ImagesSectionNotFound,
-                    string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(ImagesOptions)));
+                    string.Format(LogMessages.ConfigSectionNotFound, nameof(ImagesOptions)));
                     
         private readonly QueueOptions _queueOptions =
             configuration.GetSection(nameof(QueueOptions)).Get<QueueOptions>()
                 ?? throw new ConfigurationException(ConfigurationErrorType.ImagesSectionNotFound,
-                    string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(QueueOptions)));
+                    string.Format(LogMessages.ConfigSectionNotFound, nameof(QueueOptions)));
 ```
 
 ```

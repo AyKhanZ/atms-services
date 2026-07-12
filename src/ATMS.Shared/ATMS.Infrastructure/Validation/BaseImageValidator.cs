@@ -36,6 +36,23 @@ public abstract class BaseImageValidator<T> : AbstractValidator<T>
             .WithMessage("Unsupported image format.");
     }
 
+
+    protected void RuleForOptionalImage(
+        Expression<Func<T, IFormFile?>> expression,
+        string emptyMessage = "Image file is empty.",
+        string tooLargeMessage = "Image file is too large.",
+        string unsupportedFormatMessage = "Unsupported image format.")
+    {
+        RuleFor(expression)
+            .Cascade(CascadeMode.Stop)
+            .Must(file => file is null || file.Length > 0)
+            .WithMessage(emptyMessage)
+            .Must(file => file is null || file.Length <= _imagesOptions.MaxFileSizeBytes)
+            .WithMessage(tooLargeMessage)
+            .Must(file => file is null || IsAllowedContentType(file.ContentType))
+            .WithMessage(unsupportedFormatMessage);
+    }
+
     private bool IsAllowedContentType(string? contentType)
     {
         return !string.IsNullOrWhiteSpace(contentType) &&

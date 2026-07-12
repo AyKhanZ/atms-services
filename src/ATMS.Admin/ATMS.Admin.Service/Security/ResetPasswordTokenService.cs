@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
@@ -18,7 +18,7 @@ public class ResetPasswordTokenService(
     private readonly JwtOptions _jwtOptions =
         configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
+                string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
     public async Task<ResetPasswordTokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)
     {

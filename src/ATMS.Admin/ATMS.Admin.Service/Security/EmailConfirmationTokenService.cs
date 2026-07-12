@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using System.Text;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Security.Interfaces;
@@ -18,7 +18,7 @@ public class EmailConfirmationTokenService(IConfiguration configuration) : IEmai
     private readonly JwtOptions _jwtOptions =
         configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(JwtOptions)));
+                string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
     public EmailConfirmationTokenResult GenerateToken(User user)
     {

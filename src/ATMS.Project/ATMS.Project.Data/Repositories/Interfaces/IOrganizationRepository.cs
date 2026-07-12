@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using ATMS.Project.Data.Entities;
 
 namespace ATMS.Project.Data.Repositories.Interfaces;

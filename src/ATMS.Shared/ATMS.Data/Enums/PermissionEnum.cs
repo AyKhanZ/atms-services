@@ -21,4 +21,8 @@ public enum PermissionEnum
     CommentView,
     CommentEdit,
     CommentDelete,
+    
+    OrganizationView,
+    OrganizationEdit,
+    OrganizationDelete,
 }

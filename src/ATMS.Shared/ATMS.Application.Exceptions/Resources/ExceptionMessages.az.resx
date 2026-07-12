@@ -1,33 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-            
-        </xsd:element>
-    </xsd:schema>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    
-    
-    <data name="InvalidCredentials" xml:space="preserve">
-        <value>İstifadəçi ID-si etibarsızdır və ya iddialarda tapılmayıb.</value>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ServiceTemporarilyUnavailable" xml:space="preserve">
+        <value>Xidmət müvəqqəti əlçatan deyil. Zəhmət olmasa bir az sonra yenidən cəhd edin.</value>
     </data>
-    
-    <data name="ConfigSectionNotFound" xml:space="preserve">
-        <value>Configuration for section '{0}' is not found or could not be loaded.</value>
+  <data name="InternalServerError" xml:space="preserve">
+        <value>Nəsə səhv oldu. Zəhmət olmasa bir az sonra yenidən cəhd edin.</value>
     </data>
-    <data name="MissingSeedData" xml:space="preserve">
-        <value>"Required role '{0}' was not found in database."</value>
+  <data name="ConfigurationInitializationFailed" xml:space="preserve">
+        <value>Xidmət düzgün konfiqurasiya olunmayıb. Zəhmət olmasa dəstək xidməti ilə əlaqə saxlayın.</value>
     </data>
 </root>

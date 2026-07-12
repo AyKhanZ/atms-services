@@ -20,7 +20,7 @@ public sealed class DataInitializer(
     private readonly AdminOptions _adminOptions =
         configuration.GetSection(nameof(AdminOptions)).Get<AdminOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.AdminSectionNotFound,
-                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(AdminOptions)));
+                string.Format(LogMessages.ConfigSectionNotFound, nameof(AdminOptions)));
     
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
@@ -42,7 +42,7 @@ public sealed class DataInitializer(
         {
             throw new ConfigurationException(
                 ConfigurationErrorType.MissingSeedData,
-                string.Format(ExceptionMessages.MissingSeedData, RoleIds.SuperAdmin));
+                string.Format(LogMessages.MissingSeedData, RoleIds.SuperAdmin));
         }
 
         var userId = Guid.NewGuid();

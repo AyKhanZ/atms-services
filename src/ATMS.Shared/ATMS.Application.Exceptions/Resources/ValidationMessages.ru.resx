@@ -1,59 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-            
-        </xsd:element>
-    </xsd:schema>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    
-    <data name="NameRequired" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NameRequired" xml:space="preserve">
         <value>Название обязательно.</value>
     </data>
-
-    <data name="DescriptionRequired" xml:space="preserve">
+  <data name="DescriptionRequired" xml:space="preserve">
         <value>Описание обязательно.</value>
     </data>
-
-    <data name="RoleIdRequired" xml:space="preserve">
+  <data name="RoleIdRequired" xml:space="preserve">
         <value>Идентификатор роли обязателен.</value>
     </data>
-
-
-    <data name="NameShouldBeLessThan" xml:space="preserve">
+  <data name="NameShouldBeLessThan" xml:space="preserve">
         <value>Название должно быть меньше {0} символов.</value>
     </data>
-    
-    <data name="DescriptionShouldBeLessThan" xml:space="preserve">
+  <data name="DescriptionShouldBeLessThan" xml:space="preserve">
         <value>Описание должно быть меньше {0} символов.</value>
     </data>
-    
-    
-    <data name="InvalidEmailFormat" xml:space="preserve">
+  <data name="InvalidEmailFormat" xml:space="preserve">
         <value>Введите корректный email (например: user@example.com).</value>
     </data>
-    <data name="TitleAlreadyExists" xml:space="preserve">
+  <data name="TitleAlreadyExists" xml:space="preserve">
         <value>Название уже существует.</value>
     </data>
-    <data name="TitleRequired" xml:space="preserve">
+  <data name="TitleRequired" xml:space="preserve">
         <value>Название обязательно.</value>
     </data>
-    <data name="TitleShouldBeLessThan" xml:space="preserve">
+  <data name="TitleShouldBeLessThan" xml:space="preserve">
         <value>Длина названия не должна превышать {0} символов.</value>
     </data>
-    <data name="IdRequired" xml:space="preserve">
+  <data name="IdRequired" xml:space="preserve">
         <value>Идентификатор обязателен.</value>
     </data>
+  <data name="ImageEmpty" xml:space="preserve">
+    <value>Файл изображения пустой.</value>
+  </data>
+  <data name="ImageTooLarge" xml:space="preserve">
+    <value>Изображение слишком большое. Загрузите изображение до 5 МБ.</value>
+  </data>
+  <data name="ImageUnsupportedFormat" xml:space="preserve">
+    <value>Формат изображения не поддерживается. Используйте JPG, PNG, JFIF или WEBP.</value>
+  </data>
 </root>

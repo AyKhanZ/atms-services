@@ -33,18 +33,27 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
             new { Id = (int)PermissionEnum.RoleView, Code = "RoleView", Module = "Role" },
             new { Id = (int)PermissionEnum.RoleEdit, Code = "RoleEdit", Module = "Role" },
             new { Id = (int)PermissionEnum.RoleDelete, Code = "RoleDelete", Module = "Role" },
+            
             // User
             new { Id = (int)PermissionEnum.UserView, Code = "UserView", Module = "User" },
             new { Id = (int)PermissionEnum.UserEdit, Code = "UserEdit", Module = "User" },
             new { Id = (int)PermissionEnum.UserDelete, Code = "UserDelete", Module = "User" },
+            
             // Project
             new { Id = (int)PermissionEnum.ProjectView, Code = "ProjectView", Module = "Project" },
             new { Id = (int)PermissionEnum.ProjectEdit, Code = "ProjectEdit", Module = "Project" },
             new { Id = (int)PermissionEnum.ProjectDelete, Code = "ProjectDelete", Module = "Project" },
+          
             // Notification
             new { Id = (int)PermissionEnum.NotificationView, Code = "NotificationView", Module = "Notification" },
             new { Id = (int)PermissionEnum.NotificationEdit, Code = "NotificationEdit", Module = "Notification" },
             new { Id = (int)PermissionEnum.NotificationDelete, Code = "NotificationDelete", Module = "Notification" },
+            
+            // Organization
+            new { Id = (int)PermissionEnum.OrganizationView, Code = "OrganizationView", Module = "Organization" },
+            new { Id = (int)PermissionEnum.OrganizationEdit, Code = "OrganizationEdit", Module = "Organization" },
+            new { Id = (int)PermissionEnum.OrganizationDelete, Code = "OrganizationDelete", Module = "Organization" },
+            
             // Comment
             new { Id = (int)PermissionEnum.CommentView, Code = "CommentView", Module = "Comment" },
             new { Id = (int)PermissionEnum.CommentEdit, Code = "CommentEdit", Module = "Comment" },
@@ -80,6 +89,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { Id = 7, PermissionId = (int)PermissionEnum.RoleDelete, Language = "en", Name = "Role delete" },
             new { Id = 8, PermissionId = (int)PermissionEnum.RoleDelete, Language = "ru", Name = "Удаление ролей" },
             new { Id = 9, PermissionId = (int)PermissionEnum.RoleDelete, Language = "az", Name = "Rolu sil" },
+            
             // User
             new { Id = 10, PermissionId = (int)PermissionEnum.UserView, Language = "en", Name = "User view" },
             new { Id = 11, PermissionId = (int)PermissionEnum.UserView, Language = "ru", Name = "Просмотр пользователей" },
@@ -90,6 +100,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { Id = 16, PermissionId = (int)PermissionEnum.UserDelete, Language = "en", Name = "User delete" },
             new { Id = 17, PermissionId = (int)PermissionEnum.UserDelete, Language = "ru", Name = "Удаление пользователей" },
             new { Id = 18, PermissionId = (int)PermissionEnum.UserDelete, Language = "az", Name = "İstifadəçini sil" },
+            
             // Project
             new { Id = 19, PermissionId = (int)PermissionEnum.ProjectView, Language = "en", Name = "Project view" },
             new { Id = 20, PermissionId = (int)PermissionEnum.ProjectView, Language = "ru", Name = "Просмотр проектов" },
@@ -100,6 +111,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { Id = 25, PermissionId = (int)PermissionEnum.ProjectDelete, Language = "en", Name = "Project delete" },
             new { Id = 26, PermissionId = (int)PermissionEnum.ProjectDelete, Language = "ru", Name = "Удаление проектов" },
             new { Id = 27, PermissionId = (int)PermissionEnum.ProjectDelete, Language = "az", Name = "Layihəni sil" },
+            
             // Comment
             new { Id = 28, PermissionId = (int)PermissionEnum.CommentView, Language = "en", Name = "Comment view" },
             new { Id = 29, PermissionId = (int)PermissionEnum.CommentView, Language = "ru", Name = "Просмотр комментариев" },
@@ -110,6 +122,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { Id = 34, PermissionId = (int)PermissionEnum.CommentDelete, Language = "en", Name = "Comment delete" },
             new { Id = 35, PermissionId = (int)PermissionEnum.CommentDelete, Language = "ru", Name = "Удаление комментариев" },
             new { Id = 36, PermissionId = (int)PermissionEnum.CommentDelete, Language = "az", Name = "Şərhi sil" },
+            
             // Notification
             new { Id = 37, PermissionId = (int)PermissionEnum.NotificationView, Language = "en", Name = "Notification view" },
             new { Id = 38, PermissionId = (int)PermissionEnum.NotificationView, Language = "ru", Name = "Просмотр уведомлений" },
