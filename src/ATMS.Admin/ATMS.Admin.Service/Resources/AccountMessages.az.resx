@@ -97,4 +97,6 @@
     <data name="OrganizationIdRequired" xml:space="preserve">
         <value>Təşkilat tələb olunur.</value>
     </data>
-</root>
+    <data name="EmailShouldBeLessThan" xml:space="preserve">
+        <value>Email {0} simvoldan az olmalıdır.</value>
+    </data></root>

@@ -102,4 +102,6 @@
     <data name="OrganizationIdRequired" xml:space="preserve">
         <value>Организация не обязательна.</value>
     </data>
-</root>
+    <data name="EmailShouldBeLessThan" xml:space="preserve">
+        <value>Email должен содержать не более {0} символов.</value>
+    </data></root>

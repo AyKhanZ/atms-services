@@ -10,7 +10,7 @@ public sealed class RabbitMqConnectionFactory(IConfiguration configuration)
 {
     private readonly QueueOptions _options = configuration.GetSection(nameof(QueueOptions)).Get<QueueOptions>()
                                              ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
-                                                 string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(QueueOptions)));
+                                                 string.Format(LogMessages.ConfigSectionNotFound, nameof(QueueOptions)));
 
     private IConnection? _connection;
     

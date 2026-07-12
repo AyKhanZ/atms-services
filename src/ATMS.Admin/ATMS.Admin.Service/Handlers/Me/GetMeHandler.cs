@@ -25,14 +25,14 @@ public class GetMeHandler(
                    factory: () => GetFromDb(cancellationToken),
                    ttl: CacheTtl.Entity,
                    cancellationToken)
-               ?? throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
+               ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
     }
 
     private async Task<MeModel> GetFromDb(CancellationToken cancellationToken)
     {
         var user = await userRepository.GetMeAsync(currentUser.Id, cancellationToken)
                    ?? throw new AuthException(AuthErrorType.InvalidCredentials,
-                       ExceptionMessages.InvalidCredentials);
+                       LogMessages.InvalidCredentials);
 
         return mapper.Map<MeModel>(user);
     }

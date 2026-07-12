@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -23,8 +23,7 @@ public class OrganizationRepository(ProjectDbContext context) : IOrganizationRep
         CancellationToken cancellationToken)
     {
         var query = context.Organizations
-            .AsNoTracking()
-            .AsSplitQuery();
+            .AsNoTracking();
         
         query = filterCriteria.Apply(query);
         

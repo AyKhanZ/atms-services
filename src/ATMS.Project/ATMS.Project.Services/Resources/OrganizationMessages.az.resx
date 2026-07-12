@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-            
-        </xsd:element>
-    </xsd:schema>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="VoenShouldBeLessThan" xml:space="preserve">
-        <value>VÖEN {0} simvoldan çox olmamalıdır.</value>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="VoenShouldBeLessThan" xml:space="preserve">
+        <value>VÖEN {0} simvoldan uzun olmamalıdır.</value>
     </data>
-    <data name="VoenRequired" xml:space="preserve">
-        <value>VÖEN tələb olunur.</value>
+  <data name="VoenRequired" xml:space="preserve">
+        <value>Təşkilatın VÖEN-i tələb olunur.</value>
     </data>
-    <data name="VoenAlreadyTaken" xml:space="preserve">
-        <value>VÖEN unikal olmalıdır.</value>
+  <data name="VoenAlreadyTaken" xml:space="preserve">
+        <value>Bu VÖEN artıq başqa təşkilat tərəfindən istifadə olunur.</value>
     </data>
-    <data name="NotFound" xml:space="preserve">
+  <data name="NotFound" xml:space="preserve">
         <value>Təşkilat tapılmadı.</value>
     </data>
+  <data name="LogoTooLarge" xml:space="preserve">
+    <value>Loqo faylı çox böyükdür. 5 MB-a qədər şəkil yükləyin.</value>
+  </data>
+  <data name="LogoUnsupportedFormat" xml:space="preserve">
+    <value>Loqo formatı dəstəklənmir. JPG, PNG, JFIF və ya WEBP istifadə edin.</value>
+  </data>
+  <data name="LogoEmpty" xml:space="preserve">
+    <value>Loqo faylı boşdur.</value>
+  </data>
 </root>

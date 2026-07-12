@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 
 namespace ATMS.Admin.Data.Repositories;
 

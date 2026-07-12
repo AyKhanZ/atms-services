@@ -18,7 +18,7 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
 
             if (claim is null || !Guid.TryParse(claim, out var id))
             {
-                throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
+                throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
             }
             return id;
         }
@@ -33,7 +33,7 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
 
             if (claim is null || !Guid.TryParse(claim, out var roleId))
             {
-                throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
+                throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
             }
             return roleId;
         }
@@ -48,7 +48,7 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
 
             if (claim is null || !Guid.TryParse(claim, out var orgId))
             {
-                throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
+                throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
             }
             return orgId;
         }
@@ -61,7 +61,7 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
             var claim = httpContextAccessor.HttpContext?.User
                 .FindFirst(CustomClaimTypes.UserType)?.Value;
 
-            return claim ?? throw new AuthException(AuthErrorType.InvalidCredentials, ExceptionMessages.InvalidCredentials);
+            return claim ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
         }
     }
 }

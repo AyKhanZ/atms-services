@@ -33,41 +33,69 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
             new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.RoleEdit, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.RoleDelete, RoleId = RoleIds.SuperAdmin },
+            
             new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.UserEdit, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.UserDelete, RoleId = RoleIds.SuperAdmin },
+            
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.ProjectEdit, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.ProjectDelete, RoleId = RoleIds.SuperAdmin },
+            
             new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.NotificationEdit, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.NotificationDelete, RoleId = RoleIds.SuperAdmin },
+            
             new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.CommentEdit, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.CommentDelete, RoleId = RoleIds.SuperAdmin },
+            
+            new { PermissionId = (int)PermissionEnum.OrganizationView, RoleId = RoleIds.SuperAdmin },
+            new { PermissionId = (int)PermissionEnum.OrganizationEdit, RoleId = RoleIds.SuperAdmin },
+            new { PermissionId = (int)PermissionEnum.OrganizationDelete, RoleId = RoleIds.SuperAdmin },
+            
+            
             // Client
             new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.Client },
+            
             new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.Client },
+            
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.Client },
+            
             new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.Client },
+            
             new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.Client },
+            
+            
             // Client Manager
             new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.ClientManager },
+            
             new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.ClientManager },
+            
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.ClientManager },
+            
             new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.ClientManager },
+           
             new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.ClientManager },
             new { PermissionId = (int)PermissionEnum.CommentEdit, RoleId = RoleIds.ClientManager },
             new { PermissionId = (int)PermissionEnum.CommentDelete, RoleId = RoleIds.ClientManager },
+            
+            
             // Employee
             new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.Employee },
+            
             new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.Employee },
+            
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.Employee },
             new { PermissionId = (int)PermissionEnum.ProjectEdit, RoleId = RoleIds.Employee },
+            
             new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.Employee },
+            
             new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.Employee },
             new { PermissionId = (int)PermissionEnum.CommentEdit, RoleId = RoleIds.Employee },
-            new { PermissionId = (int)PermissionEnum.CommentDelete, RoleId = RoleIds.Employee }
+            new { PermissionId = (int)PermissionEnum.CommentDelete, RoleId = RoleIds.Employee },
+            
+            new { PermissionId = (int)PermissionEnum.OrganizationView, RoleId = RoleIds.Employee }
         );
     }
 }

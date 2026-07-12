@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Data.DbContexts;
+using ATMS.Admin.Data.DbContexts;
 using ATMS.Admin.Data.Infrastructure.Migrations;
 using ATMS.Admin.Data.Repositories;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -18,7 +18,7 @@ public static class DataAccessModule
     {
         var dbOptions = configuration.GetSection(nameof(AdminDatabaseOptions)).Get<AdminDatabaseOptions>() 
                         ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
-                            string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(AdminDatabaseOptions)));
+                            string.Format(LogMessages.ConfigSectionNotFound, nameof(AdminDatabaseOptions)));
         
         services.AddDbContext<AdminDbContext>(options => options.UseNpgsql(dbOptions.SqlConnection));
 

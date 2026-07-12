@@ -1,4 +1,5 @@
 using ATMS.Project.API.Extensions;
+using ATMS.Infrastructure.Extensions;
 using ATMS.Swagger.Extensions;
 using ATMS.Swagger.Middlewares;
 using ATMS.Project.Services.Modules;
@@ -27,6 +28,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
+
+app.UseLocalImageFiles(builder.Configuration);
 
 app.UseHttpsRedirection();
 

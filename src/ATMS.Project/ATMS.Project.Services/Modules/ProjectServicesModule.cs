@@ -1,6 +1,7 @@
 using ATMS.Application.Modules;
 using ATMS.Caching.Modules;
 using ATMS.Email.Modules;
+using ATMS.Infrastructure.Extensions;
 using ATMS.Project.Data.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ public static class ProjectServicesModule
         services.AddEmailServices(configuration);
         services.AddHandlerServices();
         services.AddMapperServices();
+        services.AddLocalImageStorage();
 
         return services;
     }

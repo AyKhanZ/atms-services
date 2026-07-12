@@ -1,5 +1,6 @@
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Services.Interfaces;
+using ATMS.Infrastructure.Images;
 using ATMS.Project.Data.Repositories.Interfaces;
 using AutoMapper;
 using Bogus;
@@ -14,6 +15,7 @@ public abstract class BaseHandlerTest
     protected readonly Mock<IMapper> MapperMock = new();
     protected readonly Mock<ICurrentUser> CurrentUserMock = new();
     protected readonly Mock<ICacheService> CacheServiceMock = new();
+    protected readonly Mock<IImageStorage> ImageStorageMock = new();
 
     protected readonly Mock<IDictionariesRepository> DictionariesRepositoryMock = new();
     protected readonly Mock<IOrganizationRepository> OrganizationRepositoryMock = new();

@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>ATMS.Application.Exceptions</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Resources\ExceptionMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -16,24 +15,11 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\ValidationMessages.ru.resx">
+    <EmbeddedResource Update="Resources\LogMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ValidationMessages.ru.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\ValidationMessages.az.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ValidationMessages.az.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\ExceptionMessages.az.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ExceptionMessages.az.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\ExceptionMessages.ru.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ExceptionMessages.ru.Designer.cs</LastGenOutput>
+      <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Resources\ExceptionMessages.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -45,26 +31,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ValidationMessages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Resources\ValidationMessages.ru.Designer.cs">
+    <Compile Update="Resources\LogMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>ValidationMessages.ru.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\ValidationMessages.az.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ValidationMessages.az.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\ExceptionMessages.az.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ExceptionMessages.az.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\ExceptionMessages.ru.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ExceptionMessages.ru.resx</DependentUpon>
+      <DependentUpon>LogMessages.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
 </Project>

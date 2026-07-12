@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -34,7 +34,7 @@ public class RegisterHandler(
     private readonly RedirectUrlOptions _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
         ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-            string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
+            string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
 
     public async Task<UserModel> Handle(RegisterCommand command, CancellationToken cancellationToken)
     {
@@ -44,9 +44,9 @@ public class RegisterHandler(
         {
             throw new ConfigurationException(
                 ConfigurationErrorType.MissingSeedData,
-                string.Format(ExceptionMessages.MissingSeedData, command.RoleId));
+                string.Format(LogMessages.MissingSeedData, command.RoleId));
         }
-        
+
         var entity = mapper.Map<User>(command);
         entity.Id = Guid.NewGuid();
 
@@ -58,7 +58,7 @@ public class RegisterHandler(
         entity.UserRoles = [userRole];
         entity.InvitedById = currentUser.Id;
         entity.OrganizationId = command.OrganizationId;
-        
+
 
         var rndPassword = passwordService.GenerateRandomPassword();
         entity.PasswordHash = passwordHasherService.Hash(rndPassword);
@@ -87,7 +87,7 @@ public class RegisterHandler(
             role.UserType,
             entity.AvatarPath,
             entity.OrganizationId);
-        
+
         await messagePublisher.PublishAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserCreated,

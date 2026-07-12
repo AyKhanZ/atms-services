@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
@@ -47,13 +47,14 @@ public class RegisterHandlerTest : BaseHandlerTest
             .Returns(new EmailConfirmationTokenResult(FakeToken, DateTime.UtcNow.AddHours(24)));
     }
 
-    private RegisterCommand CreateCommand(Guid? roleId = null) =>
+    private RegisterCommand CreateCommand(Guid? roleId = null, Guid? organizationId = null) =>
         new()
         {
             Email = Faker.Internet.Email(),
             Name = Faker.Name.FirstName(),
             Surname = Faker.Name.LastName(),
-            RoleId = roleId ?? Guid.NewGuid()
+            RoleId = roleId ?? Guid.NewGuid(),
+            OrganizationId = organizationId
         };
 
     private void SetupRole(Guid roleId) =>
@@ -204,6 +205,28 @@ public class RegisterHandlerTest : BaseHandlerTest
             It.IsAny<CancellationToken>()), Times.Once);
     }
 
+
+    [Fact]
+    public async Task Handle_WhenRoleExists_PublishesUserCreatedEvent_WithOrganizationId()
+    {
+        // Arrange
+        var organizationId = Guid.NewGuid();
+        var command = CreateCommand(organizationId: organizationId);
+        var entity = new User { Id = Guid.NewGuid(), Email = command.Email, Name = command.Name, Surname = command.Surname };
+
+        SetupMapper(command, entity);
+        SetupRole(command.RoleId);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        MessagePublisherMock.Verify(p => p.PublishAsync(
+            MessagingConstants.Exchanges.UserEvents,
+            MessagingConstants.RoutingKeys.UserCreated,
+            It.Is<UserCreatedEvent>(e => e.OrganizationId == organizationId),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
     [Fact]
     public async Task Handle_WhenRoleNotFound_DoesNotPublishEvent()
     {

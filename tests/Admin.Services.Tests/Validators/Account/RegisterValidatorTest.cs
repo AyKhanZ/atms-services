@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Organizations;
 using ATMS.Admin.Data.Entities;
@@ -35,6 +35,23 @@ public class RegisterValidatorTest
         SetupOrganizationExists(true);
     }
 
+    public static TheoryData<Guid, bool> AllowedRoleCases => new()
+    {
+        { RoleIds.Employee, false },
+        { RoleIds.ClientManager, true },
+        { RoleIds.Client, true }
+    };
+
+    public static TheoryData<Guid> NotAllowedRoleCases => new()
+    {
+        RoleIds.SuperAdmin,
+        RoleIds.ProjectManager,
+        RoleIds.BusinessConsultant,
+        RoleIds.Developer,
+        RoleIds.OrgClientManager,
+        RoleIds.OrgClientViewer
+    };
+
     private RegisterCommand CreateCommand(
         string? email = null,
         string? name = null,
@@ -47,7 +64,7 @@ public class RegisterValidatorTest
             Email = email ?? _faker.Internet.Email(),
             Name = name ?? _faker.Name.FirstName(),
             Surname = surname ?? _faker.Name.LastName(),
-            RoleId = roleId ?? Guid.NewGuid(),
+            RoleId = roleId ?? RoleIds.Employee,
             OrganizationId = organizationId
         };
     }
@@ -89,10 +106,10 @@ public class RegisterValidatorTest
     [Fact]
     public async Task Validate_WhenNameExceedsMaxLength_ReturnsFailure()
     {
-        var result = await _validator.ValidateAsync(CreateCommand(name: _faker.Random.String(51)));
+        var result = await _validator.ValidateAsync(CreateCommand(name: _faker.Random.String(101)));
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == string.Format(AccountMessages.NameShouldBeLessThan, 50));
+        Assert.Contains(result.Errors, e => e.ErrorMessage == string.Format(AccountMessages.NameShouldBeLessThan, 100));
     }
 
     [Fact]
@@ -114,7 +131,6 @@ public class RegisterValidatorTest
             e => e.ErrorMessage == string.Format(AccountMessages.SurnameShouldBeLessThan, 100));
     }
 
-
     [Fact]
     public async Task Validate_WhenEmailIsEmpty_ReturnsFailure()
     {
@@ -131,6 +147,18 @@ public class RegisterValidatorTest
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.ErrorMessage == ValidationMessages.InvalidEmailFormat);
+    }
+
+    [Fact]
+    public async Task Validate_WhenEmailExceedsMaxLength_ReturnsFailure()
+    {
+        var email = $"{_faker.Random.String2(92, "abcdefghijklmnopqrstuvwxyz")}@mail.com";
+
+        var result = await _validator.ValidateAsync(CreateCommand(email: email));
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors,
+            e => e.ErrorMessage == string.Format(AccountMessages.EmailShouldBeLessThan, 100));
     }
 
     [Fact]
@@ -165,57 +193,57 @@ public class RegisterValidatorTest
         Assert.Contains(result.Errors, e => e.ErrorMessage == RoleMessages.NotFound);
     }
 
-    [Fact]
-    public async Task Validate_WhenClientRole_AndOrganizationIdIsEmpty_ReturnsFailure()
+    [Theory]
+    [MemberData(nameof(NotAllowedRoleCases))]
+    public async Task Validate_WhenRoleIsNotAllowedForRegistration_ReturnsFailure(Guid roleId)
     {
-        var result = await _validator.ValidateAsync(CreateCommand(
-            roleId: RoleIds.Client,
-            organizationId: null));
+        var result = await _validator.ValidateAsync(CreateCommand(roleId: roleId));
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.OrganizationIdRequired);
+        Assert.Contains(result.Errors, e => e.ErrorMessage == RoleMessages.NotFound);
     }
 
-    [Fact]
-    public async Task Validate_WhenClientManagerRole_AndOrganizationIdIsEmpty_ReturnsFailure()
+    [Theory]
+    [MemberData(nameof(AllowedRoleCases))]
+    public async Task Validate_WhenAllowedRoleHasValidOrganizationRequirement_ReturnsSuccess(Guid roleId, bool requiresOrganization)
     {
         var result = await _validator.ValidateAsync(CreateCommand(
-            roleId: RoleIds.ClientManager,
-            organizationId: null));
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.OrganizationIdRequired);
-    }
-
-    [Fact]
-    public async Task Validate_WhenClientRole_AndOrganizationNotFound_ReturnsFailure()
-    {
-        SetupOrganizationExists(false);
-
-        var result = await _validator.ValidateAsync(CreateCommand(
-            roleId: RoleIds.Client,
-            organizationId: Guid.NewGuid()));
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.OrganizationIdNotExist);
-    }
-
-    [Fact]
-    public async Task Validate_WhenClientRole_WithValidOrganization_ReturnsSuccess()
-    {
-        var result = await _validator.ValidateAsync(CreateCommand(
-            roleId: RoleIds.Client,
-            organizationId: Guid.NewGuid()));
+            roleId: roleId,
+            organizationId: requiresOrganization ? Guid.NewGuid() : null));
 
         Assert.True(result.IsValid);
     }
 
-    [Fact]
-    public async Task Validate_WhenNonClientRole_AndOrganizationIdIsNull_ReturnsSuccess()
+    [Theory]
+    [MemberData(nameof(AllowedRoleCases))]
+    public async Task Validate_WhenRoleRequiresOrganization_AndOrganizationIdIsEmpty_ReturnsExpectedResult(Guid roleId, bool requiresOrganization)
     {
-        var result = await _validator.ValidateAsync(CreateCommand(
-            roleId: Guid.NewGuid(),
-            organizationId: null));
+        var result = await _validator.ValidateAsync(CreateCommand(roleId: roleId, organizationId: null));
+
+        if (requiresOrganization)
+        {
+            Assert.False(result.IsValid);
+            Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.OrganizationIdRequired);
+            return;
+        }
+
+        Assert.True(result.IsValid);
+    }
+
+    [Theory]
+    [MemberData(nameof(AllowedRoleCases))]
+    public async Task Validate_WhenRoleRequiresOrganization_AndOrganizationNotFound_ReturnsExpectedResult(Guid roleId, bool requiresOrganization)
+    {
+        SetupOrganizationExists(false);
+
+        var result = await _validator.ValidateAsync(CreateCommand(roleId: roleId, organizationId: Guid.NewGuid()));
+
+        if (requiresOrganization)
+        {
+            Assert.False(result.IsValid);
+            Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.OrganizationIdNotExist);
+            return;
+        }
 
         Assert.True(result.IsValid);
     }

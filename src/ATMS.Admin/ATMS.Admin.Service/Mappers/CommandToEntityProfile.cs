@@ -1,6 +1,6 @@
 ﻿using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Requests.Users;
-using ATMS.Admin.Data.Criterias.Users;
+using ATMS.Admin.Data.Criteria.Users;
 using ATMS.Admin.Data.Entities;
 using AutoMapper;
 

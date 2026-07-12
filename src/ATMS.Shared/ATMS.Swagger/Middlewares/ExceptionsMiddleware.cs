@@ -3,6 +3,8 @@ using ATMS.Application.Exceptions.Configuration;
 using Newtonsoft.Json;
 using System.Net;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Image;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
@@ -31,9 +33,17 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         {
             await HandleExceptionAsync(context, ex);
         }
+        catch (ImageException ex)
+        {
+            await HandleExceptionAsync(context, ex);
+        }
         catch (ValidationException ex)
         {
             await HandleExceptionAsync(context, ex);
+        }
+        catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+        {
+            return;
         }
         catch (Exception ex)
         {
@@ -43,8 +53,6 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
     private Task HandleExceptionAsync(HttpContext context, AuthException exception)
     {
-        logger.LogWarning(exception, "Authentication error: {Message}", exception.Message);
-
         var code = HttpStatusCode.InternalServerError;
 
         switch (exception.AuthErrorType)
@@ -57,6 +65,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
             case AuthErrorType.AccountLocked:
                 code = HttpStatusCode.Locked;
                 break;
+            case AuthErrorType.Forbidden:
             case AuthErrorType.AccountInactive:
                 code = HttpStatusCode.Forbidden;
                 break;
@@ -66,9 +75,16 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
             case AuthErrorType.TokenGenerationFailed:
                 logger.LogError(exception, "Authentication error: {Message}", exception.Message);
                 break;
+            default:
+                logger.LogError(exception, "Unhandled auth error type: {Type}", exception.AuthErrorType);
+                break;
         }
 
-        var result = JsonConvert.SerializeObject(new { error = exception.Message });
+        var errorMessage = code == HttpStatusCode.InternalServerError
+            ? ExceptionMessages.InternalServerError
+            : exception.Message;
+
+        var result = JsonConvert.SerializeObject(new { error = errorMessage });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)code;
 
@@ -77,8 +93,6 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
     private Task HandleExceptionAsync(HttpContext context, EntityException exception)
     {
-        logger.LogWarning(exception, "Entity error: {Message}", exception.Message);
-
         var code = HttpStatusCode.InternalServerError;
 
         switch (exception.ErrorType)
@@ -86,9 +100,16 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
             case EntityErrorType.NotFound:
                 code = HttpStatusCode.NotFound;
                 break;
+            default:
+                logger.LogError(exception, "Unhandled entity error type: {Type}", exception.ErrorType);
+                break;
         }
 
-        var result = JsonConvert.SerializeObject(new { error = exception.Message });
+        var errorMessage = code == HttpStatusCode.InternalServerError
+            ? ExceptionMessages.InternalServerError
+            : exception.Message;
+
+        var result = JsonConvert.SerializeObject(new { error = errorMessage });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)code;
 
@@ -100,10 +121,30 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         logger.LogCritical(exception, "Configuration error on {Path} {Method}: {Message}",
             context.Request.Path, context.Request.Method, exception.Message);
 
-        var result = JsonConvert.SerializeObject(new
-            { error = "System is not properly initialized. Please contact support." });
+        var result = JsonConvert.SerializeObject(new { error = ExceptionMessages.ConfigurationInitializationFailed });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+        return context.Response.WriteAsync(result);
+    }
+
+    private Task HandleExceptionAsync(HttpContext context, ImageException exception)
+    {
+        var response = new ValidationErrorModel
+        {
+            Errors =
+            [
+                new FieldError
+                {
+                    Field = exception.PropertyName,
+                    Error = exception.UserMessage
+                }
+            ]
+        };
+
+        var result = JsonConvert.SerializeObject(response);
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
         return context.Response.WriteAsync(result);
     }
@@ -121,7 +162,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
             var result = JsonConvert.SerializeObject(new
             {
-                error = "Service temporarily unavailable, please try again",
+                error = ExceptionMessages.ServiceTemporarilyUnavailable,
                 requestId = context.TraceIdentifier
             });
             context.Response.ContentType = "application/json";
@@ -130,7 +171,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         }
 
         // Unexpected exception — unhandled case, needs immediate investigation 500
-        logger.LogCritical(exception,
+        logger.LogError(exception,
             "Unexpected exception. RequestId: {RequestId}, Path: {Path}, Method: {Method}, Message: {Message}",
             context.TraceIdentifier,
             context.Request.Path,
@@ -139,7 +180,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
         var errorResult = JsonConvert.SerializeObject(new
         {
-            error = "Internal server error",
+            error = ExceptionMessages.InternalServerError,
             requestId = context.TraceIdentifier
         });
         context.Response.ContentType = "application/json";
@@ -150,15 +191,6 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
     private Task HandleExceptionAsync(HttpContext context, ValidationException exception)
     {
-        logger.LogError(exception,
-            "Validation error. Count: {Count}. Errors: {@Errors}",
-            exception.Errors.Count(),
-            exception.Errors.Select(f => new
-            {
-                f.PropertyName,
-                f.ErrorMessage
-            }));
-
         var response = new ValidationErrorModel
         {
             Errors = exception.Errors.Select(f => new FieldError

@@ -101,4 +101,6 @@
     <data name="OrganizationIdNotExist" xml:space="preserve">
         <value>Organization does not exist .</value>
     </data>
-</root>
+    <data name="EmailShouldBeLessThan" xml:space="preserve">
+        <value>Email must be less than {0} symbols.</value>
+    </data></root>

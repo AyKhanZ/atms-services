@@ -12,9 +12,8 @@ public class CreateOrganizationValidatorTest : BaseValidatorTest
 
     public CreateOrganizationValidatorTest()
     {
-        _validator = new CreateOrganizationValidator(OrganizationRepositoryMock.Object);
+        _validator = new CreateOrganizationValidator(OrganizationRepositoryMock.Object, CreateImagesConfiguration());
     }
-
     [Fact]
     public async Task Validate_WhenValid_PassesValidation()
     {
@@ -140,5 +139,31 @@ public class CreateOrganizationValidatorTest : BaseValidatorTest
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Voen));
+    }
+
+    [Fact]
+    public async Task Validate_WhenLogoHasUnsupportedFormat_FailsValidation()
+    {
+        OrganizationRepositoryMock
+            .Setup(r => r.IsExistAsync(
+                It.IsAny<Expression<Func<Organization, bool>>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        var logo = new Mock<Microsoft.AspNetCore.Http.IFormFile>();
+        logo.SetupGet(x => x.Length).Returns(256);
+        logo.SetupGet(x => x.ContentType).Returns("image/gif");
+
+        var command = new CreateOrganizationCommand
+        {
+            Title = Faker.Company.CompanyName(),
+            Voen = Faker.Random.AlphaNumeric(10),
+            Logo = logo.Object
+        };
+
+        var result = await _validator.ValidateAsync(command);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Logo));
     }
 }

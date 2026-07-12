@@ -2,8 +2,9 @@ using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
+using ATMS.Admin.Data.Criteria.Users;
 using ATMS.Admin.Service.Handlers.Users;
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Users;
@@ -14,6 +15,10 @@ public class GetUsersHandlerTest : BaseHandlerTest
 
     public GetUsersHandlerTest()
     {
+        MapperMock
+            .Setup(m => m.Map<UserFilter>(It.IsAny<GetUsersRequest>()))
+            .Returns(new UserFilter());
+
         _handler = new GetUsersHandler(UserRepositoryMock.Object, MapperMock.Object);
     }
 

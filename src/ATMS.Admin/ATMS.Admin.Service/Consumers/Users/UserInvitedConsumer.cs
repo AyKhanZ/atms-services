@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
@@ -46,14 +46,14 @@ public class UserInvitedConsumer(
         var redirectUrlOptions = configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
             ?? throw new ConfigurationException(
                 ConfigurationErrorType.RedirectUrlSectionNotFound,
-                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
+                string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
 
         var role = await roleRepository.GetAsync(r => r.Id == RoleIds.Client, cancellationToken);
         if (role is null)
         {
             throw new ConfigurationException(
                 ConfigurationErrorType.MissingSeedData,
-                string.Format(ExceptionMessages.MissingSeedData, RoleIds.Client));
+                string.Format(LogMessages.MissingSeedData, RoleIds.Client));
         }
 
         var entity = new User

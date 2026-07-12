@@ -75,6 +75,27 @@ public class DictionaryController(IMediator mediator) : ControllerBase
     
     
     /// <summary>
+    /// Gets all roles .
+    /// </summary>
+    /// <remarks>
+    /// Returns all system roles available for registration and role selection.
+    /// </remarks>
+    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <response code="200">Roles</response>
+    /// <response code="401">Unauthorized access, no access token provided by a client</response>
+    /// <response code="403">Resource forbidden.</response>
+    /// <response code="500">Unhandled server error</response>
+    [HttpGet("roles")]
+    [ProducesResponseType(typeof(DictionaryModel<Guid>[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<DictionaryModel<Guid>[]>> GetRoles(CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(new GetRoleDictionariesRequest(), cancellationToken));
+    }
+    
+    /// <summary>
     /// Gets all permissions .
     /// </summary>
     /// <remarks>

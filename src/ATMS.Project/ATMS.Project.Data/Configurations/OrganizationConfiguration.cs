@@ -1,4 +1,4 @@
-﻿using ATMS.Data.Constants;
+using ATMS.Data.Constants;
 using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -20,7 +20,7 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
         
         builder.Property(e => e.Title)
             .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(100);
             
         builder.Property(e => e.Voen)
             .IsRequired()

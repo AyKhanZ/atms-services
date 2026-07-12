@@ -1,3 +1,5 @@
+using ATMS.Project.Contracts.Models.Users;
+
 namespace ATMS.Project.Contracts.Models.Organization;
 
 public class OrganizationModel
@@ -11,4 +13,5 @@ public class OrganizationModel
     public string LogoPath { get; set; }
     
     public DateTime CreatedAt { get; set; }
+    public UserModel[] Users { get; set; } = [];
 }

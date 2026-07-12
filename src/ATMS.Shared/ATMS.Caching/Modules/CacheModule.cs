@@ -14,7 +14,7 @@ public static class CacheModule
     {
         var redisOptions = configuration.GetSection(nameof(RedisOptions)).Get<RedisOptions>()
                       ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
-                          string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedisOptions)));
+                          string.Format(LogMessages.ConfigSectionNotFound, nameof(RedisOptions)));
 
         services.AddStackExchangeRedisCache(options =>
         {

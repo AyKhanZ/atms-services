@@ -2,7 +2,7 @@
 using ATMS.Admin.Contracts.Commands.Users;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 

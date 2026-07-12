@@ -1,7 +1,7 @@
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Models.Organization;
 using ATMS.Project.Contracts.Requests.Organizations;
-using ATMS.Project.Data.Criterias.Organizations;
+using ATMS.Project.Data.Criteria.Organizations;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Services.Handlers.Organizations;
 using Moq;
@@ -72,13 +72,12 @@ public class GetOrganizationsHandlerTest : BaseHandlerTest
         // Arrange
         var request = new GetOrganizationsRequest
         {
-            Title = "Test",
-            Voen = "123",
+            Search = "Test",
             Page = 2,
             PageSize = 5
         };
  
-        var filter = new OrganizationFilter { Title = "Test", Voen = "123" };
+        var filter = new OrganizationFilter { Search = "Test" };
         var emptyResult = new PagedResult<Organization>();
  
         MapperMock

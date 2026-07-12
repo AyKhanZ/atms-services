@@ -1,6 +1,6 @@
 ﻿using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Contracts.Requests;
-using ATMS.Data.Criterias;
+using ATMS.Data.Criteria;
 using MediatR;
 
 namespace ATMS.Admin.Contracts.Requests.Users;
@@ -11,15 +11,6 @@ public class GetUsersRequest : GetPaginationRequest, IRequest<PagedResult<UserLi
     /// Search text for filtering by name, surname, email or position.
     /// </summary>
     public string? Search { get; set; }
-
-    /// <summary>Filter by first name (starts with, case-insensitive)</summary>
-    public string? Name { get; init; }
-
-    /// <summary>Filter by surname (starts with, case-insensitive)</summary>
-    public string? Surname { get; init; }
-
-    /// <summary>Filter by email (starts with, case-insensitive)</summary>
-    public string? Email { get; init; }
 
     /// <summary>Filter by user status ID (Active = 1, Inactive = 2, Locked = 3)</summary>
     public int? UserStatusId { get; init; }

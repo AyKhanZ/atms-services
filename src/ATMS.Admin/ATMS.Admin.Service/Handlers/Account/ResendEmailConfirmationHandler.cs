@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
@@ -26,7 +26,7 @@ public class ResendEmailConfirmationHandler(
     private readonly RedirectUrlOptions _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-                string.Format(ExceptionMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
+                string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
 
     public async Task Handle(ResendEmailConfirmationCommand command, CancellationToken cancellationToken)
     {
