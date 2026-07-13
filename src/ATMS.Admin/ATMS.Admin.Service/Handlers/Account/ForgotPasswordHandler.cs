@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
