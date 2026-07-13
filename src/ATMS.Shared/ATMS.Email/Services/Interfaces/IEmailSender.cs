@@ -1,4 +1,4 @@
-﻿using ATMS.Email.Models;
+using ATMS.Email.Models;
 
 namespace ATMS.Email.Services.Interfaces;
 

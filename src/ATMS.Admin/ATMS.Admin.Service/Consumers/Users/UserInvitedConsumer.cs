@@ -79,7 +79,7 @@ public class UserInvitedConsumer(
         await userRepository.CreateAsync(entity, cancellationToken);
 
         var emailConfirmationTokenResult = emailConfirmationTokenService.GenerateToken(entity);
-        var link = $"{redirectUrlOptions.BaseUrl}/account/confirm?token={emailConfirmationTokenResult.Token}";
+        var link = $"{redirectUrlOptions.BaseUrl}/account/confirm?token={Uri.EscapeDataString(emailConfirmationTokenResult.Token)}";
 
         await emailSender.SendAsync(entity.Email,
             new InviteModel

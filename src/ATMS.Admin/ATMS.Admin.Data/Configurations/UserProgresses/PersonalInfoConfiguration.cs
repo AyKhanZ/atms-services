@@ -22,7 +22,7 @@ public class PersonalInfoConfiguration : IEntityTypeConfiguration<PersonalInfo>
             .IsRequired();
 
         builder.Property(x => x.Email)
-            .HasMaxLength(256)
+            .HasMaxLength(100)
             .IsRequired();
 
         builder.Property(x => x.PhoneNumber)

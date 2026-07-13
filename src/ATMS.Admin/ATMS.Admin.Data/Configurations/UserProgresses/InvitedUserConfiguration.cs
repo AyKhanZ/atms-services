@@ -26,7 +26,7 @@ public class InvitedUserConfiguration : IEntityTypeConfiguration<InvitedUser>
             .IsRequired();
 
         builder.Property(x => x.Email)
-            .HasMaxLength(256)
+            .HasMaxLength(100)
             .IsRequired();
     }
 }

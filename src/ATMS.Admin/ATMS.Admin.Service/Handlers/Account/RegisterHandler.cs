@@ -98,5 +98,5 @@ public class RegisterHandler(
     }
 
     private string GenerateConfirmationLink(string token) =>
-        $"{_redirectUrlOptions.BaseUrl}/account/confirm?token={token}";
+        $"{_redirectUrlOptions.BaseUrl}/account/confirm?token={Uri.EscapeDataString(token)}";
 }

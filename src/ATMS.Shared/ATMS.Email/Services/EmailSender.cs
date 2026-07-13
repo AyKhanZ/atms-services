@@ -1,4 +1,4 @@
-using ATMS.Email.Models;
+﻿using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
 using FluentEmail.Core;
 using Microsoft.Extensions.Logging;
@@ -7,7 +7,7 @@ namespace ATMS.Email.Services;
 
 public class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSender> logger) : IEmailSender
 {
-    private const string InviteSubject = "Complete your account setup";
+    private const string InviteSubject = "Confirm your account";
     private const string ForgotPasswordSubject = "Reset your password";
 
     private const string InviteTemplate = "InviteTemplate.cshtml";

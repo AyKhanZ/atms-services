@@ -1,4 +1,4 @@
-using ATMS.Admin.Contracts.Commands.Account;
+﻿using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
@@ -20,7 +20,7 @@ public class ForgotPasswordHandler(
     IConfiguration configuration) : IRequestHandler<ForgotPasswordCommand>
 {
     
-    private readonly RedirectUrlOptions  _redirectUrlOptions =
+    private readonly RedirectUrlOptions _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
             ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
                 string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
@@ -40,6 +40,9 @@ public class ForgotPasswordHandler(
         await emailSender.SendAsync(user.Email,
             new ForgotPasswordModel
             {
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
                 Link = link,
                 DeadlineOfToken = tokenResult.ExpiresInHours
             }, cancellationToken);

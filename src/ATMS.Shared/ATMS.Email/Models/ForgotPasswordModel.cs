@@ -1,7 +1,10 @@
-﻿namespace ATMS.Email.Models;
+namespace ATMS.Email.Models;
 
 public class ForgotPasswordModel
 {
-    public string Link { get; set; }
+    public required string Email { get; set; }
+    public required string Name { get; set; }
+    public required string Surname { get; set; }
+    public required string Link { get; set; }
     public DateTime DeadlineOfToken { get; set; }
 }
