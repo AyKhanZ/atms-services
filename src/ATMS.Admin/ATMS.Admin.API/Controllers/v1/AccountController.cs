@@ -128,6 +128,7 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <response code="400">Validation error.</response>
     /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
+    [AllowAnonymous]
     [HttpPost("email-confirmation/resend")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
@@ -151,7 +152,7 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <remarks>
     /// User must provide their current password (OldPassword) and a new password (NewPassword).
     /// New password must meet security requirements
-    /// (at least 1 uppercase letter, 1 number, 1 special char from !@#$%^&*()-_=+, no spaces, length 6-40).
+    /// (at least 1 uppercase letter, 1 number, 1 special char from !@#$%^&amp;*()-_=+, no spaces, length 6-40).
     /// </remarks>
     /// <param name="command">Command containing Email, OldPassword, and NewPassword.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

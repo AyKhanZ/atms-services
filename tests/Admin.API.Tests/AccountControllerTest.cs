@@ -1,6 +1,7 @@
-﻿using ATMS.Admin.API.Controllers.v1;
+using ATMS.Admin.API.Controllers.v1;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -109,6 +110,16 @@ public class AccountControllerTest : BaseControllerTest
             Times.Once);
     }
 
+
+    [Fact]
+    public void ResendConfirmationLetter_ShouldAllowAnonymous()
+    {
+        var method = typeof(AccountController).GetMethod(nameof(AccountController.ResendConfirmationLetter));
+
+        Assert.NotNull(method);
+        Assert.Contains(method.GetCustomAttributes(typeof(AllowAnonymousAttribute), false),
+            attribute => attribute is AllowAnonymousAttribute);
+    }
     [Fact]
     public async Task ChangePassword_ShouldReturnNoContent()
     {
