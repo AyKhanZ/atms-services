@@ -35,9 +35,9 @@
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>ProfileMessages.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\UserProgressMessages.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>UserProgressMessages.Designer.cs</LastGenOutput>
+	  <EmbeddedResource Update="Resources\OnboardingMessages.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>OnboardingMessages.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	</ItemGroup>
 
@@ -62,10 +62,10 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>ProfileMessages.resx</DependentUpon>
 	  </Compile>
-	  <Compile Update="Resources\UserProgressMessages.Designer.cs">
+	  <Compile Update="Resources\OnboardingMessages.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
-	    <DependentUpon>UserProgressMessages.resx</DependentUpon>
+	    <DependentUpon>OnboardingMessages.resx</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 

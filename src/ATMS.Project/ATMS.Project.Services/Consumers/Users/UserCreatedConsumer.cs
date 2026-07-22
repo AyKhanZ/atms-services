@@ -3,6 +3,7 @@ using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
+using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -19,6 +20,7 @@ public sealed class UserCreatedConsumer(
         CancellationToken cancellationToken)
     {
         var userRepository = serviceProvider.GetRequiredService<IUserRepository>();
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
 
         var exist = await userRepository.IsExistAsync(u => u.Id == message.Id, cancellationToken);
         if (exist)
@@ -26,16 +28,7 @@ public sealed class UserCreatedConsumer(
             return;
         }
 
-        var user = new User
-        {
-            Id = message.Id,
-            Email = message.Email,
-            Name = message.Name,
-            Surname = message.Surname,
-            UserType = message.UserType,
-            AvatarPath = message.AvatarPath,
-            OrganizationId = message.OrganizationId
-        };
+        var user = mapper.Map<User>(message);
 
         await userRepository.CreateAsync(user, cancellationToken);
     }

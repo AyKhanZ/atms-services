@@ -11,5 +11,5 @@ public abstract class BaseValidatorTest
     protected readonly Mock<ICurrentUser> CurrentUserMock = new();
     protected readonly Mock<IUserRepository> UserRepositoryMock = new();
     protected readonly Mock<IDictionariesRepository> DictionariesRepositoryMock = new();
-    protected readonly Mock<IUserProgressRepository> UserProgressRepositoryMock = new();
+    protected readonly Mock<IOnboardingRepository> OnboardingRepositoryMock = new();
 }

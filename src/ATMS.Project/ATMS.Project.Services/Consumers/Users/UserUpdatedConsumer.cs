@@ -2,6 +2,7 @@ using ATMS.Contracts.Events.Users;
 using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Repositories.Interfaces;
+using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -18,6 +19,7 @@ public class UserUpdatedConsumer(
         CancellationToken cancellationToken)
     {
         var userRepository = serviceProvider.GetRequiredService<IUserRepository>();
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
         
         var user = await userRepository.FindAsync(u => u.Id == message.Id, cancellationToken);
         if (user is null)
@@ -25,9 +27,7 @@ public class UserUpdatedConsumer(
             return;
         }
 
-        user.Name = message.Name;
-        user.Surname = message.Surname;
-        user.AvatarPath = message.AvatarPath;
+        mapper.Map(message, user);
 
         await userRepository.SaveAsync(cancellationToken);
     }

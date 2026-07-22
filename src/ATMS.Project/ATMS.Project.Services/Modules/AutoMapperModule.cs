@@ -11,7 +11,9 @@ public static class AutoMapperModule
         services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<CommandToEntityProfile>();
+            cfg.AddProfile<EventToEntityProfile>();
             cfg.AddProfile<EntityToModelProfile>();
+            cfg.AddProfile<RequestToFilterProfile>();
         });
 
         return services;

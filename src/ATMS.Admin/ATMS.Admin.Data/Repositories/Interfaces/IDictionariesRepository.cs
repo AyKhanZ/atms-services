@@ -10,6 +10,8 @@ public interface IDictionariesRepository
     Task<List<UserStatus>> GetUserStatusesAsync(CancellationToken cancellationToken = default);
     
     Task<List<MaritalStatus>> GetMaritalStatusesAsync(CancellationToken cancellationToken = default);
+
+    Task<List<Language>> GetLanguagesAsync(CancellationToken cancellationToken = default);
     
     Task<bool> IsUserStatusExistAsync(Expression<Func<UserStatus, bool>> predicate,
         CancellationToken cancellationToken = default);
@@ -18,5 +20,8 @@ public interface IDictionariesRepository
         CancellationToken cancellationToken = default);
 
     Task<bool> IsGenderExistAsync(Expression<Func<Gender, bool>> predicate,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> IsLanguageExistAsync(Expression<Func<Language, bool>> predicate,
         CancellationToken cancellationToken = default);
 }

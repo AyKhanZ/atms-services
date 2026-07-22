@@ -1,4 +1,4 @@
-﻿using ATMS.Admin.Contracts.Models.Me;
+using ATMS.Admin.Contracts.Models.Me;
 using ATMS.Admin.Contracts.Requests.Me;
 using ATMS.Application.Models;
 using MediatR;
@@ -11,16 +11,14 @@ namespace ATMS.Admin.API.Controllers.v1;
 [Route("api/v1/me")]
 public class MeController(IMediator mediator) : ControllerBase
 {
-
     /// <summary>
-    /// Get current user
+    /// Gets the current user, including an account that is still completing onboarding.
     /// </summary>
-    /// <remarks>Method returns the current user</remarks>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="200">Me model</response>
-    /// <response code="401">Unauthorized access, no access token provided by a client</response>
-    /// <response code="404">User with specified ID not found.</response>
-    /// <response code="500">Unhandled server error</response>
+    /// <response code="200">The current user.</response>
+    /// <response code="401">The request is not authenticated.</response>
+    /// <response code="404">The current user was not found.</response>
+    /// <response code="500">An unexpected server error occurred.</response>
     [HttpGet]
     [ProducesResponseType(typeof(MeModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
@@ -30,16 +28,15 @@ public class MeController(IMediator mediator) : ControllerBase
     {
         return Ok(await mediator.Send(new GetMeRequest(), cancellationToken));
     }
-    
+
     /// <summary>
-    /// Get Current User's Permissions
+    /// Gets the current user's permissions.
     /// </summary>
-    /// <remarks>Method returns the list of current user permissions</remarks>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="200">Array of items</response>
-    /// <response code="401">Unauthorized access, no access token provided by a client</response>
-    /// <response code="404">User with specified ID not found.</response>
-    /// <response code="500">Unhandled server error</response>
+    /// <response code="200">The permission codes.</response>
+    /// <response code="401">The request is not authenticated.</response>
+    /// <response code="404">The current user was not found.</response>
+    /// <response code="500">An unexpected server error occurred.</response>
     [HttpGet("permissions")]
     [ProducesResponseType(typeof(string[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
@@ -48,20 +45,17 @@ public class MeController(IMediator mediator) : ControllerBase
     public async Task<ActionResult<string[]>> GetPermissionsAsync(CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetCurrentPermissionsRequest(), cancellationToken);
-        
         return Ok(result);
     }
 
-
     /// <summary>
-    /// Get Current User's Roles 
+    /// Gets the current user's roles.
     /// </summary>
-    /// <remarks>Method returns the list of current user roles</remarks>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="200">Dictionary of items</response>
-    /// <response code="401">Unauthorized access, no access token provided by a client</response>
-    /// <response code="404">User with specified ID not found.</response>
-    /// <response code="500">Unhandled server error</response>
+    /// <response code="200">The current user's roles.</response>
+    /// <response code="401">The request is not authenticated.</response>
+    /// <response code="404">The current user was not found.</response>
+    /// <response code="500">An unexpected server error occurred.</response>
     [HttpGet("roles")]
     [ProducesResponseType(typeof(DictionaryModel<Guid>[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
@@ -70,7 +64,6 @@ public class MeController(IMediator mediator) : ControllerBase
     public async Task<ActionResult<DictionaryModel<Guid>[]>> GetRolesAsync(CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetCurrentRolesRequest(), cancellationToken);
-        
         return Ok(result);
     }
 }

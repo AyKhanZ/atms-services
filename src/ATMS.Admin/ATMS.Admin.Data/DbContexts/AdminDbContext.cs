@@ -1,7 +1,7 @@
 ﻿using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Entities.Tokens;
-using ATMS.Admin.Data.Entities.UserProgresses;
+using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,14 +21,16 @@ public class AdminDbContext: DbContext
     
     public DbSet<RolePermission> RolePermissions { get; set; }
     
+    public DbSet<Permission> Permissions { get; set; }
+    
     #region Dictionaries
     public DbSet<Gender> Genders { get; set; }
     
     public DbSet<MaritalStatus> MaritalStatuses { get; set; }
     
     public DbSet<UserStatus> UserStatuses { get; set; }
-    
-    public DbSet<Permission> Permissions { get; set; }
+
+    public DbSet<Language> Languages { get; set; }
     #endregion
 
     #region Tokens
@@ -37,8 +39,13 @@ public class AdminDbContext: DbContext
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
     #endregion
     
-    #region UserProgresses
-    public DbSet<UserProgress> UserProgresses { get; set; }
+    #region Onboarding
+    public DbSet<OnboardingProgress> OnboardingProgresses { get; set; }
+
+    public DbSet<OnboardingPersonalInfo> OnboardingPersonalInfos { get; set; }
+
+    public DbSet<OnboardingInvitedUser> OnboardingInvitedUsers { get; set; }
+
     #endregion
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

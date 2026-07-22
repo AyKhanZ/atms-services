@@ -72,4 +72,7 @@
     <data name="UserStatusRequired" xml:space="preserve">
         <value>Поле 'Статус пользователя' обязательно для заполнения.</value>
     </data>
+    <data name="LanguageNotSupported" xml:space="preserve">
+        <value>Выберите доступный язык.</value>
+    </data>
 </root>

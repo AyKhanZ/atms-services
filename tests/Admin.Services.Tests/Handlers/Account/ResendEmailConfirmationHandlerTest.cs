@@ -49,6 +49,7 @@ public class ResendEmailConfirmationHandlerTest : BaseHandlerTest
     {
         var command = CreateCommand();
         var user = new User { Email = command.Email, Name = "John", Surname = "Doe" };
+        var expectedLink = $"{BaseUrl}/account/confirm?token={Uri.EscapeDataString(FakeToken)}";
  
         UserRepositoryMock
             .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
@@ -59,7 +60,7 @@ public class ResendEmailConfirmationHandlerTest : BaseHandlerTest
  
         EmailSenderMock.Verify(s => s.SendAsync(
             user.Email,
-            It.Is<InviteModel>(m => m.Link.Contains(FakeToken) && m.Link.Contains(BaseUrl)),
+            It.Is<InviteModel>(m => m.Link == expectedLink),
             It.IsAny<CancellationToken>()), Times.Once);
     }
  

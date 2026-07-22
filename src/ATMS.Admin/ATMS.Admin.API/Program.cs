@@ -3,6 +3,7 @@ using ATMS.Admin.Service.Modules;
 using ATMS.Swagger.Constants;
 using ATMS.Swagger.Extensions;
 using ATMS.Swagger.Middlewares;
+using ATMS.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 
-app.UseHttpsRedirection();
+app.UseLocalImageFiles(builder.Configuration);
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseMiddleware<ExceptionsMiddleware>();
 

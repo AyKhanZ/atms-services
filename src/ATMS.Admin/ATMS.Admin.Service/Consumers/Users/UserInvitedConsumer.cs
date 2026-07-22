@@ -11,6 +11,7 @@ using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Messaging.Interfaces;
+using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -35,6 +36,7 @@ public class UserInvitedConsumer(
         var emailSender = serviceProvider.GetRequiredService<IEmailSender>();
         var messagePublisher = serviceProvider.GetRequiredService<IMessagePublisher>();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
 
         var exists = await userRepository.FindAsync(u => u.Email == message.Email, cancellationToken);
         if (exists is not null)
@@ -56,15 +58,8 @@ public class UserInvitedConsumer(
                 string.Format(LogMessages.MissingSeedData, RoleIds.Client));
         }
 
-        var entity = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = message.Email,
-            Name = message.Name,
-            Surname = message.Surname,
-            OrganizationId = message.OrganizationId,
-            InvitedById = message.InvitedByUserId
-        };
+        var entity = mapper.Map<User>(message);
+        entity.Id = Guid.NewGuid();
 
         var userRole = new UserRole
         {

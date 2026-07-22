@@ -34,7 +34,7 @@ public class UserModel
     public string? Position { get; set; }
 
 
-    public bool HasCompletedSurvey { get; set; }
+    public bool HasCompletedOnboarding { get; set; }
     
     public bool EmailConfirmed { get; set; }
 }

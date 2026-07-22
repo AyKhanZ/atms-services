@@ -3,6 +3,7 @@ using ATMS.Application.Exceptions.Configuration;
 using Newtonsoft.Json;
 using System.Net;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Image;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Models;
@@ -38,6 +39,10 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
             await HandleExceptionAsync(context, ex);
         }
         catch (ValidationException ex)
+        {
+            await HandleExceptionAsync(context, ex);
+        }
+        catch (ConflictException ex)
         {
             await HandleExceptionAsync(context, ex);
         }
@@ -203,6 +208,20 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
+        return context.Response.WriteAsync(result);
+    }
+
+    private Task HandleExceptionAsync(HttpContext context, ConflictException exception)
+    {
+        logger.LogInformation(
+            "Request conflict. RequestId: {RequestId}, Path: {Path}, Message: {Message}",
+            context.TraceIdentifier,
+            context.Request.Path,
+            exception.Message);
+
+        var result = JsonConvert.SerializeObject(new { error = exception.Message });
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = StatusCodes.Status409Conflict;
         return context.Response.WriteAsync(result);
     }
 }

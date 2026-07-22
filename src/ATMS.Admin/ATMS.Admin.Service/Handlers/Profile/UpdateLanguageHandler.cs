@@ -11,8 +11,8 @@ namespace ATMS.Admin.Service.Handlers.Profile;
 
 public class UpdateLanguageHandler(
     IUserRepository userRepository,
-    ICacheService cache
-    ) : IRequestHandler<UpdateLanguageCommand>
+    IDictionariesRepository dictionariesRepository,
+    ICacheService cache) : IRequestHandler<UpdateLanguageCommand>
 {
     public async Task Handle(UpdateLanguageCommand command, CancellationToken cancellationToken)
     {
@@ -21,14 +21,17 @@ public class UpdateLanguageHandler(
         {
             throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
         }
-        
-        entity.Language = command.Language;
-        
+        var allLanguages = await dictionariesRepository.GetLanguagesAsync(cancellationToken);
+        var language = allLanguages.FirstOrDefault(x => x.Code == command.Language)
+                       ?? throw new EntityException(EntityErrorType.NotFound, ProfileMessages.LanguageNotSupported);
+
+        entity.LanguageId = language.Id;
+
         await userRepository.SaveAsync(cancellationToken);
-        
+
         await InvalidateUserCacheAsync(command, cancellationToken);
     }
-    
+
     private async Task InvalidateUserCacheAsync(
         UpdateLanguageCommand command,
         CancellationToken cancellationToken)

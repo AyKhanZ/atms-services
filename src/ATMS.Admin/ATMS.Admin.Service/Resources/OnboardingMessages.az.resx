@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="DuplicateInvitationEmail" xml:space="preserve"><value>Hər email ünvanını yalnız bir dəfə əlavə etmək olar.</value></data>
+  <data name="InvalidEmail" xml:space="preserve"><value>Düzgün email ünvanı daxil edin.</value></data>
+  <data name="InvitationEmailInUse" xml:space="preserve"><value>{0} artıq qeydiyyatdan keçib və ya dəvət olunub.</value></data>
+  <data name="InvitationLimit" xml:space="preserve"><value>Ən çox 10 əməkdaş dəvət edə bilərsiniz.</value></data>
+  <data name="InvitationsIncomplete" xml:space="preserve"><value>Onboarding-i bitirməzdən əvvəl əməkdaşları dəvət edin və ya bu addımı keçin.</value></data>
+  <data name="InvitationsManagerOnly" xml:space="preserve"><value>Əməkdaşları yalnız müştəri meneceri dəvət edə bilər.</value></data>
+  <data name="InvitationsRequired" xml:space="preserve"><value>Ən azı bir əməkdaş əlavə edin və ya bu addımı keçin.</value></data>
+  <data name="InvalidBirthDate" xml:space="preserve"><value>Düzgün doğum tarixi daxil edin.</value></data>
+  <data name="InvalidPhoneNumber" xml:space="preserve"><value>Beynəlxalq formatda düzgün telefon nömrəsi daxil edin.</value></data>
+  <data name="MinimumAge" xml:space="preserve"><value>Ən azı 18 yaşınız olmalıdır.</value></data>
+  <data name="OnboardingAlreadyCompleted" xml:space="preserve"><value>Onboarding artıq tamamlanıb.</value></data>
+  <data name="OnboardingConcurrencyConflict" xml:space="preserve"><value>Onboarding başqa tabda yenilənib. Səhifəni yeniləyin və bir daha cəhd edin.</value></data>
+  <data name="PasswordRequirements" xml:space="preserve"><value>Böyük və kiçik hərf, rəqəm və xüsusi simvol daxil olmaqla 10-40 simvoldan istifadə edin.</value></data>
+  <data name="PhoneNumberMaxLength" xml:space="preserve"><value>Telefon nömrəsi 20 simvoldan uzun ola bilməz.</value></data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve"><value>Şifrələr uyğun gəlmir.</value></data>
+  <data name="PersonalInfoIncomplete" xml:space="preserve"><value>Onboarding-i bitirməzdən əvvəl şəxsi məlumatlarınızı tamamlayın.</value></data>
+  <data name="ProfilePhotoRequired" xml:space="preserve"><value>Profil şəkli seçin.</value></data>
+  <data name="SecurityIncomplete" xml:space="preserve"><value>Onboarding-i bitirməzdən əvvəl yeni şifrə seçin.</value></data>
+  <data name="UnsupportedGender" xml:space="preserve"><value>Mövcud cins seçimlərindən birini seçin.</value></data>
+  <data name="UnsupportedLanguage" xml:space="preserve"><value>Mövcud dillərdən birini seçin.</value></data>
+  <data name="UnsupportedMaritalStatus" xml:space="preserve"><value>Mövcud ailə vəziyyətlərindən birini seçin.</value></data>
+  <data name="VersionInvalid" xml:space="preserve"><value>Onboarding versiyası mənfi ola bilməz.</value></data>
+</root>
