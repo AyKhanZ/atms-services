@@ -3,7 +3,6 @@ using ATMS.Admin.Contracts.Models.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
-using ATMS.Admin.Service.Validation.Onboarding;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Resources;
@@ -36,9 +35,9 @@ public sealed class CompleteOnboardingHandler(
             var existingUserToken = await accessTokenService.GenerateTokenAsync(
                 progress.User,
                 cancellationToken);
-            await cache.RemoveAsync(
-                CacheKeys.Admin.MeById(progress.User.Id),
-                cancellationToken);
+            
+            await cache.RemoveAsync(CacheKeys.Admin.MeById(progress.User.Id), cancellationToken);
+            
             return new OnboardingCompletionModel
             {
                 AccessToken = existingUserToken.Token,
@@ -47,21 +46,19 @@ public sealed class CompleteOnboardingHandler(
             };
         }
 
-        var completionState = OnboardingStateValidator.EnsureCanComplete(progress);
+        var personalInfo = progress.PersonalInfo;
+        var pendingPasswordHash = progress.PendingPasswordHash;
         var user = progress.User;
 
-        mapper.Map(completionState.PersonalInfo, user);
-        user.PasswordHash = completionState.PendingPasswordHash;
+        mapper.Map(personalInfo, user);
+        user.PasswordHash = pendingPasswordHash;
         user.HasCompletedOnboarding = true;
         user.OnboardingCompletedAt = DateTime.UtcNow;
         progress.PendingPasswordHash = null;
 
         var accessToken = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
 
-        var saved = await onboardingRepository.TrySaveAsync(
-            progress,
-            command.Version,
-            cancellationToken);
+        var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);
         if (!saved)
         {
             throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);

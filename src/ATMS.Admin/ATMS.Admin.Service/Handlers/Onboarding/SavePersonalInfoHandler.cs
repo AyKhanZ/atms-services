@@ -3,7 +3,6 @@ using ATMS.Admin.Contracts.Models.Onboarding;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
-using ATMS.Admin.Service.Validation.Onboarding;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Resources;
@@ -25,7 +24,6 @@ public sealed class SavePersonalInfoHandler(
     {
         var progress = await onboardingRepository.GetAsync(currentUser.Id, cancellationToken)
             ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
-        OnboardingStateValidator.EnsureNotCompleted(progress);
 
         var oldAvatarPath = progress.PersonalInfo?.AvatarPath;
         string? newAvatarPath = null;
@@ -53,15 +51,12 @@ public sealed class SavePersonalInfoHandler(
         }
 
         personalInfo.Email = progress.User.Email;
-        personalInfo.AvatarPath = newAvatarPath ?? personalInfo.AvatarPath ?? progress.User.AvatarPath;
+        personalInfo.AvatarPath = newAvatarPath ?? personalInfo.AvatarPath;
         progress.PersonalInfoStatus = OnboardingStepStatusEnum.Completed;
 
         try
         {
-            var saved = await onboardingRepository.TrySaveAsync(
-                progress,
-                command.Version,
-                cancellationToken);
+            var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);
             if (!saved)
             {
                 throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);

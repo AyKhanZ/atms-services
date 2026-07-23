@@ -1,5 +1,3 @@
-using ATMS.Application.Constants;
-
 namespace ATMS.Project.API.Extensions;
 
 public static class DependencyInjection
@@ -8,12 +6,6 @@ public static class DependencyInjection
     {
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("OnboardingAccess", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim(CustomClaimTypes.OnboardingCompleted, "false");
-            });
-
             options.AddPolicy("AdminPolicy", policy =>
             {
                 policy.RequireRole("Admin");

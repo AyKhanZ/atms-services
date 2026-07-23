@@ -22,7 +22,8 @@ public class UpdateLanguageHandler(
             throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
         }
         var allLanguages = await dictionariesRepository.GetLanguagesAsync(cancellationToken);
-        var language = allLanguages.FirstOrDefault(x => x.Code == command.Language)
+        var language = allLanguages.FirstOrDefault(x =>
+                            string.Equals(x.Code, command.Language, StringComparison.OrdinalIgnoreCase))
                        ?? throw new EntityException(EntityErrorType.NotFound, ProfileMessages.LanguageNotSupported);
 
         entity.LanguageId = language.Id;

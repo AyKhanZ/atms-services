@@ -1,17 +1,22 @@
 using ATMS.Admin.Contracts.Commands.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Conflict;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Infrastructure.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
-using PhoneNumbers;
+using ATMS.Application.Dispatcher.Validation;
 
 namespace ATMS.Admin.Service.Validation.Onboarding;
 
-public sealed class SavePersonalInfoValidator : BaseImageValidator<SavePersonalInfoCommand>
+public class SavePersonalInfoValidator : BaseImageValidator<SavePersonalInfoCommand>
 {
-    private static readonly PhoneNumberUtil PhoneUtil = PhoneNumberUtil.GetInstance();
+    private readonly ICurrentUser _currentUser;
+    private readonly IOnboardingRepository _onboardingRepository;
+    private readonly IDictionariesRepository _dictionariesRepository;
 
     public SavePersonalInfoValidator(
         IConfiguration configuration,
@@ -19,6 +24,10 @@ public sealed class SavePersonalInfoValidator : BaseImageValidator<SavePersonalI
         IOnboardingRepository onboardingRepository,
         IDictionariesRepository dictionariesRepository) : base(configuration)
     {
+        _currentUser = currentUser;
+        _onboardingRepository = onboardingRepository;
+        _dictionariesRepository = dictionariesRepository;
+
         RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(AccountMessages.NameRequired)
             .MaximumLength(50).WithMessage(string.Format(AccountMessages.NameShouldBeLessThan, 50));
@@ -30,7 +39,7 @@ public sealed class SavePersonalInfoValidator : BaseImageValidator<SavePersonalI
         RuleFor(x => x.PhoneNumber).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(ProfileMessages.PhoneNumberRequired)
             .MaximumLength(20).WithMessage(OnboardingMessages.PhoneNumberMaxLength)
-            .Must(IsValidPhoneNumber).WithMessage(OnboardingMessages.InvalidPhoneNumber);
+            .Must(PhoneNumberHelper.IsValid).WithMessage(OnboardingMessages.InvalidPhoneNumber);
         
         RuleFor(x => x.Position).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(ProfileMessages.PositionRequired)
@@ -40,44 +49,60 @@ public sealed class SavePersonalInfoValidator : BaseImageValidator<SavePersonalI
             .Must(x => x >= new DateOnly(1900, 1, 1)).WithMessage(OnboardingMessages.InvalidBirthDate)
             .Must(x => x <= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-18))).WithMessage(OnboardingMessages.MinimumAge);
         
+        
         RuleFor(x => x.GenderId)
-            .MustAsync((id, ct) => dictionariesRepository.IsGenderExistAsync(x => x.Id == id, ct))
+            .MustAsync(IsGenderExistAsync)
             .WithMessage(OnboardingMessages.UnsupportedGender);
         
         RuleFor(x => x.MaritalStatusId)
-            .MustAsync((id, ct) => dictionariesRepository.IsMaritalStatusExistAsync(x => x.Id == id, ct))
+            .MustAsync(IsMaritalStatusExistAsync)
             .WithMessage(OnboardingMessages.UnsupportedMaritalStatus);
         
         RuleFor(x => x.LanguageId)
-            .MustAsync((id, ct) => dictionariesRepository.IsLanguageExistAsync(x => x.Id == id, ct))
+            .MustAsync(IsLanguageExistAsync)
             .WithMessage(OnboardingMessages.UnsupportedLanguage);
-        
-        RuleFor(x => x.Version)
-            .GreaterThanOrEqualTo(0).WithMessage(OnboardingMessages.VersionInvalid);
         
         RuleForOptionalImage(x => x.Avatar);
         
-        RuleFor(x => x).MustAsync(async (command, ct) =>
-        {
-            if (command.Avatar is not null)
-            {
-                return true;
-            }
-
-            var progress = await onboardingRepository.GetAsync(currentUser.Id, ct);
-            return !string.IsNullOrWhiteSpace(progress?.PersonalInfo?.AvatarPath);
-        }).WithMessage(OnboardingMessages.ProfilePhotoRequired).WithName(nameof(SavePersonalInfoCommand.Avatar));
+        RuleFor(x => x).CustomAsync(ValidateOnboardingAsync);
     }
 
-    private static bool IsValidPhoneNumber(string phoneNumber)
+    private Task<bool> IsGenderExistAsync(int genderId, CancellationToken cancellationToken)
     {
-        try
+        return _dictionariesRepository.IsGenderExistAsync(x => x.Id == genderId, cancellationToken);
+    }
+
+    private Task<bool> IsMaritalStatusExistAsync(int maritalStatusId, CancellationToken cancellationToken)
+    {
+        return _dictionariesRepository.IsMaritalStatusExistAsync(x => x.Id == maritalStatusId, cancellationToken);
+    }
+
+    private Task<bool> IsLanguageExistAsync(int languageId, CancellationToken cancellationToken)
+    {
+        return _dictionariesRepository.IsLanguageExistAsync(x => x.Id == languageId, cancellationToken);
+    }
+
+    private async Task ValidateOnboardingAsync(
+        SavePersonalInfoCommand command,
+        ValidationContext<SavePersonalInfoCommand> context,
+        CancellationToken cancellationToken)
+    {
+        var progress = await _onboardingRepository.GetAsync(_currentUser.Id, cancellationToken)
+            ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+
+        if (progress.User.HasCompletedOnboarding)
         {
-            return PhoneUtil.IsValidNumber(PhoneUtil.Parse(phoneNumber, null));
+            throw new ConflictException(OnboardingMessages.OnboardingAlreadyCompleted);
         }
-        catch (NumberParseException)
+
+        if (progress.Version != command.Version)
         {
-            return false;
+            throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);
+        }
+
+        if (command.Avatar is null && string.IsNullOrWhiteSpace(progress.PersonalInfo?.AvatarPath))
+        {
+            context.AddFailure(nameof(command.Avatar), OnboardingMessages.ProfilePhotoRequired);
         }
     }
 }

@@ -3,7 +3,6 @@ using ATMS.Admin.Contracts.Models.Onboarding;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
-using ATMS.Admin.Service.Validation.Onboarding;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Resources;
@@ -17,14 +16,12 @@ namespace ATMS.Admin.Service.Handlers.Onboarding;
 public sealed class SaveInvitationsHandler(
     ICurrentUser currentUser,
     IOnboardingRepository onboardingRepository,
-    IMapper mapper)
-    : IRequestHandler<SaveInvitationsCommand, OnboardingModel>
+    IMapper mapper) : IRequestHandler<SaveInvitationsCommand, OnboardingModel>
 {
     public async Task<OnboardingModel> Handle(SaveInvitationsCommand command, CancellationToken cancellationToken)
     {
         var progress = await onboardingRepository.GetAsync(currentUser.Id, cancellationToken)
             ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
-        OnboardingStateValidator.EnsureInvitationsAvailable(progress);
 
         progress.InvitedUsers.Clear();
         progress.InvitedUsers.AddRange(command.Users.Select(commandUser =>
@@ -37,11 +34,7 @@ public sealed class SaveInvitationsHandler(
         }));
         progress.InvitationsStatus = OnboardingStepStatusEnum.Completed;
 
-        var saved = await onboardingRepository.TrySaveAsync(
-            progress,
-            command.Version,
-            cancellationToken);
-        
+        var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);
         if (!saved)
         {
             throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);

@@ -85,31 +85,6 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
     }
 
     [Fact]
-    public async Task Handle_WhenSecurityIsIncomplete_DoesNotSaveOrPublishEvents()
-    {
-        var userId = Guid.NewGuid();
-        var progress = CreateReadyProgress(userId, Guid.NewGuid());
-        progress.SecurityStatus = OnboardingStepStatusEnum.NotStarted;
-        progress.PendingPasswordHash = null;
-        CurrentUserMock.SetupGet(x => x.Id).Returns(userId);
-        OnboardingRepositoryMock
-            .Setup(x => x.GetAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(progress);
-
-        var exception = await Assert.ThrowsAsync<ConflictException>(() =>
-            CreateHandler().Handle(new CompleteOnboardingCommand { Version = 7 }, CancellationToken.None));
-
-        Assert.Contains("Choose a new password", exception.Message);
-        Assert.False(progress.User.HasCompletedOnboarding);
-        OnboardingRepositoryMock.Verify(
-            x => x.TrySaveAsync(It.IsAny<OnboardingProgress>(), It.IsAny<long>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-        MessagePublisherMock.Verify(
-            x => x.PublishAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<UserUpdatedEvent>(), It.IsAny<CancellationToken>()),
-            Times.Never);
-    }
-
-    [Fact]
     public async Task Handle_WhenOnboardingIsAlreadyCompleted_ReturnsFreshTokenWithoutPublishingEvents()
     {
         var userId = Guid.NewGuid();

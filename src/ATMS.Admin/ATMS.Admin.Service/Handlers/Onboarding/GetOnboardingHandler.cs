@@ -12,12 +12,9 @@ namespace ATMS.Admin.Service.Handlers.Onboarding;
 public sealed class GetOnboardingHandler(
     ICurrentUser currentUser,
     IOnboardingRepository onboardingRepository,
-    IMapper mapper)
-    : IRequestHandler<GetOnboardingRequest, OnboardingModel>
+    IMapper mapper) : IRequestHandler<GetOnboardingRequest, OnboardingModel>
 {
-    public async Task<OnboardingModel> Handle(
-        GetOnboardingRequest request,
-        CancellationToken cancellationToken)
+    public async Task<OnboardingModel> Handle(GetOnboardingRequest request, CancellationToken cancellationToken)
     {
         var progress = await onboardingRepository.GetAsync(currentUser.Id, cancellationToken)
             ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ATMS.Admin.API.Controllers.v1;
 
-[Authorize(Policy = "OnboardingAccess")]
+[Authorize]
 [ApiController]
 [Route("api/v1/onboarding")]
 public sealed class OnboardingController(IMediator mediator) : ControllerBase

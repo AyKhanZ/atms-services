@@ -1,4 +1,7 @@
 using ATMS.Admin.Contracts.Commands.Onboarding;
+using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Onboarding;
+using ATMS.Data.Constants;
 using ATMS.Admin.Service.Validation.Onboarding;
 using Moq;
 
@@ -10,6 +13,7 @@ public sealed class SaveInvitationsValidatorTest : BaseValidatorTest
     public async Task Validate_WhenEmailsAreAvailable_ChecksThemInOneRepositoryCall()
     {
         var userId = Guid.NewGuid();
+        SetupOnboarding(userId);
         CurrentUserMock.SetupGet(x => x.Id).Returns(userId);
         OnboardingRepositoryMock
             .Setup(x => x.GetEmailsInUseAsync(
@@ -34,6 +38,7 @@ public sealed class SaveInvitationsValidatorTest : BaseValidatorTest
     [Fact]
     public async Task Validate_WhenEmailIsDuplicated_DoesNotQueryDatabase()
     {
+        SetupOnboarding(Guid.NewGuid());
         var validator = new SaveInvitationsValidator(
             CurrentUserMock.Object,
             OnboardingRepositoryMock.Object);
@@ -52,6 +57,7 @@ public sealed class SaveInvitationsValidatorTest : BaseValidatorTest
     public async Task Validate_WhenEmailIsAlreadyUsed_ReturnsValidationFailure()
     {
         var userId = Guid.NewGuid();
+        SetupOnboarding(userId);
         CurrentUserMock.SetupGet(x => x.Id).Returns(userId);
         OnboardingRepositoryMock
             .Setup(x => x.GetEmailsInUseAsync(
@@ -81,5 +87,18 @@ public sealed class SaveInvitationsValidatorTest : BaseValidatorTest
                 Email = email
             }).ToList()
         };
+    }
+
+    private void SetupOnboarding(Guid userId)
+    {
+        CurrentUserMock.SetupGet(x => x.Id).Returns(userId);
+        CurrentUserMock.SetupGet(x => x.RoleId).Returns(RoleIds.ClientManager);
+        OnboardingRepositoryMock
+            .Setup(x => x.GetAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new OnboardingProgress
+            {
+                Version = 0,
+                User = new User()
+            });
     }
 }

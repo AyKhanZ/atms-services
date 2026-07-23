@@ -2,7 +2,6 @@ using ATMS.Admin.Contracts.Commands.Onboarding;
 using ATMS.Admin.Contracts.Models.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
-using ATMS.Admin.Service.Validation.Onboarding;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Resources;
@@ -22,16 +21,11 @@ public sealed class SkipInvitationsHandler(
     {
         var progress = await onboardingRepository.GetAsync(currentUser.Id, cancellationToken)
             ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
-        OnboardingStateValidator.EnsureInvitationsAvailable(progress);
 
         progress.InvitedUsers.Clear();
         progress.InvitationsStatus = OnboardingStepStatusEnum.Skipped;
 
-        var saved = await onboardingRepository.TrySaveAsync(
-            progress,
-            command.Version,
-            cancellationToken);
-        
+        var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);
         if (!saved)
         {
             throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);
