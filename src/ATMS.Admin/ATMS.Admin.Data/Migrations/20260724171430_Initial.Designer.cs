@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    [Migration("20260713194844_ChangeFieldsMaxSizeEmail")]
-    partial class ChangeFieldsMaxSizeEmail
+    [Migration("20260724171430_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -180,6 +180,60 @@ namespace ATMS.Admin.Data.Migrations
                             GenderId = 4,
                             Language = "az",
                             Name = "Digər"
+                        });
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.Language", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("NativeName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Languages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "AZ",
+                            Name = "Azerbaijani",
+                            NativeName = "Azərbaycanca"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "EN",
+                            Name = "English",
+                            NativeName = "English"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "RU",
+                            Name = "Russian",
+                            NativeName = "Русский"
                         });
                 });
 
@@ -929,6 +983,186 @@ namespace ATMS.Admin.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Messaging.EmailDelivery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("FailedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("NextAttemptAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TemporaryPassword")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status", "NextAttemptAt");
+
+                    b.HasIndex("UserId", "Type", "Status");
+
+                    b.ToTable("EmailDeliveries");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Onboarding.OnboardingInvitedUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("OnboardingUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .IsUnique();
+
+                    b.HasIndex("OnboardingUserId");
+
+                    b.ToTable("OnboardingInvitedUsers");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Onboarding.OnboardingPersonalInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AvatarPath")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateOnly>("BirthDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("GenderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaritalStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GenderId");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("MaritalStatusId");
+
+                    b.ToTable("OnboardingPersonalInfos");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Onboarding.OnboardingProgress", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("InvitationsStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PendingPasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PersonalInfoStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SecurityStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("bigint");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("OnboardingProgresses");
+                });
+
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1303,7 +1537,7 @@ namespace ATMS.Admin.Data.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(1);
 
-                    b.Property<bool>("HasCompletedSurvey")
+                    b.Property<bool>("HasCompletedOnboarding")
                         .HasColumnType("boolean");
 
                     b.Property<Guid?>("InvitedById")
@@ -1314,11 +1548,10 @@ namespace ATMS.Admin.Data.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Language")
-                        .IsRequired()
+                    b.Property<int>("LanguageId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("en");
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
 
                     b.Property<DateTime?>("LastLogin")
                         .HasColumnType("timestamp with time zone");
@@ -1335,6 +1568,14 @@ namespace ATMS.Admin.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("OnboardingCompletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uuid");
@@ -1379,7 +1620,12 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.HasIndex("InvitedById");
 
+                    b.HasIndex("LanguageId");
+
                     b.HasIndex("MaritalStatusId");
+
+                    b.HasIndex("NormalizedEmail")
+                        .IsUnique();
 
                     b.HasIndex("RefreshToken")
                         .IsUnique();
@@ -1387,137 +1633,6 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("UserStatusId");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.InvitedUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<Guid>("UserProgressId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("UserProgressId");
-
-                    b.ToTable("InvitedUser");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.PersonalInfo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("AvatarPath")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("GenderId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("character varying(2)");
-
-                    b.Property<int>("MaritalStatusId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<Guid>("UserProgressId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GenderId");
-
-                    b.HasIndex("MaritalStatusId");
-
-                    b.ToTable("PersonalInfo");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.UserProgress", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("CurrentStep")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("OrganizationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("PersonalInfoId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("UserProgressType")
-                        .HasColumnType("integer");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("PersonalInfoId");
-
-                    b.ToTable("UserProgresses");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.UserRole", b =>
@@ -1535,6 +1650,79 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("ATMS.Data.Messaging.InboxMessage", b =>
+                {
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConsumerName")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("MessageId", "ConsumerName");
+
+                    b.HasIndex("ProcessedAt");
+
+                    b.ToTable("InboxMessages");
+                });
+
+            modelBuilder.Entity("ATMS.Data.Messaging.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Exchange")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("FailedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("NextAttemptAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RoutingKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status", "NextAttemptAt");
+
+                    b.ToTable("OutboxMessages");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Dictionaries.GenderTranslation", b =>
@@ -1579,6 +1767,74 @@ namespace ATMS.Admin.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("UserStatus");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Messaging.EmailDelivery", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Onboarding.OnboardingInvitedUser", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.Onboarding.OnboardingProgress", "Progress")
+                        .WithMany("InvitedUsers")
+                        .HasForeignKey("OnboardingUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Progress");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Onboarding.OnboardingPersonalInfo", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Gender", "Gender")
+                        .WithMany()
+                        .HasForeignKey("GenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Admin.Data.Entities.Onboarding.OnboardingProgress", "Progress")
+                        .WithOne("PersonalInfo")
+                        .HasForeignKey("ATMS.Admin.Data.Entities.Onboarding.OnboardingPersonalInfo", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", "MaritalStatus")
+                        .WithMany()
+                        .HasForeignKey("MaritalStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Gender");
+
+                    b.Navigation("Language");
+
+                    b.Navigation("MaritalStatus");
+
+                    b.Navigation("Progress");
+                });
+
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Onboarding.OnboardingProgress", b =>
+                {
+                    b.HasOne("ATMS.Admin.Data.Entities.User", "User")
+                        .WithOne()
+                        .HasForeignKey("ATMS.Admin.Data.Entities.Onboarding.OnboardingProgress", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.RolePermission", b =>
@@ -1634,6 +1890,12 @@ namespace ATMS.Admin.Data.Migrations
                         .WithMany()
                         .HasForeignKey("InvitedById");
 
+                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", "MaritalStatus")
                         .WithMany()
                         .HasForeignKey("MaritalStatusId")
@@ -1650,46 +1912,11 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Navigation("InvitedBy");
 
+                    b.Navigation("Language");
+
                     b.Navigation("MaritalStatus");
 
                     b.Navigation("UserStatus");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.InvitedUser", b =>
-                {
-                    b.HasOne("ATMS.Admin.Data.Entities.UserProgresses.UserProgress", null)
-                        .WithMany("InvitedUsers")
-                        .HasForeignKey("UserProgressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.PersonalInfo", b =>
-                {
-                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.Gender", "Gender")
-                        .WithMany()
-                        .HasForeignKey("GenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ATMS.Admin.Data.Entities.Dictionaries.MaritalStatus", "MaritalStatus")
-                        .WithMany()
-                        .HasForeignKey("MaritalStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Gender");
-
-                    b.Navigation("MaritalStatus");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.UserProgress", b =>
-                {
-                    b.HasOne("ATMS.Admin.Data.Entities.UserProgresses.PersonalInfo", "PersonalInfo")
-                        .WithMany()
-                        .HasForeignKey("PersonalInfoId");
-
-                    b.Navigation("PersonalInfo");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.UserRole", b =>
@@ -1733,6 +1960,13 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("Translations");
                 });
 
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Onboarding.OnboardingProgress", b =>
+                {
+                    b.Navigation("InvitedUsers");
+
+                    b.Navigation("PersonalInfo");
+                });
+
             modelBuilder.Entity("ATMS.Admin.Data.Entities.Role", b =>
                 {
                     b.Navigation("RolePermissions");
@@ -1743,11 +1977,6 @@ namespace ATMS.Admin.Data.Migrations
             modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.UserProgresses.UserProgress", b =>
-                {
-                    b.Navigation("InvitedUsers");
                 });
 #pragma warning restore 612, 618
         }

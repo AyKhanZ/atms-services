@@ -41,11 +41,24 @@ namespace ATMS.Project.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InboxMessages",
+                columns: table => new
+                {
+                    MessageId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ConsumerName = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InboxMessages", x => new { x.MessageId, x.ConsumerName });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Organizations",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Voen = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     LogoPath = table.Column<string>(type: "text", nullable: true, defaultValue: "default-org.png"),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
@@ -1295,6 +1308,11 @@ namespace ATMS.Project.Data.Migrations
                 column: "ParentCommentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InboxMessages_ProcessedAt",
+                table: "InboxMessages",
+                column: "ProcessedAt");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MeetingAgendaItems_MeetingId_Order",
                 table: "MeetingAgendaItems",
                 columns: new[] { "MeetingId", "Order" },
@@ -1645,6 +1663,9 @@ namespace ATMS.Project.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Attachments");
+
+            migrationBuilder.DropTable(
+                name: "InboxMessages");
 
             migrationBuilder.DropTable(
                 name: "MeetingAgendaItems");

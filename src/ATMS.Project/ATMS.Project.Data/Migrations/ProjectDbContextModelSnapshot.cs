@@ -22,6 +22,25 @@ namespace ATMS.Project.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ATMS.Data.Messaging.InboxMessage", b =>
+                {
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConsumerName")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("MessageId", "ConsumerName");
+
+                    b.HasIndex("ProcessedAt");
+
+                    b.ToTable("InboxMessages");
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.Attachment", b =>
                 {
                     b.Property<Guid>("Id")

@@ -28,6 +28,34 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InboxMessages",
+                columns: table => new
+                {
+                    MessageId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ConsumerName = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InboxMessages", x => new { x.MessageId, x.ConsumerName });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Languages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    NativeName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Code = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Languages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MaritalStatuses",
                 columns: table => new
                 {
@@ -38,6 +66,28 @@ namespace ATMS.Admin.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MaritalStatuses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OutboxMessages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Exchange = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    RoutingKey = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    MessageType = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    Payload = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    AttemptCount = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    NextAttemptAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    FailedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastError = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,40 +176,6 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PersonalInfo",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    Position = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Language = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
-                    AvatarPath = table.Column<string>(type: "text", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserProgressId = table.Column<Guid>(type: "uuid", nullable: false),
-                    GenderId = table.Column<int>(type: "integer", nullable: false),
-                    MaritalStatusId = table.Column<int>(type: "integer", nullable: false),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Surname = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PersonalInfo", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PersonalInfo_Genders_GenderId",
-                        column: x => x.GenderId,
-                        principalTable: "Genders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PersonalInfo_MaritalStatuses_MaritalStatusId",
-                        column: x => x.MaritalStatusId,
-                        principalTable: "MaritalStatuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PermissionTranslation",
                 columns: table => new
                 {
@@ -214,13 +230,15 @@ namespace ATMS.Admin.Data.Migrations
                     AvatarPath = table.Column<string>(type: "text", nullable: false, defaultValue: "default-avatar.png"),
                     Position = table.Column<string>(type: "text", nullable: true),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    HasCompletedSurvey = table.Column<bool>(type: "boolean", nullable: false),
+                    HasCompletedOnboarding = table.Column<bool>(type: "boolean", nullable: false),
+                    OnboardingCompletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
                     FailedLoginCount = table.Column<long>(type: "bigint", nullable: false),
                     LockoutEnd = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
                     RefreshTokenExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Language = table.Column<string>(type: "text", nullable: false, defaultValue: "en"),
+                    LanguageId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
+                    NormalizedEmail = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     OrganizationId = table.Column<Guid>(type: "uuid", nullable: true),
                     IsAdmin = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     InvitedById = table.Column<Guid>(type: "uuid", nullable: true),
@@ -230,9 +248,9 @@ namespace ATMS.Admin.Data.Migrations
                     UserStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     MaritalStatusId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     GenderId = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Surname = table.Column<string>(type: "text", nullable: false)
+                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Surname = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -243,6 +261,12 @@ namespace ATMS.Admin.Data.Migrations
                         principalTable: "Genders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Users_Languages_LanguageId",
+                        column: x => x.LanguageId,
+                        principalTable: "Languages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Users_MaritalStatuses_MaritalStatusId",
                         column: x => x.MaritalStatusId,
@@ -284,26 +308,55 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserProgresses",
+                name: "EmailDeliveries",
                 columns: table => new
                 {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserProgressType = table.Column<int>(type: "integer", nullable: false),
-                    CurrentStep = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
-                    LastUpdated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    PersonalInfoId = table.Column<Guid>(type: "uuid", nullable: true),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    OrganizationId = table.Column<Guid>(type: "uuid", nullable: true)
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    TemporaryPassword = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true),
+                    PasswordResetToken = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    PasswordResetTokenExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    AttemptCount = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    NextAttemptAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    FailedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastError = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProgresses", x => x.UserId);
+                    table.PrimaryKey("PK_EmailDeliveries", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserProgresses_PersonalInfo_PersonalInfoId",
-                        column: x => x.PersonalInfoId,
-                        principalTable: "PersonalInfo",
-                        principalColumn: "Id");
+                        name: "FK_EmailDeliveries_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OnboardingProgresses",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PersonalInfoStatus = table.Column<int>(type: "integer", nullable: false),
+                    SecurityStatus = table.Column<int>(type: "integer", nullable: false),
+                    InvitationsStatus = table.Column<int>(type: "integer", nullable: false),
+                    PendingPasswordHash = table.Column<string>(type: "text", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Version = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OnboardingProgresses", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_OnboardingProgresses_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -371,22 +424,68 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InvitedUser",
+                name: "OnboardingInvitedUsers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserProgressId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    OnboardingUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NormalizedEmail = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Surname = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InvitedUser", x => x.Id);
+                    table.PrimaryKey("PK_OnboardingInvitedUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InvitedUser_UserProgresses_UserProgressId",
-                        column: x => x.UserProgressId,
-                        principalTable: "UserProgresses",
+                        name: "FK_OnboardingInvitedUsers_OnboardingProgresses_OnboardingUserId",
+                        column: x => x.OnboardingUserId,
+                        principalTable: "OnboardingProgresses",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OnboardingPersonalInfos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Position = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    LanguageId = table.Column<int>(type: "integer", nullable: false),
+                    AvatarPath = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    GenderId = table.Column<int>(type: "integer", nullable: false),
+                    MaritalStatusId = table.Column<int>(type: "integer", nullable: false),
+                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Surname = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OnboardingPersonalInfos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OnboardingPersonalInfos_Genders_GenderId",
+                        column: x => x.GenderId,
+                        principalTable: "Genders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_OnboardingPersonalInfos_Languages_LanguageId",
+                        column: x => x.LanguageId,
+                        principalTable: "Languages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_OnboardingPersonalInfos_MaritalStatuses_MaritalStatusId",
+                        column: x => x.MaritalStatusId,
+                        principalTable: "MaritalStatuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_OnboardingPersonalInfos_OnboardingProgresses_Id",
+                        column: x => x.Id,
+                        principalTable: "OnboardingProgresses",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -400,6 +499,16 @@ namespace ATMS.Admin.Data.Migrations
                     { 2, "Male" },
                     { 3, "Female" },
                     { 4, "Other" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Languages",
+                columns: new[] { "Id", "Code", "Name", "NativeName" },
+                values: new object[,]
+                {
+                    { 1, "AZ", "Azerbaijani", "Azərbaycanca" },
+                    { 2, "EN", "English", "English" },
+                    { 3, "RU", "Russian", "Русский" }
                 });
 
             migrationBuilder.InsertData(
@@ -431,7 +540,10 @@ namespace ATMS.Admin.Data.Migrations
                     { 12, "NotificationDelete", "Notification" },
                     { 13, "CommentView", "Comment" },
                     { 14, "CommentEdit", "Comment" },
-                    { 15, "CommentDelete", "Comment" }
+                    { 15, "CommentDelete", "Comment" },
+                    { 16, "OrganizationView", "Organization" },
+                    { 17, "OrganizationEdit", "Organization" },
+                    { 18, "OrganizationDelete", "Organization" }
                 });
 
             migrationBuilder.InsertData(
@@ -589,7 +701,11 @@ namespace ATMS.Admin.Data.Migrations
                     { 14, new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f") },
                     { 15, new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5") },
                     { 15, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") },
-                    { 15, new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f") }
+                    { 15, new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f") },
+                    { 16, new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53") },
+                    { 16, new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f") },
+                    { 17, new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f") },
+                    { 18, new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f") }
                 });
 
             migrationBuilder.InsertData(
@@ -609,6 +725,16 @@ namespace ATMS.Admin.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmailDeliveries_Status_NextAttemptAt",
+                table: "EmailDeliveries",
+                columns: new[] { "Status", "NextAttemptAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailDeliveries_UserId_Type_Status",
+                table: "EmailDeliveries",
+                columns: new[] { "UserId", "Type", "Status" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Genders_Code",
                 table: "Genders",
                 column: "Code",
@@ -621,15 +747,15 @@ namespace ATMS.Admin.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_InvitedUser_Email",
-                table: "InvitedUser",
-                column: "Email",
-                unique: true);
+                name: "IX_InboxMessages_ProcessedAt",
+                table: "InboxMessages",
+                column: "ProcessedAt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InvitedUser_UserProgressId",
-                table: "InvitedUser",
-                column: "UserProgressId");
+                name: "IX_Languages_Code",
+                table: "Languages",
+                column: "Code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaritalStatuses_Code",
@@ -642,6 +768,37 @@ namespace ATMS.Admin.Data.Migrations
                 table: "MaritalStatusTranslation",
                 columns: new[] { "MaritalStatusId", "Language" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OnboardingInvitedUsers_NormalizedEmail",
+                table: "OnboardingInvitedUsers",
+                column: "NormalizedEmail",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OnboardingInvitedUsers_OnboardingUserId",
+                table: "OnboardingInvitedUsers",
+                column: "OnboardingUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OnboardingPersonalInfos_GenderId",
+                table: "OnboardingPersonalInfos",
+                column: "GenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OnboardingPersonalInfos_LanguageId",
+                table: "OnboardingPersonalInfos",
+                column: "LanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OnboardingPersonalInfos_MaritalStatusId",
+                table: "OnboardingPersonalInfos",
+                column: "MaritalStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessages_Status_NextAttemptAt",
+                table: "OutboxMessages",
+                columns: new[] { "Status", "NextAttemptAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PasswordResetTokens_Token",
@@ -665,16 +822,6 @@ namespace ATMS.Admin.Data.Migrations
                 table: "PermissionTranslation",
                 columns: new[] { "PermissionId", "Language" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PersonalInfo_GenderId",
-                table: "PersonalInfo",
-                column: "GenderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PersonalInfo_MaritalStatusId",
-                table: "PersonalInfo",
-                column: "MaritalStatusId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshRevokedTokens_Token",
@@ -709,11 +856,6 @@ namespace ATMS.Admin.Data.Migrations
                 column: "UserType");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserProgresses_PersonalInfoId",
-                table: "UserProgresses",
-                column: "PersonalInfoId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_RoleId",
                 table: "UserRoles",
                 column: "RoleId");
@@ -745,9 +887,20 @@ namespace ATMS.Admin.Data.Migrations
                 column: "InvitedById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_LanguageId",
+                table: "Users",
+                column: "LanguageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_MaritalStatusId",
                 table: "Users",
                 column: "MaritalStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_NormalizedEmail",
+                table: "Users",
+                column: "NormalizedEmail",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RefreshToken",
@@ -777,13 +930,25 @@ namespace ATMS.Admin.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "EmailDeliveries");
+
+            migrationBuilder.DropTable(
                 name: "GenderTranslation");
 
             migrationBuilder.DropTable(
-                name: "InvitedUser");
+                name: "InboxMessages");
 
             migrationBuilder.DropTable(
                 name: "MaritalStatusTranslation");
+
+            migrationBuilder.DropTable(
+                name: "OnboardingInvitedUsers");
+
+            migrationBuilder.DropTable(
+                name: "OnboardingPersonalInfos");
+
+            migrationBuilder.DropTable(
+                name: "OutboxMessages");
 
             migrationBuilder.DropTable(
                 name: "PasswordResetTokens");
@@ -804,7 +969,7 @@ namespace ATMS.Admin.Data.Migrations
                 name: "UserStatusTranslation");
 
             migrationBuilder.DropTable(
-                name: "UserProgresses");
+                name: "OnboardingProgresses");
 
             migrationBuilder.DropTable(
                 name: "Permissions");
@@ -816,16 +981,16 @@ namespace ATMS.Admin.Data.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "PersonalInfo");
-
-            migrationBuilder.DropTable(
-                name: "UserStatuses");
-
-            migrationBuilder.DropTable(
                 name: "Genders");
 
             migrationBuilder.DropTable(
+                name: "Languages");
+
+            migrationBuilder.DropTable(
                 name: "MaritalStatuses");
+
+            migrationBuilder.DropTable(
+                name: "UserStatuses");
         }
     }
 }
