@@ -27,6 +27,7 @@ public static class DataAccessModule
         
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
         services.AddScoped<IHealthRepository, HealthRepository>();
+        services.AddScoped<IInboxRepository, InboxRepository>();
         
         return services;
     }

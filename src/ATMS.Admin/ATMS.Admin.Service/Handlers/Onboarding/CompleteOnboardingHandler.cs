@@ -11,7 +11,6 @@ using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Contracts.Events.Users;
 using ATMS.Messaging.Configuration;
-using ATMS.Messaging.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -23,7 +22,7 @@ public sealed class CompleteOnboardingHandler(
     IMapper mapper,
     IAccessTokenService accessTokenService,
     ICacheService cache,
-    IMessagePublisher messagePublisher) : IRequestHandler<CompleteOnboardingCommand, OnboardingCompletionModel>
+    IOutboxRepository outboxRepository) : IRequestHandler<CompleteOnboardingCommand, OnboardingCompletionModel>
 {
     public async Task<OnboardingCompletionModel> Handle(CompleteOnboardingCommand command, CancellationToken cancellationToken)
     {
@@ -58,15 +57,7 @@ public sealed class CompleteOnboardingHandler(
 
         var accessToken = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
 
-        var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);
-        if (!saved)
-        {
-            throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);
-        }
-
-        await cache.RemoveAsync(CacheKeys.Admin.MeById(user.Id), cancellationToken);
-
-        await messagePublisher.PublishAsync(
+        await outboxRepository.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserUpdated,
             new UserUpdatedEvent(user.Id, user.Name, user.Surname, user.AvatarPath),
@@ -74,7 +65,7 @@ public sealed class CompleteOnboardingHandler(
 
         foreach (var invitedUser in progress.InvitedUsers)
         {
-            await messagePublisher.PublishAsync(
+            await outboxRepository.AddAsync(
                 MessagingConstants.Exchanges.UserEvents,
                 MessagingConstants.RoutingKeys.UserInvited,
                 new UserInvitedEvent(
@@ -85,6 +76,14 @@ public sealed class CompleteOnboardingHandler(
                     user.Id),
                 cancellationToken);
         }
+
+        var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);
+        if (!saved)
+        {
+            throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);
+        }
+
+        await cache.RemoveAsync(CacheKeys.Admin.MeById(user.Id), cancellationToken);
 
         return new OnboardingCompletionModel
         {

@@ -7,14 +7,13 @@ using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Contracts.Events.Users;
 using ATMS.Messaging.Configuration;
-using ATMS.Messaging.Interfaces;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Profile;
 
 public class UpdateSettingsHandler(
     IUserRepository userRepository,
-    IMessagePublisher messagePublisher,
+    IOutboxRepository outboxRepository,
     ICacheService cache) : IRequestHandler<UpdateSettingsCommand>
 {
     public async Task Handle(UpdateSettingsCommand command, CancellationToken cancellationToken)
@@ -33,19 +32,19 @@ public class UpdateSettingsHandler(
         entity.MaritalStatusId = command.MaritalStatusId;
         entity.GenderId = command.GenderId;
 
-        await userRepository.SaveAsync(cancellationToken);
-        
         var @event = new UserUpdatedEvent(
             entity.Id,
             entity.Name,
             entity.Surname,
             entity.AvatarPath);
 
-        await messagePublisher.PublishAsync(
+        await outboxRepository.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserUpdated,
             @event,
             cancellationToken);
+
+        await userRepository.SaveAsync(cancellationToken);
         
         await InvalidateUserCacheAsync(command, cancellationToken);
     }

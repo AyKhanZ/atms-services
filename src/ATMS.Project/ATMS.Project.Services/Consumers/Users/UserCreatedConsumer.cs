@@ -16,20 +16,39 @@ public sealed class UserCreatedConsumer(
     : RabbitMqConsumerBase<UserCreatedEvent>(connectionFactory, scopeFactory, logger,
         MessagingConstants.Queues.ProjectUserCreated)
 {
-    protected override async Task HandleAsync(UserCreatedEvent message, IServiceProvider serviceProvider,
+    protected override async Task HandleAsync(UserCreatedEvent message, Guid messageId, IServiceProvider serviceProvider,
         CancellationToken cancellationToken)
     {
         var userRepository = serviceProvider.GetRequiredService<IUserRepository>();
+        var inboxRepository = serviceProvider.GetRequiredService<IInboxRepository>();
         var mapper = serviceProvider.GetRequiredService<IMapper>();
+
+        if (await inboxRepository.IsProcessedAsync(
+                messageId,
+                nameof(UserCreatedConsumer),
+                cancellationToken))
+        {
+            return;
+        }
 
         var exist = await userRepository.IsExistAsync(u => u.Id == message.Id, cancellationToken);
         if (exist)
         {
+            await inboxRepository.AddAsync(
+                messageId,
+                nameof(UserCreatedConsumer),
+                cancellationToken);
+            await userRepository.SaveAsync(cancellationToken);
             return;
         }
 
         var user = mapper.Map<User>(message);
 
-        await userRepository.CreateAsync(user, cancellationToken);
+        await userRepository.AddAsync(user, cancellationToken);
+        await inboxRepository.AddAsync(
+            messageId,
+            nameof(UserCreatedConsumer),
+            cancellationToken);
+        await userRepository.SaveAsync(cancellationToken);
     }
 }

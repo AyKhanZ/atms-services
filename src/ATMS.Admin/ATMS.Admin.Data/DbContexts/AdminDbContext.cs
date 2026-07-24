@@ -2,7 +2,9 @@
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Data.Entities.Onboarding;
+using ATMS.Admin.Data.Entities.Messaging;
 using ATMS.Data.Interfaces;
+using ATMS.Data.Messaging;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.DbContexts;
@@ -45,6 +47,15 @@ public class AdminDbContext: DbContext
     public DbSet<OnboardingPersonalInfo> OnboardingPersonalInfos { get; set; }
 
     public DbSet<OnboardingInvitedUser> OnboardingInvitedUsers { get; set; }
+
+    #endregion
+
+    #region Messaging
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
+
+    public DbSet<InboxMessage> InboxMessages { get; set; }
+
+    public DbSet<EmailDelivery> EmailDeliveries { get; set; }
 
     #endregion
 

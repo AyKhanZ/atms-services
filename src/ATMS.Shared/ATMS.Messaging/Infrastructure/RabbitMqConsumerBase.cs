@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using ATMS.Messaging.Interfaces;
@@ -17,7 +18,19 @@ public abstract class RabbitMqConsumerBase<T>(
     ushort prefetchCount = 10)
     : IMessageConsumer
 {
-    private const int MaxRetryCount = 3;
+    private const int MaxAttemptCount = 10;
+    private readonly TimeSpan[] _retryDelays =
+    [
+        TimeSpan.FromSeconds(30),
+        TimeSpan.FromMinutes(2),
+        TimeSpan.FromMinutes(5),
+        TimeSpan.FromMinutes(15),
+        TimeSpan.FromMinutes(30),
+        TimeSpan.FromHours(1),
+        TimeSpan.FromHours(2),
+        TimeSpan.FromHours(4),
+        TimeSpan.FromHours(8)
+    ];
 
     private IConnection? _connection;
     private IChannel? _channel;
@@ -25,8 +38,10 @@ public abstract class RabbitMqConsumerBase<T>(
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _connection = await connectionFactory.GetConnectionAsync();
-        _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        _connection = await connectionFactory.GetConnectionAsync(cancellationToken);
+        _channel = await _connection.CreateChannelAsync(
+            new CreateChannelOptions(true, true),
+            cancellationToken);
         _cancellationToken = cancellationToken;
         
         // Keeps no more than N unacknowledged messages in this consumer.
@@ -65,7 +80,7 @@ public abstract class RabbitMqConsumerBase<T>(
         try
         {
             var json = Encoding.UTF8.GetString(args.Body.Span);
-            var envelope = JsonSerializer.Deserialize<MessageEnvelope<T>>(json);
+            var envelope = JsonSerializer.Deserialize<MessageEnvelope>(json);
 
             if (envelope is null)
             {
@@ -74,16 +89,27 @@ public abstract class RabbitMqConsumerBase<T>(
                 return;
             }
 
+            var expectedMessageType = typeof(T).FullName ?? typeof(T).Name;
+            if (envelope.MessageType != expectedMessageType &&
+                envelope.MessageType != typeof(T).Name)
+            {
+                throw new JsonException(
+                    $"Message type {envelope.MessageType} cannot be handled as {expectedMessageType}.");
+            }
+
+            var message = envelope.Payload.Deserialize<T>()
+                ?? throw new JsonException($"Message {envelope.MessageId} has an empty payload.");
+
             await using var scope = scopeFactory.CreateAsyncScope();
-            await HandleAsync(envelope.Payload, scope.ServiceProvider, _cancellationToken);
+            await HandleAsync(message, envelope.MessageId, scope.ServiceProvider, _cancellationToken);
             await _channel!.BasicAckAsync(args.DeliveryTag, false, CancellationToken.None);
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Failed to process message {MessageId}", messageId);
 
-            var retryCount = GetRetryCount(args.BasicProperties.Headers);
-            if (retryCount >= MaxRetryCount)
+            var attemptCount = GetRetryCount(args.BasicProperties.Headers) + 1;
+            if (attemptCount >= MaxAttemptCount)
             {
                 // Retries are exhausted: send the original message to the queue DLX.
                 await RejectAsync(args.DeliveryTag);
@@ -96,7 +122,9 @@ public abstract class RabbitMqConsumerBase<T>(
                 ContentType = args.BasicProperties.ContentType ?? "application/json",
                 MessageId = args.BasicProperties.MessageId,
                 Timestamp = args.BasicProperties.Timestamp,
-                Headers = CopyHeaders(args.BasicProperties.Headers, retryCount + 1)
+                Expiration = ((long)_retryDelays[attemptCount - 1].TotalMilliseconds)
+                    .ToString(CultureInfo.InvariantCulture),
+                Headers = CopyHeaders(args.BasicProperties.Headers, attemptCount)
             };
 
             // Nack(requeue: false) only sends to the queue's dead-letter exchange.
@@ -113,7 +141,11 @@ public abstract class RabbitMqConsumerBase<T>(
         }
     }
 
-    protected abstract Task HandleAsync(T message, IServiceProvider serviceProvider, CancellationToken cancellationToken);
+    protected abstract Task HandleAsync(
+        T message,
+        Guid messageId,
+        IServiceProvider serviceProvider,
+        CancellationToken cancellationToken);
 
     private Task RejectAsync(ulong deliveryTag)
     {

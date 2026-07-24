@@ -31,6 +31,9 @@ public static class DataAccessModule
         services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
         services.AddScoped<IDictionariesRepository, DictionariesRepository>();
         services.AddScoped<IHealthRepository, HealthRepository>();
+        services.AddScoped<IOutboxRepository, OutboxRepository>();
+        services.AddScoped<IInboxRepository, InboxRepository>();
+        services.AddScoped<IEmailDeliveryRepository, EmailDeliveryRepository>();
         
         return services;
     }

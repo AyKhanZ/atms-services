@@ -2,9 +2,9 @@
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Account;
-using ATMS.Admin.Service.Security.Models;
-using ATMS.Email.Models;
+using ATMS.Admin.Service.Infrastructure.Delivery;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Data.Enums;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Account;
@@ -13,27 +13,19 @@ public class ForgotPasswordHandlerTest : BaseHandlerTest
 {
     private readonly ForgotPasswordHandler _handler;
  
-    private const string FakeToken = "fake-reset-token";
     public ForgotPasswordHandlerTest()
     {
- 
         _handler = new ForgotPasswordHandler(
             UserRepositoryMock.Object,
-            EmailSenderMock.Object,
-            ResetPasswordTokenServiceMock.Object,
-            BuildConfiguration());
- 
-        ResetPasswordTokenServiceMock
-            .Setup(s => s.GenerateTokenAsync(It.IsAny<User>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ResetPasswordTokenResult(FakeToken, DateTime.UtcNow.AddHours(2)));
+            EmailDeliveryRepositoryMock.Object,
+            new EmailDeliveryRequestLock());
     }
  
     private ForgotPasswordCommand CreateCommand(string? email = null) =>
         new() { Email = email ?? Faker.Internet.Email() };
  
     [Fact]
-    public async Task Handle_WhenUserExists_SendsEmailWithCorrectLink()
+    public async Task Handle_WhenUserExists_QueuesPasswordResetAndSaves()
     {
         var command = CreateCommand();
         var user = new User { Email = command.Email };
@@ -44,11 +36,19 @@ public class ForgotPasswordHandlerTest : BaseHandlerTest
             .ReturnsAsync(user);
  
         await _handler.Handle(command, CancellationToken.None);
- 
-        EmailSenderMock.Verify(s => s.SendAsync(
-            user.Email,
-            It.Is<ForgotPasswordModel>(m => m.Link.Contains(FakeToken) && m.Link.Contains(ResetPasswordPage)),
-            It.IsAny<CancellationToken>()), Times.Once);
+
+        EmailDeliveryRepositoryMock.Verify(
+            x => x.RemoveUnsentAsync(
+                user.Id,
+                EmailDeliveryTypeEnum.PasswordReset,
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+        EmailDeliveryRepositoryMock.Verify(
+            x => x.AddPasswordResetAsync(user.Id, It.IsAny<CancellationToken>()),
+            Times.Once);
+        UserRepositoryMock.Verify(
+            x => x.SaveAsync(It.IsAny<CancellationToken>()),
+            Times.Once);
     }
  
     [Fact]

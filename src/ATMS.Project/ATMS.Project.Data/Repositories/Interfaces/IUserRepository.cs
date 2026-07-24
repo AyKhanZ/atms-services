@@ -5,6 +5,8 @@ namespace ATMS.Project.Data.Repositories.Interfaces;
 
 public interface IUserRepository
 {
+    Task AddAsync(User entity, CancellationToken cancellationToken);
+
     Task<User?> GetAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken);
     
     Task<List<User>> GetAsync(CancellationToken cancellationToken);

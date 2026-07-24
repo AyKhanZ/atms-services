@@ -126,7 +126,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         logger.LogCritical(exception, "Configuration error on {Path} {Method}: {Message}",
             context.Request.Path, context.Request.Method, exception.Message);
 
-        var result = JsonConvert.SerializeObject(new { error = ExceptionMessages.ConfigurationInitializationFailed });
+        var result = JsonConvert.SerializeObject(new { error = ExceptionMessages.InternalServerError });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 

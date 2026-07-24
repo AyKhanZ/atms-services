@@ -8,6 +8,11 @@ namespace ATMS.Project.Data.Repositories;
 
 public class UserRepository(ProjectDbContext context) : IUserRepository
 {
+    public async Task AddAsync(User entity, CancellationToken cancellationToken)
+    {
+        await context.Users.AddAsync(entity, cancellationToken);
+    }
+
     public async Task CreateAsync(User entity, CancellationToken cancellationToken)
     {
         await context.Users.AddAsync(entity, cancellationToken);

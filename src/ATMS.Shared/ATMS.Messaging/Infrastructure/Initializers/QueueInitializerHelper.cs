@@ -12,7 +12,6 @@ public static class QueueInitializerHelper
         string mainExchange,
         string deadExchange,
         string routingKey,
-        int retryDelayMs = 30_000,
         CancellationToken cancellationToken = default)
     {
         // Dead letter queue
@@ -21,12 +20,11 @@ public static class QueueInitializerHelper
         
         await channel.QueueBindAsync(deadQueue, deadExchange, routingKey, cancellationToken: cancellationToken);
 
-        // Retry queue (Waits 30 seconds and then comes back to main)
+        // Each retry message defines its own delay before returning to the main queue.
         await channel.QueueDeclareAsync(retryQueue,
             durable: true, exclusive: false, autoDelete: false,
             arguments: new Dictionary<string, object?>
             {
-                ["x-message-ttl"] = retryDelayMs, // 30 seconds delay
                 ["x-dead-letter-exchange"] = mainExchange, // Where to go after TTL
                 ["x-dead-letter-routing-key"] = routingKey
             }, cancellationToken: cancellationToken);

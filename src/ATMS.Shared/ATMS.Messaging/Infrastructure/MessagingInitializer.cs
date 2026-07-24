@@ -8,7 +8,7 @@ public class MessagingInitializer(RabbitMqConnectionFactory connectionFactory)
 {
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        var connection = await connectionFactory.GetConnectionAsync();
+        var connection = await connectionFactory.GetConnectionAsync(cancellationToken);
         var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
         await using (channel)

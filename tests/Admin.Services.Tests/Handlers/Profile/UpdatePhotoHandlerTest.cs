@@ -3,6 +3,8 @@ using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Profile;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Contracts.Events.Users;
+using ATMS.Messaging.Configuration;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Profile;
@@ -15,7 +17,7 @@ public class UpdatePhotoHandlerTest : BaseHandlerTest
     {
         _handler = new UpdatePhotoHandler(
             UserRepositoryMock.Object,
-            MessagePublisherMock.Object,
+            OutboxRepositoryMock.Object,
             CacheServiceMock.Object);
     }
 
@@ -57,6 +59,26 @@ public class UpdatePhotoHandlerTest : BaseHandlerTest
 
         // Assert
         UserRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_QueuesUserUpdatedEvent()
+    {
+        var user = CreateUser();
+        var command = new UpdatePhotoCommand { Id = user.Id, FileName = "new-photo.jpg" };
+
+        UserRepositoryMock
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        await _handler.Handle(command, CancellationToken.None);
+
+        OutboxRepositoryMock.Verify(p => p.AddAsync(
+            MessagingConstants.Exchanges.UserEvents,
+            MessagingConstants.RoutingKeys.UserUpdated,
+            It.Is<UserUpdatedEvent>(e => e.Id == user.Id && e.AvatarPath == command.FileName),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

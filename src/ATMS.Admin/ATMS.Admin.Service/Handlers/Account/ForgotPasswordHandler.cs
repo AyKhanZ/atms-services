@@ -1,53 +1,34 @@
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Infrastructure.Delivery;
 using ATMS.Admin.Service.Resources;
-using ATMS.Admin.Service.Security.Interfaces;
-using ATMS.Email.Models;
-using ATMS.Email.Services.Interfaces;
-using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Entity;
-using ATMS.Application.Exceptions.Resources;
-using ATMS.Infrastructure.Options;
+using ATMS.Data.Enums;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Admin.Service.Handlers.Account;
 
 public class ForgotPasswordHandler(
     IUserRepository userRepository,
-    IEmailSender emailSender,
-    IResetPasswordTokenService resetPasswordTokenService,
-    IConfiguration configuration) : IRequestHandler<ForgotPasswordCommand>
+    IEmailDeliveryRepository emailDeliveryRepository,
+    EmailDeliveryRequestLock emailDeliveryRequestLock) : IRequestHandler<ForgotPasswordCommand>
 {
-    
-    private readonly RedirectUrlOptions _redirectUrlOptions =
-        configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-                string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
-
     public async Task Handle(ForgotPasswordCommand command, CancellationToken cancellationToken)
     {
-        var user = await userRepository.FindAsync(u => u.Email == command.Email, cancellationToken);
-        if (user is null)
+        await emailDeliveryRequestLock.ExecuteAsync(async () =>
         {
-            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
-        }
-        
-        var tokenResult = await resetPasswordTokenService.GenerateTokenAsync(user, cancellationToken);
-
-        var link = GenerateResetPasswordUrl(tokenResult.Token);
-        
-        await emailSender.SendAsync(user.Email,
-            new ForgotPasswordModel
+            var user = await userRepository.FindAsync(u => u.Email == command.Email, cancellationToken);
+            if (user is null)
             {
-                Email = user.Email,
-                Name = user.Name,
-                Surname = user.Surname,
-                Link = link,
-                DeadlineOfToken = tokenResult.ExpiresInHours
-            }, cancellationToken);
+                throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+            }
+
+            await emailDeliveryRepository.RemoveUnsentAsync(
+                user.Id,
+                EmailDeliveryTypeEnum.PasswordReset,
+                cancellationToken);
+            await emailDeliveryRepository.AddPasswordResetAsync(user.Id, cancellationToken);
+            await userRepository.SaveAsync(cancellationToken);
+        }, cancellationToken);
     }
-    
-    private string GenerateResetPasswordUrl(string resetToken) =>
-        $"{_redirectUrlOptions.ResetPasswordPage}?token={Uri.EscapeDataString(resetToken)}";
 }

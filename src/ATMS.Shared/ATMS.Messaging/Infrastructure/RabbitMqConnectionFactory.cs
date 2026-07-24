@@ -17,14 +17,14 @@ public sealed class RabbitMqConnectionFactory(IConfiguration configuration)
     // Without a lock, you'll get two connections instead of one.
     private readonly SemaphoreSlim _lock = new(1, 1);
 
-    public async Task<IConnection> GetConnectionAsync()
+    public async Task<IConnection> GetConnectionAsync(CancellationToken cancellationToken = default)
     {
         if (_connection is { IsOpen: true })
         {
             return _connection;
         }
 
-        await _lock.WaitAsync();
+        await _lock.WaitAsync(cancellationToken);
         try
         {
             if (_connection is { IsOpen: true })
@@ -43,7 +43,7 @@ public sealed class RabbitMqConnectionFactory(IConfiguration configuration)
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
             };
 
-            _connection = await factory.CreateConnectionAsync();
+            _connection = await factory.CreateConnectionAsync(cancellationToken);
             return _connection;
         }
         finally

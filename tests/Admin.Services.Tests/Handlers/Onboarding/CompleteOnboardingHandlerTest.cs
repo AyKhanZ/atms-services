@@ -34,22 +34,22 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
         AccessTokenServiceMock
             .Setup(x => x.GenerateTokenAsync(progress.User, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new AccessTokenResult("new-access-token", DateTime.UtcNow.AddMinutes(15)));
-        MessagePublisherMock
-            .Setup(x => x.PublishAsync(
+        OutboxRepositoryMock
+            .Setup(x => x.AddAsync(
                 MessagingConstants.Exchanges.UserEvents,
                 MessagingConstants.RoutingKeys.UserUpdated,
                 It.IsAny<UserUpdatedEvent>(),
                 It.IsAny<CancellationToken>()))
             .Callback<string, string, UserUpdatedEvent, CancellationToken>((_, _, message, _) => updatedEvent = message)
-            .Returns(Task.CompletedTask);
-        MessagePublisherMock
-            .Setup(x => x.PublishAsync(
+            .ReturnsAsync(Guid.NewGuid());
+        OutboxRepositoryMock
+            .Setup(x => x.AddAsync(
                 MessagingConstants.Exchanges.UserEvents,
                 MessagingConstants.RoutingKeys.UserInvited,
                 It.IsAny<UserInvitedEvent>(),
                 It.IsAny<CancellationToken>()))
             .Callback<string, string, UserInvitedEvent, CancellationToken>((_, _, message, _) => invitedEvent = message)
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync(Guid.NewGuid());
         var personalInfo = Assert.IsType<OnboardingPersonalInfo>(progress.PersonalInfo);
         MapperMock
             .Setup(x => x.Map<OnboardingPersonalInfo, User>(personalInfo, progress.User))
@@ -109,8 +109,8 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
         OnboardingRepositoryMock.Verify(
             x => x.TrySaveAsync(It.IsAny<OnboardingProgress>(), It.IsAny<long>(), It.IsAny<CancellationToken>()),
             Times.Never);
-        MessagePublisherMock.Verify(
-            x => x.PublishAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<UserUpdatedEvent>(), It.IsAny<CancellationToken>()),
+        OutboxRepositoryMock.Verify(
+            x => x.AddAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<UserUpdatedEvent>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -122,7 +122,7 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
             MapperMock.Object,
             AccessTokenServiceMock.Object,
             CacheServiceMock.Object,
-            MessagePublisherMock.Object);
+            OutboxRepositoryMock.Object);
     }
 
     private static OnboardingProgress CreateReadyProgress(Guid userId, Guid invitationId)

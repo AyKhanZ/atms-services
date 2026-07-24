@@ -5,14 +5,9 @@ using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Contracts.Events.Users;
 using ATMS.Data.Constants;
-using ATMS.Email.Models;
-using ATMS.Email.Services.Interfaces;
-using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
-using ATMS.Messaging.Interfaces;
 using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -25,30 +20,36 @@ public class UserInvitedConsumer(
     : RabbitMqConsumerBase<UserInvitedEvent>(connectionFactory, scopeFactory, logger,
         MessagingConstants.Queues.UserInvited)
 {
-    protected override async Task HandleAsync(UserInvitedEvent message, IServiceProvider serviceProvider,
+    protected override async Task HandleAsync(UserInvitedEvent message, Guid messageId, IServiceProvider serviceProvider,
         CancellationToken cancellationToken)
     {
         var userRepository = serviceProvider.GetRequiredService<IUserRepository>();
         var roleRepository = serviceProvider.GetRequiredService<IRoleRepository>();
         var passwordService = serviceProvider.GetRequiredService<IPasswordService>();
         var passwordHasherService = serviceProvider.GetRequiredService<IPasswordHasherService>();
-        var emailConfirmationTokenService = serviceProvider.GetRequiredService<IEmailConfirmationTokenService>();
-        var emailSender = serviceProvider.GetRequiredService<IEmailSender>();
-        var messagePublisher = serviceProvider.GetRequiredService<IMessagePublisher>();
-        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        var inboxRepository = serviceProvider.GetRequiredService<IInboxRepository>();
+        var outboxRepository = serviceProvider.GetRequiredService<IOutboxRepository>();
+        var emailDeliveryRepository = serviceProvider.GetRequiredService<IEmailDeliveryRepository>();
         var mapper = serviceProvider.GetRequiredService<IMapper>();
+
+        if (await inboxRepository.IsProcessedAsync(
+                messageId,
+                nameof(UserInvitedConsumer),
+                cancellationToken))
+        {
+            return;
+        }
 
         var exists = await userRepository.FindAsync(u => u.Email == message.Email, cancellationToken);
         if (exists is not null)
         {
-            logger.LogError("User {MessageEmail} already exists", message.Email);
+            await inboxRepository.AddAsync(
+                messageId,
+                nameof(UserInvitedConsumer),
+                cancellationToken);
+            await userRepository.SaveAsync(cancellationToken);
             return;
         }
-
-        var redirectUrlOptions = configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
-            ?? throw new ConfigurationException(
-                ConfigurationErrorType.RedirectUrlSectionNotFound,
-                string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
 
         var role = await roleRepository.GetAsync(r => r.Id == RoleIds.Client, cancellationToken);
         if (role is null)
@@ -71,21 +72,7 @@ public class UserInvitedConsumer(
         var rndPassword = passwordService.GenerateRandomPassword();
         entity.PasswordHash = passwordHasherService.Hash(rndPassword);
 
-        await userRepository.CreateAsync(entity, cancellationToken);
-
-        var emailConfirmationTokenResult = emailConfirmationTokenService.GenerateToken(entity);
-        var link = $"{redirectUrlOptions.BaseUrl}/account/confirm?token={Uri.EscapeDataString(emailConfirmationTokenResult.Token)}";
-
-        await emailSender.SendAsync(entity.Email,
-            new InviteModel
-            {
-                Email = entity.Email,
-                Name = entity.Name,
-                Surname = entity.Surname,
-                Password = rndPassword,
-                Link = link,
-                DeadlineOfToken = emailConfirmationTokenResult.ExpiresInHours
-            }, cancellationToken);
+        await userRepository.AddAsync(entity, cancellationToken);
 
         var @event = new UserCreatedEvent(
             entity.Id,
@@ -96,10 +83,22 @@ public class UserInvitedConsumer(
             entity.AvatarPath,
             entity.OrganizationId);
 
-        await messagePublisher.PublishAsync(
+        await outboxRepository.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserCreated,
             @event,
             cancellationToken);
+
+        await emailDeliveryRepository.AddConfirmationAsync(
+            entity.Id,
+            rndPassword,
+            cancellationToken);
+
+        await inboxRepository.AddAsync(
+            messageId,
+            nameof(UserInvitedConsumer),
+            cancellationToken);
+
+        await userRepository.SaveAsync(cancellationToken);
     }
 }

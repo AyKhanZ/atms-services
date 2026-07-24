@@ -1,4 +1,5 @@
 using ATMS.Data.Interfaces;
+using ATMS.Data.Messaging;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Entities.Dictionaries;
 using Microsoft.EntityFrameworkCore;
@@ -66,6 +67,8 @@ public class ProjectDbContext : DbContext
     public DbSet<Role> Roles { get; set; }
     
     public DbSet<RolePermission> RolePermissions { get; set; }
+
+    public DbSet<InboxMessage> InboxMessages { get; set; }
     
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
