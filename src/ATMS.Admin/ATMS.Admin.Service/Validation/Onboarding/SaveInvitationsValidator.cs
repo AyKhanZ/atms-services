@@ -12,7 +12,7 @@ namespace ATMS.Admin.Service.Validation.Onboarding;
 
 public class SaveInvitationsValidator : AbstractValidator<SaveInvitationsCommand>
 {
-    private const int MaxInvitations = 10;
+    private const int MaxInvitations = 6;
     private readonly ICurrentUser _currentUser;
     private readonly IOnboardingRepository _onboardingRepository;
 

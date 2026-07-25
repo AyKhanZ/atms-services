@@ -25,7 +25,7 @@ public sealed class OnboardingModelMappingActionTest
         Assert.Equal("clientManager", model.Role);
         Assert.Equal("invitations", model.CurrentStep);
         Assert.Equal(3, model.Steps.Length);
-        Assert.Equal(10, model.MaxInvitations);
+        Assert.Equal(6, model.MaxInvitations);
     }
 
     [Fact]

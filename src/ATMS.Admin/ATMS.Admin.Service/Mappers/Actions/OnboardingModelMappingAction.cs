@@ -8,7 +8,7 @@ namespace ATMS.Admin.Service.Mappers.Actions;
 
 public class OnboardingModelMappingAction : IMappingAction<OnboardingProgress, OnboardingModel>
 {
-    private const int MaxInvitations = 10;
+    private const int MaxInvitations = 6;
 
     public void Process(
         OnboardingProgress source,

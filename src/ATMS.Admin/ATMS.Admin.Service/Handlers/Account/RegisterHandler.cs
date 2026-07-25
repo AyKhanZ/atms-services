@@ -1,6 +1,7 @@
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
@@ -20,6 +21,7 @@ public class RegisterHandler(
     IMapper mapper,
     IPasswordService passwordService,
     IPasswordHasherService passwordHasherService,
+    IOnboardingRepository onboardingRepository,
     IOutboxRepository outboxRepository,
     IEmailDeliveryRepository emailDeliveryRepository)
     : IRequestHandler<RegisterCommand, UserModel>
@@ -37,6 +39,7 @@ public class RegisterHandler(
 
         var entity = mapper.Map<User>(command);
         entity.Id = Guid.NewGuid();
+        entity.NormalizedEmail = command.Email.Trim().ToUpperInvariant();
 
         var userRole = new UserRole
         {
@@ -52,6 +55,12 @@ public class RegisterHandler(
         entity.PasswordHash = passwordHasherService.Hash(rndPassword);
 
         await userRepository.AddAsync(entity, cancellationToken);
+
+        await onboardingRepository.AddAsync(new OnboardingProgress
+        {
+            UserId = entity.Id,
+            UpdatedAt = DateTime.UtcNow
+        }, cancellationToken);
         
         var @event = new UserCreatedEvent(
             entity.Id,

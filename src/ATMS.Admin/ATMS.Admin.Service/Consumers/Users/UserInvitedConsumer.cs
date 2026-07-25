@@ -1,4 +1,5 @@
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
@@ -30,6 +31,7 @@ public class UserInvitedConsumer(
         var inboxRepository = serviceProvider.GetRequiredService<IInboxRepository>();
         var outboxRepository = serviceProvider.GetRequiredService<IOutboxRepository>();
         var emailDeliveryRepository = serviceProvider.GetRequiredService<IEmailDeliveryRepository>();
+        var onboardingRepository = serviceProvider.GetRequiredService<IOnboardingRepository>();
         var mapper = serviceProvider.GetRequiredService<IMapper>();
 
         if (await inboxRepository.IsProcessedAsync(
@@ -73,6 +75,12 @@ public class UserInvitedConsumer(
         entity.PasswordHash = passwordHasherService.Hash(rndPassword);
 
         await userRepository.AddAsync(entity, cancellationToken);
+
+        await onboardingRepository.AddAsync(new OnboardingProgress
+        {
+            UserId = entity.Id,
+            UpdatedAt = DateTime.UtcNow
+        }, cancellationToken);
 
         var @event = new UserCreatedEvent(
             entity.Id,

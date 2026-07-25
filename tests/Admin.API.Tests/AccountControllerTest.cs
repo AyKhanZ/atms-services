@@ -1,5 +1,6 @@
 using ATMS.Admin.API.Controllers.v1;
 using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Contracts.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +55,26 @@ public class AccountControllerTest : BaseControllerTest
         MediatorMock
             .Setup(m => m.Send(It.IsAny<ConfirmEmailCommand>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .ReturnsAsync(ConfirmEmailResultEnum.Confirmed);
+
+        // Act
+        var result = await _controller.ConfirmEmail(Faker.Internet.Url(), CancellationToken.None);
+
+        // Assert
+
+        var redirect = Assert.IsType<RedirectResult>(result);
+        Assert.Equal(expectedPage, redirect.Url);
+    }
+
+    [Fact]
+    public async Task ConfirmEmail_ShouldRedirectToAlreadyConfirmedWhenEmailWasConfirmedBefore()
+    {
+        // Arrange
+        var expectedPage = "https://already-ok";
+        MediatorMock
+            .Setup(m => m.Send(It.IsAny<ConfirmEmailCommand>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ConfirmEmailResultEnum.AlreadyConfirmed);
 
         // Act
         var result = await _controller.ConfirmEmail(Faker.Internet.Url(), CancellationToken.None);
@@ -74,7 +94,7 @@ public class AccountControllerTest : BaseControllerTest
         MediatorMock
             .Setup(m => m.Send(It.IsAny<ConfirmEmailCommand>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+            .ReturnsAsync(ConfirmEmailResultEnum.Failed);
 
         // Act
         var result = await _controller.ConfirmEmail(Faker.Internet.Url(), CancellationToken.None);

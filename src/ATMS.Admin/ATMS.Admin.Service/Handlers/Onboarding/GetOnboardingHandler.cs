@@ -16,7 +16,7 @@ public sealed class GetOnboardingHandler(
 {
     public async Task<OnboardingModel> Handle(GetOnboardingRequest request, CancellationToken cancellationToken)
     {
-        var progress = await onboardingRepository.GetAsync(currentUser.Id, cancellationToken)
+        var progress = await onboardingRepository.GetOrCreateAsync(currentUser.Id, cancellationToken)
             ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
 
         return mapper.Map<OnboardingModel>(progress);

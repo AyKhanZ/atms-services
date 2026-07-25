@@ -18,7 +18,7 @@
   <data name="DuplicateInvitationEmail" xml:space="preserve"><value>Each email address can only be added once.</value></data>
   <data name="InvalidEmail" xml:space="preserve"><value>Enter a valid email address.</value></data>
   <data name="InvitationEmailInUse" xml:space="preserve"><value>{0} is already registered or invited.</value></data>
-  <data name="InvitationLimit" xml:space="preserve"><value>You can invite up to 10 colleagues.</value></data>
+  <data name="InvitationLimit" xml:space="preserve"><value>You can invite up to 6 colleagues.</value></data>
   <data name="InvitationsIncomplete" xml:space="preserve"><value>Invite colleagues or skip this step before finishing onboarding.</value></data>
   <data name="InvitationsManagerOnly" xml:space="preserve"><value>Invitations are only available to client managers.</value></data>
   <data name="InvitationsRequired" xml:space="preserve"><value>Add at least one colleague or skip this step.</value></data>

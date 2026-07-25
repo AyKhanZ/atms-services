@@ -16,6 +16,14 @@ namespace Admin.Services.Tests.Handlers;
 public abstract class BaseHandlerTest
 {
     protected readonly Faker Faker =  new();
+
+    protected BaseHandlerTest()
+    {
+        CurrentUserMock.SetupGet(x => x.Id).Returns(Guid.NewGuid());
+        CurrentUserMock.SetupGet(x => x.RoleId).Returns(Guid.NewGuid());
+        CurrentUserMock.SetupGet(x => x.OrganizationId).Returns((Guid?)null);
+        CurrentUserMock.SetupGet(x => x.UserType).Returns("Client");
+    }
     
     protected readonly Mock<IMapper> MapperMock = new();
     

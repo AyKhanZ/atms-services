@@ -10,7 +10,7 @@
   <data name="DuplicateInvitationEmail" xml:space="preserve"><value>Hər email ünvanını yalnız bir dəfə əlavə etmək olar.</value></data>
   <data name="InvalidEmail" xml:space="preserve"><value>Düzgün email ünvanı daxil edin.</value></data>
   <data name="InvitationEmailInUse" xml:space="preserve"><value>{0} artıq qeydiyyatdan keçib və ya dəvət olunub.</value></data>
-  <data name="InvitationLimit" xml:space="preserve"><value>Ən çox 10 əməkdaş dəvət edə bilərsiniz.</value></data>
+  <data name="InvitationLimit" xml:space="preserve"><value>Ən çox 6 əməkdaş dəvət edə bilərsiniz.</value></data>
   <data name="InvitationsIncomplete" xml:space="preserve"><value>Onboarding-i bitirməzdən əvvəl əməkdaşları dəvət edin və ya bu addımı keçin.</value></data>
   <data name="InvitationsManagerOnly" xml:space="preserve"><value>Əməkdaşları yalnız müştəri meneceri dəvət edə bilər.</value></data>
   <data name="InvitationsRequired" xml:space="preserve"><value>Ən azı bir əməkdaş əlavə edin və ya bu addımı keçin.</value></data>

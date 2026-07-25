@@ -6,6 +6,10 @@ public interface IOnboardingRepository
 {
     Task<OnboardingProgress?> GetAsync(Guid userId, CancellationToken cancellationToken);
 
+    Task<OnboardingProgress?> GetOrCreateAsync(Guid userId, CancellationToken cancellationToken);
+
+    Task AddAsync(OnboardingProgress progress, CancellationToken cancellationToken);
+
     Task<bool> IsInvitedEmailInUseAsync(string normalizedEmail, Guid onboardingUserId, CancellationToken cancellationToken);
 
     Task<IReadOnlyCollection<string>> GetEmailsInUseAsync(IReadOnlyCollection<string> normalizedEmails, Guid onboardingUserId, CancellationToken cancellationToken);

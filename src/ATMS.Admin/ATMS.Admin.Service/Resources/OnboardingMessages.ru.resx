@@ -10,7 +10,7 @@
   <data name="DuplicateInvitationEmail" xml:space="preserve"><value>Каждый email можно добавить только один раз.</value></data>
   <data name="InvalidEmail" xml:space="preserve"><value>Укажите корректный email.</value></data>
   <data name="InvitationEmailInUse" xml:space="preserve"><value>{0} уже зарегистрирован или приглашён.</value></data>
-  <data name="InvitationLimit" xml:space="preserve"><value>Можно пригласить не более 10 коллег.</value></data>
+  <data name="InvitationLimit" xml:space="preserve"><value>Можно пригласить не более 6 коллег.</value></data>
   <data name="InvitationsIncomplete" xml:space="preserve"><value>Пригласите коллег или пропустите этот шаг перед завершением онбординга.</value></data>
   <data name="InvitationsManagerOnly" xml:space="preserve"><value>Приглашать коллег может только менеджер клиента.</value></data>
   <data name="InvitationsRequired" xml:space="preserve"><value>Добавьте хотя бы одного коллегу или пропустите этот шаг.</value></data>

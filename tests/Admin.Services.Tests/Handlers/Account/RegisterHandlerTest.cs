@@ -2,8 +2,10 @@ using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Service.Handlers.Account;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Data.Enums;
 using ATMS.Contracts.Events.Users;
 using ATMS.Messaging.Configuration;
 using Moq;
@@ -25,6 +27,7 @@ public class RegisterHandlerTest : BaseHandlerTest
             MapperMock.Object,
             PasswordServiceMock.Object,
             PasswordHasherServiceMock.Object,
+            OnboardingRepositoryMock.Object,
             OutboxRepositoryMock.Object,
             EmailDeliveryRepositoryMock.Object);
 
@@ -101,6 +104,23 @@ public class RegisterHandlerTest : BaseHandlerTest
     }
 
     [Fact]
+    public async Task Handle_WhenRoleExists_SetsNormalizedEmail()
+    {
+        // Arrange
+        var command = CreateCommand();
+        var entity = new User { Id = Guid.NewGuid(), Email = command.Email };
+
+        SetupMapper(command, entity);
+        SetupRole(command.RoleId);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(command.Email.Trim().ToUpperInvariant(), entity.NormalizedEmail);
+    }
+
+    [Fact]
     public async Task Handle_WhenRoleExists_CreatesUser()
     {
         // Arrange
@@ -118,6 +138,29 @@ public class RegisterHandlerTest : BaseHandlerTest
             It.Is<User>(u => u.Id == entity.Id),
             It.IsAny<CancellationToken>()), Times.Once);
         UserRepositoryMock.Verify(r => r.SaveAsync(
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WhenRoleExists_CreatesOnboardingProgress()
+    {
+        // Arrange
+        var command = CreateCommand();
+        var entity = new User { Id = Guid.NewGuid() };
+
+        SetupMapper(command, entity);
+        SetupRole(command.RoleId);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        OnboardingRepositoryMock.Verify(r => r.AddAsync(
+            It.Is<OnboardingProgress>(x =>
+                x.UserId == entity.Id &&
+                x.PersonalInfoStatus == OnboardingStepStatusEnum.NotStarted &&
+                x.SecurityStatus == OnboardingStepStatusEnum.NotStarted &&
+                x.InvitationsStatus == OnboardingStepStatusEnum.NotStarted),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 

@@ -105,7 +105,7 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You can invite up to 10 colleagues..
+        ///   Looks up a localized string similar to You can invite up to 6 colleagues..
         /// </summary>
         public static string InvitationLimit {
             get {

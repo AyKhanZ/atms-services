@@ -1,4 +1,5 @@
 using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Application.Models;
 using ATMS.Application.Exceptions.Configuration;
@@ -79,23 +80,22 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="302">Redirects user to confirmation result page.</response>
     /// <response code="400">Invalid or malformed request.</response>
-    /// <response code="409">Email already confirmed.</response>
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]
     [HttpGet("confirm")]
     [ProducesResponseType(StatusCodes.Status302Found)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> ConfirmEmail(
-        [FromQuery] string token,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string token, CancellationToken cancellationToken)
     {
-        var isConfirmed = await mediator.Send(new ConfirmEmailCommand { Token = token }, cancellationToken);
+        var result = await mediator.Send(new ConfirmEmailCommand { Token = token }, cancellationToken);
 
-        return isConfirmed
-            ? Redirect(_redirectUrlOptions.EmailConfirmedPage)
-            : Redirect(_redirectUrlOptions.EmailConfirmFailedPage);
+        return Redirect(result switch
+        {
+            ConfirmEmailResultEnum.Confirmed => _redirectUrlOptions.EmailConfirmedPage,
+            ConfirmEmailResultEnum.AlreadyConfirmed => _redirectUrlOptions.EmailAlreadyConfirmedPage,
+            _ => _redirectUrlOptions.EmailConfirmFailedPage
+        });
     }
 
 

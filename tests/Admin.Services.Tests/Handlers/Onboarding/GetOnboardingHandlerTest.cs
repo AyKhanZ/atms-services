@@ -25,7 +25,7 @@ public sealed class GetOnboardingHandlerTest : BaseHandlerTest
             PersonalInfo = new()
         };
         OnboardingRepositoryMock
-            .Setup(x => x.GetAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetOrCreateAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(progress);
         MapperMock.Setup(x => x.Map<OnboardingModel>(progress)).Returns(expected);
         var handler = new GetOnboardingHandler(
