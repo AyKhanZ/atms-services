@@ -56,6 +56,7 @@ public class UserRepository(AdminDbContext context) : IUserRepository
     {
         return context.Users
             .AsNoTracking()
+            .Include(x => x.Language)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

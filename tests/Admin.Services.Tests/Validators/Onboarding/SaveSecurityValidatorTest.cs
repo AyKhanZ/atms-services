@@ -67,7 +67,7 @@ public sealed class SaveSecurityValidatorTest : BaseValidatorTest
         var userId = Guid.NewGuid();
         CurrentUserMock.SetupGet(x => x.Id).Returns(userId);
         OnboardingRepositoryMock
-            .Setup(x => x.GetAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetAsNoTrackingAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new OnboardingProgress
             {
                 Version = version,

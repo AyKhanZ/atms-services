@@ -6,6 +6,8 @@ public interface IOnboardingRepository
 {
     Task<OnboardingProgress?> GetAsync(Guid userId, CancellationToken cancellationToken);
 
+    Task<OnboardingProgress?> GetAsNoTrackingAsync(Guid userId, CancellationToken cancellationToken);
+
     Task<OnboardingProgress?> GetOrCreateAsync(Guid userId, CancellationToken cancellationToken);
 
     Task AddAsync(OnboardingProgress progress, CancellationToken cancellationToken);

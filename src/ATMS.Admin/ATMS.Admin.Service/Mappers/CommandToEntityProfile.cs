@@ -45,7 +45,8 @@ public class CommandToEntityProfile : Profile
             .ForMember(destination => destination.Id, options => options.Ignore())
             .ForMember(destination => destination.Email, options => options.Ignore())
             .ForMember(destination => destination.BirthDate,
-                options => options.MapFrom(source => source.BirthDate.ToDateTime(TimeOnly.MinValue)))
+                options => options.MapFrom(source =>
+                    source.BirthDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc)))
             .ForMember(destination => destination.Language, options => options.Ignore())
             .ForMember(destination => destination.Gender, options => options.Ignore())
             .ForMember(destination => destination.MaritalStatus, options => options.Ignore())

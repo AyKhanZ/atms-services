@@ -28,7 +28,7 @@ public class SkipInvitationsValidator : AbstractValidator<SkipInvitationsCommand
         ValidationContext<SkipInvitationsCommand> context,
         CancellationToken cancellationToken)
     {
-        var progress = await _onboardingRepository.GetAsync(_currentUser.Id, cancellationToken)
+        var progress = await _onboardingRepository.GetAsNoTrackingAsync(_currentUser.Id, cancellationToken)
             ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
 
         if (progress.User.HasCompletedOnboarding)
@@ -41,9 +41,5 @@ public class SkipInvitationsValidator : AbstractValidator<SkipInvitationsCommand
             throw new ConflictException(OnboardingMessages.InvitationsManagerOnly);
         }
 
-        if (progress.Version != command.Version)
-        {
-            throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);
-        }
     }
 }

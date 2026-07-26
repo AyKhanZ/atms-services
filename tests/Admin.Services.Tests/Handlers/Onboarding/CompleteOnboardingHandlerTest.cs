@@ -61,7 +61,7 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
                 destination.Position = source.Position;
                 destination.LanguageId = source.LanguageId;
                 destination.AvatarPath = source.AvatarPath;
-                destination.BirthDate = source.BirthDate.ToDateTime(TimeOnly.MinValue);
+                destination.BirthDate = source.BirthDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
                 destination.GenderId = source.GenderId;
                 destination.MaritalStatusId = source.MaritalStatusId;
             })
@@ -72,6 +72,7 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
 
         Assert.True(progress.User.HasCompletedOnboarding);
         Assert.NotNull(progress.User.OnboardingCompletedAt);
+        Assert.Equal(DateTimeKind.Utc, progress.User.BirthDate!.Value.Kind);
         Assert.Equal("new-password-hash", progress.User.PasswordHash);
         Assert.Null(progress.PendingPasswordHash);
         Assert.Equal("new-access-token", result.AccessToken);

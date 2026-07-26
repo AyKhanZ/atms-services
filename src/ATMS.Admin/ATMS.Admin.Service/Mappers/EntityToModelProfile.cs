@@ -94,7 +94,9 @@ public class EntityToModelProfile : Profile
             .AfterMap<OnboardingModelMappingAction>();
         
         
-        CreateMap<User, MeModel>();
+        CreateMap<User, MeModel>()
+            .ForMember(destination => destination.Language,
+                options => options.MapFrom(source => source.Language.Code));
         
         CreateMap<User, UserModel>()
             .ForMember(destination => destination.Gender, options => options.Ignore())

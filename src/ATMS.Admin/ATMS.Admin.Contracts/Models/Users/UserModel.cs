@@ -28,6 +28,8 @@ public class UserModel
     
     public DateTime? LockoutEnd { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
     
     public string AvatarPath { get; set; }
     

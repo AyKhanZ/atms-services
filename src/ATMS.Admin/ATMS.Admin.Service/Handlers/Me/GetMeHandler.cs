@@ -20,12 +20,21 @@ public class GetMeHandler(
 {
     public async Task<MeModel> Handle(GetMeRequest request, CancellationToken cancellationToken)
     {
-        return await cache.GetOrSetAsync(
-                   key: CacheKeys.Admin.MeById(currentUser.Id),
+        var key = CacheKeys.Admin.MeById(currentUser.Id);
+        var model = await cache.GetOrSetAsync(
+                   key: key,
                    factory: () => GetFromDb(cancellationToken),
                    ttl: CacheTtl.Entity,
-                   cancellationToken)
-               ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+                   cancellationToken);
+
+        if (model?.Language is not null)
+        {
+            return model;
+        }
+
+        await cache.RemoveAsync(key, cancellationToken);
+
+        return await GetFromDb(cancellationToken);
     }
 
     private async Task<MeModel> GetFromDb(CancellationToken cancellationToken)

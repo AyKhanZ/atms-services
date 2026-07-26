@@ -27,7 +27,6 @@ public sealed class SaveInvitationsHandler(
         progress.InvitedUsers.AddRange(command.Users.Select(commandUser =>
         {
             var invitedUser = mapper.Map<OnboardingInvitedUser>(commandUser);
-            invitedUser.Id = Guid.NewGuid();
             invitedUser.OnboardingUserId = currentUser.Id;
             invitedUser.NormalizedEmail = invitedUser.Email.ToUpperInvariant();
             return invitedUser;

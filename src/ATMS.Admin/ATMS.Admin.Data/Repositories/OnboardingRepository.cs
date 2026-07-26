@@ -13,6 +13,13 @@ public class OnboardingRepository(AdminDbContext context) : IOnboardingRepositor
         return Query().FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
     }
 
+    public Task<OnboardingProgress?> GetAsNoTrackingAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return Query()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+    }
+
     public async Task<OnboardingProgress?> GetOrCreateAsync(Guid userId, CancellationToken cancellationToken)
     {
         var progress = await GetAsync(userId, cancellationToken);
@@ -92,7 +99,9 @@ public class OnboardingRepository(AdminDbContext context) : IOnboardingRepositor
             await context.SaveChangesAsync(cancellationToken);
             return true;
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException exception) when (
+            exception.Entries.Count == 1 &&
+            exception.Entries[0].Entity is OnboardingProgress)
         {
             return false;
         }

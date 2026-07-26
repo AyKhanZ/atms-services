@@ -56,7 +56,7 @@ public sealed class SavePersonalInfoValidatorTest : BaseValidatorTest
     {
         CurrentUserMock.SetupGet(x => x.Id).Returns(Guid.NewGuid());
         OnboardingRepositoryMock
-            .Setup(x => x.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetAsNoTrackingAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new OnboardingProgress
             {
                 User = new User(),

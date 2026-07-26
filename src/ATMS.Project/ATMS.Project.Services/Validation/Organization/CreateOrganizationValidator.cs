@@ -2,8 +2,6 @@ using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Validation;
 using ATMS.Project.Contracts.Commands.Organization;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Resources;
-using FluentValidation;
 using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Project.Services.Validation.Organization;

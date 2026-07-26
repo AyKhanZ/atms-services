@@ -38,7 +38,7 @@ public class SaveSecurityValidator : AbstractValidator<SaveSecurityCommand>
         ValidationContext<SaveSecurityCommand> context,
         CancellationToken cancellationToken)
     {
-        var progress = await _onboardingRepository.GetAsync(_currentUser.Id, cancellationToken)
+        var progress = await _onboardingRepository.GetAsNoTrackingAsync(_currentUser.Id, cancellationToken)
             ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
 
         if (progress.User.HasCompletedOnboarding)

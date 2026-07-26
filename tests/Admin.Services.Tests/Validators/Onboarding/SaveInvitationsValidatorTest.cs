@@ -94,7 +94,7 @@ public sealed class SaveInvitationsValidatorTest : BaseValidatorTest
         CurrentUserMock.SetupGet(x => x.Id).Returns(userId);
         CurrentUserMock.SetupGet(x => x.RoleId).Returns(RoleIds.ClientManager);
         OnboardingRepositoryMock
-            .Setup(x => x.GetAsync(userId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetAsNoTrackingAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new OnboardingProgress
             {
                 Version = 0,
