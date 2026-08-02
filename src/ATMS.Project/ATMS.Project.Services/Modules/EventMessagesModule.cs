@@ -1,6 +1,7 @@
 using ATMS.Messaging.Infrastructure;
 using ATMS.Messaging.Modules;
 using ATMS.Project.Services.Consumers.Users;
+using ATMS.Project.Services.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +19,7 @@ public static class EventMessagesModule
         
         services.AddSingleton<UserUpdatedConsumer>();
         services.AddHostedService<ConsumerHostedService<UserUpdatedConsumer>>();
+        services.AddHostedService<InboxRetentionBackgroundService>();
         
         return services;
     }

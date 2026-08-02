@@ -17,6 +17,7 @@ public class BaseControllerTest
             ["RedirectUrlOptions:BaseUrl"] = "https://",
             ["RedirectUrlOptions:ResetPasswordPage"] = "https://reset",
             ["RedirectUrlOptions:EmailConfirmedPage"] = "https://ok",
+            ["RedirectUrlOptions:EmailAlreadyConfirmedPage"] = "https://already-ok",
             ["RedirectUrlOptions:EmailConfirmFailedPage"] = "https://fail"
         };
 

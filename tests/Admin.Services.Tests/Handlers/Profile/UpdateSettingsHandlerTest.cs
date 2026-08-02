@@ -17,7 +17,7 @@ public class UpdateSettingsHandlerTest : BaseHandlerTest
     {
         _handler = new UpdateSettingsHandler(
             UserRepositoryMock.Object,
-            MessagePublisherMock.Object,
+            OutboxRepositoryMock.Object,
             CacheServiceMock.Object);
     }
 
@@ -87,7 +87,7 @@ public class UpdateSettingsHandlerTest : BaseHandlerTest
     }
 
     [Fact]
-    public async Task Handle_PublishesUserUpdatedEvent()
+    public async Task Handle_QueuesUserUpdatedEvent()
     {
         // Arrange
         var user = CreateUser();
@@ -102,7 +102,7 @@ public class UpdateSettingsHandlerTest : BaseHandlerTest
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        MessagePublisherMock.Verify(p => p.PublishAsync(
+        OutboxRepositoryMock.Verify(p => p.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserUpdated,
             It.Is<UserUpdatedEvent>(e => e.Id == user.Id && e.Name == command.Name && e.Surname == command.Surname),

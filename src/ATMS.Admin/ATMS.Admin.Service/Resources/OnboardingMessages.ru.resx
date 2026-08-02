@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="DuplicateInvitationEmail" xml:space="preserve"><value>Каждый email можно добавить только один раз.</value></data>
+  <data name="InvalidEmail" xml:space="preserve"><value>Укажите корректный email.</value></data>
+  <data name="InvitationEmailInUse" xml:space="preserve"><value>{0} уже зарегистрирован или приглашён.</value></data>
+  <data name="InvitationLimit" xml:space="preserve"><value>Можно пригласить не более 6 коллег.</value></data>
+  <data name="InvitationsIncomplete" xml:space="preserve"><value>Пригласите коллег или пропустите этот шаг перед завершением онбординга.</value></data>
+  <data name="InvitationsManagerOnly" xml:space="preserve"><value>Приглашать коллег может только менеджер клиента.</value></data>
+  <data name="InvitationsRequired" xml:space="preserve"><value>Добавьте хотя бы одного коллегу или пропустите этот шаг.</value></data>
+  <data name="InvalidBirthDate" xml:space="preserve"><value>Укажите корректную дату рождения.</value></data>
+  <data name="InvalidPhoneNumber" xml:space="preserve"><value>Укажите корректный номер телефона в международном формате.</value></data>
+  <data name="MinimumAge" xml:space="preserve"><value>Вам должно быть не менее 18 лет.</value></data>
+  <data name="OnboardingAlreadyCompleted" xml:space="preserve"><value>Онбординг уже завершён.</value></data>
+  <data name="OnboardingConcurrencyConflict" xml:space="preserve"><value>Онбординг был изменён в другой вкладке. Обновите страницу и попробуйте снова.</value></data>
+  <data name="PasswordRequirements" xml:space="preserve"><value>Используйте от 10 до 40 символов, включая заглавную и строчную буквы, цифру и специальный символ.</value></data>
+  <data name="PhoneNumberMaxLength" xml:space="preserve"><value>Номер телефона не может быть длиннее 20 символов.</value></data>
+  <data name="PasswordsDoNotMatch" xml:space="preserve"><value>Пароли не совпадают.</value></data>
+  <data name="PersonalInfoIncomplete" xml:space="preserve"><value>Заполните личную информацию перед завершением онбординга.</value></data>
+  <data name="ProfilePhotoRequired" xml:space="preserve"><value>Выберите фотографию профиля.</value></data>
+  <data name="SecurityIncomplete" xml:space="preserve"><value>Выберите новый пароль перед завершением онбординга.</value></data>
+  <data name="UnsupportedGender" xml:space="preserve"><value>Выберите доступный вариант пола.</value></data>
+  <data name="UnsupportedLanguage" xml:space="preserve"><value>Выберите доступный язык.</value></data>
+  <data name="UnsupportedMaritalStatus" xml:space="preserve"><value>Выберите доступный семейный статус.</value></data>
+  <data name="VersionInvalid" xml:space="preserve"><value>Версия онбординга не может быть отрицательной.</value></data>
+</root>

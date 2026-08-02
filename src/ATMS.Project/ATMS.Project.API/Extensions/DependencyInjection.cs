@@ -1,4 +1,4 @@
-﻿namespace ATMS.Project.API.Extensions;
+namespace ATMS.Project.API.Extensions;
 
 public static class DependencyInjection
 {

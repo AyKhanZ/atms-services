@@ -72,4 +72,7 @@
     <data name="UserStatusRequired" xml:space="preserve">
         <value>'User status' field is required.</value>
     </data>
+    <data name="LanguageNotSupported" xml:space="preserve">
+        <value>Select a supported language.</value>
+    </data>
 </root>

@@ -43,7 +43,7 @@ public abstract class BaseServiceTest
         string? email = null,
         string? name = null,
         string? surname = null,
-        bool? hasCompletedSurvey = null,
+        bool? hasCompletedOnboarding = null,
         bool? emailConfirmed = null) =>
         new()
         {
@@ -51,7 +51,7 @@ public abstract class BaseServiceTest
             Email = email ?? Faker.Internet.Email(),
             Name = name ?? Faker.Name.FirstName(),
             Surname = surname ?? Faker.Name.LastName(),
-            HasCompletedSurvey = hasCompletedSurvey ?? Faker.Random.Bool(),
+            HasCompletedOnboarding = hasCompletedOnboarding ?? Faker.Random.Bool(),
             EmailConfirmed = emailConfirmed ?? Faker.Random.Bool()
         };
 }

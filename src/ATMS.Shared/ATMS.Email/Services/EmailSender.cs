@@ -40,6 +40,8 @@ public class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSe
         TModel model,
         CancellationToken cancellationToken)
     {
+        string? errors = null;
+
         try
         {
             var sendResponse = await fluentEmailFactory
@@ -54,15 +56,8 @@ public class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSe
                 return;
             }
 
-            var errors = sendResponse.ErrorMessages is null || sendResponse.ErrorMessages.Count == 0
+            errors = sendResponse.ErrorMessages is null || sendResponse.ErrorMessages.Count == 0
                 ? "No SMTP error details were returned." : string.Join("; ", sendResponse.ErrorMessages);
-
-            logger.LogError(
-                "Email delivery failed for {Recipient}. Subject: {Subject}. Template: {TemplateName}. Errors: {Errors}",
-                to,
-                subject,
-                templateName,
-                errors);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -72,56 +67,19 @@ public class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSe
         {
             logger.LogError(
                 exception,
-                "An exception occurred while sending email to {Recipient}. Subject: {Subject}. Template: {TemplateName}",
-                to,
+                "An exception occurred while sending an email. Subject: {Subject}. Template: {TemplateName}",
                 subject,
                 templateName);
-        }
-    }
-
-    private async Task SendTemplateAsync<TModel>(
-        string to,
-        string subject,
-        string templateName,
-        TModel model,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var sendResponse = await fluentEmailFactory
-                .Create()
-                .To(to)
-                .Subject(subject)
-                .UsingTemplateFromFile(Path.Combine(AppContext.BaseDirectory, "Templates", templateName), model)
-                .SendAsync(cancellationToken);
-
-            if (sendResponse.Successful)
-            {
-                return;
-            }
-
-            var errors = sendResponse.ErrorMessages is null || sendResponse.ErrorMessages.Count == 0
-                ? "No SMTP error details were returned." : string.Join("; ", sendResponse.ErrorMessages);
-
-            logger.LogError(
-                "Email delivery failed for {Recipient}. Subject: {Subject}. Template: {TemplateName}. Errors: {Errors}",
-                to,
-                subject,
-                templateName,
-                errors);
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
             throw;
         }
-        catch (Exception exception)
-        {
-            logger.LogError(
-                exception,
-                "An exception occurred while sending email to {Recipient}. Subject: {Subject}. Template: {TemplateName}",
-                to,
-                subject,
-                templateName);
-        }
+
+        logger.LogError(
+            "Email delivery failed. Subject: {Subject}. Template: {TemplateName}. Errors: {Errors}",
+            subject,
+            templateName,
+            errors);
+
+        throw new InvalidOperationException($"SMTP rejected the email. {errors}");
     }
+
 }

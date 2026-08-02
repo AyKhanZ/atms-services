@@ -17,7 +17,9 @@ public class User : UserBase, IAuditable
 
     public string PasswordHash { get; set; }
 
-    public bool HasCompletedSurvey { get; set; }
+    public bool HasCompletedOnboarding { get; set; }
+
+    public DateTime? OnboardingCompletedAt { get; set; }
 
     public bool EmailConfirmed { get; set; }
 
@@ -31,7 +33,11 @@ public class User : UserBase, IAuditable
     public DateTime? RefreshTokenExpiresAt { get; set; }
 
     
-    public string Language { get; set; }
+    public int LanguageId { get; set; }
+
+    public Language Language { get; set; }
+
+    public string NormalizedEmail { get; set; }
     
     
     
@@ -40,7 +46,7 @@ public class User : UserBase, IAuditable
     public bool IsAdmin { get; set; }
     
     public Guid? InvitedById { get; set; }
-    
+
     public User? InvitedBy { get; set; }
     
     public DateTime? LastLogin { get; set; }

@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Handlers.Profile;
 using ATMS.Application.Exceptions.Entity;
 using Moq;
@@ -15,10 +16,18 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
     {
         _handler = new UpdateLanguageHandler(
             UserRepositoryMock.Object,
+            DictionariesRepositoryMock.Object,
             CacheServiceMock.Object);
+
+        DictionariesRepositoryMock
+            .Setup(x => x.GetLanguagesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync([
+                new Language { Id = 1, Code = "AZ", Name = "Azerbaijani", NativeName = "Azərbaycanca" },
+                new Language { Id = 2, Code = "EN", Name = "English", NativeName = "English" }
+            ]);
     }
 
-    private User CreateUser() => new User { Id = Guid.NewGuid(), Language = "en" };
+    private User CreateUser() => new User { Id = Guid.NewGuid(), LanguageId = 2 };
 
     [Fact]
     public async Task Handle_UpdatesLanguage()
@@ -36,7 +45,7 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        Assert.Equal(command.Language, user.Language);
+        Assert.Equal(1, user.LanguageId);
     }
 
     [Fact]

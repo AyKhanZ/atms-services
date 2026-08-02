@@ -2,9 +2,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Account;
-using ATMS.Application.Exceptions.Auth;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Account;
@@ -34,7 +34,7 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
  
         var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
  
-        Assert.False(result);
+        Assert.Equal(ConfirmEmailResultEnum.Failed, result);
     }
  
     [Fact]
@@ -50,7 +50,7 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
  
         var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
  
-        Assert.False(result);
+        Assert.Equal(ConfirmEmailResultEnum.Failed, result);
     }
  
     [Fact]
@@ -69,11 +69,11 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
 
         var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
 
-        Assert.False(result);
+        Assert.Equal(ConfirmEmailResultEnum.Failed, result);
     }
 
     [Fact]
-    public async Task Handle_WhenEmailAlreadyConfirmed_ThrowsAuthException()
+    public async Task Handle_WhenEmailAlreadyConfirmed_ReturnsAlreadyConfirmed()
     {
         var userId = Guid.NewGuid();
         var user = new User { Id = userId, EmailConfirmed = true };
@@ -87,15 +87,14 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var exception = await Assert.ThrowsAsync<AuthException>(() =>
-            _handler.Handle(CreateCommand(), CancellationToken.None));
+        var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
 
-        Assert.Equal(AuthErrorType.EmailAlreadyConfirmed, exception.AuthErrorType);
+        Assert.Equal(ConfirmEmailResultEnum.AlreadyConfirmed, result);
         UserRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
  
     [Fact]
-    public async Task Handle_WhenEmailNotConfirmed_ConfirmsEmailAndReturnsTrue()
+    public async Task Handle_WhenEmailNotConfirmed_ConfirmsEmailAndReturnsConfirmed()
     {
         var userId = Guid.NewGuid();
         var user = new User { Id = userId, EmailConfirmed = false };
@@ -110,7 +109,7 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
  
         var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
  
-        Assert.True(result);
+        Assert.Equal(ConfirmEmailResultEnum.Confirmed, result);
         Assert.True(user.EmailConfirmed);
         UserRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }

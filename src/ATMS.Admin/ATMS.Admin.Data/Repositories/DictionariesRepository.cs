@@ -32,6 +32,14 @@ public class DictionariesRepository(AdminDbContext context) : IDictionariesRepos
             .ToListAsync(cancellationToken);
     }
 
+    public Task<List<Language>> GetLanguagesAsync(CancellationToken cancellationToken = default)
+    {
+        return context.Languages
+            .AsNoTracking()
+            .OrderBy(x => x.Id)
+            .ToListAsync(cancellationToken);
+    }
+
     public Task<bool> IsUserStatusExistAsync(
         Expression<Func<UserStatus, bool>> predicate,
         CancellationToken cancellationToken = default)
@@ -51,5 +59,12 @@ public class DictionariesRepository(AdminDbContext context) : IDictionariesRepos
         CancellationToken cancellationToken = default)
     {
         return context.Genders.AnyAsync(predicate, cancellationToken);
+    }
+
+    public Task<bool> IsLanguageExistAsync(
+        Expression<Func<Language, bool>> predicate,
+        CancellationToken cancellationToken = default)
+    {
+        return context.Languages.AnyAsync(predicate, cancellationToken);
     }
 }

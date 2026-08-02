@@ -9,4 +9,13 @@ public interface IMessagePublisher
         string routingKey,
         T message,
         CancellationToken cancellationToken = default);
+
+    Task PublishAsync(
+        string exchange,
+        string routingKey,
+        string messageType,
+        string payload,
+        Guid messageId,
+        DateTime createdAt,
+        CancellationToken cancellationToken = default);
 }

@@ -7,6 +7,8 @@ namespace ATMS.Admin.Data.Repositories.Interfaces;
 
 public interface IUserRepository
 {
+    Task AddAsync(User user, CancellationToken cancellationToken);
+
     Task CreateAsync(User user, CancellationToken cancellationToken);
 
     Task<PagedResult<User>> GetAsync(ACriteria<User> filterCriteria, PaginationCriteria<User> pagination, CancellationToken cancellationToken);

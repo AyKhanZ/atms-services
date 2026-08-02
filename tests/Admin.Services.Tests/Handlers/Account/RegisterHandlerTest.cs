@@ -2,10 +2,10 @@ using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Service.Handlers.Account;
-using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Exceptions.Configuration;
-using ATMS.Email.Models;
+using ATMS.Data.Enums;
 using ATMS.Contracts.Events.Users;
 using ATMS.Messaging.Configuration;
 using Moq;
@@ -18,8 +18,6 @@ public class RegisterHandlerTest : BaseHandlerTest
 
     private const string FakePassword = "RandPass1!";
     private const string FakePasswordHash = "hashed-password";
-    private const string FakeToken = "fake-email-token";
-
     public RegisterHandlerTest()
     {
         _handler = new RegisterHandler(
@@ -29,10 +27,9 @@ public class RegisterHandlerTest : BaseHandlerTest
             MapperMock.Object,
             PasswordServiceMock.Object,
             PasswordHasherServiceMock.Object,
-            EmailConfirmationTokenServiceMock.Object,
-            EmailSenderMock.Object,
-            MessagePublisherMock.Object,
-            BuildConfiguration());
+            OnboardingRepositoryMock.Object,
+            OutboxRepositoryMock.Object,
+            EmailDeliveryRepositoryMock.Object);
 
         PasswordServiceMock
             .Setup(p => p.GenerateRandomPassword())
@@ -42,9 +39,6 @@ public class RegisterHandlerTest : BaseHandlerTest
             .Setup(p => p.Hash(FakePassword))
             .Returns(FakePasswordHash);
 
-        EmailConfirmationTokenServiceMock
-            .Setup(s => s.GenerateToken(It.IsAny<User>()))
-            .Returns(new EmailConfirmationTokenResult(FakeToken, DateTime.UtcNow.AddHours(24)));
     }
 
     private RegisterCommand CreateCommand(Guid? roleId = null, Guid? organizationId = null) =>
@@ -110,6 +104,23 @@ public class RegisterHandlerTest : BaseHandlerTest
     }
 
     [Fact]
+    public async Task Handle_WhenRoleExists_SetsNormalizedEmail()
+    {
+        // Arrange
+        var command = CreateCommand();
+        var entity = new User { Id = Guid.NewGuid(), Email = command.Email };
+
+        SetupMapper(command, entity);
+        SetupRole(command.RoleId);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(command.Email.Trim().ToUpperInvariant(), entity.NormalizedEmail);
+    }
+
+    [Fact]
     public async Task Handle_WhenRoleExists_CreatesUser()
     {
         // Arrange
@@ -123,8 +134,33 @@ public class RegisterHandlerTest : BaseHandlerTest
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        UserRepositoryMock.Verify(r => r.CreateAsync(
+        UserRepositoryMock.Verify(r => r.AddAsync(
             It.Is<User>(u => u.Id == entity.Id),
+            It.IsAny<CancellationToken>()), Times.Once);
+        UserRepositoryMock.Verify(r => r.SaveAsync(
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WhenRoleExists_CreatesOnboardingProgress()
+    {
+        // Arrange
+        var command = CreateCommand();
+        var entity = new User { Id = Guid.NewGuid() };
+
+        SetupMapper(command, entity);
+        SetupRole(command.RoleId);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        OnboardingRepositoryMock.Verify(r => r.AddAsync(
+            It.Is<OnboardingProgress>(x =>
+                x.UserId == entity.Id &&
+                x.PersonalInfoStatus == OnboardingStepStatusEnum.NotStarted &&
+                x.SecurityStatus == OnboardingStepStatusEnum.NotStarted &&
+                x.InvitationsStatus == OnboardingStepStatusEnum.NotStarted),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -133,7 +169,7 @@ public class RegisterHandlerTest : BaseHandlerTest
     // -------------------------
 
     [Fact]
-    public async Task Handle_WhenRoleExists_SendsEmailWithCorrectLink()
+    public async Task Handle_WhenRoleExists_QueuesConfirmationEmail()
     {
         // Arrange
         var command = CreateCommand();
@@ -146,33 +182,9 @@ public class RegisterHandlerTest : BaseHandlerTest
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        EmailSenderMock.Verify(s => s.SendAsync(
-            entity.Email,
-            It.Is<InviteModel>(m => m.Link.Contains(FakeToken) && m.Link.Contains(BaseUrl)),
-            It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_WhenRoleExists_SendsEmailWithCorrectUserData()
-    {
-        // Arrange
-        var command = CreateCommand();
-        var entity = new User { Id = Guid.NewGuid(), Email = command.Email, Name = command.Name, Surname = command.Surname };
-
-        SetupMapper(command, entity);
-        SetupRole(command.RoleId);
-
-        // Act
-        await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        EmailSenderMock.Verify(s => s.SendAsync(
-            entity.Email,
-            It.Is<InviteModel>(m =>
-                m.Email == entity.Email &&
-                m.Name == entity.Name &&
-                m.Surname == entity.Surname &&
-                m.Password == FakePassword),
+        EmailDeliveryRepositoryMock.Verify(s => s.AddConfirmationAsync(
+            entity.Id,
+            FakePassword,
             It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -181,7 +193,7 @@ public class RegisterHandlerTest : BaseHandlerTest
     // -------------------------
 
     [Fact]
-    public async Task Handle_WhenRoleExists_PublishesUserCreatedEvent()
+    public async Task Handle_WhenRoleExists_QueuesUserCreatedEvent()
     {
         // Arrange
         var command = CreateCommand();
@@ -194,7 +206,7 @@ public class RegisterHandlerTest : BaseHandlerTest
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        MessagePublisherMock.Verify(p => p.PublishAsync(
+        OutboxRepositoryMock.Verify(p => p.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserCreated,
             It.Is<UserCreatedEvent>(e =>
@@ -207,7 +219,7 @@ public class RegisterHandlerTest : BaseHandlerTest
 
 
     [Fact]
-    public async Task Handle_WhenRoleExists_PublishesUserCreatedEvent_WithOrganizationId()
+    public async Task Handle_WhenRoleExists_QueuesUserCreatedEvent_WithOrganizationId()
     {
         // Arrange
         var organizationId = Guid.NewGuid();
@@ -221,7 +233,7 @@ public class RegisterHandlerTest : BaseHandlerTest
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        MessagePublisherMock.Verify(p => p.PublishAsync(
+        OutboxRepositoryMock.Verify(p => p.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserCreated,
             It.Is<UserCreatedEvent>(e => e.OrganizationId == organizationId),
@@ -249,7 +261,7 @@ public class RegisterHandlerTest : BaseHandlerTest
         }
 
         // Assert
-        MessagePublisherMock.Verify(p => p.PublishAsync(
+        OutboxRepositoryMock.Verify(p => p.AddAsync(
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<UserCreatedEvent>(),

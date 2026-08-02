@@ -31,7 +31,10 @@ app.UseCors();
 
 app.UseLocalImageFiles(builder.Configuration);
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseMiddleware<ExceptionsMiddleware>();
 
@@ -40,7 +43,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-await app.InitializeEventBusAsync();
 
 app.Run();

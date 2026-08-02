@@ -7,14 +7,13 @@ using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Contracts.Events.Users;
 using ATMS.Messaging.Configuration;
-using ATMS.Messaging.Interfaces;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Profile;
 
 public class UpdatePhotoHandler(
     IUserRepository userRepository,
-    IMessagePublisher messagePublisher,
+    IOutboxRepository outboxRepository,
     ICacheService cache) : IRequestHandler<UpdatePhotoCommand>
 {
     public async Task Handle(UpdatePhotoCommand command, CancellationToken cancellationToken)
@@ -27,19 +26,19 @@ public class UpdatePhotoHandler(
         
         entity.AvatarPath = command.FileName;
         
-        await userRepository.SaveAsync(cancellationToken);
-        
         var @event = new UserUpdatedEvent(
             entity.Id,
             entity.Name,
             entity.Surname,
             entity.AvatarPath);
 
-        await messagePublisher.PublishAsync(
+        await outboxRepository.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserUpdated,
             @event,
             cancellationToken);
+
+        await userRepository.SaveAsync(cancellationToken);
         
         await InvalidateUserCacheAsync(command, cancellationToken);
     }

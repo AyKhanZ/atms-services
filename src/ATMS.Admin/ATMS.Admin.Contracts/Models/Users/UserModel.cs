@@ -28,13 +28,15 @@ public class UserModel
     
     public DateTime? LockoutEnd { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
     
     public string AvatarPath { get; set; }
     
     public string? Position { get; set; }
 
 
-    public bool HasCompletedSurvey { get; set; }
+    public bool HasCompletedOnboarding { get; set; }
     
     public bool EmailConfirmed { get; set; }
 }

@@ -1,24 +1,23 @@
+using System.Security.Claims;
+using System.Text;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Admin.Service.Security.Models;
+using ATMS.Application.Constants;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Constants;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Text;
-using ATMS.Admin.Data.Repositories.Interfaces;
-using ATMS.Application.Constants;
-using ATMS.Application.Exceptions.Resources;
-using ATMS.Data.Constants;
 
 namespace ATMS.Admin.Service.Security;
 
 public class AccessTokenService(
     IUserRepository userRepository,
-    IConfiguration configuration
-) : IAccessTokenService
+    IConfiguration configuration) : IAccessTokenService
 {
     private readonly JwtOptions _jwtOptions =
         configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
@@ -32,22 +31,23 @@ public class AccessTokenService(
 
         var roles = await userRepository.GetRolesAsync(user.Id, cancellationToken);
 
+        var role = roles.First();
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Name, user.Name),
             new(CustomClaimTypes.Surname, user.Surname),
-            new(CustomClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new(CustomClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLowerInvariant()),
+            new(CustomClaimTypes.OnboardingCompleted, user.HasCompletedOnboarding.ToString().ToLowerInvariant()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(CustomClaimTypes.RoleId, role.Id.ToString()),
+            new(CustomClaimTypes.UserType, role.Name)
         };
-        var role = roles.First();
-        claims.Add(new Claim(CustomClaimTypes.RoleId, role.Id.ToString()));
-        claims.Add(new Claim(CustomClaimTypes.UserType, role.Name));
-        
-        if (role.Id != RoleIds.Employee && user.OrganizationId != null)
+
+        if (role.Id != RoleIds.Employee && user.OrganizationId.HasValue)
         {
-            claims.Add(new Claim(CustomClaimTypes.OrganizationId, user.OrganizationId.ToString()!));
+            claims.Add(new Claim(CustomClaimTypes.OrganizationId, user.OrganizationId.Value.ToString()));
         }
 
         var tokenDescriptor = new SecurityTokenDescriptor

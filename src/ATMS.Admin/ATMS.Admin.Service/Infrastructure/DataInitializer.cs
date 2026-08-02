@@ -53,10 +53,13 @@ public sealed class DataInitializer(
             Email = _adminOptions.Email,
             Name = _adminOptions.Name,
             Surname = _adminOptions.Surname,
+            NormalizedEmail = _adminOptions.Email.Trim().ToUpperInvariant(),
             PasswordHash = passwordHasherService.Hash(_adminOptions.Password),
             EmailConfirmed = true,
             IsAdmin = true,
-            HasCompletedSurvey = true,
+            HasCompletedOnboarding = true,
+            OnboardingCompletedAt = DateTime.UtcNow,
+            LanguageId = DefaultValues.Language,
             UserRoles = [new UserRole { RoleId = role.Id, UserId = userId }]
         };
 

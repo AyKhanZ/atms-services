@@ -72,4 +72,7 @@
     <data name="UserStatusRequired" xml:space="preserve">
         <value>'İstifadəçi statusu' sahəsi doldurulmalıdır.</value>
     </data>
+    <data name="LanguageNotSupported" xml:space="preserve">
+        <value>Mövcud dillərdən birini seçin.</value>
+    </data>
 </root>

@@ -22,6 +22,10 @@ public class ResetPasswordTokenService(
 
     public async Task<ResetPasswordTokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)
     {
+        await passwordResetTokenRepository.ClearListAsync(
+            x => x.UserId == user.Id,
+            cancellationToken);
+
         var resetPasswordToken = await uniqueTokenService.GenerateUniqueAsync(
             async token => await passwordResetTokenRepository.IsExistAsync(token, cancellationToken)
             );

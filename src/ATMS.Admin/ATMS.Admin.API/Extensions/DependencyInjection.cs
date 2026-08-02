@@ -1,4 +1,4 @@
-﻿namespace ATMS.Admin.API.Extensions;
+namespace ATMS.Admin.API.Extensions;
 
 public static class DependencyInjection
 {

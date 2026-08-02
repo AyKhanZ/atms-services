@@ -14,29 +14,60 @@ public sealed class RabbitMqPublisher(RabbitMqConnectionFactory connectionFactor
         T message,
         CancellationToken cancellationToken = default)
     {
-        var connection = await connectionFactory.GetConnectionAsync();
-        var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        var envelope = new MessageEnvelope(
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            typeof(T).FullName ?? typeof(T).Name,
+            JsonSerializer.SerializeToElement(message));
 
-        await using (channel)
+        await PublishEnvelopeAsync(exchange, routingKey, envelope, cancellationToken);
+    }
+
+    public async Task PublishAsync(
+        string exchange,
+        string routingKey,
+        string messageType,
+        string payload,
+        Guid messageId,
+        DateTime createdAt,
+        CancellationToken cancellationToken = default)
+    {
+        var envelope = new MessageEnvelope(
+            messageId,
+            createdAt,
+            messageType,
+            JsonSerializer.Deserialize<JsonElement>(payload));
+
+        await PublishEnvelopeAsync(exchange, routingKey, envelope, cancellationToken);
+    }
+
+    private async Task PublishEnvelopeAsync(
+        string exchange,
+        string routingKey,
+        MessageEnvelope envelope,
+        CancellationToken cancellationToken)
+    {
+        var connection = await connectionFactory.GetConnectionAsync(cancellationToken);
+        var channelOptions = new CreateChannelOptions(true, true);
+        await using var channel = await connection.CreateChannelAsync(channelOptions, cancellationToken);
+
+        var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(envelope));
+        var props = new BasicProperties
         {
-            var envelope = new MessageEnvelope<T> { Payload = message };
-            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(envelope));
+            Persistent = true, // the message will survive after the broker restart
+            ContentType = "application/json",
+            MessageId = envelope.MessageId.ToString(),
+            Timestamp = new AmqpTimestamp(new DateTimeOffset(envelope.CreatedAt).ToUnixTimeSeconds())
+        };
 
-            var props = new BasicProperties
-            {
-                Persistent = true, // the message will survive after the broker restart
-                ContentType = "application/json",
-                MessageId = envelope.MessageId.ToString(),
-                Timestamp = new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeSeconds())
-            };
-
-            await channel.BasicPublishAsync(
-                exchange: exchange,
-                routingKey: routingKey,
-                mandatory: true, // if there is no queue, it will return an error, it will not lose it quietly
-                basicProperties: props,
-                body: body,
-                cancellationToken: cancellationToken);
-        }
+        // With publisher confirmation tracking enabled this call completes only
+        // after RabbitMQ confirms the publish or reports that it cannot be routed.
+        await channel.BasicPublishAsync(
+            exchange: exchange,
+            routingKey: routingKey,
+            mandatory: true,
+            basicProperties: props,
+            body: body,
+            cancellationToken: cancellationToken);
     }
 }

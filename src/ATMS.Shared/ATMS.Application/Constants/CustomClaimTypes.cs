@@ -7,4 +7,5 @@ public static class CustomClaimTypes
     public const string RoleId = "role";
     public const string OrganizationId = "org";
     public const string UserType = "user_type";
+    public const string OnboardingCompleted = "onboarding_completed";
 }

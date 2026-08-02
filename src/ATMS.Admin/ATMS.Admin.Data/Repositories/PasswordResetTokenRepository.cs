@@ -8,13 +8,15 @@ namespace ATMS.Admin.Data.Repositories;
 
 public class PasswordResetTokenRepository(AdminDbContext context) : IPasswordResetTokenRepository
 {
-    public Task ClearListAsync(
+    public async Task ClearListAsync(
         Expression<Func<PasswordResetToken, bool>> predicate,
         CancellationToken cancellationToken)
     {
-        return context.PasswordResetTokens
+        var tokens = await context.PasswordResetTokens
             .Where(predicate)
-            .ExecuteDeleteAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
+
+        context.PasswordResetTokens.RemoveRange(tokens);
     }
 
     public async Task AddToListAsync(

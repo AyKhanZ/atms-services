@@ -3,6 +3,7 @@ using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
+using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -15,28 +16,39 @@ public sealed class UserCreatedConsumer(
     : RabbitMqConsumerBase<UserCreatedEvent>(connectionFactory, scopeFactory, logger,
         MessagingConstants.Queues.ProjectUserCreated)
 {
-    protected override async Task HandleAsync(UserCreatedEvent message, IServiceProvider serviceProvider,
+    protected override async Task HandleAsync(UserCreatedEvent message, Guid messageId, IServiceProvider serviceProvider,
         CancellationToken cancellationToken)
     {
         var userRepository = serviceProvider.GetRequiredService<IUserRepository>();
+        var inboxRepository = serviceProvider.GetRequiredService<IInboxRepository>();
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
 
-        var exist = await userRepository.IsExistAsync(u => u.Id == message.Id, cancellationToken);
-        if (exist)
+        if (await inboxRepository.IsProcessedAsync(
+                messageId,
+                nameof(UserCreatedConsumer),
+                cancellationToken))
         {
             return;
         }
 
-        var user = new User
+        var exist = await userRepository.IsExistAsync(u => u.Id == message.Id, cancellationToken);
+        if (exist)
         {
-            Id = message.Id,
-            Email = message.Email,
-            Name = message.Name,
-            Surname = message.Surname,
-            UserType = message.UserType,
-            AvatarPath = message.AvatarPath,
-            OrganizationId = message.OrganizationId
-        };
+            await inboxRepository.AddAsync(
+                messageId,
+                nameof(UserCreatedConsumer),
+                cancellationToken);
+            await userRepository.SaveAsync(cancellationToken);
+            return;
+        }
 
-        await userRepository.CreateAsync(user, cancellationToken);
+        var user = mapper.Map<User>(message);
+
+        await userRepository.AddAsync(user, cancellationToken);
+        await inboxRepository.AddAsync(
+            messageId,
+            nameof(UserCreatedConsumer),
+            cancellationToken);
+        await userRepository.SaveAsync(cancellationToken);
     }
 }

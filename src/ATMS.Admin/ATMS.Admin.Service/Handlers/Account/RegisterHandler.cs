@@ -1,20 +1,16 @@
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
-using ATMS.Email.Models;
-using ATMS.Email.Services.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Contracts.Events.Users;
-using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Configuration;
-using ATMS.Messaging.Interfaces;
 using AutoMapper;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Admin.Service.Handlers.Account;
 
@@ -25,17 +21,11 @@ public class RegisterHandler(
     IMapper mapper,
     IPasswordService passwordService,
     IPasswordHasherService passwordHasherService,
-    IEmailConfirmationTokenService emailConfirmationTokenService,
-    IEmailSender emailSender,
-    IMessagePublisher messagePublisher,
-    IConfiguration configuration)
+    IOnboardingRepository onboardingRepository,
+    IOutboxRepository outboxRepository,
+    IEmailDeliveryRepository emailDeliveryRepository)
     : IRequestHandler<RegisterCommand, UserModel>
 {
-    private readonly RedirectUrlOptions _redirectUrlOptions =
-        configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
-        ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
-
     public async Task<UserModel> Handle(RegisterCommand command, CancellationToken cancellationToken)
     {
         var role = await roleRepository.GetAsync(r => r.Id == command.RoleId, cancellationToken);
@@ -49,6 +39,7 @@ public class RegisterHandler(
 
         var entity = mapper.Map<User>(command);
         entity.Id = Guid.NewGuid();
+        entity.NormalizedEmail = command.Email.Trim().ToUpperInvariant();
 
         var userRole = new UserRole
         {
@@ -63,21 +54,13 @@ public class RegisterHandler(
         var rndPassword = passwordService.GenerateRandomPassword();
         entity.PasswordHash = passwordHasherService.Hash(rndPassword);
 
-        await userRepository.CreateAsync(entity, cancellationToken);
+        await userRepository.AddAsync(entity, cancellationToken);
 
-        var emailConfirmationTokenResult = emailConfirmationTokenService.GenerateToken(entity);
-        var link = GenerateConfirmationLink(emailConfirmationTokenResult.Token);
-
-        await emailSender.SendAsync(entity.Email,
-            new InviteModel
-            {
-                Email = entity.Email,
-                Name = entity.Name,
-                Surname = entity.Surname,
-                Password = rndPassword,
-                Link = link,
-                DeadlineOfToken = emailConfirmationTokenResult.ExpiresInHours
-            }, cancellationToken);
+        await onboardingRepository.AddAsync(new OnboardingProgress
+        {
+            UserId = entity.Id,
+            UpdatedAt = DateTime.UtcNow
+        }, cancellationToken);
         
         var @event = new UserCreatedEvent(
             entity.Id,
@@ -88,15 +71,19 @@ public class RegisterHandler(
             entity.AvatarPath,
             entity.OrganizationId);
 
-        await messagePublisher.PublishAsync(
+        await outboxRepository.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserCreated,
             @event,
             cancellationToken);
 
+        await emailDeliveryRepository.AddConfirmationAsync(
+            entity.Id,
+            rndPassword,
+            cancellationToken);
+
+        await userRepository.SaveAsync(cancellationToken);
+
         return mapper.Map<UserModel>(entity);
     }
-
-    private string GenerateConfirmationLink(string token) =>
-        $"{_redirectUrlOptions.BaseUrl}/account/confirm?token={Uri.EscapeDataString(token)}";
 }

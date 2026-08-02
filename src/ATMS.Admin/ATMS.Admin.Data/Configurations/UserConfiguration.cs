@@ -12,7 +12,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.HasIndex(e => e.Email)
             .IsUnique();
-        
+
+        builder.HasIndex(e => e.NormalizedEmail)
+            .IsUnique();
+
         builder.HasIndex(e => e.RefreshToken)
             .IsUnique();
         
@@ -38,8 +41,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.AvatarPath)
             .HasDefaultValue(DefaultValues.UserAvatar);
         
-        builder.Property(e => e.Language)
-            .HasDefaultValue(DefaultValues.Language);
+        builder.Property(e => e.NormalizedEmail)
+            .HasMaxLength(100)
+            .IsRequired();
+
+        builder.Property(e => e.LanguageId)
+            .HasDefaultValue(DefaultValues.Language)
+            .IsRequired();
+
+        builder.HasOne(e => e.Language)
+            .WithMany()
+            .HasForeignKey(e => e.LanguageId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         
         builder.Property(u => u.IsAdmin)

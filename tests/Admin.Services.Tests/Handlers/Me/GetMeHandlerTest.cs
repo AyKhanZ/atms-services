@@ -28,7 +28,7 @@ public class GetMeHandlerTest : BaseHandlerTest
         var userId = Guid.NewGuid();
 
         var user = new User { Id = userId };
-        var expected = new MeModel();
+        var expected = new MeModel { Language = "AZ" };
 
         CacheServiceMock
             .Setup(c => c.GetOrSetAsync(
@@ -111,7 +111,7 @@ public class GetMeHandlerTest : BaseHandlerTest
 
         MapperMock
             .Setup(m => m.Map<MeModel>(It.IsAny<User>()))
-            .Returns(new MeModel());
+            .Returns(new MeModel { Language = "AZ" });
 
         // Act
         await _handler.Handle(request, CancellationToken.None);
@@ -151,7 +151,7 @@ public class GetMeHandlerTest : BaseHandlerTest
 
         MapperMock
             .Setup(m => m.Map<MeModel>(user))
-            .Returns(new MeModel());
+            .Returns(new MeModel { Language = "AZ" });
 
         // Act
         await _handler.Handle(request, CancellationToken.None);
@@ -159,6 +159,58 @@ public class GetMeHandlerTest : BaseHandlerTest
         // Assert
         MapperMock.Verify(m =>
                 m.Map<MeModel>(user),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WhenCachedLanguageIsMissing_RemovesCacheAndLoadsFromDb()
+    {
+        // Arrange
+        var request = new GetMeRequest();
+        var userId = Guid.NewGuid();
+        var user = new User { Id = userId };
+        var key = $"user:me:{userId}";
+        var cacheCalls = 0;
+
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                key,
+                It.IsAny<Func<Task<MeModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<MeModel>>, TimeSpan, CancellationToken>(
+                async (_, factory, _, _) =>
+                {
+                    cacheCalls++;
+                    if (cacheCalls == 1)
+                    {
+                        return new MeModel();
+                    }
+
+                    return await factory();
+                });
+
+        CurrentUserMock
+            .Setup(c => c.Id)
+            .Returns(userId);
+
+        UserRepositoryMock
+            .Setup(r => r.GetMeAsync(userId,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        MapperMock
+            .Setup(m => m.Map<MeModel>(user))
+            .Returns(new MeModel { Language = "AZ" });
+
+        // Act
+        var result = await _handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        Assert.Equal("AZ", result.Language);
+
+        CacheServiceMock.Verify(c =>
+                c.RemoveAsync(key, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

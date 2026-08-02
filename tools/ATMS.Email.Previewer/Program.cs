@@ -18,7 +18,7 @@ await RenderTemplateAsync(
         Surname = "Zeynalov",
         Email = "aykhan.zeynalov@baim.az",
         Password = "Baim@2026!",
-        Link = "https://localhost:7117/api/v1/account/confirm?token=preview-confirmation-token",
+        Link = "http://localhost:5000/admin/api/v1/account/confirm?token=preview-confirmation-token",
         DeadlineOfToken = DateTime.Now.AddHours(24)
     });
 
@@ -30,7 +30,7 @@ await RenderTemplateAsync(
         Name = "Aykhan",
         Surname = "Zeynalov",
         Email = "aykhan.zeynalov@baim.az",
-        Link = "http://localhost:3000/reset-password?token=preview-reset-token",
+        Link = "http://localhost:4200/reset-password?token=preview-reset-token",
         DeadlineOfToken = DateTime.Now.AddHours(1)
     });
 

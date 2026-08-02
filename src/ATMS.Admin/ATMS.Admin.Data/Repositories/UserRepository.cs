@@ -10,6 +10,11 @@ namespace ATMS.Admin.Data.Repositories;
 
 public class UserRepository(AdminDbContext context) : IUserRepository
 {
+    public async Task AddAsync(User user, CancellationToken cancellationToken)
+    {
+        await context.Users.AddAsync(user, cancellationToken);
+    }
+
     public async Task CreateAsync(User user, CancellationToken cancellationToken)
     {
         await context.Users.AddAsync(user, cancellationToken);
@@ -51,6 +56,7 @@ public class UserRepository(AdminDbContext context) : IUserRepository
     {
         return context.Users
             .AsNoTracking()
+            .Include(x => x.Language)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

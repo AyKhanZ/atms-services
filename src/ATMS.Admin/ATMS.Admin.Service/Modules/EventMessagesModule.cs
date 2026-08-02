@@ -1,4 +1,5 @@
 using ATMS.Admin.Service.Consumers.Users;
+using ATMS.Admin.Service.Infrastructure.Delivery;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Messaging.Modules;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,12 @@ public static class EventMessagesModule
         
         services.AddSingleton<UserInvitedConsumer>();
         services.AddHostedService<ConsumerHostedService<UserInvitedConsumer>>();
+
+        services.AddSingleton<DeliveryRetrySchedule>();
+        services.AddSingleton<EmailDeliveryRequestLock>();
+        services.AddHostedService<OutboxBackgroundService>();
+        services.AddHostedService<EmailDeliveryBackgroundService>();
+        services.AddHostedService<DeliveryRetentionBackgroundService>();
         
         return services;
     }

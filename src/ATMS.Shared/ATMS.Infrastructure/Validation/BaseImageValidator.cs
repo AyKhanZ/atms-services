@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
@@ -31,18 +32,22 @@ public abstract class BaseImageValidator<T> : AbstractValidator<T>
             .NotNull().WithMessage(requiredMessage)
             .Must(file => file is { Length: > 0 }).WithMessage(requiredMessage)
             .Must(file => file!.Length <= _imagesOptions.MaxFileSizeBytes)
-            .WithMessage("Image file is too large.")
+            .WithMessage(ValidationMessages.ImageTooLarge)
             .Must(file => IsAllowedContentType(file!.ContentType))
-            .WithMessage("Unsupported image format.");
+            .WithMessage(ValidationMessages.ImageUnsupportedFormat);
     }
 
 
     protected void RuleForOptionalImage(
         Expression<Func<T, IFormFile?>> expression,
-        string emptyMessage = "Image file is empty.",
-        string tooLargeMessage = "Image file is too large.",
-        string unsupportedFormatMessage = "Unsupported image format.")
+        string? emptyMessage = null,
+        string? tooLargeMessage = null,
+        string? unsupportedFormatMessage = null)
     {
+        emptyMessage ??= ValidationMessages.ImageEmpty;
+        tooLargeMessage ??= ValidationMessages.ImageTooLarge;
+        unsupportedFormatMessage ??= ValidationMessages.ImageUnsupportedFormat;
+
         RuleFor(expression)
             .Cascade(CascadeMode.Stop)
             .Must(file => file is null || file.Length > 0)
