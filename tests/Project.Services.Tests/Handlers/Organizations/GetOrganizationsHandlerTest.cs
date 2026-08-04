@@ -1,5 +1,5 @@
 using ATMS.Data.Criteria;
-using ATMS.Project.Contracts.Models.Organization;
+using ATMS.Project.Contracts.Models.Organizations;
 using ATMS.Project.Contracts.Requests.Organizations;
 using ATMS.Project.Data.Criteria.Organizations;
 using ATMS.Project.Data.Entities;

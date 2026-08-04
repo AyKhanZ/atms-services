@@ -1,4 +1,5 @@
-using ATMS.Project.Contracts.Commands.Organization;
+using ATMS.Project.Contracts.Commands.Organizations;
+using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
 using AutoMapper;
 
@@ -10,5 +11,8 @@ public class CommandToEntityProfile : Profile
     {
         CreateMap<CreateOrganizationCommand, Organization>();
         CreateMap<UpdateOrganizationCommand, Organization>();
+
+        CreateMap<CreateWorkProjectCommand, WorkProject>();
+        CreateMap<UpdateWorkProjectCommand, WorkProject>();
     }
 }

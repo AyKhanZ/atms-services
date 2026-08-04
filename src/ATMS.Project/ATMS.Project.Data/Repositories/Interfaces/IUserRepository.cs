@@ -10,6 +10,8 @@ public interface IUserRepository
     Task<User?> GetAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken);
     
     Task<List<User>> GetAsync(CancellationToken cancellationToken);
+
+    Task<List<User>> GetManyAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken);
     
     Task<User?> FindAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken);
     

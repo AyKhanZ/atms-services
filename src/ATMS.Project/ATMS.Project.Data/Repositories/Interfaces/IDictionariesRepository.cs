@@ -4,6 +4,12 @@ namespace ATMS.Project.Data.Repositories.Interfaces;
 
 public interface IDictionariesRepository
 {
+    Task<bool> IsProjectKindExistAsync(int id, CancellationToken cancellationToken = default);
+
+    Task<bool> IsProjectStatusExistAsync(int id, CancellationToken cancellationToken = default);
+
+    Task<bool> IsProjectTypeExistAsync(int id, CancellationToken cancellationToken = default);
+
     Task<List<ProjectKind>> GetProjectKindsAsync(CancellationToken cancellationToken = default);
     
     Task<List<ProjectStatus>> GetProjectStatusesAsync(CancellationToken cancellationToken = default);

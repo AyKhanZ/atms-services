@@ -22,6 +22,8 @@ namespace ATMS.Project.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.HasSequence("EntityCodeSequence");
+
             modelBuilder.Entity("ATMS.Data.Messaging.InboxMessage", b =>
                 {
                     b.Property<Guid>("MessageId")
@@ -2847,7 +2849,8 @@ namespace ATMS.Project.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp with time zone");
@@ -2883,17 +2886,23 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("EndDate");
+
                     b.HasIndex("ProjectKindId");
 
                     b.HasIndex("ProjectStatusId");
 
                     b.HasIndex("ProjectTypeId");
 
-                    b.HasIndex("Title")
-                        .IsUnique();
+                    b.HasIndex("StartDate");
 
                     b.HasIndex("OrganizationId", "Title")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("OrganizationId", "Title"), false);
 
                     b.ToTable("Projects", (string)null);
                 });
@@ -2924,7 +2933,8 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.HasIndex("WorkProjectId", "UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("ProjectParticipants", (string)null);
                 });
@@ -2955,7 +2965,8 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.HasIndex("WorkProjectParticipantId", "RoleId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("ProjectParticipantRoles", (string)null);
                 });

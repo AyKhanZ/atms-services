@@ -4,6 +4,8 @@ using ATMS.Infrastructure.Options;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Repositories;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Project.Data.Services;
+using ATMS.Project.Data.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +28,9 @@ public static class DataAccessModule
         services.AddScoped<IUserRepository, UserRepository>();
         
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+        services.AddScoped<IWorkProjectRepository, WorkProjectRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IEntityCodeGenerator, EntityCodeGenerator>();
         services.AddScoped<IHealthRepository, HealthRepository>();
         services.AddScoped<IInboxRepository, InboxRepository>();
         

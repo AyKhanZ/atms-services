@@ -100,6 +100,8 @@ public class ProjectDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasSequence<long>("EntityCodeSequence");
+
         #region Global Query Filters
         
         modelBuilder.Entity<WorkProject>()

@@ -1,7 +1,7 @@
 using ATMS.Data.Criteria;
 using ATMS.Project.API.Controllers.v1;
-using ATMS.Project.Contracts.Commands.Organization;
-using ATMS.Project.Contracts.Models.Organization;
+using ATMS.Project.Contracts.Commands.Organizations;
+using ATMS.Project.Contracts.Models.Organizations;
 using ATMS.Project.Contracts.Requests.Organizations;
 using MediatR;
 using Microsoft.AspNetCore.Http;

@@ -1,6 +1,6 @@
 using ATMS.Contracts.Requests;
 using ATMS.Data.Criteria;
-using ATMS.Project.Contracts.Models.Organization;
+using ATMS.Project.Contracts.Models.Organizations;
 using MediatR;
 
 namespace ATMS.Project.Contracts.Requests.Organizations;
