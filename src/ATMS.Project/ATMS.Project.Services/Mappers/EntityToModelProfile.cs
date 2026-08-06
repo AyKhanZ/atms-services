@@ -39,11 +39,17 @@ public class EntityToModelProfile : Profile
                 expression => expression.MapFrom(x => x.WorkProjectParticipantRoles.Single().Role));
         
         CreateMap<WorkProject, WorkProjectModel>()
+            .ForMember(x => x.ProjectType, expression => expression.Ignore())
+            .ForMember(x => x.ProjectKind, expression => expression.Ignore())
+            .ForMember(x => x.ProjectStatus, expression => expression.Ignore())
             .ForMember(
                 x => x.Participants,
                 expression => expression.MapFrom(x => x.WorkProjectParticipants));
         
-        CreateMap<WorkProject, WorkProjectItemModel>();
+        CreateMap<WorkProject, WorkProjectItemModel>()
+            .ForMember(x => x.ProjectType, expression => expression.Ignore())
+            .ForMember(x => x.ProjectKind, expression => expression.Ignore())
+            .ForMember(x => x.ProjectStatus, expression => expression.Ignore());
     }
 
     private string GetProjectRoleName(Role role)
