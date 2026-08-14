@@ -1,9 +1,11 @@
 using ATMS.Application.Models;
+using ATMS.Application.Localization;
 using ATMS.Data.Constants;
 using ATMS.Project.Contracts.Models.Organizations;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Models.WorkProjects;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Entities.Dictionaries;
 using ATMS.Project.Services.Resources;
 using AutoMapper;
 
@@ -23,6 +25,21 @@ public class EntityToModelProfile : Profile
         
         CreateMap<Organization, WorkProjectOrganizationModel>();
 
+        CreateMap<ProjectType, DictionaryModel>()
+            .ForMember(
+                x => x.Name,
+                expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
+
+        CreateMap<ProjectKind, DictionaryModel>()
+            .ForMember(
+                x => x.Name,
+                expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
+
+        CreateMap<ProjectStatus, DictionaryModel>()
+            .ForMember(
+                x => x.Name,
+                expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
+
         CreateMap<Role, WorkProjectRoleModel>()
             .ForMember(x => x.Name, expression => expression.MapFrom(x => GetProjectRoleName(x)));
 
@@ -39,17 +56,11 @@ public class EntityToModelProfile : Profile
                 expression => expression.MapFrom(x => x.WorkProjectParticipantRoles.Single().Role));
         
         CreateMap<WorkProject, WorkProjectModel>()
-            .ForMember(x => x.ProjectType, expression => expression.Ignore())
-            .ForMember(x => x.ProjectKind, expression => expression.Ignore())
-            .ForMember(x => x.ProjectStatus, expression => expression.Ignore())
             .ForMember(
                 x => x.Participants,
                 expression => expression.MapFrom(x => x.WorkProjectParticipants));
         
-        CreateMap<WorkProject, WorkProjectItemModel>()
-            .ForMember(x => x.ProjectType, expression => expression.Ignore())
-            .ForMember(x => x.ProjectKind, expression => expression.Ignore())
-            .ForMember(x => x.ProjectStatus, expression => expression.Ignore());
+        CreateMap<WorkProject, WorkProjectItemModel>();
     }
 
     private string GetProjectRoleName(Role role)

@@ -18,6 +18,8 @@ public interface IWorkProjectRepository
 
     Task<WorkProject?> FindAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<WorkProject?> FindRootAsync(Guid id, CancellationToken cancellationToken);
+
     Task CreateAsync(WorkProject entity, CancellationToken cancellationToken);
 
     Task<bool> IsExistAsync(Expression<Func<WorkProject, bool>> predicate, CancellationToken cancellationToken);

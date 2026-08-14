@@ -51,6 +51,11 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
         return DetailsQuery().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
+    public Task<WorkProject?> FindRootAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return context.WorkProjects.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
     public async Task CreateAsync(WorkProject entity, CancellationToken cancellationToken)
     {
         await context.WorkProjects.AddAsync(entity, cancellationToken);

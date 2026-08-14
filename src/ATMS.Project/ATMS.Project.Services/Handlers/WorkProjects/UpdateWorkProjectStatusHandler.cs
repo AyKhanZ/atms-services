@@ -15,7 +15,7 @@ public class UpdateWorkProjectStatusHandler(
 {
     public async Task Handle(UpdateWorkProjectStatusCommand command, CancellationToken cancellationToken)
     {
-        var project = await workProjectRepository.FindAsync(command.Id, cancellationToken);
+        var project = await workProjectRepository.FindRootAsync(command.Id, cancellationToken);
         if (project is null)
         {
             throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
