@@ -26,7 +26,14 @@ public class LogoutHandler(
             throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
         }
         
-        await blackListService.AddToListAsync(user.Id, user.RefreshToken, user.RefreshTokenExpiresAt.Value, cancellationToken);
+        if (!await blackListService.TryAddToListAsync(
+                user.Id,
+                user.RefreshToken,
+                user.RefreshTokenExpiresAt.Value,
+                cancellationToken))
+        {
+            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+        }
         
         user.RefreshToken = null;
         user.RefreshTokenExpiresAt = null;

@@ -6,7 +6,8 @@ namespace ATMS.Admin.Service.Security;
 
 public class BlackListService(IRefreshTokenRepository refreshTokenRepository) : IBlackListService
 {
-    public Task AddToListAsync(Guid userId, string refreshToken, DateTime expiresAt, CancellationToken cancellationToken)
+    public Task<bool> TryAddToListAsync(Guid userId, string refreshToken, DateTime expiresAt,
+        CancellationToken cancellationToken)
     {
         var revokedToken = new RefreshRevokedToken
         {
@@ -16,7 +17,7 @@ public class BlackListService(IRefreshTokenRepository refreshTokenRepository) : 
             ExpiresAt = expiresAt
         };
         return refreshTokenRepository
-            .AddToListAsync(revokedToken, cancellationToken);
+            .TryAddToListAsync(revokedToken, cancellationToken);
     }
     
     public Task<bool> IsRefreshTokenRevokedAsync(string refreshToken, CancellationToken cancellationToken)

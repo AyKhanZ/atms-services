@@ -23,6 +23,13 @@ public abstract class BaseHandlerTest
         CurrentUserMock.SetupGet(x => x.RoleId).Returns(Guid.NewGuid());
         CurrentUserMock.SetupGet(x => x.OrganizationId).Returns((Guid?)null);
         CurrentUserMock.SetupGet(x => x.UserType).Returns("Client");
+        BlackListServiceMock
+            .Setup(x => x.TryAddToListAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
     }
     
     protected readonly Mock<IMapper> MapperMock = new();
