@@ -2,6 +2,8 @@ using ATMS.Data.Criteria;
 using ATMS.Project.API.Controllers.v1;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Contracts.Models.WorkProjects;
+using ATMS.Project.Contracts.Models.Users;
+using ATMS.Project.Contracts.Requests.Users;
 using ATMS.Project.Contracts.Requests.WorkProjects;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -50,6 +52,22 @@ public class ProjectControllerTest : BaseControllerTest
             .ReturnsAsync(expected);
 
         var result = await _controller.Get(id, CancellationToken.None);
+
+        var response = Assert.IsType<OkObjectResult>(result.Result);
+        Assert.Equal(expected, response.Value);
+    }
+
+    [Fact]
+    public async Task GetTeamMembers_Returns200WithCandidates()
+    {
+        var expected = new[] { new UserModel { Id = Guid.NewGuid() } };
+        MediatorMock
+            .Setup(x => x.Send(
+                It.IsAny<GetProjectTeamMembersRequest>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expected);
+
+        var result = await _controller.GetTeamMembers(CancellationToken.None);
 
         var response = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Equal(expected, response.Value);

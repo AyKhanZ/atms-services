@@ -2,6 +2,8 @@ using ATMS.Application.Models;
 using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Contracts.Models.WorkProjects;
+using ATMS.Project.Contracts.Models.Users;
+using ATMS.Project.Contracts.Requests.Users;
 using ATMS.Project.Contracts.Requests.WorkProjects;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -62,11 +64,32 @@ public class ProjectController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>
+    /// Returns users from the internal team who can participate in projects.
+    /// </summary>
+    /// <remarks>
+    /// Client organization users are intentionally excluded. They are loaded from the selected organization instead.
+    /// </remarks>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Returns internal project participant candidates.</response>
+    /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden.</response>
+    /// <response code="500">Unexpected server error.</response>
+    [HttpGet("team-members")]
+    [ProducesResponseType(typeof(UserModel[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<UserModel[]>> GetTeamMembers(CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(new GetProjectTeamMembersRequest(), cancellationToken));
+    }
+
+    /// <summary>
     /// Creates a new project.
     /// </summary>
     /// <remarks>
     /// Creates a project with an automatically generated code. Only a super administrator can perform this operation.
-    /// Organization is optional when no participants are specified.
+    /// Internal projects cannot have an organization. Participants may be added without an organization when they belong to the internal team.
     /// </remarks>
     /// <param name="command">Command containing project details and optional participants.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

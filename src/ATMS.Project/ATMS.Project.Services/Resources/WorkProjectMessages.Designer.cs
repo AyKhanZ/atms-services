@@ -15,6 +15,7 @@ internal static class WorkProjectMessages
     internal static string DescriptionTooLong => Get(nameof(DescriptionTooLong));
     internal static string OrganizationRequired => Get(nameof(OrganizationRequired));
     internal static string OrganizationNotFound => Get(nameof(OrganizationNotFound));
+    internal static string InternalProjectOrganizationNotAllowed => Get(nameof(InternalProjectOrganizationNotAllowed));
     internal static string ProjectTypeRequired => Get(nameof(ProjectTypeRequired));
     internal static string ProjectTypeUnsupported => Get(nameof(ProjectTypeUnsupported));
     internal static string ProjectKindRequired => Get(nameof(ProjectKindRequired));
@@ -24,12 +25,14 @@ internal static class WorkProjectMessages
     internal static string StartDateAfterEndDate => Get(nameof(StartDateAfterEndDate));
     internal static string TitleAlreadyExists => Get(nameof(TitleAlreadyExists));
     internal static string ParticipantsLimitExceeded => Get(nameof(ParticipantsLimitExceeded));
+    internal static string ParticipantsRequired => Get(nameof(ParticipantsRequired));
     internal static string DuplicateParticipant => Get(nameof(DuplicateParticipant));
     internal static string ParticipantRequired => Get(nameof(ParticipantRequired));
     internal static string ParticipantRoleRequired => Get(nameof(ParticipantRoleRequired));
     internal static string ParticipantNotFound => Get(nameof(ParticipantNotFound));
     internal static string ParticipantRoleNotFound => Get(nameof(ParticipantRoleNotFound));
     internal static string ParticipantOrganizationMismatch => Get(nameof(ParticipantOrganizationMismatch));
+    internal static string ParticipantRoleMismatch => Get(nameof(ParticipantRoleMismatch));
     internal static string ProjectManager => Get(nameof(ProjectManager));
     internal static string BusinessConsultant => Get(nameof(BusinessConsultant));
     internal static string Developer => Get(nameof(Developer));

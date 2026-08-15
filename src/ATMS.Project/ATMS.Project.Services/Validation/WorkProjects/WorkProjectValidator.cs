@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -39,7 +40,11 @@ public class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
             .MaximumLength(2000).WithMessage(_ => string.Format(WorkProjectMessages.DescriptionTooLong, 2000));
 
         RuleFor(x => x.OrganizationId)
-            .NotNull().When(x => x.Participants.Length > 0)
+            .Null().When(x => x.ProjectKindId == (int)ProjectKindEnum.Internal)
+            .WithMessage(WorkProjectMessages.InternalProjectOrganizationNotAllowed);
+
+        RuleFor(x => x.OrganizationId)
+            .NotNull().When(RequiresOrganization)
             .WithMessage(WorkProjectMessages.OrganizationRequired);
 
         RuleFor(x => x.OrganizationId).Cascade(CascadeMode.Stop)
@@ -71,6 +76,10 @@ public class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
             .Must(x => x.Length <= MaxParticipants)
             .WithMessage(string.Format(WorkProjectMessages.ParticipantsLimitExceeded, MaxParticipants))
             .Must(HaveUniqueParticipants).WithMessage(WorkProjectMessages.DuplicateParticipant);
+
+        RuleFor(x => x.Participants)
+            .NotEmpty().When(RequiresOrganization)
+            .WithMessage(WorkProjectMessages.ParticipantsRequired);
 
         RuleForEach(x => x.Participants).ChildRules(participant =>
         {
@@ -135,11 +144,44 @@ public class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
         if (roles.Count != command.Participants.Select(x => x.RoleId).Distinct().Count())
         {
             context.AddFailure(nameof(command.Participants), WorkProjectMessages.ParticipantRoleNotFound);
+            return;
         }
 
         if (users.Any(x => x.UserType == (int)UserTypeEnum.Client && x.OrganizationId != command.OrganizationId))
         {
             context.AddFailure(nameof(command.Participants), WorkProjectMessages.ParticipantOrganizationMismatch);
         }
+
+        var usersById = users.ToDictionary(x => x.Id);
+        var internalRoleIds = new HashSet<Guid>
+        {
+            RoleIds.ProjectManager,
+            RoleIds.BusinessConsultant,
+            RoleIds.Developer
+        };
+        var clientRoleIds = new HashSet<Guid>
+        {
+            RoleIds.OrgClientManager,
+            RoleIds.OrgClientViewer
+        };
+
+        var hasRoleMismatch = command.Participants.Any(participant =>
+        {
+            var user = usersById[participant.UserId];
+            var allowedRoleIds = user.UserType == (int)UserTypeEnum.Client
+                ? clientRoleIds
+                : internalRoleIds;
+            return !allowedRoleIds.Contains(participant.RoleId);
+        });
+
+        if (hasRoleMismatch)
+        {
+            context.AddFailure(nameof(command.Participants), WorkProjectMessages.ParticipantRoleMismatch);
+        }
+    }
+
+    private static bool RequiresOrganization(WorkProjectCommand command)
+    {
+        return command.ProjectKindId > 0 && command.ProjectKindId != (int)ProjectKindEnum.Internal;
     }
 }
