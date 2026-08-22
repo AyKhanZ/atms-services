@@ -62,6 +62,11 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    public void Touch(WorkProject entity)
+    {
+        context.Entry(entity).State = EntityState.Modified;
+    }
+
     public Task<bool> IsExistAsync(
         Expression<Func<WorkProject, bool>> predicate,
         CancellationToken cancellationToken)
@@ -81,6 +86,7 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
             .Include(x => x.ProjectType).ThenInclude(x => x.Translations)
             .Include(x => x.ProjectKind).ThenInclude(x => x.Translations)
             .Include(x => x.ProjectStatus).ThenInclude(x => x.Translations)
+            .Include(x => x.UpdatedBy)
             .Include(x => x.WorkProjectParticipants).ThenInclude(x => x.User)
             .Include(x => x.WorkProjectParticipants)
                 .ThenInclude(x => x.WorkProjectParticipantRoles)

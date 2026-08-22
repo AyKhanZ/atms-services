@@ -33,9 +33,4 @@ internal static class WorkProjectMessages
     internal static string ParticipantRoleNotFound => Get(nameof(ParticipantRoleNotFound));
     internal static string ParticipantOrganizationMismatch => Get(nameof(ParticipantOrganizationMismatch));
     internal static string ParticipantRoleMismatch => Get(nameof(ParticipantRoleMismatch));
-    internal static string ProjectManager => Get(nameof(ProjectManager));
-    internal static string BusinessConsultant => Get(nameof(BusinessConsultant));
-    internal static string Developer => Get(nameof(Developer));
-    internal static string OrgClientManager => Get(nameof(OrgClientManager));
-    internal static string OrgClientViewer => Get(nameof(OrgClientViewer));
 }

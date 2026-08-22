@@ -22,6 +22,8 @@ public interface IWorkProjectRepository
 
     Task CreateAsync(WorkProject entity, CancellationToken cancellationToken);
 
+    void Touch(WorkProject entity);
+
     Task<bool> IsExistAsync(Expression<Func<WorkProject, bool>> predicate, CancellationToken cancellationToken);
 
     Task SaveAsync(CancellationToken cancellationToken);

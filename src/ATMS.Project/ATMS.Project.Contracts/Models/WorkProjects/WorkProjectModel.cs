@@ -12,7 +12,7 @@ public class WorkProjectModel
 
     public string? Description { get; set; }
 
-    public WorkProjectOrganizationModel Organization { get; set; }
+    public WorkProjectOrganizationModel? Organization { get; set; }
 
     public DictionaryModel ProjectType { get; set; }
 
@@ -27,4 +27,8 @@ public class WorkProjectModel
     public WorkProjectParticipantModel[] Participants { get; set; } = [];
 
     public DateTime CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public WorkProjectAuditUserModel? UpdatedBy { get; set; }
 }

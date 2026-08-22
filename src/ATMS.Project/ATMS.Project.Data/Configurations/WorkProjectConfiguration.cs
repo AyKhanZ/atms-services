@@ -56,6 +56,11 @@ public class WorkProjectConfiguration : IEntityTypeConfiguration<WorkProject>
             .WithMany(o => o.WorkProjects)
             .HasForeignKey(p => p.OrganizationId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(p => p.UpdatedBy)
+            .WithMany()
+            .HasForeignKey(p => p.UpdatedById)
+            .OnDelete(DeleteBehavior.Restrict);
             
             
         builder.HasMany(p => p.WorkProjectParticipants)

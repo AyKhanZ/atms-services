@@ -30,9 +30,4 @@
   <data name="ParticipantRoleNotFound" xml:space="preserve"><value>One or more selected project roles were not found.</value></data>
   <data name="ParticipantOrganizationMismatch" xml:space="preserve"><value>Client participants must belong to the selected organization.</value></data>
   <data name="ParticipantRoleMismatch" xml:space="preserve"><value>Choose an internal project role for team members and a client organization role for client participants.</value></data>
-  <data name="ProjectManager" xml:space="preserve"><value>Project Manager</value></data>
-  <data name="BusinessConsultant" xml:space="preserve"><value>Business Consultant</value></data>
-  <data name="Developer" xml:space="preserve"><value>Developer</value></data>
-  <data name="OrgClientManager" xml:space="preserve"><value>Client Organization Manager</value></data>
-  <data name="OrgClientViewer" xml:space="preserve"><value>Client Organization Viewer</value></data>
 </root>

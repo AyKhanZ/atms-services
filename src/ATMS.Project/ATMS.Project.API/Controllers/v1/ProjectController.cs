@@ -171,6 +171,109 @@ public class ProjectController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>
+    /// Adds a participant to an existing project.
+    /// </summary>
+    /// <remarks>
+    /// Adds a user with the specified project role. Only a super administrator can perform this operation.
+    /// The change is applied immediately to the existing project.
+    /// </remarks>
+    /// <param name="id">Project ID.</param>
+    /// <param name="command">Command containing participant user and role details.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="204">Participant successfully added.</response>
+    /// <response code="400">Validation error, e.g. invalid user, role or duplicate participant.</response>
+    /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden, user is not a super administrator.</response>
+    /// <response code="404">Project, user or role with the specified ID was not found.</response>
+    /// <response code="500">Unexpected server error.</response>
+    [HttpPost("{id:guid}/participants")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AddParticipant(
+        Guid id,
+        [FromBody] AddWorkProjectParticipantCommand command,
+        CancellationToken cancellationToken)
+    {
+        command.ProjectId = id;
+        await mediator.Send(command, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Updates an existing project participant.
+    /// </summary>
+    /// <remarks>
+    /// Updates participant details such as the assigned project role. Only a super administrator can perform this operation.
+    /// The change is applied immediately to the existing project.
+    /// </remarks>
+    /// <param name="id">Project ID.</param>
+    /// <param name="participantId">Project participant ID.</param>
+    /// <param name="command">Command containing updated participant details.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="204">Participant successfully updated.</response>
+    /// <response code="400">Validation error, e.g. invalid role.</response>
+    /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden, user is not a super administrator.</response>
+    /// <response code="404">Project, participant or role with the specified ID was not found.</response>
+    /// <response code="500">Unexpected server error.</response>
+    [HttpPatch("{id:guid}/participants/{participantId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateParticipant(
+        Guid id,
+        Guid participantId,
+        [FromBody] UpdateWorkProjectParticipantCommand command,
+        CancellationToken cancellationToken)
+    {
+        command.ProjectId = id;
+        command.ParticipantId = participantId;
+        await mediator.Send(command, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Removes a participant from an existing project.
+    /// </summary>
+    /// <remarks>
+    /// Deletes a participant assignment from the project. Only a super administrator can perform this operation.
+    /// The change is applied immediately to the existing project.
+    /// </remarks>
+    /// <param name="id">Project ID.</param>
+    /// <param name="participantId">Project participant ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="204">Participant successfully removed.</response>
+    /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden, user is not a super administrator.</response>
+    /// <response code="404">Project or participant with the specified ID was not found.</response>
+    /// <response code="500">Unexpected server error.</response>
+    [HttpDelete("{id:guid}/participants/{participantId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteParticipant(
+        Guid id,
+        Guid participantId,
+        CancellationToken cancellationToken)
+    {
+        await mediator.Send(new DeleteWorkProjectParticipantCommand
+        {
+            ProjectId = id,
+            ParticipantId = participantId
+        }, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>
     /// Deletes an existing project.
     /// </summary>
     /// <remarks>
