@@ -1,6 +1,6 @@
-namespace ATMS.Project.Contracts.Models.WorkProjects;
+namespace ATMS.Application.Models;
 
-public class WorkProjectAuditUserModel
+public class AuditUserModel
 {
     public Guid Id { get; set; }
 

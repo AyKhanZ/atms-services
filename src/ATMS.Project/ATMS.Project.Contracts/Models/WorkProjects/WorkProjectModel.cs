@@ -30,5 +30,5 @@ public class WorkProjectModel
 
     public DateTime? UpdatedAt { get; set; }
 
-    public WorkProjectAuditUserModel? UpdatedBy { get; set; }
+    public AuditUserModel? UpdatedBy { get; set; }
 }

@@ -23,7 +23,7 @@ public class EntityToModelProfile : Profile
         
         CreateMap<Organization, WorkProjectOrganizationModel>();
 
-        CreateMap<User, WorkProjectAuditUserModel>();
+        CreateMap<User, AuditUserModel>();
 
         CreateMap<ProjectType, DictionaryModel>()
             .ForMember(
