@@ -1,5 +1,5 @@
 using ATMS.Infrastructure.Images;
-using ATMS.Project.Contracts.Commands.Organization;
+using ATMS.Project.Contracts.Commands.Organizations;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Services.Handlers.Organizations;
 using Microsoft.AspNetCore.Http;

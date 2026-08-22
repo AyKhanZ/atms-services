@@ -3,6 +3,7 @@ using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Entities.Messaging;
+using ATMS.Data;
 using ATMS.Data.Interfaces;
 using ATMS.Data.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +12,15 @@ namespace ATMS.Admin.Data.DbContexts;
 
 public class AdminDbContext: DbContext
 {
+    private readonly IAuditActorAccessor? auditActor;
+
     public AdminDbContext() { }
-    public AdminDbContext(DbContextOptions<AdminDbContext> options)
-        : base(options) { }
+    public AdminDbContext(
+        DbContextOptions<AdminDbContext> options,
+        IAuditActorAccessor? auditActor = null) : base(options)
+    {
+        this.auditActor = auditActor;
+    }
 
     public DbSet<User> Users { get; set; }
     
@@ -69,18 +76,7 @@ public class AdminDbContext: DbContext
     
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var entry in ChangeTracker.Entries<IAuditable>())
-        {
-            if (entry.State == EntityState.Added)
-            {
-                entry.Entity.CreatedAt = DateTime.UtcNow;
-            }
-            
-            if (entry.State == EntityState.Modified)
-            {
-                entry.Entity.UpdatedAt = DateTime.UtcNow;
-            }
-        }
+        ChangeTracker.ApplyAuditMetadata(auditActor?.UserId);
 
         return await base.SaveChangesAsync(cancellationToken);
     }

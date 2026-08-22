@@ -32,7 +32,15 @@ public class RefreshTokenHandler(
         var newAccessToken = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
         var newRefreshToken = await refreshTokenService.GenerateTokenAsync(user, cancellationToken);
 
-        await blackListService.AddToListAsync(user.Id, oldRefreshToken, oldExpiresAt, cancellationToken);
+        if (!await blackListService.TryAddToListAsync(
+                user.Id,
+                oldRefreshToken,
+                oldExpiresAt,
+                cancellationToken))
+        {
+            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+        }
+
         await userRepository.SaveAsync(cancellationToken);
 
         return new AccessInfoModel

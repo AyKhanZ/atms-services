@@ -41,6 +41,24 @@ public class UserRepository(ProjectDbContext context) : IUserRepository
             .ToListAsync(cancellationToken);
     }
 
+    public Task<List<User>> GetManyAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
+    {
+        return context.Users
+            .AsNoTracking()
+            .Where(x => ids.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<User>> GetManyAsync(
+        Expression<Func<User, bool>> predicate,
+        CancellationToken cancellationToken)
+    {
+        return context.Users
+            .AsNoTracking()
+            .Where(predicate)
+            .ToListAsync(cancellationToken);
+    }
+
     public Task<bool> IsExistAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken)
         => context.Users.AnyAsync(predicate, cancellationToken);
     

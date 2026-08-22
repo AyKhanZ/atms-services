@@ -3,24 +3,25 @@ using ATMS.Application.Constants;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
+using ATMS.Data.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace ATMS.Application.Infrastructure;
 
-public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser
+public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser, IAuditActorAccessor
 {
+    Guid? IAuditActorAccessor.UserId => TryGetUserId();
+
     public Guid Id
     {
         get
         {
-            var claim = httpContextAccessor.HttpContext?.User
-                .FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-
-            if (claim is null || !Guid.TryParse(claim, out var id))
+            var id = TryGetUserId();
+            if (!id.HasValue)
             {
                 throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
             }
-            return id;
+            return id.Value;
         }
     }
 
@@ -63,5 +64,13 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
 
             return claim ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
         }
+    }
+
+    private Guid? TryGetUserId()
+    {
+        var claim = httpContextAccessor.HttpContext?.User
+            .FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+        return Guid.TryParse(claim, out var id) ? id : null;
     }
 }

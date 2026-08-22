@@ -32,6 +32,17 @@ Treat this repository as a real production application. Follow the existing arch
 
 ---
 
+# Code layout and vertical readability
+
+- Optimize code for vertical scanning and readable diffs, not for minimizing the number of lines.
+- Keep short, cohesive expressions on one line. Do not split every word, argument, or property mechanically.
+- Break code across multiple lines when a single line becomes difficult to scan, requires horizontal scrolling, contains several logical parts, or hides the structure of the code.
+- Format long parameter lists, generic types, LINQ and fluent chains, object initializers, boolean expressions, attributes, and method calls vertically at meaningful boundaries.
+- Keep one statement or declaration per line; do not compress several operations into a wide one-line block.
+- Follow the repository formatter, but improve the source layout when the formatter alone still leaves code unnecessarily wide or difficult to review.
+
+---
+
 # General engineering quality
 
 - Write simple, professional, production-quality C#.

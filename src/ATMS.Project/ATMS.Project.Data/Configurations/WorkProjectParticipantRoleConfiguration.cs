@@ -11,7 +11,8 @@ public class WorkProjectParticipantRoleConfiguration : IEntityTypeConfiguration<
         builder.ToTable("ProjectParticipantRoles");
 
         builder.HasIndex(e => new { e.WorkProjectParticipantId, e.RoleId })
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("\"IsDeleted\" = false");
             
 
         builder.HasOne(ppr => ppr.Role)

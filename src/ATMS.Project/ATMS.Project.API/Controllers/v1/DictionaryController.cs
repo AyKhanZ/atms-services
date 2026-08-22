@@ -73,6 +73,27 @@ public class DictionaryController(IMediator mediator) : ControllerBase
     {
         return Ok(await mediator.Send(new GetProjectStatusDictionariesRequest(), cancellationToken));
     }
+
+    /// <summary>
+    /// Gets all roles available to work project participants.
+    /// </summary>
+    /// <remarks>
+    /// Returns the roles that can be assigned to a participant in a work project.
+    /// </remarks>
+    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <response code="200">Work project participant roles</response>
+    /// <response code="401">Unauthorized access, no access token provided by a client</response>
+    /// <response code="403">Resource forbidden.</response>
+    /// <response code="500">Unhandled server error</response>
+    [HttpGet("project-roles")]
+    [ProducesResponseType(typeof(DictionaryModel<Guid>[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IReadOnlyList<DictionaryModel<Guid>>>> GetProjectRoles(CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(new GetProjectRoleDictionariesRequest(), cancellationToken));
+    }
     
     
     

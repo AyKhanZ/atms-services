@@ -53,6 +53,7 @@ public class User : UserBase, IAuditable
     
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public Guid? UpdatedById { get; set; }
 
     #region Dictionaries
     public int UserStatusId { get; set; }

@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using ATMS.Project.Contracts.Commands.Organization;
+using ATMS.Project.Contracts.Commands.Organizations;
 using ATMS.Project.Data.Entities;
-using ATMS.Project.Services.Validation.Organization;
+using ATMS.Project.Services.Validation.Organizations;
 using Moq;
 
 namespace Project.Services.Tests.Validators.Organizations;

@@ -2,6 +2,7 @@ using ATMS.Application.Interfaces;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Infrastructure.Images;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Project.Data.Services.Interfaces;
 using AutoMapper;
 using Bogus;
 using Moq;
@@ -19,6 +20,8 @@ public abstract class BaseHandlerTest
 
     protected readonly Mock<IDictionariesRepository> DictionariesRepositoryMock = new();
     protected readonly Mock<IOrganizationRepository> OrganizationRepositoryMock = new();
+    protected readonly Mock<IWorkProjectRepository> WorkProjectRepositoryMock = new();
+    protected readonly Mock<IEntityCodeGenerator> EntityCodeGeneratorMock = new();
     
     // Simulates cache miss — factory is called, repository will be hit
     protected void SetupCacheMiss<T>()

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="NotFound" xml:space="preserve"><value>Project was not found.</value></data>
+  <data name="SuperAdminRequired" xml:space="preserve"><value>Only a super administrator can manage projects.</value></data>
+  <data name="DescriptionTooLong" xml:space="preserve"><value>Description must be {0} characters or less.</value></data>
+  <data name="OrganizationRequired" xml:space="preserve"><value>Organization is required.</value></data>
+  <data name="OrganizationNotFound" xml:space="preserve"><value>Choose an existing organization.</value></data>
+  <data name="InternalProjectOrganizationNotAllowed" xml:space="preserve"><value>Internal projects cannot be assigned to a client organization.</value></data>
+  <data name="ProjectTypeRequired" xml:space="preserve"><value>Project type is required.</value></data>
+  <data name="ProjectTypeUnsupported" xml:space="preserve"><value>Choose a supported project type.</value></data>
+  <data name="ProjectKindRequired" xml:space="preserve"><value>Project kind is required.</value></data>
+  <data name="ProjectKindUnsupported" xml:space="preserve"><value>Choose a supported project kind.</value></data>
+  <data name="ProjectStatusRequired" xml:space="preserve"><value>Project status is required.</value></data>
+  <data name="ProjectStatusUnsupported" xml:space="preserve"><value>Choose a supported project status.</value></data>
+  <data name="StartDateAfterEndDate" xml:space="preserve"><value>Start date must be before or equal to end date.</value></data>
+  <data name="TitleAlreadyExists" xml:space="preserve"><value>A project with this title already exists in the selected organization.</value></data>
+  <data name="ParticipantsLimitExceeded" xml:space="preserve"><value>You can add up to {0} participants.</value></data>
+  <data name="ParticipantsRequired" xml:space="preserve"><value>Add at least one participant for a client project.</value></data>
+  <data name="DuplicateParticipant" xml:space="preserve"><value>Each participant can be added only once.</value></data>
+  <data name="ParticipantRequired" xml:space="preserve"><value>Participant is required.</value></data>
+  <data name="ParticipantRoleRequired" xml:space="preserve"><value>Participant role is required.</value></data>
+  <data name="ParticipantNotFound" xml:space="preserve"><value>One or more selected participants were not found.</value></data>
+  <data name="ParticipantRoleNotFound" xml:space="preserve"><value>One or more selected project roles were not found.</value></data>
+  <data name="ParticipantOrganizationMismatch" xml:space="preserve"><value>Client participants must belong to the selected organization.</value></data>
+  <data name="ParticipantRoleMismatch" xml:space="preserve"><value>Choose an internal project role for team members and a client organization role for client participants.</value></data>
+</root>

@@ -22,6 +22,8 @@ namespace ATMS.Project.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.HasSequence("EntityCodeSequence");
+
             modelBuilder.Entity("ATMS.Data.Messaging.InboxMessage", b =>
                 {
                     b.Property<Guid>("MessageId")
@@ -92,6 +94,9 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CommentId");
@@ -138,6 +143,9 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -2147,6 +2155,9 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("WorkProjectId")
                         .HasColumnType("uuid");
 
@@ -2213,6 +2224,9 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MeetingId", "Order")
@@ -2278,6 +2292,9 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Voen")
                         .IsRequired()
@@ -2799,6 +2816,9 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("WorkProjectId")
                         .HasColumnType("uuid");
 
@@ -2847,7 +2867,8 @@ namespace ATMS.Project.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp with time zone");
@@ -2878,10 +2899,17 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("EndDate");
 
                     b.HasIndex("ProjectKindId");
 
@@ -2889,11 +2917,15 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("ProjectTypeId");
 
-                    b.HasIndex("Title")
-                        .IsUnique();
+                    b.HasIndex("StartDate");
+
+                    b.HasIndex("UpdatedById");
 
                     b.HasIndex("OrganizationId", "Title")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("OrganizationId", "Title"), false);
 
                     b.ToTable("Projects", (string)null);
                 });
@@ -2924,7 +2956,8 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.HasIndex("WorkProjectId", "UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("ProjectParticipants", (string)null);
                 });
@@ -2955,7 +2988,8 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.HasIndex("WorkProjectParticipantId", "RoleId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("ProjectParticipantRoles", (string)null);
                 });
@@ -3019,6 +3053,9 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("WorkProjectId")
                         .HasColumnType("uuid");
@@ -3098,6 +3135,9 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("WorkGroupId")
                         .HasColumnType("uuid");
@@ -3393,6 +3433,11 @@ namespace ATMS.Project.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ATMS.Project.Data.Entities.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Organization");
 
                     b.Navigation("ProjectKind");
@@ -3400,6 +3445,8 @@ namespace ATMS.Project.Data.Migrations
                     b.Navigation("ProjectStatus");
 
                     b.Navigation("ProjectType");
+
+                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkProjectParticipant", b =>

@@ -1,4 +1,4 @@
-using ATMS.Project.Contracts.Models.Organization;
+using ATMS.Project.Contracts.Models.Organizations;
 using ATMS.Project.Contracts.Requests.Organizations;
 using ATMS.Project.Data.Repositories.Interfaces;
 using AutoMapper;

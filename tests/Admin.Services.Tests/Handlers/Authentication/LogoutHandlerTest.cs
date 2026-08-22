@@ -70,7 +70,7 @@ public class LogoutHandlerTest : BaseHandlerTest
  
         await _handler.Handle(command, CancellationToken.None);
  
-        BlackListServiceMock.Verify(s => s.AddToListAsync(
+        BlackListServiceMock.Verify(s => s.TryAddToListAsync(
             It.IsAny<Guid>(), 
             It.IsAny<string>(), 
             It.IsAny<DateTime>(), 
@@ -153,7 +153,7 @@ public class LogoutHandlerTest : BaseHandlerTest
         await Assert.ThrowsAsync<AuthException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
-        BlackListServiceMock.Verify(s => s.AddToListAsync(
+        BlackListServiceMock.Verify(s => s.TryAddToListAsync(
             It.IsAny<Guid>(),
             It.IsAny<string>(),
             It.IsAny<DateTime>(),
@@ -178,7 +178,7 @@ public class LogoutHandlerTest : BaseHandlerTest
         await Assert.ThrowsAsync<AuthException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
-        BlackListServiceMock.Verify(s => s.AddToListAsync(
+        BlackListServiceMock.Verify(s => s.TryAddToListAsync(
             It.IsAny<Guid>(),
             It.IsAny<string>(),
             It.IsAny<DateTime>(),

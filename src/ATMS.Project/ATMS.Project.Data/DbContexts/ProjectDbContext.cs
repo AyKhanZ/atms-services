@@ -1,3 +1,4 @@
+using ATMS.Data;
 using ATMS.Data.Interfaces;
 using ATMS.Data.Messaging;
 using ATMS.Project.Data.Entities;
@@ -8,8 +9,15 @@ namespace ATMS.Project.Data.DbContexts;
 
 public class ProjectDbContext : DbContext
 {
+    private readonly IAuditActorAccessor? auditActor;
+
     public ProjectDbContext() { }
-    public ProjectDbContext(DbContextOptions<ProjectDbContext> options) : base(options) { }
+    public ProjectDbContext(
+        DbContextOptions<ProjectDbContext> options,
+        IAuditActorAccessor? auditActor = null) : base(options)
+    {
+        this.auditActor = auditActor;
+    }
     
     #region Dictionaries
     
@@ -81,24 +89,15 @@ public class ProjectDbContext : DbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var entry in ChangeTracker.Entries<IAuditable>())
-        {
-            if (entry.State == EntityState.Added)
-            {
-                entry.Entity.CreatedAt = DateTime.UtcNow;
-            }
-
-            if (entry.State == EntityState.Modified)
-            {
-                entry.Entity.UpdatedAt = DateTime.UtcNow;
-            }
-        }
+        ChangeTracker.ApplyAuditMetadata(auditActor?.UserId);
 
         return await base.SaveChangesAsync(cancellationToken);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.HasSequence<long>("EntityCodeSequence");
 
         #region Global Query Filters
         

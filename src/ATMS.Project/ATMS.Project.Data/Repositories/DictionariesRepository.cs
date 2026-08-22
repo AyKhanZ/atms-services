@@ -7,6 +7,21 @@ namespace ATMS.Project.Data.Repositories;
 
 public class DictionariesRepository(ProjectDbContext context) : IDictionariesRepository
 {
+    public Task<bool> IsProjectKindExistAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return context.ProjectKinds.AnyAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public Task<bool> IsProjectStatusExistAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return context.ProjectStatuses.AnyAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public Task<bool> IsProjectTypeExistAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return context.ProjectTypes.AnyAsync(x => x.Id == id, cancellationToken);
+    }
+
     public Task<List<ProjectKind>> GetProjectKindsAsync(CancellationToken cancellationToken = default)
     {
         return context.ProjectKinds

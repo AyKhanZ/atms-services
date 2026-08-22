@@ -1,7 +1,7 @@
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Infrastructure.Images;
 using ATMS.Data.Constants;
-using ATMS.Project.Contracts.Commands.Organization;
+using ATMS.Project.Contracts.Commands.Organizations;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
 using MediatR;

@@ -9,6 +9,7 @@
 
 - dotnet ef migrations add Initial --project src\ATMS.Project\ATMS.Project.Data --startup-project src\ATMS.Project\ATMS.Project.API
 - dotnet ef database update --project src\ATMS.Project\ATMS.Project.Data --startup-project src\ATMS.Project\ATMS.Project.API
+- dotnet ef migrations remove --project src\ATMS.Project\ATMS.Project.Data --startup-project src\ATMS.Project\ATMS.Project.API
 
 ---
 #### If Error(1):
