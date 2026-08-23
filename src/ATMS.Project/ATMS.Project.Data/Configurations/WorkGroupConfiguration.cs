@@ -9,33 +9,19 @@ public class WorkGroupConfiguration : IEntityTypeConfiguration<WorkGroup>
 {
     public void Configure(EntityTypeBuilder<WorkGroup> builder)
     {
-        builder.ToTable("ProjectGroups", t =>
-            t.HasCheckConstraint("CK_ProjectGroups_Level", "\"Level\" <= 1"));
+        builder.ToTable("ProjectGroups");
 
         builder.HasIndex(e => new { e.WorkProjectId, e.ParentWorkGroupId, e.Title })
-            .IsUnique();
-            
-            
-        builder.HasIndex(e => e.Title)
-            .IsUnique();
-            
-        builder.HasIndex(e => e.Code)
-            .IsUnique();
-            
+            .IsUnique()
+            .AreNullsDistinct(false)
+            .HasFilter("\"IsDeleted\" = false");
             
         builder.Property(e => e.Title)
-            .IsRequired();
-            
-        builder.Property(e => e.Code)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(100);
             
         builder.Property(e => e.CreatedAt)
             .IsRequired();
-            
-        builder.Property(e => e.Level)
-            .IsRequired();
-            
             
         builder.Property(u => u.StatusId)
             .HasDefaultValue((int)WorkGroupStatusEnum.Planned)

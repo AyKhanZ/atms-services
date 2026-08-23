@@ -2,7 +2,9 @@ using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Swagger.Middlewares;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Npgsql;
 
 namespace Admin.API.Tests;
 
@@ -40,6 +42,26 @@ public class ExceptionsMiddlewareTest
         Assert.Equal(StatusCodes.Status500InternalServerError, context.Response.StatusCode);
         Assert.Contains(ExceptionMessages.InternalServerError, response);
         Assert.DoesNotContain(exception.Message, response);
+    }
+
+    [Fact]
+    public async Task InvokeAsync_WhenUniqueConstraintIsViolated_ReturnsConflict()
+    {
+        var context = CreateContext();
+        var middleware = new ExceptionsMiddleware(NullLogger<ExceptionsMiddleware>.Instance);
+        var postgresException = new PostgresException(
+            "duplicate key value violates unique constraint",
+            "ERROR",
+            "ERROR",
+            PostgresErrorCodes.UniqueViolation);
+        var exception = new DbUpdateException("Database update failed", postgresException);
+
+        await middleware.InvokeAsync(context, _ => throw exception);
+
+        var response = await ReadResponseAsync(context);
+        Assert.Equal(StatusCodes.Status409Conflict, context.Response.StatusCode);
+        Assert.Contains(ExceptionMessages.NameAlreadyInUse, response);
+        Assert.DoesNotContain(postgresException.MessageText, response);
     }
 
     public static TheoryData<Exception> UnexpectedExceptions()

@@ -21,6 +21,9 @@
   <data name="InternalServerError" xml:space="preserve">
         <value>Something went wrong. Please try again later.</value>
     </data>
+  <data name="NameAlreadyInUse" xml:space="preserve">
+        <value>This name is already in use. Choose a different name.</value>
+    </data>
   <data name="ConfigurationInitializationFailed" xml:space="preserve">
         <value>The service is not configured correctly. Please contact support.</value>
     </data>
