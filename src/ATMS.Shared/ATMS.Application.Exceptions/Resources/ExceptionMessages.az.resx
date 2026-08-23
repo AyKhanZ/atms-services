@@ -21,6 +21,9 @@
   <data name="InternalServerError" xml:space="preserve">
         <value>Nəsə səhv oldu. Zəhmət olmasa bir az sonra yenidən cəhd edin.</value>
     </data>
+  <data name="NameAlreadyInUse" xml:space="preserve">
+        <value>Bu ad artıq istifadə olunur. Başqa ad seçin.</value>
+    </data>
   <data name="ConfigurationInitializationFailed" xml:space="preserve">
         <value>Xidmət düzgün konfiqurasiya olunmayıb. Zəhmət olmasa dəstək xidməti ilə əlaqə saxlayın.</value>
     </data>

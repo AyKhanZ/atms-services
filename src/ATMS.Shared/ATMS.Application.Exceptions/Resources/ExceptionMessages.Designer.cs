@@ -59,6 +59,12 @@ namespace ATMS.Application.Exceptions.Resources {
                 return ResourceManager.GetString("InternalServerError", resourceCulture);
             }
         }
+
+        public static string NameAlreadyInUse {
+            get {
+                return ResourceManager.GetString("NameAlreadyInUse", resourceCulture);
+            }
+        }
         
         public static string ServiceTemporarilyUnavailable {
             get {

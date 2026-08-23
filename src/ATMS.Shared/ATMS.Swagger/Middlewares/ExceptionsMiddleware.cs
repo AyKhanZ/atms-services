@@ -9,6 +9,7 @@ using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
@@ -45,6 +46,10 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         catch (ConflictException ex)
         {
             await HandleExceptionAsync(context, ex);
+        }
+        catch (DbUpdateException ex) when (IsUniqueConstraintViolation(ex))
+        {
+            await HandleUniqueConstraintViolationAsync(context, ex);
         }
         catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
         {
@@ -223,5 +228,33 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = StatusCodes.Status409Conflict;
         return context.Response.WriteAsync(result);
+    }
+
+    private Task HandleUniqueConstraintViolationAsync(
+        HttpContext context,
+        DbUpdateException exception)
+    {
+        logger.LogInformation(
+            exception,
+            "Unique constraint conflict. RequestId: {RequestId}, Path: {Path}",
+            context.TraceIdentifier,
+            context.Request.Path);
+
+        var result = JsonConvert.SerializeObject(new
+        {
+            error = ExceptionMessages.NameAlreadyInUse
+        });
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = StatusCodes.Status409Conflict;
+
+        return context.Response.WriteAsync(result);
+    }
+
+    private static bool IsUniqueConstraintViolation(DbUpdateException exception)
+    {
+        return exception.InnerException is PostgresException
+        {
+            SqlState: PostgresErrorCodes.UniqueViolation
+        };
     }
 }

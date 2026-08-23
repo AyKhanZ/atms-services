@@ -3,6 +3,7 @@ using ATMS.Application.Localization;
 using ATMS.Project.Contracts.Models.Organizations;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Models.WorkProjects;
+using ATMS.Project.Contracts.Models.WorkGroups;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Entities.Dictionaries;
 using AutoMapper;
@@ -14,13 +15,11 @@ public class EntityToModelProfile : Profile
     public EntityToModelProfile()
     {
         CreateMap<Organization, OrganizationModel>();
-        
+
         CreateMap<Organization, OrganizationItemModel>();
-        
-        
+
         CreateMap<User, UserModel>();
 
-        
         CreateMap<Organization, WorkProjectOrganizationModel>();
 
         CreateMap<User, AuditUserModel>();
@@ -40,6 +39,19 @@ public class EntityToModelProfile : Profile
                 x => x.Name,
                 expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
 
+        CreateMap<WorkGroupStatus, DictionaryModel>()
+            .ForMember(
+                x => x.Name,
+                expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
+
+        CreateMap<WorkGroup, WorkGroupModel>()
+            .ForMember(
+                x => x.Milestones,
+                expression => expression.MapFrom(x => x.Children))
+            .ForMember(
+                x => x.TicketCount,
+                expression => expression.Ignore());
+
         CreateMap<Role, WorkProjectRoleModel>();
 
         CreateMap<Role, DictionaryModel<Guid>>()
@@ -56,12 +68,12 @@ public class EntityToModelProfile : Profile
             .ForMember(
                 x => x.Role,
                 expression => expression.MapFrom(x => x.WorkProjectParticipantRoles.Single().Role));
-        
+
         CreateMap<WorkProject, WorkProjectModel>()
             .ForMember(
                 x => x.Participants,
                 expression => expression.MapFrom(x => x.WorkProjectParticipants));
-        
+
         CreateMap<WorkProject, WorkProjectItemModel>();
     }
 

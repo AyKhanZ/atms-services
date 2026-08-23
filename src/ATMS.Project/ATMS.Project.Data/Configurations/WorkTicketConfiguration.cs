@@ -20,7 +20,11 @@ public class WorkTicketConfiguration : IEntityTypeConfiguration<WorkTicket>
             .HasMaxLength(50);
 
         builder.Property(e => e.Title)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(e => e.Description)
+            .HasMaxLength(2000);
 
         builder.Property(e => e.WorkTicketStatusId)
             .HasDefaultValue((int)WorkTicketStatusEnum.New)

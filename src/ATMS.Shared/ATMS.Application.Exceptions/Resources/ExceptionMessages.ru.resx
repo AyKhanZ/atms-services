@@ -18,6 +18,9 @@
   <data name="InternalServerError" xml:space="preserve">
     <value>Что-то пошло не так. Пожалуйста, попробуйте позже.</value>
   </data>
+  <data name="NameAlreadyInUse" xml:space="preserve">
+    <value>Это название уже используется. Выберите другое название.</value>
+  </data>
   <data name="ServiceTemporarilyUnavailable" xml:space="preserve">
     <value>Сервис временно недоступен. Пожалуйста, попробуйте позже.</value>
   </data>
