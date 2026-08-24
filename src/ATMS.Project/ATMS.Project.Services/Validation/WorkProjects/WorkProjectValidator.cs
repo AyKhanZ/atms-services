@@ -2,6 +2,8 @@ using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkProjects;
+using ATMS.Data.Criteria.Users;
+using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
 using FluentValidation;
@@ -131,9 +133,13 @@ public class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
             return;
         }
 
-        var users = await _userRepository.GetManyAsync(command.Participants.Select(x => x.UserId).Distinct(), cancellationToken);
+        var participantUserIds = command.Participants.Select(x => x.UserId).Distinct().ToArray();
+        var users = await _userRepository.GetManyAsync(
+            participantUserIds,
+            new NotAdminCriteria<User>(),
+            cancellationToken);
 
-        if (users.Count != command.Participants.Select(x => x.UserId).Distinct().Count())
+        if (users.Count != participantUserIds.Length)
         {
             context.AddFailure(nameof(command.Participants), WorkProjectMessages.ParticipantNotFound);
             return;

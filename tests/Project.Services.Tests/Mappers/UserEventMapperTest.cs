@@ -30,6 +30,7 @@ public sealed class UserEventMapperTest
 
         Assert.Equal(message.Id, user.Id);
         Assert.Equal(message.Email, user.Email);
+        Assert.False(user.IsAdmin);
         Assert.Equal(DefaultValues.UserAvatar, user.AvatarPath);
     }
 }

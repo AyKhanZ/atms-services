@@ -31,6 +31,7 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
             .Include(x => x.ProjectType).ThenInclude(x => x.Translations)
             .Include(x => x.ProjectKind).ThenInclude(x => x.Translations)
             .Include(x => x.ProjectStatus).ThenInclude(x => x.Translations)
+            .AsSplitQuery()
             .AsNoTracking();
 
         query = filterCriteria.Apply(query);
@@ -90,6 +91,7 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
             .Include(x => x.WorkProjectParticipants).ThenInclude(x => x.User)
             .Include(x => x.WorkProjectParticipants)
                 .ThenInclude(x => x.WorkProjectParticipantRoles)
-                .ThenInclude(x => x.Role);
+                .ThenInclude(x => x.Role)
+            .AsSplitQuery();
     }
 }

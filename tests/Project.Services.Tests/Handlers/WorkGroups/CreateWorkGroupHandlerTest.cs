@@ -22,10 +22,8 @@ public class CreateWorkGroupHandlerTest : BaseHandlerTest
     [Fact]
     public async Task Handle_WhenCreatingRootGroup_TrimsNameAndCreatesPlannedItem()
     {
-        var currentUserId = Guid.NewGuid();
         var projectId = Guid.NewGuid();
         WorkGroup? created = null;
-        CurrentUserMock.SetupGet(x => x.Id).Returns(currentUserId);
         WorkGroupRepositoryMock
             .Setup(x => x.CreateAsync(
                 It.IsAny<WorkGroup>(),
@@ -45,7 +43,6 @@ public class CreateWorkGroupHandlerTest : BaseHandlerTest
         Assert.Equal(projectId, created.WorkProjectId);
         Assert.Null(created.ParentWorkGroupId);
         Assert.Equal((int)WorkGroupStatusEnum.Planned, created.StatusId);
-        Assert.Equal(currentUserId, created.CreatedById);
     }
 
     [Fact]
@@ -93,7 +90,6 @@ public class CreateWorkGroupHandlerTest : BaseHandlerTest
     private CreateWorkGroupHandler CreateHandler()
     {
         return new CreateWorkGroupHandler(
-            CurrentUserMock.Object,
             WorkProjectRepositoryMock.Object,
             WorkGroupRepositoryMock.Object);
     }

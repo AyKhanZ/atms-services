@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using ATMS.Data.Criteria;
 using ATMS.Project.Data.Entities;
 
 namespace ATMS.Project.Data.Repositories.Interfaces;
@@ -12,6 +13,10 @@ public interface IUserRepository
     Task<List<User>> GetAsync(CancellationToken cancellationToken);
 
     Task<List<User>> GetManyAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken);
+
+    Task<List<User>> GetManyAsync(IEnumerable<Guid> ids, ACriteria<User> criteria, CancellationToken cancellationToken);
+
+    Task<List<User>> GetManyAsync(ACriteria<User> criteria, CancellationToken cancellationToken);
 
     Task<List<User>> GetManyAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken);
     

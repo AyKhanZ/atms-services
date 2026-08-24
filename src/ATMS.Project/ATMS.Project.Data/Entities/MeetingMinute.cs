@@ -2,7 +2,7 @@ using ATMS.Data;
 
 namespace ATMS.Project.Data.Entities;
 
-public class MeetingMinute : AuditableEntity
+public class MeetingMinute : AuditableEntity<User>
 {
     public Guid MeetingId { get; set; }
 

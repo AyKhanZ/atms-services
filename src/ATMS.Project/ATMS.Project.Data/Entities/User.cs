@@ -1,9 +1,9 @@
-﻿using ATMS.Data;
+using ATMS.Data;
 using ATMS.Data.Interfaces;
 
 namespace ATMS.Project.Data.Entities;
 
-public class User : UserBase, ISoftDeletable
+public class User : UserAccountBase, ISoftDeletable
 {
     public Guid? OrganizationId { get; set; }
     
@@ -13,7 +13,7 @@ public class User : UserBase, ISoftDeletable
     public string AvatarPath { get; set; }
     
     public int UserType { get; set; }
-    
+
     public bool IsDeleted { get; set; }
     
     public DateTime? DeletedAt { get; set; }

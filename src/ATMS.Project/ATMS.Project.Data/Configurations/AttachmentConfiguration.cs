@@ -1,4 +1,5 @@
 using ATMS.Project.Data.Entities;
+using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,8 +9,6 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
 {
     public void Configure(EntityTypeBuilder<Attachment> builder)
     {
-        builder.ToTable("Attachments");
-
         builder.HasIndex(e => new { e.OwnerType, e.OwnerId, e.CreatedAt });
 
         builder.Property(e => e.OwnerType)
@@ -38,5 +37,7 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
             .WithMany(e => e.Attachments)
             .HasForeignKey(e => e.CommentId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.ConfigureSoftDeletableAuditUserRelationships<Attachment, User>();
     }
 }

@@ -1,4 +1,5 @@
 using ATMS.Project.Data.Entities;
+using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,8 +9,6 @@ public class MeetingMinuteConfiguration : IEntityTypeConfiguration<MeetingMinute
 {
     public void Configure(EntityTypeBuilder<MeetingMinute> builder)
     {
-        builder.ToTable("MeetingMinutes");
-
         builder.HasIndex(e => new { e.MeetingId, e.Order })
             .IsUnique();
 
@@ -27,5 +26,7 @@ public class MeetingMinuteConfiguration : IEntityTypeConfiguration<MeetingMinute
             .WithMany(e => e.Minutes)
             .HasForeignKey(e => e.MeetingId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.ConfigureAuditUserRelationships<MeetingMinute, User>();
     }
 }

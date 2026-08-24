@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using ATMS.Data.Criteria;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -46,6 +47,21 @@ public class UserRepository(ProjectDbContext context) : IUserRepository
         return context.Users
             .AsNoTracking()
             .Where(x => ids.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<User>> GetManyAsync(IEnumerable<Guid> ids, ACriteria<User> criteria, CancellationToken cancellationToken)
+    {
+        return criteria.Apply(context.Users)
+            .AsNoTracking()
+            .Where(x => ids.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<List<User>> GetManyAsync(ACriteria<User> criteria, CancellationToken cancellationToken)
+    {
+        return criteria.Apply(context.Users)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 

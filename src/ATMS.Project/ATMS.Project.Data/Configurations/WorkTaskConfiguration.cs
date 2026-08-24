@@ -1,5 +1,6 @@
 ﻿using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
+using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -54,5 +55,7 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
             .WithMany()
             .HasForeignKey(t => t.AssigneeId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.ConfigureSoftDeletableAuditUserRelationships<WorkTask, User>();
     }
 }

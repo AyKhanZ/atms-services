@@ -1,5 +1,6 @@
 ﻿using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
+using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -63,5 +64,7 @@ public class WorkTicketConfiguration : IEntityTypeConfiguration<WorkTicket>
             .WithOne(m => m.WorkTicket)
             .HasForeignKey(m => m.WorkTicketId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.ConfigureSoftDeletableAuditUserRelationships<WorkTicket, User>();
     }
 }

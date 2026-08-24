@@ -1,4 +1,4 @@
-using System.Linq.Expressions;
+using ATMS.Data.Criteria;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Requests.Users;
@@ -31,10 +31,10 @@ public class GetProjectTeamMembersHandlerTest : BaseHandlerTest
 
         _userRepositoryMock
             .Setup(repository => repository.GetManyAsync(
-                It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<ACriteria<User>>(),
                 It.IsAny<CancellationToken>()))
-            .Returns<Expression<Func<User, bool>>, CancellationToken>((predicate, _) =>
-                Task.FromResult(users.Where(predicate.Compile()).ToList()));
+            .Returns<ACriteria<User>, CancellationToken>((criteria, _) =>
+                Task.FromResult(criteria.Apply(users.AsQueryable()).ToList()));
         MapperMock
             .Setup(mapper => mapper.Map<UserModel[]>(
                 It.Is<List<User>>(items => items.Count == 1 && items[0].Id == teamMember.Id)))

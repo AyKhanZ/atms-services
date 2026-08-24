@@ -1,5 +1,4 @@
 using ATMS.Data;
-using ATMS.Data.Enums;
 
 namespace ATMS.Project.Data.Entities;
 
@@ -13,5 +12,5 @@ public class MeetingParticipant : BaseEntity
 
     public WorkProjectParticipant Participant { get; set; }
 
-    public MeetingParticipantStatusEnum Status { get; set; }
+    public int Status { get; set; }
 }
