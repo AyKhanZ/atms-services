@@ -1,5 +1,6 @@
 ﻿using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
+using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -37,5 +38,6 @@ public class WorkGroupConfiguration : IEntityTypeConfiguration<WorkGroup>
             .HasForeignKey(t => t.WorkGroupId)
             .OnDelete(DeleteBehavior.NoAction);
 
+        builder.ConfigureSoftDeletableAuditUserRelationships<WorkGroup, User>();
     }
 }

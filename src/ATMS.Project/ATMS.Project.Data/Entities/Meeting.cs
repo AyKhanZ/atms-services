@@ -1,10 +1,8 @@
 using ATMS.Data;
-using ATMS.Data.Enums;
-using ATMS.Data.Interfaces;
 
 namespace ATMS.Project.Data.Entities;
 
-public class Meeting : AuditableEntity, ISoftDeletable
+public class Meeting : SoftDeletableAuditableEntity<User>
 {
     public string Title { get; set; }
 
@@ -18,7 +16,7 @@ public class Meeting : AuditableEntity, ISoftDeletable
 
     public string? MeetingUrl { get; set; }
 
-    public MeetingStatusEnum Status { get; set; }
+    public int Status { get; set; }
 
     public Guid WorkProjectId { get; set; }
 
@@ -33,10 +31,4 @@ public class Meeting : AuditableEntity, ISoftDeletable
     public ICollection<MeetingAgendaItem> AgendaItems { get; set; } = [];
 
     public ICollection<MeetingMinute> Minutes { get; set; } = [];
-
-    public bool IsDeleted { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public Guid? DeletedById { get; set; }
 }

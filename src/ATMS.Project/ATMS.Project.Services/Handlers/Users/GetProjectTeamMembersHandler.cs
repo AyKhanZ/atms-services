@@ -1,6 +1,8 @@
-using ATMS.Data.Enums;
+using ATMS.Data.Criteria.Users;
+using ATMS.Project.Data.Criteria.Users;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Requests.Users;
+using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -16,9 +18,10 @@ public class GetProjectTeamMembersHandler(
         GetProjectTeamMembersRequest request,
         CancellationToken cancellationToken)
     {
-        var users = await userRepository.GetManyAsync(
-            user => user.UserType != (int)UserTypeEnum.Client,
-            cancellationToken);
+        var criteria = new NotAdminCriteria<User>()
+            .And(new NotClientUsersCriteria());
+
+        var users = await userRepository.GetManyAsync(criteria, cancellationToken);
 
         return mapper.Map<UserModel[]>(users);
     }

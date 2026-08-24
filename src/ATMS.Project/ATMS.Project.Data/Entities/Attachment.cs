@@ -1,10 +1,9 @@
 using ATMS.Data;
 using ATMS.Data.Enums;
-using ATMS.Data.Interfaces;
 
 namespace ATMS.Project.Data.Entities;
 
-public class Attachment : AuditableEntity, ISoftDeletable
+public class Attachment : SoftDeletableAuditableEntity<User>
 {
     public AttachmentOwnerTypeEnum OwnerType { get; set; }
 
@@ -21,10 +20,4 @@ public class Attachment : AuditableEntity, ISoftDeletable
     public Guid? CommentId { get; set; }
 
     public Comment? Comment { get; set; }
-
-    public bool IsDeleted { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public Guid? DeletedById { get; set; }
 }

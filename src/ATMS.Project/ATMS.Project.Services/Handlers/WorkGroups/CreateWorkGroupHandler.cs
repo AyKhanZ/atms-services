@@ -1,5 +1,4 @@
 using ATMS.Application.Exceptions.Entity;
-using ATMS.Application.Interfaces;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkGroups;
 using ATMS.Project.Data.Entities;
@@ -10,7 +9,6 @@ using MediatR;
 namespace ATMS.Project.Services.Handlers.WorkGroups;
 
 public class CreateWorkGroupHandler(
-    ICurrentUser currentUser,
     IWorkProjectRepository workProjectRepository,
     IWorkGroupRepository workGroupRepository)
     : IRequestHandler<CreateWorkGroupCommand, Guid>
@@ -41,8 +39,7 @@ public class CreateWorkGroupHandler(
             Title = command.Title.Trim(),
             ParentWorkGroupId = command.ParentWorkGroupId,
             WorkProjectId = command.ProjectId,
-            StatusId = (int)WorkGroupStatusEnum.Planned,
-            CreatedById = currentUser.Id
+            StatusId = (int)WorkGroupStatusEnum.Planned
         };
 
         await workGroupRepository.CreateAsync(workGroup, cancellationToken);

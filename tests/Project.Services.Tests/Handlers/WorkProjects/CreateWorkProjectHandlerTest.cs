@@ -9,14 +9,11 @@ namespace Project.Services.Tests.Handlers.WorkProjects;
 public class CreateWorkProjectHandlerTest : BaseHandlerTest
 {
     [Fact]
-    public async Task Handle_WhenCurrentUserIsSuperAdmin_CreatesProjectWithCodeAndParticipants()
+    public async Task Handle_WhenCommandIsValid_CreatesProjectWithCodeAndParticipants()
     {
-        var currentUserId = Guid.NewGuid();
         var participantId = Guid.NewGuid();
         var command = CreateCommand(participantId);
         var project = new WorkProject();
-        CurrentUserMock.SetupGet(x => x.Id).Returns(currentUserId);
-        CurrentUserMock.SetupGet(x => x.RoleId).Returns(RoleIds.SuperAdmin);
         MapperMock.Setup(x => x.Map<WorkProject>(command)).Returns(project);
         EntityCodeGeneratorMock.Setup(x => x.GetNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync("42");
         var handler = CreateHandler();
@@ -26,7 +23,6 @@ public class CreateWorkProjectHandlerTest : BaseHandlerTest
         Assert.Equal(project.Id, result);
         Assert.NotEqual(Guid.Empty, project.Id);
         Assert.Equal("42", project.Code);
-        Assert.Equal(currentUserId, project.CreatedById);
         var participant = Assert.Single(project.WorkProjectParticipants);
         Assert.Equal(participantId, participant.UserId);
         Assert.Equal(RoleIds.Developer, Assert.Single(participant.WorkProjectParticipantRoles).RoleId);
@@ -38,7 +34,6 @@ public class CreateWorkProjectHandlerTest : BaseHandlerTest
     private CreateWorkProjectHandler CreateHandler()
     {
         return new CreateWorkProjectHandler(
-            CurrentUserMock.Object,
             MapperMock.Object,
             WorkProjectRepositoryMock.Object,
             EntityCodeGeneratorMock.Object);

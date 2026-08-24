@@ -12,14 +12,12 @@ namespace ATMS.Admin.Data.DbContexts;
 
 public class AdminDbContext: DbContext
 {
-    private readonly IAuditActorAccessor? auditActor;
+    private readonly IAuditActorAccessor? _auditActor;
 
     public AdminDbContext() { }
-    public AdminDbContext(
-        DbContextOptions<AdminDbContext> options,
-        IAuditActorAccessor? auditActor = null) : base(options)
+    public AdminDbContext(DbContextOptions<AdminDbContext> options, IAuditActorAccessor? auditActor = null) : base(options)
     {
-        this.auditActor = auditActor;
+        _auditActor = auditActor;
     }
 
     public DbSet<User> Users { get; set; }
@@ -76,7 +74,7 @@ public class AdminDbContext: DbContext
     
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        ChangeTracker.ApplyAuditMetadata(auditActor?.UserId);
+        ChangeTracker.ApplyAuditMetadata(_auditActor?.UserId);
 
         return await base.SaveChangesAsync(cancellationToken);
     }

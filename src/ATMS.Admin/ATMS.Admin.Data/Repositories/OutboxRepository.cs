@@ -9,6 +9,23 @@ namespace ATMS.Admin.Data.Repositories;
 
 public class OutboxRepository(AdminDbContext context) : IOutboxRepository
 {
+    public Task<bool> ContainsAsync<T>(
+        string exchange,
+        string routingKey,
+        T message,
+        CancellationToken cancellationToken)
+    {
+        var messageType = typeof(T).FullName ?? typeof(T).Name;
+        var payload = JsonSerializer.Serialize(message);
+
+        return context.OutboxMessages.AnyAsync(
+            x => x.Exchange == exchange &&
+                 x.RoutingKey == routingKey &&
+                 x.MessageType == messageType &&
+                 x.Payload == payload,
+            cancellationToken);
+    }
+
     public async Task<Guid> AddAsync<T>(
         string exchange,
         string routingKey,

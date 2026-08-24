@@ -4,6 +4,12 @@ namespace ATMS.Admin.Data.Repositories.Interfaces;
 
 public interface IOutboxRepository
 {
+    Task<bool> ContainsAsync<T>(
+        string exchange,
+        string routingKey,
+        T message,
+        CancellationToken cancellationToken);
+
     Task<Guid> AddAsync<T>(
         string exchange,
         string routingKey,

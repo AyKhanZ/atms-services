@@ -1,5 +1,6 @@
 ﻿using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
@@ -56,12 +57,6 @@ public class WorkProjectConfiguration : IEntityTypeConfiguration<WorkProject>
             .WithMany(o => o.WorkProjects)
             .HasForeignKey(p => p.OrganizationId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(p => p.UpdatedBy)
-            .WithMany()
-            .HasForeignKey(p => p.UpdatedById)
-            .OnDelete(DeleteBehavior.Restrict);
-            
             
         builder.HasMany(p => p.WorkProjectParticipants)
             .WithOne(o => o.WorkProject)
@@ -77,5 +72,7 @@ public class WorkProjectConfiguration : IEntityTypeConfiguration<WorkProject>
             .WithOne(o => o.WorkProject)
             .HasForeignKey(o => o.WorkProjectId)
             .OnDelete(DeleteBehavior.NoAction);
+       
+        builder.ConfigureSoftDeletableAuditUserRelationships<WorkProject, User>();
     }
 }

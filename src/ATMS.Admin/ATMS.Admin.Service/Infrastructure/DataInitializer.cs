@@ -4,8 +4,10 @@ using ATMS.Admin.Service.Infrastructure.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Contracts.Events.Users;
 using ATMS.Data.Constants;
 using ATMS.Infrastructure.Options;
+using ATMS.Messaging.Configuration;
 using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Admin.Service.Infrastructure;
@@ -14,7 +16,8 @@ public sealed class DataInitializer(
     IConfiguration configuration,
     IUserRepository userRepository,
     IRoleRepository roleRepository,
-    IPasswordHasherService passwordHasherService) : IDataInitializer
+    IPasswordHasherService passwordHasherService,
+    IOutboxRepository outboxRepository) : IDataInitializer
 {
     
     private readonly AdminOptions _adminOptions =
@@ -29,13 +32,6 @@ public sealed class DataInitializer(
 
     private async Task EnsureSuperAdminUserAsync(CancellationToken cancellationToken)
     {
-        var userExists = await userRepository.IsExistAsync(
-            u => u.Email == _adminOptions.Email, cancellationToken);
-
-        if (userExists)
-        {
-            return;
-        }
         var role = await roleRepository.GetAsync(r => r.Id == RoleIds.SuperAdmin, cancellationToken);
 
         if (role is null)
@@ -45,24 +41,58 @@ public sealed class DataInitializer(
                 string.Format(LogMessages.MissingSeedData, RoleIds.SuperAdmin));
         }
 
-        var userId = Guid.NewGuid();
+        var user = await userRepository.FindAsync(
+            u => u.NormalizedEmail == _adminOptions.Email.Trim().ToUpperInvariant(),
+            cancellationToken);
 
-        var user = new User
+        if (user is null)
         {
-            Id = userId,
-            Email = _adminOptions.Email,
-            Name = _adminOptions.Name,
-            Surname = _adminOptions.Surname,
-            NormalizedEmail = _adminOptions.Email.Trim().ToUpperInvariant(),
-            PasswordHash = passwordHasherService.Hash(_adminOptions.Password),
-            EmailConfirmed = true,
-            IsAdmin = true,
-            HasCompletedOnboarding = true,
-            OnboardingCompletedAt = DateTime.UtcNow,
-            LanguageId = DefaultValues.Language,
-            UserRoles = [new UserRole { RoleId = role.Id, UserId = userId }]
-        };
+            var userId = Guid.NewGuid();
+            user = new User
+            {
+                Id = userId,
+                Email = _adminOptions.Email,
+                Name = _adminOptions.Name,
+                Surname = _adminOptions.Surname,
+                NormalizedEmail = _adminOptions.Email.Trim().ToUpperInvariant(),
+                PasswordHash = passwordHasherService.Hash(_adminOptions.Password),
+                EmailConfirmed = true,
+                IsAdmin = true,
+                HasCompletedOnboarding = true,
+                OnboardingCompletedAt = DateTime.UtcNow,
+                LanguageId = DefaultValues.Language,
+                AvatarPath = DefaultValues.UserAvatar,
+                UserRoles = [new UserRole { RoleId = role.Id, UserId = userId }]
+            };
 
-        await userRepository.CreateAsync(user, cancellationToken);
+            await userRepository.AddAsync(user, cancellationToken);
+        }
+
+        var @event = new UserCreatedEvent(
+            user.Id,
+            user.Email,
+            user.Name,
+            user.Surname,
+            role.UserType,
+            user.AvatarPath,
+            user.OrganizationId,
+            user.IsAdmin);
+
+        var eventExists = await outboxRepository.ContainsAsync(
+            MessagingConstants.Exchanges.UserEvents,
+            MessagingConstants.RoutingKeys.UserCreated,
+            @event,
+            cancellationToken);
+
+        if (!eventExists)
+        {
+            await outboxRepository.AddAsync(
+                MessagingConstants.Exchanges.UserEvents,
+                MessagingConstants.RoutingKeys.UserCreated,
+                @event,
+                cancellationToken);
+        }
+
+        await userRepository.SaveAsync(cancellationToken);
     }
 }

@@ -9,14 +9,11 @@ public class MeetingParticipantConfiguration : IEntityTypeConfiguration<MeetingP
 {
     public void Configure(EntityTypeBuilder<MeetingParticipant> builder)
     {
-        builder.ToTable("MeetingParticipants");
-
         builder.HasIndex(e => new { e.MeetingId, e.ParticipantId })
             .IsUnique();
 
         builder.Property(e => e.Status)
-            .HasConversion<int>()
-            .HasDefaultValue(MeetingParticipantStatusEnum.Pending)
+            .HasDefaultValue((int)MeetingParticipantStatusEnum.Pending)
             .IsRequired();
 
         builder.HasOne(e => e.Meeting)

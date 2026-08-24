@@ -1,5 +1,6 @@
 using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
+using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,8 +10,6 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
 {
     public void Configure(EntityTypeBuilder<Meeting> builder)
     {
-        builder.ToTable("Meetings");
-
         builder.HasIndex(e => new { e.WorkProjectId, e.StartsAt });
 
         builder.Property(e => e.Title)
@@ -27,8 +26,7 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
             .HasMaxLength(500);
 
         builder.Property(e => e.Status)
-            .HasConversion<int>()
-            .HasDefaultValue(MeetingStatusEnum.Planned)
+            .HasDefaultValue((int)MeetingStatusEnum.Planned)
             .IsRequired();
 
         builder.Property(e => e.CreatedAt)
@@ -36,5 +34,7 @@ public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
 
         builder.Property(e => e.CreatedById)
             .IsRequired();
+
+        builder.ConfigureSoftDeletableAuditUserRelationships<Meeting, User>();
     }
 }

@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using ATMS.Data.Constants;
+using ATMS.Data.Criteria;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
@@ -39,9 +40,12 @@ public class CreateWorkProjectValidatorTest : BaseValidatorTest
             .Setup(x => x.IsProjectStatusExistAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
         _userRepositoryMock
-            .Setup(x => x.GetManyAsync(It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()))
-            .Returns<IEnumerable<Guid>, CancellationToken>((ids, _) => Task.FromResult(
-                ids.Select(id => new User { Id = id }).ToList()));
+            .Setup(x => x.GetManyAsync(
+                It.IsAny<IEnumerable<Guid>>(),
+                It.IsAny<ACriteria<User>>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<IEnumerable<Guid>, ACriteria<User>, CancellationToken>((ids, criteria, _) => Task.FromResult(
+                criteria.Apply(ids.Select(id => new User { Id = id }).AsQueryable()).ToList()));
         _roleRepositoryMock
             .Setup(x => x.GetManyAsync(It.IsAny<IEnumerable<Guid>>(), It.IsAny<CancellationToken>()))
             .Returns<IEnumerable<Guid>, CancellationToken>((ids, _) => Task.FromResult(
@@ -309,15 +313,17 @@ public class CreateWorkProjectValidatorTest : BaseValidatorTest
         _userRepositoryMock
             .Setup(x => x.GetManyAsync(
                 It.Is<IEnumerable<Guid>>(ids => ids.Contains(id)),
+                It.IsAny<ACriteria<User>>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
-            [
-                new User
+            .Returns<IEnumerable<Guid>, ACriteria<User>, CancellationToken>((_, criteria, _) => Task.FromResult(
+                criteria.Apply(new[]
                 {
-                    Id = id,
-                    UserType = (int)userType,
-                    OrganizationId = organizationId
-                }
-            ]);
+                    new User
+                    {
+                        Id = id,
+                        UserType = (int)userType,
+                        OrganizationId = organizationId
+                    }
+                }.AsQueryable()).ToList()));
     }
 }

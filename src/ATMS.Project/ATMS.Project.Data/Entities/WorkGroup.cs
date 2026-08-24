@@ -1,10 +1,9 @@
 using ATMS.Data;
-using ATMS.Data.Interfaces;
 using ATMS.Project.Data.Entities.Dictionaries;
 
 namespace ATMS.Project.Data.Entities;
 
-public class WorkGroup : AuditableEntity, ISoftDeletable
+public class WorkGroup : SoftDeletableAuditableEntity<User>
 {
     public string Title { get; set; }
 
@@ -25,11 +24,4 @@ public class WorkGroup : AuditableEntity, ISoftDeletable
     public Guid WorkProjectId { get; set; }
     
     public WorkProject WorkProject { get; set; }
-    
-    
-    public bool IsDeleted { get; set; }
-    
-    public DateTime? DeletedAt { get; set; }
-    
-    public Guid? DeletedById { get; set; }
 }

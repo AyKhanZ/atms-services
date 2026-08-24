@@ -14,6 +14,12 @@ public static class ChangeTrackerAuditExtensions
             if (entry.State == EntityState.Added)
             {
                 entry.Entity.CreatedAt = timestamp;
+                if (userId.HasValue &&
+                    entry.Entity is ICreatedByAuditable auditableEntity &&
+                    auditableEntity.CreatedById == Guid.Empty)
+                {
+                    auditableEntity.CreatedById = userId.Value;
+                }
             }
 
             if (entry.State != EntityState.Modified)

@@ -1,4 +1,3 @@
-using ATMS.Application.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -9,7 +8,6 @@ using MediatR;
 namespace ATMS.Project.Services.Handlers.WorkProjects;
 
 public class CreateWorkProjectHandler(
-    ICurrentUser currentUser,
     IMapper mapper,
     IWorkProjectRepository workProjectRepository,
     IEntityCodeGenerator codeGenerator)
@@ -21,7 +19,6 @@ public class CreateWorkProjectHandler(
         project.Id = Guid.NewGuid();
         project.Code = await codeGenerator.GetNextAsync(cancellationToken);
         project.Title = command.Title.Trim();
-        project.CreatedById = currentUser.Id;
         project.WorkProjectParticipants = command.Participants.Select(CreateParticipant).ToArray();
 
         await workProjectRepository.CreateAsync(project, cancellationToken);

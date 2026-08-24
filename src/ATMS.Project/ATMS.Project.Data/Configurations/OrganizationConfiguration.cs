@@ -1,5 +1,6 @@
 using ATMS.Data.Constants;
 using ATMS.Project.Data.Entities;
+using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -31,7 +32,7 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
 
         builder.Property(e => e.LogoPath)
             .HasDefaultValue(DefaultValues.OrganizationLogo);
-            
+        
         
         builder.HasMany(o => o.Users)
             .WithOne(u => u.Organization)
@@ -42,5 +43,7 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
             .WithOne(p => p.Organization)
             .HasForeignKey(p => p.OrganizationId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.ConfigureSoftDeletableAuditUserRelationships<Organization, User>();
     }
 }

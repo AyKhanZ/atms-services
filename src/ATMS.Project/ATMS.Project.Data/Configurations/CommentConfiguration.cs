@@ -1,4 +1,5 @@
 using ATMS.Project.Data.Entities;
+using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,8 +9,6 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
-        builder.ToTable("Comments");
-
         builder.HasIndex(e => new { e.OwnerType, e.OwnerId, e.CreatedAt });
 
         builder.Property(e => e.OwnerType)
@@ -30,5 +29,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .WithMany(e => e.Replies)
             .HasForeignKey(e => e.ParentCommentId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.ConfigureSoftDeletableAuditUserRelationships<Comment, User>();
     }
 }

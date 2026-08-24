@@ -31,9 +31,11 @@ public sealed class UserCreatedConsumer(
             return;
         }
 
-        var exist = await userRepository.IsExistAsync(u => u.Id == message.Id, cancellationToken);
-        if (exist)
+        var user = await userRepository.FindAsync(u => u.Id == message.Id, cancellationToken);
+        if (user is not null)
         {
+            mapper.Map(message, user);
+
             await inboxRepository.AddAsync(
                 messageId,
                 nameof(UserCreatedConsumer),
@@ -42,7 +44,7 @@ public sealed class UserCreatedConsumer(
             return;
         }
 
-        var user = mapper.Map<User>(message);
+        user = mapper.Map<User>(message);
 
         await userRepository.AddAsync(user, cancellationToken);
         await inboxRepository.AddAsync(

@@ -1,6 +1,7 @@
-﻿using ATMS.Admin.Contracts.Models.Users;
+using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Criteria.Users;
+using ATMS.Data.Criteria.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Localization;
@@ -19,7 +20,7 @@ public class GetUsersHandler(
         CancellationToken cancellationToken)
     {
         var filter = mapper.Map<UserFilter>(request);
-        var criteria = filter.And(new NotAdminCriteria());
+        var criteria = filter.And(new NotAdminCriteria<User>());
         
         var pagination = new PaginationCriteria<User>(request.Page, request.PageSize);
         

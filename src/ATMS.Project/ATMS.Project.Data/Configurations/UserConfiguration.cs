@@ -13,6 +13,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         
         builder.HasIndex(e => e.UserType);
 
+        builder.HasIndex(e => e.IsAdmin);
+
         builder.Property(e => e.Email)
             .HasMaxLength(256)
             .IsRequired();
@@ -26,6 +28,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
         
         builder.Property(e => e.UserType)
+            .IsRequired();
+
+        builder.Property(e => e.IsAdmin)
             .IsRequired();
     }
 }

@@ -9,14 +9,12 @@ namespace ATMS.Project.Data.DbContexts;
 
 public class ProjectDbContext : DbContext
 {
-    private readonly IAuditActorAccessor? auditActor;
+    private readonly IAuditActorAccessor? _auditActor;
 
     public ProjectDbContext() { }
-    public ProjectDbContext(
-        DbContextOptions<ProjectDbContext> options,
-        IAuditActorAccessor? auditActor = null) : base(options)
+    public ProjectDbContext(DbContextOptions<ProjectDbContext> options, IAuditActorAccessor? auditActor = null) : base(options)
     {
-        this.auditActor = auditActor;
+        _auditActor = auditActor;
     }
     
     #region Dictionaries
@@ -89,10 +87,11 @@ public class ProjectDbContext : DbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        ChangeTracker.ApplyAuditMetadata(auditActor?.UserId);
+        ChangeTracker.ApplyAuditMetadata(_auditActor?.UserId);
 
         return await base.SaveChangesAsync(cancellationToken);
     }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -124,6 +123,15 @@ public class ProjectDbContext : DbContext
 
         modelBuilder.Entity<Meeting>()
             .HasQueryFilter(t => !t.IsDeleted);
+
+        modelBuilder.Entity<MeetingParticipant>()
+            .HasQueryFilter(t => !t.Meeting.IsDeleted);
+
+        modelBuilder.Entity<MeetingAgendaItem>()
+            .HasQueryFilter(t => !t.Meeting.IsDeleted);
+
+        modelBuilder.Entity<MeetingMinute>()
+            .HasQueryFilter(t => !t.Meeting.IsDeleted && !t.CreatedBy.IsDeleted);
         
         modelBuilder.Entity<User>()
             .HasQueryFilter(t => !t.IsDeleted);

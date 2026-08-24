@@ -1,13 +1,10 @@
 using ATMS.Data;
-using ATMS.Data.Interfaces;
 using ATMS.Project.Data.Entities.Dictionaries;
 
 namespace ATMS.Project.Data.Entities;
 
-public class WorkProject : AuditableEntity, ISoftDeletable
+public class WorkProject : SoftDeletableAuditableEntity<User>
 {
-    public User? UpdatedBy { get; set; }
-
     public string Code { get; set; }
     
     public string Title { get; set; }
@@ -53,11 +50,4 @@ public class WorkProject : AuditableEntity, ISoftDeletable
     public ICollection<WorkGroup> WorkGroups { get; set; } = [];
 
     public ICollection<Meeting> Meetings { get; set; } = [];
-    
-    
-    public bool IsDeleted { get; set; }
-    
-    public DateTime? DeletedAt { get; set; }
-    
-    public Guid? DeletedById { get; set; }
 }

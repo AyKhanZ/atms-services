@@ -7,4 +7,5 @@ public sealed record UserCreatedEvent(
     string Surname,
     int UserType,
     string AvatarPath,
-    Guid? OrganizationId);
+    Guid? OrganizationId,
+    bool IsAdmin = false);

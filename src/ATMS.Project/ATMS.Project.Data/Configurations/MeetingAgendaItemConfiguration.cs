@@ -8,8 +8,6 @@ public class MeetingAgendaItemConfiguration : IEntityTypeConfiguration<MeetingAg
 {
     public void Configure(EntityTypeBuilder<MeetingAgendaItem> builder)
     {
-        builder.ToTable("MeetingAgendaItems");
-
         builder.HasIndex(e => new { e.MeetingId, e.Order })
             .IsUnique();
 
