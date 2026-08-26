@@ -1,11 +1,29 @@
+using ATMS.Application.Exceptions.Resources;
+
 namespace ATMS.Data.Criteria;
 
-public sealed class PaginationCriteria<T>(int page, int pageSize) : ACriteria<T>
+public sealed class PaginationCriteria<T> : ACriteria<T>
 {
     private const int MaxPageSize = 50;
 
-    public int Page { get; } = page < 1 ? 1 : page;
-    public int PageSize { get; } = pageSize > MaxPageSize ? MaxPageSize : pageSize < 1 ? 20 : pageSize;
+    public PaginationCriteria(int page, int pageSize)
+    {
+        if (page < 1)
+        {
+            throw new CriteriaException(nameof(page), ValidationMessages.PageMustBePositive);
+        }
+
+        if (pageSize < 1 || pageSize > MaxPageSize)
+        {
+            throw new CriteriaException(nameof(pageSize), ValidationMessages.PageSizeOutOfRange);
+        }
+
+        Page = page;
+        PageSize = pageSize;
+    }
+
+    public int Page { get; }
+    public int PageSize { get; }
     public int Skip => (Page - 1) * PageSize;
 
     // Пагинация применяется отдельно — ПОСЛЕ Count()

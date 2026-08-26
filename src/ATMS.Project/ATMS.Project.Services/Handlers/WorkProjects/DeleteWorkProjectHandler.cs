@@ -5,6 +5,7 @@ using ATMS.Caching.Services.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
+using ATMS.Project.Services.Security.Interfaces;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkProjects;
@@ -12,7 +13,8 @@ namespace ATMS.Project.Services.Handlers.WorkProjects;
 public class DeleteWorkProjectHandler(
     ICurrentUser currentUser,
     IWorkProjectRepository workProjectRepository,
-    ICacheService cache)
+    ICacheService cache,
+    IProjectPermissionService projectPermissionService)
     : IRequestHandler<DeleteWorkProjectCommand>
 {
     public async Task Handle(DeleteWorkProjectCommand command, CancellationToken cancellationToken)
@@ -44,5 +46,9 @@ public class DeleteWorkProjectHandler(
 
         await workProjectRepository.SaveAsync(cancellationToken);
         await cache.RemoveAsync(CacheKeys.Project.ProjectById(project.Id), cancellationToken);
+        await projectPermissionService.RemoveProjectPermissionsAsync(
+            project.Id,
+            project.WorkProjectParticipants.Select(participant => participant.UserId),
+            cancellationToken);
     }
 }

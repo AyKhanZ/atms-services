@@ -6,6 +6,7 @@ using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
+using ATMS.Project.Services.Security.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -15,7 +16,8 @@ public class UpdateWorkProjectHandler(
     ICurrentUser currentUser,
     IMapper mapper,
     IWorkProjectRepository workProjectRepository,
-    ICacheService cache)
+    ICacheService cache,
+    IProjectPermissionService projectPermissionService)
     : IRequestHandler<UpdateWorkProjectCommand>
 {
     public async Task Handle(UpdateWorkProjectCommand command, CancellationToken cancellationToken)
@@ -32,6 +34,12 @@ public class UpdateWorkProjectHandler(
 
         await workProjectRepository.SaveAsync(cancellationToken);
         await cache.RemoveAsync(CacheKeys.Project.ProjectById(project.Id), cancellationToken);
+        await projectPermissionService.RemoveProjectPermissionsAsync(
+            project.Id,
+            project.WorkProjectParticipants
+                .Select(participant => participant.UserId)
+                .Concat(command.Participants.Select(participant => participant.UserId)),
+            cancellationToken);
     }
 
     private void SynchronizeParticipants(

@@ -38,7 +38,7 @@ public class UpdateSettingsValidator : AbstractValidator<UpdateSettingsCommand>
         
         RuleFor(s => s.BirthDate)
             .NotEmpty().WithMessage(ProfileMessages.BirthDateRequired)
-            .Must(date => date > new DateTime(1900, 1, 1)).WithMessage(ProfileMessages.BirthDateMinValue)
+            .IsInDateRange(new DateTime(1900, 1, 2), DateTime.UtcNow)
             .Must(date => date <= DateTime.UtcNow).WithMessage(ProfileMessages.BirthDateMaxValue)
             .Must(date => date <= DateTime.UtcNow.AddYears(-18)).WithMessage(ProfileMessages.BirthDateValidValue);
         

@@ -6,6 +6,7 @@ using ATMS.Data.Criteria.Users;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
+using ATMS.Application.Dispatcher.Validation;
 using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkProjects;
@@ -70,9 +71,13 @@ public class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
             .WithMessage(WorkProjectMessages.ProjectStatusUnsupported);
 
         RuleFor(x => x.EndDate)
+            .IsInDateRange()
             .GreaterThanOrEqualTo(x => x.StartDate)
             .When(x => x.StartDate.HasValue && x.EndDate.HasValue)
             .WithMessage(WorkProjectMessages.StartDateAfterEndDate);
+
+        RuleFor(x => x.StartDate)
+            .IsInDateRange();
 
         RuleFor(x => x.Participants)
             .Must(x => x.Length <= MaxParticipants)

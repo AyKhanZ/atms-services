@@ -5,6 +5,7 @@ using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
 using MediatR;
+using ATMS.Data.Enums;
 
 namespace ATMS.Admin.Service.Handlers.Authentication;
 
@@ -39,6 +40,11 @@ public class RefreshTokenHandler(
                 cancellationToken))
         {
             throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+        }
+
+        if (user.UserStatusId != (int)UserStatusEnum.Active)
+        {
+            throw new AuthException(AuthErrorType.AccountInactive, AuthMessages.AccountInactive);
         }
 
         await userRepository.SaveAsync(cancellationToken);

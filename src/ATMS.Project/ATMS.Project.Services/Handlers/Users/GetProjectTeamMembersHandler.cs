@@ -11,12 +11,9 @@ namespace ATMS.Project.Services.Handlers.Users;
 
 public class GetProjectTeamMembersHandler(
     IUserRepository userRepository,
-    IMapper mapper)
-    : IRequestHandler<GetProjectTeamMembersRequest, UserModel[]>
+    IMapper mapper) : IRequestHandler<GetProjectTeamMembersRequest, UserModel[]>
 {
-    public async Task<UserModel[]> Handle(
-        GetProjectTeamMembersRequest request,
-        CancellationToken cancellationToken)
+    public async Task<UserModel[]> Handle(GetProjectTeamMembersRequest request, CancellationToken cancellationToken)
     {
         var criteria = new NotAdminCriteria<User>()
             .And(new NotClientUsersCriteria());

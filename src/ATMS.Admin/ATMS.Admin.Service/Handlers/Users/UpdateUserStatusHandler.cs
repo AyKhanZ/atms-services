@@ -6,6 +6,7 @@ using ATMS.Application.Localization;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using MediatR;
+using ATMS.Data.Enums;
 
 namespace ATMS.Admin.Service.Handlers.Users;
 
@@ -22,6 +23,12 @@ public class UpdateUserStatusHandler(
         }
 
         entity.UserStatusId = command.UserStatusId;
+
+        if (entity.UserStatusId != (int)UserStatusEnum.Active)
+        {
+            entity.RefreshToken = null;
+            entity.RefreshTokenExpiresAt = null;
+        }
 
         await userRepository.SaveAsync(cancellationToken);
 

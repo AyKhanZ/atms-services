@@ -64,6 +64,29 @@ public class ProjectController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>
+    /// Returns effective project permissions of the current user.
+    /// </summary>
+    /// <remarks>
+    /// Super administrators receive all project permissions. Regular users receive permissions assigned through
+    /// their project participant role. If the user is not a project participant, an empty permission list is returned.
+    /// </remarks>
+    /// <param name="id">Project ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Returns the current user's effective permissions in the project.</response>
+    /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden.</response>
+    /// <response code="500">Unexpected server error.</response>
+    [HttpGet("{id:guid}/my-permissions")]
+    [ProducesResponseType(typeof(string[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<string[]>> GetMyPermissions(Guid id, CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(new GetMyProjectPermissionsRequest { ProjectId = id }, cancellationToken));
+    }
+
+    /// <summary>
     /// Returns users from the internal team who can participate in projects.
     /// </summary>
     /// <remarks>

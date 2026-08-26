@@ -5,13 +5,15 @@ using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
+using ATMS.Project.Services.Security.Interfaces;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkProjects;
 
 public class AddWorkProjectParticipantHandler(
     IWorkProjectRepository workProjectRepository,
-    ICacheService cache)
+    ICacheService cache,
+    IProjectPermissionService projectPermissionService)
     : IRequestHandler<AddWorkProjectParticipantCommand>
 {
     public async Task Handle(AddWorkProjectParticipantCommand command, CancellationToken cancellationToken)
@@ -39,5 +41,6 @@ public class AddWorkProjectParticipantHandler(
 
         await workProjectRepository.SaveAsync(cancellationToken);
         await cache.RemoveAsync(CacheKeys.Project.ProjectById(project.Id), cancellationToken);
+        await projectPermissionService.RemoveUserPermissionsAsync(project.Id, command.UserId, cancellationToken);
     }
 }

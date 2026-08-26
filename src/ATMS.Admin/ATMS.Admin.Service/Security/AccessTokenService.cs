@@ -31,7 +31,9 @@ public class AccessTokenService(
 
         var roles = await userRepository.GetRolesAsync(user.Id, cancellationToken);
 
-        var role = roles.First();
+        var role = roles.Single();
+        var permissions = await userRepository.GetPermissionsAsync(user.Id, cancellationToken);
+
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
@@ -44,6 +46,8 @@ public class AccessTokenService(
             new(CustomClaimTypes.RoleId, role.Id.ToString()),
             new(CustomClaimTypes.UserType, role.Name)
         };
+
+        claims.AddRange(permissions.Select(permission => new Claim(CustomClaimTypes.Permission, permission.Code)));
 
         if (role.Id != RoleIds.Employee && user.OrganizationId.HasValue)
         {

@@ -39,7 +39,14 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
             return roleId;
         }
     }
-    
+
+    public IReadOnlySet<string> Permissions => httpContextAccessor.HttpContext?.User
+        .FindAll(CustomClaimTypes.Permission)
+        .Select(claim => claim.Value)
+        .Where(value => !string.IsNullOrWhiteSpace(value))
+        .ToHashSet(StringComparer.Ordinal)
+        ?? new HashSet<string>();
+
     public Guid? OrganizationId
     {
         get
@@ -54,7 +61,7 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
             return orgId;
         }
     }
-    
+
     public string UserType
     {
         get
