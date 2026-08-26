@@ -60,6 +60,18 @@ namespace ATMS.Application.Exceptions.Resources {
             }
         }
 
+        public static string AccessDenied {
+            get {
+                return ResourceManager.GetString("AccessDenied", resourceCulture);
+            }
+        }
+
+        public static string ProjectAccessDenied {
+            get {
+                return ResourceManager.GetString("ProjectAccessDenied", resourceCulture);
+            }
+        }
+
         public static string NameAlreadyInUse {
             get {
                 return ResourceManager.GetString("NameAlreadyInUse", resourceCulture);

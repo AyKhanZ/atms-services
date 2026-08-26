@@ -2,9 +2,12 @@
 using ATMS.Contracts.Requests;
 using ATMS.Data.Criteria;
 using MediatR;
+using ATMS.Application.Security;
+using ATMS.Data.Enums;
 
 namespace ATMS.Admin.Contracts.Requests.Users;
 
+[Access(PermissionEnum.UserView)]
 public class GetUsersRequest : GetPaginationRequest, IRequest<PagedResult<UserListItemModel>>
 {
     /// <summary>

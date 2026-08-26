@@ -1,8 +1,13 @@
 using MediatR;
+using ATMS.Application.Security;
+using ATMS.Data.Enums;
+using ATMS.Project.Contracts.Requests.Security;
 
 namespace ATMS.Project.Contracts.Commands.WorkProjects;
 
-public class UpdateWorkProjectParticipantCommand : IRequest
+[Access(PermissionEnum.ProjectEdit)]
+[ProjectAccess(ProjectPermissionEnum.ProjectEdit)]
+public class UpdateWorkProjectParticipantCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

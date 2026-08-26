@@ -9,8 +9,8 @@ using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi;
-using System.Reflection;
 using ATMS.Swagger.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ATMS.Swagger.Extensions;
 
@@ -69,6 +69,24 @@ public static class DependencyInjection
                     ClockSkew = TimeSpan.Zero
                 };
             });
+
+        return services;
+    }
+
+
+    public static IServiceCollection AddAuthorizationPolicies(this IServiceCollection services)
+    {
+        services.AddAuthorization(options =>
+        {
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+
+            options.AddPolicy("AdminPolicy", policy =>
+            {
+                policy.RequireRole("SuperAdmin");
+            });
+        });
 
         return services;
     }

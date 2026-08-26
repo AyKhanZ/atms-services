@@ -4,6 +4,7 @@ using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Handlers.Authentication;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Data.Enums;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Authentication;
@@ -33,7 +34,10 @@ public class RefreshTokenHandlerTest : BaseHandlerTest
     {
         var user = new User
         {
-            Id = Guid.NewGuid(), RefreshToken = FakeRefreshToken, RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(5)
+            Id = Guid.NewGuid(),
+            UserStatusId = (int)UserStatusEnum.Active,
+            RefreshToken = FakeRefreshToken,
+            RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(5)
         };
         var command = CreateCommand();
 
@@ -168,6 +172,7 @@ public class RefreshTokenHandlerTest : BaseHandlerTest
         var user = new User
         {
             Id = Guid.NewGuid(),
+            UserStatusId = (int)UserStatusEnum.Active,
             RefreshToken = FakeRefreshToken,
             RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(5)
         };

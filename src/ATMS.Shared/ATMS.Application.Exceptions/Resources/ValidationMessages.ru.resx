@@ -54,4 +54,10 @@
   <data name="ImageUnsupportedFormat" xml:space="preserve">
     <value>Формат изображения не поддерживается. Используйте JPG, PNG, JFIF или WEBP.</value>
   </data>
+  <data name="PageMustBePositive" xml:space="preserve"><value>Номер страницы должен быть не меньше 1.</value></data>
+  <data name="PageSizeOutOfRange" xml:space="preserve"><value>Размер страницы должен быть от 1 до 50.</value></data>
+  <data name="InvalidSortDirection" xml:space="preserve"><value>Направление сортировки не поддерживается.</value></data>
+  <data name="InvalidCursor" xml:space="preserve"><value>Курсор продолжения имеет неверный формат.</value></data>
+  <data name="DateOutOfRange" xml:space="preserve"><value>Дата должна быть в диапазоне от {0} до {1}.</value></data>
+  <data name="InvalidDateRange" xml:space="preserve"><value>Начальная дата не может быть позже конечной.</value></data>
 </root>

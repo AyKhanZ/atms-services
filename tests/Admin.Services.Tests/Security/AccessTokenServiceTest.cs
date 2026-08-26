@@ -1,4 +1,5 @@
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Security;
 using ATMS.Application.Constants;
 using ATMS.Data.Constants;
@@ -24,6 +25,7 @@ public class AccessTokenServiceTest : BaseServiceTest
         UserRepositoryMock
             .Setup(r => r.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateRoles());
+        SetupPermissions(user.Id);
 
         var result = await _accessTokenService.GenerateTokenAsync(user, CancellationToken.None);
 
@@ -38,6 +40,7 @@ public class AccessTokenServiceTest : BaseServiceTest
         UserRepositoryMock
             .Setup(r => r.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateRoles());
+        SetupPermissions(user.Id);
 
         var before = DateTime.UtcNow.AddMinutes(JwtValidExpirationMinutes);
         var result = await _accessTokenService.GenerateTokenAsync(user, CancellationToken.None);
@@ -57,6 +60,7 @@ public class AccessTokenServiceTest : BaseServiceTest
         UserRepositoryMock
             .Setup(r => r.GetRolesAsync(user.Id, token))
             .ReturnsAsync(CreateRoles());
+        SetupPermissions(user.Id, token);
 
         await _accessTokenService.GenerateTokenAsync(user, token);
 
@@ -75,6 +79,7 @@ public class AccessTokenServiceTest : BaseServiceTest
         UserRepositoryMock
             .Setup(r => r.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateRoles(roleId, "Client"));
+        SetupPermissions(user.Id);
 
         // Act
         var result = await _accessTokenService.GenerateTokenAsync(user, CancellationToken.None);
@@ -98,6 +103,7 @@ public class AccessTokenServiceTest : BaseServiceTest
         UserRepositoryMock
             .Setup(r => r.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateRoles(RoleIds.Employee, "Employee"));
+        SetupPermissions(user.Id);
 
         var result = await _accessTokenService.GenerateTokenAsync(user, CancellationToken.None);
 
@@ -107,6 +113,45 @@ public class AccessTokenServiceTest : BaseServiceTest
         var claim = jwt.Claims.FirstOrDefault(c => c.Type == CustomClaimTypes.OrganizationId);
 
         Assert.Null(claim);
+    }
+
+    [Fact]
+    public async Task GenerateTokenAsync_AddsPermissionClaims()
+    {
+        var user = CreateUser();
+        var permissions = new[] { "UserView", "UserEdit" };
+
+        UserRepositoryMock
+            .Setup(r => r.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateRoles());
+        UserRepositoryMock
+            .Setup(r => r.GetPermissionsAsync(user.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(permissions.Select(code => new Permission { Code = code }).ToList());
+
+        var result = await _accessTokenService.GenerateTokenAsync(user, CancellationToken.None);
+
+        var jwt = new JsonWebTokenHandler().ReadJsonWebToken(result.Token);
+        var permissionClaims = jwt.Claims
+            .Where(claim => claim.Type == CustomClaimTypes.Permission)
+            .Select(claim => claim.Value)
+            .ToArray();
+
+        Assert.Equal(permissions, permissionClaims);
+    }
+
+    [Fact]
+    public async Task GenerateTokenAsync_Throws_WhenUserHasMoreThanOneRole()
+    {
+        var user = CreateUser();
+        var roles = CreateRoles();
+        roles.Add(new Role { Id = Guid.NewGuid(), Name = "Employee" });
+
+        UserRepositoryMock
+            .Setup(r => r.GetRolesAsync(user.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(roles);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            _accessTokenService.GenerateTokenAsync(user, CancellationToken.None));
     }
     
     private List<Role> CreateRoles(Guid? roleId = null, string? roleName = null)
@@ -119,5 +164,14 @@ public class AccessTokenServiceTest : BaseServiceTest
                 Name = roleName ?? "Client"
             }
         ];
+    }
+
+    private void SetupPermissions(Guid userId, CancellationToken? cancellationToken = null)
+    {
+        UserRepositoryMock
+            .Setup(r => r.GetPermissionsAsync(
+                userId,
+                cancellationToken ?? It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
     }
 }

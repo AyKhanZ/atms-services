@@ -46,7 +46,7 @@ public class SavePersonalInfoValidator : BaseImageValidator<SavePersonalInfoComm
             .MaximumLength(100).WithMessage(string.Format(ProfileMessages.PositionMaxLength, 100));
         
         RuleFor(x => x.BirthDate)
-            .Must(x => x >= new DateOnly(1900, 1, 1)).WithMessage(OnboardingMessages.InvalidBirthDate)
+            .IsInDateRange(new DateOnly(1900, 1, 1), DateOnly.FromDateTime(DateTime.UtcNow))
             .Must(x => x <= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-18))).WithMessage(OnboardingMessages.MinimumAge);
         
         

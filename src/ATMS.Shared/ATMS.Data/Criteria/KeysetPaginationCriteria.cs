@@ -1,16 +1,16 @@
 using System.Linq.Expressions;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Enums;
 
 namespace ATMS.Data.Criteria;
 
 public sealed class KeysetPaginationCriteria<T>(string? cursor, int pageSize, SortDirectionEnum sortDirection)
 {
-    private const int DefaultPageSize = 20;
     private const int MaxPageSize = 50;
 
-    public int PageSize { get; } = pageSize > MaxPageSize ? MaxPageSize : pageSize < 1 ? DefaultPageSize : pageSize;
-    public SortDirectionEnum SortDirection { get; } = sortDirection;
-    public KeysetCursor? Cursor { get; } = KeysetCursor.TryDecode(cursor, out var decoded) ? decoded : null;
+    public int PageSize { get; } = ValidatePageSize(pageSize);
+    public SortDirectionEnum SortDirection { get; } = ValidateSortDirection(sortDirection);
+    public KeysetCursor? Cursor { get; } = DecodeCursor(cursor, sortDirection);
     public int QuerySize => PageSize + 1;
 
     public IQueryable<T> Apply(
@@ -78,6 +78,41 @@ public sealed class KeysetPaginationCriteria<T>(string? cursor, int pageSize, So
 
     private static Expression ReplaceParameter(Expression expression, ParameterExpression source, ParameterExpression target)
         => new ParameterReplaceVisitor(source, target).Visit(expression)!;
+
+    private static int ValidatePageSize(int value)
+    {
+        if (value < 1 || value > MaxPageSize)
+        {
+            throw new CriteriaException("pageSize", ValidationMessages.PageSizeOutOfRange);
+        }
+
+        return value;
+    }
+
+    private static SortDirectionEnum ValidateSortDirection(SortDirectionEnum value)
+    {
+        if (!Enum.IsDefined(value))
+        {
+            throw new CriteriaException("sortDirection", ValidationMessages.InvalidSortDirection);
+        }
+
+        return value;
+    }
+
+    private static KeysetCursor? DecodeCursor(string? value, SortDirectionEnum direction)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        if (!KeysetCursor.TryDecode(value, out var decoded) || decoded?.SortDirection != direction)
+        {
+            throw new CriteriaException("cursor", ValidationMessages.InvalidCursor);
+        }
+
+        return decoded;
+    }
 
     private sealed class ParameterReplaceVisitor(ParameterExpression source, ParameterExpression target) : ExpressionVisitor
     {

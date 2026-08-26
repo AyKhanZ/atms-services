@@ -27,6 +27,7 @@ public class AuthenticationController(IMediator mediator) : ControllerBase
     /// <response code="423">Account temporary locked.</response>
     /// <response code="500">Unhandled server error</response>
     [HttpPost("login")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(AccessInfoModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status401Unauthorized)]
@@ -58,6 +59,7 @@ public class AuthenticationController(IMediator mediator) : ControllerBase
     /// <response code="401">Unauthorized access, no access token provided by a client</response>
     /// <response code="500">Unhandled server error</response>
     [HttpPost("refresh")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(AccessInfoModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel),StatusCodes.Status401Unauthorized)]

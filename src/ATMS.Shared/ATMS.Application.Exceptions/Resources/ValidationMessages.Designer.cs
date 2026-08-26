@@ -176,5 +176,12 @@ namespace ATMS.Application.Exceptions.Resources {
                 return ResourceManager.GetString("TitleShouldBeLessThan", resourceCulture);
             }
         }
+
+        public static string PageMustBePositive => ResourceManager.GetString("PageMustBePositive", resourceCulture);
+        public static string PageSizeOutOfRange => ResourceManager.GetString("PageSizeOutOfRange", resourceCulture);
+        public static string InvalidSortDirection => ResourceManager.GetString("InvalidSortDirection", resourceCulture);
+        public static string InvalidCursor => ResourceManager.GetString("InvalidCursor", resourceCulture);
+        public static string DateOutOfRange => ResourceManager.GetString("DateOutOfRange", resourceCulture);
+        public static string InvalidDateRange => ResourceManager.GetString("InvalidDateRange", resourceCulture);
     }
 }

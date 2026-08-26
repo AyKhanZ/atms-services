@@ -5,6 +5,8 @@ using ATMS.Infrastructure.Extensions;
 using ATMS.Project.Data.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ATMS.Project.Services.Security;
+using ATMS.Project.Services.Security.Interfaces;
 
 namespace ATMS.Project.Services.Modules;
 
@@ -18,6 +20,7 @@ public static class ProjectServicesModule
         services.AddCurrentUser();
         services.AddValidationServices();
         services.AddProjectData(configuration);
+        services.AddScoped<IProjectPermissionService, ProjectPermissionService>();
         services.AddEmailServices(configuration);
         services.AddHandlerServices();
         services.AddMapperServices();

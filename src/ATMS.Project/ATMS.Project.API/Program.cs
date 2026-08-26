@@ -1,4 +1,3 @@
-using ATMS.Project.API.Extensions;
 using ATMS.Infrastructure.Extensions;
 using ATMS.Swagger.Extensions;
 using ATMS.Swagger.Middlewares;

@@ -11,7 +11,7 @@ public static class CacheKeys
         public static string UserRoles(Guid userId) => $"user:{userId}:roles";
         
         public static string UserPermissions(Guid userId) => $"user:{userId}:permissions";
-        
+
         public static string RoleById(Guid id) => $"role:{id}";
         
         public const string AllRoles = "roles:all";
@@ -29,6 +29,9 @@ public static class CacheKeys
 
     public static class Project
     {
+        public static string UserPermissions(Guid projectId, Guid userId)
+            => $"work-project:{projectId}:user:{userId}:permissions";
+
         public static string ProjectById(Guid id) => $"work-project:{id}";
 
         public static string TicketById(Guid id) => $"work-ticket:{id}";

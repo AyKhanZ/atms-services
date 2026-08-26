@@ -2,9 +2,12 @@ using ATMS.Contracts.Requests;
 using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Models.WorkProjects;
 using MediatR;
+using ATMS.Application.Security;
+using ATMS.Data.Enums;
 
 namespace ATMS.Project.Contracts.Requests.WorkProjects;
 
+[Access(PermissionEnum.ProjectView)]
 public class GetWorkProjectsRequest : GetPaginationRequest, IRequest<PagedResult<WorkProjectItemModel>>
 {
     /// <summary>Search by project title, code or organization name.</summary>

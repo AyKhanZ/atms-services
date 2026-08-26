@@ -7,6 +7,7 @@ using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Image;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Models;
+using ATMS.Data.Criteria;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,10 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
             await HandleExceptionAsync(context, ex);
         }
         catch (ValidationException ex)
+        {
+            await HandleExceptionAsync(context, ex);
+        }
+        catch (CriteriaException ex)
         {
             await HandleExceptionAsync(context, ex);
         }
@@ -209,6 +214,27 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
                 Error = f.ErrorMessage
             }).ToList()
         };
+        var result = JsonConvert.SerializeObject(response);
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+        return context.Response.WriteAsync(result);
+    }
+
+    private Task HandleExceptionAsync(HttpContext context, CriteriaException exception)
+    {
+        var response = new ValidationErrorModel
+        {
+            Errors =
+            [
+                new FieldError
+                {
+                    Field = exception.PropertyName,
+                    Error = exception.UserMessage
+                }
+            ]
+        };
+
         var result = JsonConvert.SerializeObject(response);
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;

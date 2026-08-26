@@ -54,4 +54,10 @@
   <data name="ImageUnsupportedFormat" xml:space="preserve">
     <value>Şəkil formatı dəstəklənmir. JPG, PNG, JFIF və ya WEBP istifadə edin.</value>
   </data>
+  <data name="PageMustBePositive" xml:space="preserve"><value>Səhifə nömrəsi 1-dən az olmamalıdır.</value></data>
+  <data name="PageSizeOutOfRange" xml:space="preserve"><value>Səhifə ölçüsü 1 ilə 50 arasında olmalıdır.</value></data>
+  <data name="InvalidSortDirection" xml:space="preserve"><value>Çeşidləmə istiqaməti dəstəklənmir.</value></data>
+  <data name="InvalidCursor" xml:space="preserve"><value>Davametmə kursoru yanlışdır.</value></data>
+  <data name="DateOutOfRange" xml:space="preserve"><value>Tarix {0} ilə {1} arasında olmalıdır.</value></data>
+  <data name="InvalidDateRange" xml:space="preserve"><value>Başlanğıc tarixi bitmə tarixindən gec ola bilməz.</value></data>
 </root>

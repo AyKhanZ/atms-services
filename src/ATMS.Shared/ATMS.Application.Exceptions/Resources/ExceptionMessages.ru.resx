@@ -27,4 +27,10 @@
   <data name="ConfigurationInitializationFailed" xml:space="preserve">
     <value>Сервис настроен некорректно. Пожалуйста, обратитесь в поддержку.</value>
   </data>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>У вас нет прав для выполнения этого действия.</value>
+  </data>
+  <data name="ProjectAccessDenied" xml:space="preserve">
+    <value>У вас нет доступа к этому проекту.</value>
+  </data>
 </root>

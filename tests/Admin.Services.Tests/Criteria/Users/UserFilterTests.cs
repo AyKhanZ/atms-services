@@ -307,17 +307,15 @@ public class UserFilterTests
     }
  
     [Fact]
-    public void PaginationCriteria_PageBelowOne_DefaultsToPage1()
+    public void PaginationCriteria_PageBelowOne_ThrowsArgumentOutOfRangeException()
     {
-        var pagination = new PaginationCriteria<User>(0, 2);
-        Assert.Equal(1, pagination.Page);
+        Assert.Throws<ArgumentOutOfRangeException>(() => new PaginationCriteria<User>(0, 2));
     }
  
     [Fact]
-    public void PaginationCriteria_PageSizeAboveMax_ClampsToMax()
+    public void PaginationCriteria_PageSizeAboveMax_ThrowsArgumentOutOfRangeException()
     {
-        var pagination = new PaginationCriteria<User>(1, 999);
-        Assert.Equal(50, pagination.PageSize);
+        Assert.Throws<ArgumentOutOfRangeException>(() => new PaginationCriteria<User>(1, 999));
     }
  
     #endregion

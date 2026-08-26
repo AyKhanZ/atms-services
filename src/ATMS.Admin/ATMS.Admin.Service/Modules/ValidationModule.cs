@@ -9,7 +9,6 @@ public static class ValidationModule
         this IServiceCollection services)
     {
         services.AddValidatorsFromAssembly(typeof(ValidationModule).Assembly, includeInternalTypes: true);
-
         return services;
     }
 }

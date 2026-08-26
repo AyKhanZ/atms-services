@@ -1,9 +1,11 @@
 ﻿using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Data.Enums;
 using MediatR;
+using ATMS.Application.Security;
 
 namespace ATMS.Admin.Contracts.Commands.Account;
 
+[Access(PermissionEnum.UserEdit)]
 public class RegisterCommand: IRequest<UserModel>
 {
     public required string Name { get; init; }

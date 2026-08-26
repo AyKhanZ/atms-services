@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ATMS.Application\ATMS.Application.csproj" />
+      <ProjectReference Include="..\ATMS.Contracts\ATMS.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

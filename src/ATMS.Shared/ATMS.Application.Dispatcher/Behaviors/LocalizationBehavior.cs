@@ -8,7 +8,7 @@ namespace ATMS.Application.Dispatcher.Behaviors;
 
 /// <summary>
 /// Sets the thread culture before executing the request.
-/// Must be placed AFTER AccessBehavior (so User is available) and BEFORE ValidationBehavior.
+/// Must be placed before access and validation behaviors so localized resources use the request language.
 ///
 /// Language priority:
 /// 1. Accept-Language header
