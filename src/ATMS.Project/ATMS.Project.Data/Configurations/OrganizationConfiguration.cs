@@ -11,10 +11,12 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
     public void Configure(EntityTypeBuilder<Organization> builder)
     {
         builder.HasIndex(e => e.Title)
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("\"IsDeleted\" = false");
         
         builder.HasIndex(e => e.Voen)
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("\"IsDeleted\" = false");
             
         builder.HasIndex(u => u.CreatedAt);
         
