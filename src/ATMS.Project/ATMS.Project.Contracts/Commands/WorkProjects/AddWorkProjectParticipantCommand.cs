@@ -5,9 +5,9 @@ using ATMS.Project.Contracts.Requests.Security;
 
 namespace ATMS.Project.Contracts.Commands.WorkProjects;
 
-[Access(PermissionEnum.ProjectEdit)]
-[ProjectAccess(ProjectPermissionEnum.ProjectEdit)]
-public class AddWorkProjectParticipantCommand : WorkProjectParticipantCommand, IRequest, IProjectScopedRequest
+[Access(PermissionEnum.ProjectView)]
+[ProjectAccess(ProjectAccessPolicy.ParticipantInvite)]
+public class AddWorkProjectParticipantCommand : WorkProjectParticipantCommand, IRequest, IProjectRoleScopedRequest
 {
     public Guid ProjectId { get; set; }
 }

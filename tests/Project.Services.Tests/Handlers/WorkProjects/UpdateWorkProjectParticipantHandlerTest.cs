@@ -16,7 +16,7 @@ public sealed class UpdateWorkProjectParticipantHandlerTest
     [Fact]
     public async Task Handle_TracksReplacementRoleAsAdded()
     {
-        using var context = CreateContext();
+        await using var context = CreateContext();
         var project = CreateProject();
         var participant = project.WorkProjectParticipants.Single();
         var currentRole = participant.WorkProjectParticipantRoles.Single();

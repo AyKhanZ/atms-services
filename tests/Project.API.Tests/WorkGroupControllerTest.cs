@@ -2,6 +2,7 @@ using ATMS.Project.API.Controllers.v1;
 using ATMS.Project.Contracts.Commands.WorkGroups;
 using ATMS.Project.Contracts.Models.WorkGroups;
 using ATMS.Project.Contracts.Requests.WorkGroups;
+using ATMS.Data.Criteria;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -30,6 +31,31 @@ public class WorkGroupControllerTest : BaseControllerTest
 
         var result = await _controller.GetGroups(projectId, CancellationToken.None);
 
+        var response = Assert.IsType<OkObjectResult>(result.Result);
+        Assert.Same(expected, response.Value);
+    }
+
+    [Fact]
+    public async Task GetMilestones_OverridesRouteProjectIdAndPreservesSearchAndCursor()
+    {
+        var projectId = Guid.NewGuid();
+        var request = new GetMilestonesRequest
+        {
+            ProjectId = Guid.NewGuid(),
+            Search = "release",
+            Cursor = "cursor",
+            PageSize = 10
+        };
+        var expected = new KeysetPagedResult<MilestoneOptionModel> { PageSize = 10 };
+        MediatorMock
+            .Setup(mediator => mediator.Send(request, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expected);
+
+        var result = await _controller.GetMilestones(projectId, request, CancellationToken.None);
+
+        Assert.Equal(projectId, request.ProjectId);
+        Assert.Equal("release", request.Search);
+        Assert.Equal("cursor", request.Cursor);
         var response = Assert.IsType<OkObjectResult>(result.Result);
         Assert.Same(expected, response.Value);
     }

@@ -442,12 +442,6 @@ namespace ATMS.Admin.Data.Migrations
                         },
                         new
                         {
-                            Id = 9,
-                            Code = "ProjectDelete",
-                            Module = "Project"
-                        },
-                        new
-                        {
                             Id = 10,
                             Code = "NotificationView",
                             Module = "Notification"
@@ -698,27 +692,6 @@ namespace ATMS.Admin.Data.Migrations
                             Language = "az",
                             Name = "Layihəni redaktə",
                             PermissionId = 8
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Language = "en",
-                            Name = "Project delete",
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Language = "ru",
-                            Name = "Удаление проектов",
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Language = "az",
-                            Name = "Layihəni sil",
-                            PermissionId = 9
                         },
                         new
                         {
@@ -1289,11 +1262,6 @@ namespace ATMS.Admin.Data.Migrations
                         new
                         {
                             PermissionId = 8,
-                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
-                        },
-                        new
-                        {
-                            PermissionId = 9,
                             RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
                         },
                         new

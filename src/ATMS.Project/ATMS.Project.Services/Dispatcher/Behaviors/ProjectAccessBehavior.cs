@@ -13,15 +13,14 @@ namespace ATMS.Project.Services.Dispatcher.Behaviors;
 
 public sealed class ProjectAccessBehavior<TRequest, TResponse>(
     ICurrentUser currentUser,
-    IProjectPermissionService projectPermissionService)
+    IProjectPermissionService projectPermissionService,
+    IProjectAccessPolicyResolver projectAccessPolicyResolver)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private static readonly ProjectPermissionEnum[] ProjectPermissions = typeof(TRequest)
+    private static readonly ProjectAccessAttribute[] AccessRequirements = typeof(TRequest)
         .GetCustomAttributes(typeof(ProjectAccessAttribute), inherit: false)
         .Cast<ProjectAccessAttribute>()
-        .Select(attribute => attribute.Permission)
-        .Distinct()
         .ToArray();
 
     public async Task<TResponse> Handle(
@@ -29,31 +28,76 @@ public sealed class ProjectAccessBehavior<TRequest, TResponse>(
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (ProjectPermissions.Length == 0 || currentUser.RoleId == RoleIds.SuperAdmin)
+        if (currentUser.RoleId == RoleIds.SuperAdmin)
         {
             return await next(cancellationToken);
         }
 
-        if (request is not IProjectScopedRequest)
+        if (AccessRequirements.Length == 0)
         {
-            Deny();
+            return await next(cancellationToken);
         }
 
-        var projectRequest = (IProjectScopedRequest)request;
+        if (request is not IProjectScopedRequest projectRequest)
+        {
+            throw new AuthException(AuthErrorType.Forbidden, ExceptionMessages.ProjectAccessDenied);
+        }
+
         if (projectRequest.ProjectId == Guid.Empty)
         {
-            Deny();
+            throw new AuthException(AuthErrorType.Forbidden, ExceptionMessages.ProjectAccessDenied);
         }
 
-        if (!await projectPermissionService.HasAnyPermissionAsync(
-                projectRequest.ProjectId,
-                ProjectPermissions,
-                cancellationToken))
+        var requirements = await ResolveRequirementsAsync(projectRequest, cancellationToken);
+        var permissionCodes = await projectPermissionService.GetPermissionCodesAsync(
+            projectRequest.ProjectId,
+            cancellationToken);
+
+        var hasAccess = requirements.All(requirement =>
+            requirement.Count > 0 &&
+            requirement.Any(permission => permissionCodes.Contains(permission.ToString())));
+
+        if (!hasAccess)
         {
             Deny();
         }
 
         return await next(cancellationToken);
+    }
+
+    private static IReadOnlyCollection<ProjectPermissionEnum>[] StaticRequirements()
+    {
+        return AccessRequirements
+            .Where(attribute => !attribute.Policy.HasValue)
+            .Select(attribute => attribute.Permissions)
+            .ToArray();
+    }
+
+    private async Task<IReadOnlyCollection<ProjectPermissionEnum>[]> ResolveRequirementsAsync(
+        IProjectScopedRequest request,
+        CancellationToken cancellationToken)
+    {
+        var staticRequirements = StaticRequirements();
+        var policyRequirements = new List<IReadOnlyCollection<ProjectPermissionEnum>>();
+
+        foreach (var attribute in AccessRequirements)
+        {
+            if (attribute.Policy is not ProjectAccessPolicy policy)
+            {
+                continue;
+            }
+
+            var permissions = await projectAccessPolicyResolver.ResolveAsync(
+                policy,
+                request,
+                cancellationToken);
+
+            policyRequirements.Add(permissions);
+        }
+
+        return staticRequirements
+            .Concat(policyRequirements)
+            .ToArray();
     }
 
     [DoesNotReturn]

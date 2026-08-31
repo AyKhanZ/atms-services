@@ -5,7 +5,8 @@ using ATMS.Project.Contracts.Requests.Security;
 
 namespace ATMS.Project.Contracts.Commands.WorkGroups;
 
-[ProjectAccess(ProjectPermissionEnum.GroupDelete)]
+[Access(PermissionEnum.ProjectEdit)]
+[ProjectAccess(ProjectPermissionEnum.ProjectEdit)]
 public class DeleteWorkGroupCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }

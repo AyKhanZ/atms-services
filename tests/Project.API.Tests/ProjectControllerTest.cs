@@ -5,7 +5,6 @@ using ATMS.Project.Contracts.Models.WorkProjects;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Requests.Users;
 using ATMS.Project.Contracts.Requests.WorkProjects;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

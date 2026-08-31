@@ -40,7 +40,6 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
             
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.ProjectEdit, RoleId = RoleIds.SuperAdmin },
-            new { PermissionId = (int)PermissionEnum.ProjectDelete, RoleId = RoleIds.SuperAdmin },
             
             new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.NotificationEdit, RoleId = RoleIds.SuperAdmin },
