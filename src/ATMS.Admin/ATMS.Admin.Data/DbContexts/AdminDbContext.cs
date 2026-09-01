@@ -41,7 +41,7 @@ public class AdminDbContext: DbContext
     #endregion
 
     #region Tokens
-    public DbSet<RefreshRevokedToken> RefreshRevokedTokens { get; set; }
+    public DbSet<UserSession> UserSessions { get; set; }
     
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
     #endregion

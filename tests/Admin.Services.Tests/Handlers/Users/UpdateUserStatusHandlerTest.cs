@@ -15,6 +15,7 @@ public class UpdateUserStatusHandlerTest : BaseHandlerTest
     {
         _handler = new UpdateUserStatusHandler(
             UserRepositoryMock.Object,
+            UserSessionRepositoryMock.Object,
             CacheServiceMock.Object);
     }
 
@@ -72,5 +73,28 @@ public class UpdateUserStatusHandlerTest : BaseHandlerTest
         // Act & Assert
         await Assert.ThrowsAsync<EntityException>(() =>
             _handler.Handle(command, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserBecomesInactive_RevokesAllSessions()
+    {
+        var user = CreateUser();
+        var command = new UpdateUserStatusCommand
+        {
+            Id = user.Id,
+            UserStatusId = 2
+        };
+
+        UserRepositoryMock
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        await _handler.Handle(command, CancellationToken.None);
+
+        UserSessionRepositoryMock.Verify(repository => repository.RevokeAllAsync(
+            user.Id,
+            It.IsAny<DateTime>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 }

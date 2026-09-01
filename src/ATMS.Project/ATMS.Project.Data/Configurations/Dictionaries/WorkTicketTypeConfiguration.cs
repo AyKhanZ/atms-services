@@ -26,7 +26,7 @@ public class WorkTicketTypeConfiguration : IEntityTypeConfiguration<WorkTicketTy
         builder.HasData(
             new { Id = (int)WorkTicketTypeEnum.Bug, Code = "Bug" },
             new { Id = (int)WorkTicketTypeEnum.Feature, Code = "Feature" },
-            new { Id = (int)WorkTicketTypeEnum.Task, Code = "Task" }
+            new { Id = (int)WorkTicketTypeEnum.Project, Code = "Project" }
         );
     }
 }
@@ -56,10 +56,10 @@ public class WorkTicketTypeTranslationConfiguration : IEntityTypeConfiguration<W
             new { Id = 4, WorkTicketTypeId = (int)WorkTicketTypeEnum.Feature, Language = "en", Name = "Feature" },
             new { Id = 5, WorkTicketTypeId = (int)WorkTicketTypeEnum.Feature, Language = "ru", Name = "Новая функция" },
             new { Id = 6, WorkTicketTypeId = (int)WorkTicketTypeEnum.Feature, Language = "az", Name = "Təzə Funksiya" },
-            // Task
-            new { Id = 7, WorkTicketTypeId = (int)WorkTicketTypeEnum.Task, Language = "en", Name = "Task" },
-            new { Id = 8, WorkTicketTypeId = (int)WorkTicketTypeEnum.Task, Language = "ru", Name = "Задача" },
-            new { Id = 9, WorkTicketTypeId = (int)WorkTicketTypeEnum.Task, Language = "az", Name = "Tapşırıq" }
+            // Project
+            new { Id = 7, WorkTicketTypeId = (int)WorkTicketTypeEnum.Project, Language = "en", Name = "Project" },
+            new { Id = 8, WorkTicketTypeId = (int)WorkTicketTypeEnum.Project, Language = "ru", Name = "Проект" },
+            new { Id = 9, WorkTicketTypeId = (int)WorkTicketTypeEnum.Project, Language = "az", Name = "Layihə" }
         );
     }
 }

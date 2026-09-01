@@ -4,6 +4,7 @@ using ATMS.Project.Contracts.Models.Organizations;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Models.WorkProjects;
 using ATMS.Project.Contracts.Models.WorkGroups;
+using ATMS.Project.Contracts.Models.WorkTickets;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Entities.Dictionaries;
 using AutoMapper;
@@ -44,6 +45,37 @@ public class EntityToModelProfile : Profile
                 x => x.Name,
                 expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
 
+        CreateMap<WorkTicketType, DictionaryModel>()
+            .ForMember(
+                x => x.Name,
+                expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
+
+        CreateMap<WorkTicketStatus, DictionaryModel>()
+            .ForMember(
+                x => x.Name,
+                expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
+
+        CreateMap<WorkItemPriority, DictionaryModel>()
+            .ForMember(
+                x => x.Name,
+                expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
+
+        CreateMap<WorkProjectParticipant, WorkTicketAssigneeModel>()
+            .ForMember(x => x.Name, expression => expression.MapFrom(x => x.User.Name))
+            .ForMember(x => x.Surname, expression => expression.MapFrom(x => x.User.Surname))
+            .ForMember(x => x.AvatarPath, expression => expression.MapFrom(x => x.User.AvatarPath));
+
+        CreateMap<WorkTicket, WorkTicketModel>()
+            .ForMember(x => x.MilestoneId, expression => expression.MapFrom(x => x.WorkGroupId))
+            .ForMember(x => x.MilestoneTitle, expression => expression.MapFrom(x => x.WorkGroup.Title))
+            .ForMember(
+                x => x.GroupId,
+                expression => expression.MapFrom(x => x.WorkGroup.ParentWorkGroupId.Value))
+            .ForMember(
+                x => x.GroupTitle,
+                expression => expression.MapFrom(x =>
+                    x.WorkGroup.ParentWorkGroup == null ? null : x.WorkGroup.ParentWorkGroup.Title));
+
         CreateMap<WorkGroup, WorkGroupModel>()
             .ForMember(
                 x => x.Milestones,
@@ -51,6 +83,15 @@ public class EntityToModelProfile : Profile
             .ForMember(
                 x => x.TicketCount,
                 expression => expression.Ignore());
+
+        CreateMap<WorkGroup, MilestoneOptionModel>()
+            .ForMember(
+                x => x.GroupId,
+                expression => expression.MapFrom(x => x.ParentWorkGroupId.Value))
+            .ForMember(
+                x => x.GroupTitle,
+                expression => expression.MapFrom(x =>
+                    x.ParentWorkGroup == null ? null : x.ParentWorkGroup.Title));
 
         CreateMap<Role, WorkProjectRoleModel>();
 

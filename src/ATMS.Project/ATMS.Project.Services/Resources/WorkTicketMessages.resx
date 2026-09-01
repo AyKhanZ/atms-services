@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="NotFound" xml:space="preserve"><value>We couldn't find this ticket in the selected project. Refresh the project plan and try again.</value></data>
+  <data name="ProjectRequired" xml:space="preserve"><value>We couldn't identify the project. Return to the project list and open the project again.</value></data>
+  <data name="TicketRequired" xml:space="preserve"><value>We couldn't identify the ticket. Return to the project plan and open the ticket again.</value></data>
+  <data name="TitleRequired" xml:space="preserve"><value>Enter a name for the ticket.</value></data>
+  <data name="TitleTooLong" xml:space="preserve"><value>The ticket name must be {0} characters or fewer. Shorten the name and try again.</value></data>
+  <data name="DescriptionTooLong" xml:space="preserve"><value>The ticket description must be {0} characters or fewer. Shorten the description and try again.</value></data>
+  <data name="MilestoneRequired" xml:space="preserve"><value>Select a milestone for the ticket.</value></data>
+  <data name="MilestoneNotFound" xml:space="preserve"><value>The selected milestone is no longer available in this project. Refresh the plan and choose another milestone.</value></data>
+  <data name="TypeRequired" xml:space="preserve"><value>Select a ticket type.</value></data>
+  <data name="TypeUnsupported" xml:space="preserve"><value>The selected ticket type is no longer available. Choose another type.</value></data>
+  <data name="StatusRequired" xml:space="preserve"><value>Select a ticket status.</value></data>
+  <data name="StatusUnsupported" xml:space="preserve"><value>The selected ticket status is no longer available. Choose another status.</value></data>
+  <data name="PriorityRequired" xml:space="preserve"><value>Select a ticket priority.</value></data>
+  <data name="PriorityUnsupported" xml:space="preserve"><value>The selected priority is no longer available. Choose another priority.</value></data>
+  <data name="AssigneeNotFound" xml:space="preserve"><value>The selected assignee is not a participant of this project. Choose a project participant.</value></data>
+  <data name="DeadlineOutOfRange" xml:space="preserve"><value>Enter a deadline between 01.01.1900 and 31.12.2100.</value></data>
+</root>

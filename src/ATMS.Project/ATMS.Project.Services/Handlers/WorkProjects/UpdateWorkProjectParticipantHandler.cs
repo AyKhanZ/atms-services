@@ -44,7 +44,6 @@ public class UpdateWorkProjectParticipantHandler(
         currentRole.DeletedById = currentUser.Id;
         participant.WorkProjectParticipantRoles.Add(new WorkProjectParticipantRole
         {
-            Id = Guid.NewGuid(),
             RoleId = command.RoleId
         });
         workProjectRepository.Touch(project);

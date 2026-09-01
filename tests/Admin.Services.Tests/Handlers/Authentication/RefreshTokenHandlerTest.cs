@@ -1,6 +1,6 @@
-﻿using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Service.Handlers.Authentication;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Exceptions.Auth;
@@ -11,233 +11,192 @@ namespace Admin.Services.Tests.Handlers.Authentication;
 
 public class RefreshTokenHandlerTest : BaseHandlerTest
 {
-    private readonly RefreshTokenHandler _handler;
+    private const string RefreshToken = "refresh-token";
+    private const string NewRefreshToken = "new-refresh-token";
+    private const string TokenHash = "token-hash";
 
-    private const string FakeRefreshToken = "fake-refresh-token";
-    private const string FakeNewRefreshToken = "fake-new-refresh-token";
-    private const string FakeAccessToken = "fake-access-token";
+    private readonly RefreshTokenHandler _handler;
 
     public RefreshTokenHandlerTest()
     {
         _handler = new RefreshTokenHandler(
             AccessTokenServiceMock.Object,
             RefreshTokenServiceMock.Object,
-            UserRepositoryMock.Object,
-            BlackListServiceMock.Object);
+            UserSessionRepositoryMock.Object);
+
+        RefreshTokenServiceMock
+            .Setup(service => service.HashToken(RefreshToken))
+            .Returns(TokenHash);
     }
 
-    private RefreshTokenCommand CreateCommand(string? refreshToken = null) =>
-        new() { RefreshToken = refreshToken ?? FakeRefreshToken };
-
     [Fact]
-    public async Task Handle_WhenTokenValid_ReturnsNewTokens()
+    public async Task Handle_WhenSessionIsActive_RotatesOnlyThatSession()
     {
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            UserStatusId = (int)UserStatusEnum.Active,
-            RefreshToken = FakeRefreshToken,
-            RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(5)
-        };
-        var command = CreateCommand();
+        var session = CreateSession();
+        SetupSuccessfulRotation(session);
 
-        BlackListServiceMock.Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+        var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
 
-        UserRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        AccessTokenServiceMock.Setup(s => s.GenerateTokenAsync(user,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new AccessTokenResult(FakeAccessToken, DateTime.UtcNow.AddMinutes(1)));
-
-        RefreshTokenServiceMock.Setup(s => s.GenerateTokenAsync(user,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeNewRefreshToken);
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        Assert.Equal(FakeAccessToken, result.AccessToken);
-        Assert.Equal(FakeNewRefreshToken, result.RefreshToken);
-        BlackListServiceMock.Verify(s => s.TryAddToListAsync(user.Id, user.RefreshToken, user.RefreshTokenExpiresAt.Value,
+        Assert.Equal(NewRefreshToken, result.RefreshToken);
+        UserSessionRepositoryMock.Verify(repository => repository.RotateAsync(
+            session,
+            It.Is<UserSession>(replacement =>
+                replacement.UserId == session.UserId
+                && replacement.FamilyId == session.FamilyId
+                && replacement.TokenHash == "new-token-hash"),
+            It.IsAny<DateTime>(),
             It.IsAny<CancellationToken>()), Times.Once);
-        UserRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+        UserSessionRepositoryMock.Verify(repository => repository.RevokeAllAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<DateTime>(),
+            It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task Handle_WhenTokenExpired_ThrowsAuthException()
+    public async Task Handle_WhenSessionDoesNotExist_ThrowsInvalidToken()
     {
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            RefreshToken = FakeRefreshToken,
-            RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(-1)
-        };
-        var command = CreateCommand();
-
-        UserRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+        UserSessionRepositoryMock
+            .Setup(repository => repository.FindByTokenHashAsync(
+                TokenHash,
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        BlackListServiceMock.Setup(s => s.IsRefreshTokenRevokedAsync(It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        await Assert.ThrowsAsync<AuthException>(() => _handler.Handle(command, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task Handle_WhenRefreshTokenNull_ThrowsAuthException()
-    {
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            RefreshToken = null,
-            RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(10)
-        };
-        var command = CreateCommand();
-
-        UserRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        BlackListServiceMock.Setup(s => s.IsRefreshTokenRevokedAsync(It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        await Assert.ThrowsAsync<AuthException>(() => _handler.Handle(command, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task Handle_WhenRefreshTokenExpiresAtNull_ThrowsAuthException()
-    {
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            RefreshToken = FakeRefreshToken,
-            RefreshTokenExpiresAt = null
-        };
-        var command = CreateCommand();
-
-        UserRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        BlackListServiceMock.Setup(s => s.IsRefreshTokenRevokedAsync(It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        await Assert.ThrowsAsync<AuthException>(() => _handler.Handle(command, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task Handle_WhenUserNotFound_ThrowsAuthException()
-    {
-        var command = CreateCommand();
-
-        UserRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((User?)null);
-
-        await Assert.ThrowsAsync<AuthException>(() => _handler.Handle(command, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task Handle_WhenTokenRevoked_ThrowsAuthException()
-    {
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            RefreshToken = FakeRefreshToken,
-            RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(5)
-        };
-        var command = CreateCommand();
-
-        UserRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        BlackListServiceMock.Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        await Assert.ThrowsAsync<AuthException>(() => _handler.Handle(command, CancellationToken.None));
-    }
-
-    [Fact]
-    public async Task Handle_WhenTokenValid_SetsCorrectAccessTokenExpireTime()
-    {
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            UserStatusId = (int)UserStatusEnum.Active,
-            RefreshToken = FakeRefreshToken,
-            RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(5)
-        };
-        var command = CreateCommand();
-
-        BlackListServiceMock.Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        UserRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        var expectedExpiry = DateTime.UtcNow.AddMinutes(10);
-        AccessTokenServiceMock.Setup(s => s.GenerateTokenAsync(user,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new AccessTokenResult(FakeAccessToken, expectedExpiry));
-
-        RefreshTokenServiceMock.Setup(s => s.GenerateTokenAsync(user,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeNewRefreshToken);
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        Assert.Equal(expectedExpiry, result.AccessTokenExpireTime);
-    }
-
-    [Fact]
-    public async Task Handle_WhenRefreshTokenWasConcurrentlyRevoked_ThrowsAuthException()
-    {
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            RefreshToken = FakeRefreshToken,
-            RefreshTokenExpiresAt = DateTime.UtcNow.AddMinutes(5)
-        };
-        var command = CreateCommand();
-
-        UserRepositoryMock.Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        BlackListServiceMock.Setup(s => s.IsRefreshTokenRevokedAsync(command.RefreshToken,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        AccessTokenServiceMock.Setup(s => s.GenerateTokenAsync(user,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new AccessTokenResult(FakeAccessToken, DateTime.UtcNow.AddMinutes(1)));
-
-        RefreshTokenServiceMock.Setup(s => s.GenerateTokenAsync(user,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeNewRefreshToken);
-
-        BlackListServiceMock.Setup(s => s.TryAddToListAsync(
-                user.Id,
-                FakeRefreshToken,
-                It.IsAny<DateTime>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+            .ReturnsAsync((UserSession?)null);
 
         var exception = await Assert.ThrowsAsync<AuthException>(
-            () => _handler.Handle(command, CancellationToken.None));
+            () => _handler.Handle(CreateCommand(), CancellationToken.None));
 
         Assert.Equal(AuthErrorType.InvalidToken, exception.AuthErrorType);
-        UserRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public async Task Handle_WhenSessionOrFamilyExpired_RevokesFamily(
+        bool sessionExpired,
+        bool familyExpired)
+    {
+        var session = CreateSession();
+        session.ExpiresAt = sessionExpired
+            ? DateTime.UtcNow.AddMinutes(-1)
+            : DateTime.UtcNow.AddDays(1);
+        session.FamilyExpiresAt = familyExpired
+            ? DateTime.UtcNow.AddMinutes(-1)
+            : DateTime.UtcNow.AddDays(30);
+
+        SetupSession(session);
+
+        await Assert.ThrowsAsync<AuthException>(
+            () => _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        VerifyFamilyRevoked(session.FamilyId);
+    }
+
+    [Fact]
+    public async Task Handle_WhenTokenWasAlreadyUsed_RevokesFamily()
+    {
+        var session = CreateSession();
+        session.RevokedAt = DateTime.UtcNow.AddSeconds(-1);
+        SetupSession(session);
+
+        await Assert.ThrowsAsync<AuthException>(
+            () => _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        VerifyFamilyRevoked(session.FamilyId);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserIsInactive_RevokesFamilyAndThrowsForbidden()
+    {
+        var session = CreateSession();
+        session.User.UserStatusId = (int)UserStatusEnum.Inactive;
+        SetupSession(session);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(
+            () => _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.AccountInactive, exception.AuthErrorType);
+        VerifyFamilyRevoked(session.FamilyId);
+    }
+
+    [Fact]
+    public async Task Handle_WhenRotationLosesConcurrencyRace_RevokesFamily()
+    {
+        var session = CreateSession();
+        SetupSuccessfulRotation(session, rotationSucceeded: false);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(
+            () => _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.InvalidToken, exception.AuthErrorType);
+        VerifyFamilyRevoked(session.FamilyId);
+    }
+
+    private static RefreshTokenCommand CreateCommand()
+    {
+        return new RefreshTokenCommand { RefreshToken = RefreshToken };
+    }
+
+    private static UserSession CreateSession()
+    {
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            UserStatusId = (int)UserStatusEnum.Active
+        };
+
+        return new UserSession
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            User = user,
+            FamilyId = Guid.NewGuid(),
+            TokenHash = TokenHash,
+            CreatedAt = DateTime.UtcNow.AddDays(-1),
+            ExpiresAt = DateTime.UtcNow.AddDays(1),
+            FamilyExpiresAt = DateTime.UtcNow.AddDays(30)
+        };
+    }
+
+    private void SetupSession(UserSession session)
+    {
+        UserSessionRepositoryMock
+            .Setup(repository => repository.FindByTokenHashAsync(
+                TokenHash,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(session);
+    }
+
+    private void SetupSuccessfulRotation(UserSession session, bool rotationSucceeded = true)
+    {
+        SetupSession(session);
+
+        AccessTokenServiceMock
+            .Setup(service => service.GenerateTokenAsync(session.User, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new AccessTokenResult("access-token", DateTime.UtcNow.AddMinutes(25)));
+
+        RefreshTokenServiceMock
+            .Setup(service => service.GenerateTokenAsync(
+                session.FamilyExpiresAt,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RefreshTokenResult(
+                NewRefreshToken,
+                "new-token-hash",
+                DateTime.UtcNow.AddDays(7),
+                session.FamilyExpiresAt));
+
+        UserSessionRepositoryMock
+            .Setup(repository => repository.RotateAsync(
+                session,
+                It.IsAny<UserSession>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(rotationSucceeded);
+    }
+
+    private void VerifyFamilyRevoked(Guid familyId)
+    {
+        UserSessionRepositoryMock.Verify(repository => repository.RevokeFamilyAsync(
+            familyId,
+            It.IsAny<DateTime>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 }

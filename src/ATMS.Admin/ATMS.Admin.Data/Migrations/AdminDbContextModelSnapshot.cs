@@ -442,12 +442,6 @@ namespace ATMS.Admin.Data.Migrations
                         },
                         new
                         {
-                            Id = 9,
-                            Code = "ProjectDelete",
-                            Module = "Project"
-                        },
-                        new
-                        {
                             Id = 10,
                             Code = "NotificationView",
                             Module = "Notification"
@@ -698,27 +692,6 @@ namespace ATMS.Admin.Data.Migrations
                             Language = "az",
                             Name = "Layihəni redaktə",
                             PermissionId = 8
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Language = "en",
-                            Name = "Project delete",
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Language = "ru",
-                            Name = "Удаление проектов",
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Language = "az",
-                            Name = "Layihəni sil",
-                            PermissionId = 9
                         },
                         new
                         {
@@ -1293,11 +1266,6 @@ namespace ATMS.Admin.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 9,
-                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
-                        },
-                        new
-                        {
                             PermissionId = 10,
                             RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
                         },
@@ -1474,30 +1442,48 @@ namespace ATMS.Admin.Data.Migrations
                     b.ToTable("PasswordResetTokens");
                 });
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.RefreshRevokedToken", b =>
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.UserSession", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Token")
+                    b.Property<DateTime>("FamilyExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FamilyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .IsConcurrencyToken()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Token")
+                    b.HasIndex("FamilyExpiresAt");
+
+                    b.HasIndex("FamilyId");
+
+                    b.HasIndex("TokenHash")
                         .IsUnique();
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshRevokedTokens");
+                    b.ToTable("UserSessions");
                 });
 
             modelBuilder.Entity("ATMS.Admin.Data.Entities.User", b =>
@@ -1587,12 +1573,6 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<string>("Position")
                         .HasColumnType("text");
 
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("RefreshTokenExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1625,9 +1605,6 @@ namespace ATMS.Admin.Data.Migrations
                     b.HasIndex("MaritalStatusId");
 
                     b.HasIndex("NormalizedEmail")
-                        .IsUnique();
-
-                    b.HasIndex("RefreshToken")
                         .IsUnique();
 
                     b.HasIndex("UserStatusId");
@@ -1867,7 +1844,7 @@ namespace ATMS.Admin.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.RefreshRevokedToken", b =>
+            modelBuilder.Entity("ATMS.Admin.Data.Entities.Tokens.UserSession", b =>
                 {
                     b.HasOne("ATMS.Admin.Data.Entities.User", "User")
                         .WithMany()

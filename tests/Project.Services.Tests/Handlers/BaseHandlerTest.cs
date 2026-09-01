@@ -22,6 +22,7 @@ public abstract class BaseHandlerTest
     protected readonly Mock<IOrganizationRepository> OrganizationRepositoryMock = new();
     protected readonly Mock<IWorkProjectRepository> WorkProjectRepositoryMock = new();
     protected readonly Mock<IWorkGroupRepository> WorkGroupRepositoryMock = new();
+    protected readonly Mock<IWorkTicketRepository> WorkTicketRepositoryMock = new();
     protected readonly Mock<IEntityCodeGenerator> EntityCodeGeneratorMock = new();
     
     // Simulates cache miss — factory is called, repository will be hit

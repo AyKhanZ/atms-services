@@ -3,7 +3,6 @@ using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Application.Security;
 using ATMS.Data.Constants;
-using ATMS.Data.Enums;
 using MediatR;
 using System.Diagnostics.CodeAnalysis;
 
@@ -14,11 +13,9 @@ public sealed class AccessBehavior<TRequest, TResponse>(
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private static readonly PermissionEnum[] SystemPermissions = typeof(TRequest)
+    private static readonly AccessAttribute[] AccessRequirements = typeof(TRequest)
         .GetCustomAttributes(typeof(AccessAttribute), inherit: false)
         .Cast<AccessAttribute>()
-        .Select(attribute => attribute.Permission)
-        .Distinct()
         .ToArray();
 
     private static readonly bool RequiresSuperAdmin = typeof(TRequest)
@@ -30,7 +27,7 @@ public sealed class AccessBehavior<TRequest, TResponse>(
         CancellationToken cancellationToken)
     {
         // Requests without SuperAdminAccess or Access attributes do not require system permission checks.
-        if (!RequiresSuperAdmin && SystemPermissions.Length == 0)
+        if (!RequiresSuperAdmin && AccessRequirements.Length == 0)
         {
             return await next(cancellationToken);
         }
@@ -43,8 +40,8 @@ public sealed class AccessBehavior<TRequest, TResponse>(
 
         // At this point SuperAdmin was already allowed above.
         // If this request explicitly requires SuperAdmin, any other user must be denied.
-        // Otherwise, the user must have at least one required permission.
-        if (RequiresSuperAdmin || !HasAnySystemPermission())
+        // Permissions inside one attribute are alternatives. Multiple attributes are cumulative requirements.
+        if (RequiresSuperAdmin || !HasAllSystemPermissionRequirements())
         {
             Deny();
         }
@@ -52,9 +49,9 @@ public sealed class AccessBehavior<TRequest, TResponse>(
         return await next(cancellationToken);
     }
 
-    private bool HasAnySystemPermission()
-        => SystemPermissions.Length == 0 ||
-           SystemPermissions.Any(permission => currentUser.Permissions.Contains(permission.ToString()));
+    private bool HasAllSystemPermissionRequirements()
+        => AccessRequirements.All(requirement =>
+            requirement.Permissions.Any(permission => currentUser.Permissions.Contains(permission.ToString())));
 
     [DoesNotReturn]
     private static void Deny() => throw new AuthException(AuthErrorType.Forbidden, ExceptionMessages.AccessDenied);

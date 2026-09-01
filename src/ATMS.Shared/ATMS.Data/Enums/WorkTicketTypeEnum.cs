@@ -4,5 +4,5 @@ public enum WorkTicketTypeEnum
 {
     Bug = 1,
     Feature,
-    Task
+    Project
 }

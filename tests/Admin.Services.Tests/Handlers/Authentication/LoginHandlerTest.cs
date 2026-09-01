@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Service.Handlers.Authentication;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Exceptions.Auth;
@@ -21,6 +22,7 @@ public class LoginHandlerTest : BaseHandlerTest
     {
         _handler = new LoginHandler(
             UserRepositoryMock.Object,
+            UserSessionRepositoryMock.Object,
             AccessTokenServiceMock.Object,
             RefreshTokenServiceMock.Object,
             PasswordHasherServiceMock.Object);
@@ -61,8 +63,12 @@ public class LoginHandlerTest : BaseHandlerTest
             .ReturnsAsync(new AccessTokenResult(FakeAccessToken, DateTime.UtcNow.AddMinutes(60)));
  
         RefreshTokenServiceMock
-            .Setup(s => s.GenerateTokenAsync(user, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(FakeRefreshToken);
+            .Setup(s => s.GenerateTokenAsync(null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RefreshTokenResult(
+                FakeRefreshToken,
+                "refresh-token-hash",
+                DateTime.UtcNow.AddDays(7),
+                DateTime.UtcNow.AddDays(90)));
     }
  
  
@@ -80,6 +86,28 @@ public class LoginHandlerTest : BaseHandlerTest
  
         Assert.Equal(FakeAccessToken, result.AccessToken);
         Assert.Equal(FakeRefreshToken, result.RefreshToken);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserLogsInTwice_CreatesIndependentSessionFamilies()
+    {
+        var user = CreateUser();
+        var sessions = new List<UserSession>();
+        SetupUser(user);
+        SetupPasswordMatch(true);
+        SetupTokenServices(user);
+        UserSessionRepositoryMock
+            .Setup(repository => repository.AddAsync(
+                It.IsAny<UserSession>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<UserSession, CancellationToken>((session, _) => sessions.Add(session));
+
+        await _handler.Handle(CreateCommand(), CancellationToken.None);
+        await _handler.Handle(CreateCommand(), CancellationToken.None);
+
+        Assert.Equal(2, sessions.Count);
+        Assert.NotEqual(sessions[0].FamilyId, sessions[1].FamilyId);
+        Assert.All(sessions, session => Assert.Equal(user.Id, session.UserId));
     }
  
     [Fact]

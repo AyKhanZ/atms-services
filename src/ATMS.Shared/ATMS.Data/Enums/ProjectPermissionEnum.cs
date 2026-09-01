@@ -3,39 +3,25 @@ namespace ATMS.Data.Enums;
 public enum ProjectPermissionEnum
 {
     ProjectView = 1,
-    ProjectEdit,
-    ProjectDelete,
+    ProjectEdit = 2,
 
-    TicketView,
-    TicketEdit,
-    TicketDelete,
+    TicketEdit = 5,
+    TicketDelete = 6,
     
-    TaskView,
-    TaskEdit,
-    TaskDelete,
+    TaskEdit = 8,
+    TaskDelete = 9,
     
-    CommentView,
-    CommentEdit,
-    CommentDelete,
+    CommentEdit = 11,
+    CommentDelete = 12,
     
-    NotificationView,
-    NotificationEdit,
-    NotificationDelete,
-    
-    GroupView,
-    GroupEdit,
-    GroupDelete,
-    
-    DictionaryView,
-    DictionaryEdit,
-    DictionaryDelete,
-    
-    OrganizationView,
-    OrganizationEdit,
-    OrganizationDelete,
-    
-    UserView,
-    UserEdit,
-    UserDelete,
-    UserInvite,
+    NotificationEdit = 14,
+    NotificationDelete = 15,
+
+    ParticipantEdit = 26,
+    ParticipantDelete = 27,
+    ParticipantInviteClient = 28,
+    ParticipantInviteEmployee = 33,
+
+    TicketCreate = 29,
+    TaskCreate = 30
 }

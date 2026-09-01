@@ -1,11 +1,17 @@
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.WorkGroups;
+using ATMS.Data.Criteria;
 
 namespace ATMS.Project.Data.Repositories.Interfaces;
 
 public interface IWorkGroupRepository
 {
     Task<WorkGroupsQueryResult> GetGroupsAsync(Guid projectId, CancellationToken cancellationToken);
+
+    Task<KeysetPagedResult<WorkGroup>> GetMilestonesAsync(
+        ACriteria<WorkGroup> criteria,
+        KeysetPaginationCriteria<WorkGroup> pagination,
+        CancellationToken cancellationToken);
 
     Task<WorkGroup?> FindAsync(Guid projectId, Guid workGroupId, CancellationToken cancellationToken);
 

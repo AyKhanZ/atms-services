@@ -12,17 +12,16 @@ public enum PermissionEnum
 
     ProjectView,
     ProjectEdit,
-    ProjectDelete,
 
-    NotificationView,
+    NotificationView = 10,
     NotificationEdit,
     NotificationDelete,
     
-    CommentView,
+    CommentView = 13,
     CommentEdit,
     CommentDelete,
     
-    OrganizationView,
+    OrganizationView = 16,
     OrganizationEdit,
     OrganizationDelete,
 }

@@ -1,4 +1,5 @@
 using ATMS.Project.Data.DbContexts;
+using ATMS.Data.Criteria;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.WorkGroups;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -8,6 +9,23 @@ namespace ATMS.Project.Data.Repositories;
 
 public class WorkGroupRepository(ProjectDbContext context) : IWorkGroupRepository
 {
+    public async Task<KeysetPagedResult<WorkGroup>> GetMilestonesAsync(
+        ACriteria<WorkGroup> criteria,
+        KeysetPaginationCriteria<WorkGroup> pagination,
+        CancellationToken cancellationToken)
+    {
+        var query = context.WorkGroups
+            .Include(group => group.ParentWorkGroup)
+            .AsNoTracking();
+        query = criteria.Apply(query);
+
+        var items = await pagination
+            .Apply(query, milestone => milestone.CreatedAt, milestone => milestone.Id)
+            .ToArrayAsync(cancellationToken);
+
+        return pagination.ToResult(items, milestone => milestone.CreatedAt, milestone => milestone.Id);
+    }
+
     public async Task<WorkGroupsQueryResult> GetGroupsAsync(
         Guid projectId,
         CancellationToken cancellationToken)

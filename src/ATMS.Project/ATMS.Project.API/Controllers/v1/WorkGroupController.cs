@@ -2,6 +2,7 @@ using ATMS.Application.Models;
 using ATMS.Project.Contracts.Commands.WorkGroups;
 using ATMS.Project.Contracts.Models.WorkGroups;
 using ATMS.Project.Contracts.Requests.WorkGroups;
+using ATMS.Data.Criteria;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,33 @@ public class WorkGroupController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(new GetWorkGroupsRequest { ProjectId = projectId }, cancellationToken);
 
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns a cursor-paginated milestone lookup for ticket forms.
+    /// </summary>
+    /// <remarks>
+    /// Results are limited to the selected project. Search is performed on the server against milestone and parent
+    /// group names, so the client does not need to load the complete project plan.
+    /// </remarks>
+    /// <param name="projectId">Project ID.</param>
+    /// <param name="request">Search and continuation-token pagination settings.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Returns a page of milestones available for ticket creation or editing.</response>
+    /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden, user cannot edit tickets in this project.</response>
+    /// <response code="404">Project with the specified ID was not found.</response>
+    /// <response code="500">Unexpected server error.</response>
+    [HttpGet("milestones")]
+    [ProducesResponseType(typeof(KeysetPagedResult<MilestoneOptionModel>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<KeysetPagedResult<MilestoneOptionModel>>> GetMilestones(Guid projectId, [FromQuery] GetMilestonesRequest request, CancellationToken cancellationToken)
+    {
+        request.ProjectId = projectId;
+        return Ok(await mediator.Send(request, cancellationToken));
     }
 
     /// <summary>

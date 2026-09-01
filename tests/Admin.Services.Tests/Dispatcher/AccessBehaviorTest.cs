@@ -29,10 +29,14 @@ public class AccessBehaviorTest
     }
 
     [Fact]
-    public async Task Handle_AnyDeclaredSystemPermission_AllowsRequest()
+    public async Task Handle_AllDeclaredSystemPermissionAttributes_AllowsRequest()
     {
         _currentUser.SetupGet(user => user.Permissions)
-            .Returns(new HashSet<string> { PermissionEnum.UserEdit.ToString() });
+            .Returns(new HashSet<string>
+            {
+                nameof(PermissionEnum.UserView),
+                nameof(PermissionEnum.UserEdit)
+            });
         var behavior = CreateBehavior<SystemRequest>();
 
         var result = await behavior.Handle(new SystemRequest(), Next, CancellationToken.None);
@@ -43,6 +47,29 @@ public class AccessBehaviorTest
     [Fact]
     public async Task Handle_MissingSystemPermission_DeniesRequest()
     {
+        var behavior = CreateBehavior<SystemRequest>();
+
+        await Assert.ThrowsAsync<AuthException>(
+            () => behavior.Handle(new SystemRequest(), Next, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Handle_PermissionsInsideOneAttribute_UsesOrSemantics()
+    {
+        _currentUser.SetupGet(user => user.Permissions)
+            .Returns(new HashSet<string> { PermissionEnum.UserEdit.ToString() });
+        var behavior = CreateBehavior<AlternativeSystemRequest>();
+
+        var result = await behavior.Handle(new AlternativeSystemRequest(), Next, CancellationToken.None);
+
+        Assert.Equal("handled", result);
+    }
+
+    [Fact]
+    public async Task Handle_MultipleAttributes_UsesAndSemantics()
+    {
+        _currentUser.SetupGet(user => user.Permissions)
+            .Returns(new HashSet<string> { nameof(PermissionEnum.UserView) });
         var behavior = CreateBehavior<SystemRequest>();
 
         await Assert.ThrowsAsync<AuthException>(
@@ -73,5 +100,8 @@ public class AccessBehaviorTest
     [Access(PermissionEnum.UserView)]
     [Access(PermissionEnum.UserEdit)]
     private sealed record SystemRequest : IRequest<string>;
+
+    [Access(PermissionEnum.UserView, PermissionEnum.UserEdit)]
+    private sealed record AlternativeSystemRequest : IRequest<string>;
 
 }

@@ -6,7 +6,7 @@ using ATMS.Project.Contracts.Requests.Security;
 namespace ATMS.Project.Contracts.Commands.WorkProjects;
 
 [Access(PermissionEnum.ProjectEdit)]
-[ProjectAccess(ProjectPermissionEnum.ProjectEdit)]
+[ProjectAccess(ProjectPermissionEnum.ParticipantDelete)]
 public class DeleteWorkProjectParticipantCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }

@@ -42,7 +42,6 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
             // Project
             new { Id = (int)PermissionEnum.ProjectView, Code = "ProjectView", Module = "Project" },
             new { Id = (int)PermissionEnum.ProjectEdit, Code = "ProjectEdit", Module = "Project" },
-            new { Id = (int)PermissionEnum.ProjectDelete, Code = "ProjectDelete", Module = "Project" },
           
             // Notification
             new { Id = (int)PermissionEnum.NotificationView, Code = "NotificationView", Module = "Notification" },
@@ -108,9 +107,6 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { Id = 22, PermissionId = (int)PermissionEnum.ProjectEdit, Language = "en", Name = "Project edit" },
             new { Id = 23, PermissionId = (int)PermissionEnum.ProjectEdit, Language = "ru", Name = "Редактирование проектов" },
             new { Id = 24, PermissionId = (int)PermissionEnum.ProjectEdit, Language = "az", Name = "Layihəni redaktə" },
-            new { Id = 25, PermissionId = (int)PermissionEnum.ProjectDelete, Language = "en", Name = "Project delete" },
-            new { Id = 26, PermissionId = (int)PermissionEnum.ProjectDelete, Language = "ru", Name = "Удаление проектов" },
-            new { Id = 27, PermissionId = (int)PermissionEnum.ProjectDelete, Language = "az", Name = "Layihəni sil" },
             
             // Comment
             new { Id = 28, PermissionId = (int)PermissionEnum.CommentView, Language = "en", Name = "Comment view" },

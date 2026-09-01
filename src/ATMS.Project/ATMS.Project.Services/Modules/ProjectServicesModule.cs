@@ -21,6 +21,7 @@ public static class ProjectServicesModule
         services.AddValidationServices();
         services.AddProjectData(configuration);
         services.AddScoped<IProjectPermissionService, ProjectPermissionService>();
+        services.AddScoped<IProjectAccessPolicyResolver, ProjectAccessPolicyResolver>();
         services.AddEmailServices(configuration);
         services.AddHandlerServices();
         services.AddMapperServices();

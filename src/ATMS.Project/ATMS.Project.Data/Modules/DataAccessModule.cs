@@ -30,6 +30,7 @@ public static class DataAccessModule
         services.AddScoped<IOrganizationRepository, OrganizationRepository>();
         services.AddScoped<IWorkProjectRepository, WorkProjectRepository>();
         services.AddScoped<IWorkGroupRepository, WorkGroupRepository>();
+        services.AddScoped<IWorkTicketRepository, WorkTicketRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IProjectPermissionRepository, ProjectPermissionRepository>();
         services.AddScoped<IEntityCodeGenerator, EntityCodeGenerator>();

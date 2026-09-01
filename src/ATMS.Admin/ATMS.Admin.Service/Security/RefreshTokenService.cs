@@ -1,15 +1,18 @@
-using ATMS.Admin.Data.Entities;
+using System.Security.Cryptography;
+using System.Text;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
+using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Admin.Service.Security;
 
 public class RefreshTokenService(
-    IUserRepository userRepository,
+    IUserSessionRepository userSessionRepository,
     IUniqueTokenService uniqueTokenService,
     IConfiguration configuration) : IRefreshTokenService
 {
@@ -18,16 +21,31 @@ public class RefreshTokenService(
             ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
                 string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
-    
-    public async Task<string> GenerateTokenAsync(User user, CancellationToken cancellationToken)
+    public async Task<RefreshTokenResult> GenerateTokenAsync(DateTime? familyExpiresAt, CancellationToken cancellationToken)
     {
+        var now = DateTime.UtcNow;
+        var absoluteExpiration = familyExpiresAt
+            ?? now.AddDays(_jwtOptions.MaxRefreshTokenLifetimeExpirationInDays);
+
         var refreshToken = await uniqueTokenService.GenerateUniqueAsync(
-            async token => await userRepository.IsExistAsync(u => u.RefreshToken == token, cancellationToken)
-        );
+            token => userSessionRepository.IsTokenHashExistsAsync(HashToken(token), cancellationToken));
 
-        user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
+        var expiresAt = now.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
+        if (expiresAt > absoluteExpiration)
+        {
+            expiresAt = absoluteExpiration;
+        }
 
-        return refreshToken;
+        return new RefreshTokenResult(
+            refreshToken,
+            HashToken(refreshToken),
+            expiresAt,
+            absoluteExpiration);
+    }
+
+    public string HashToken(string token)
+    {
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+        return WebEncoders.Base64UrlEncode(hash);
     }
 }

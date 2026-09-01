@@ -109,7 +109,7 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("OwnerType", "OwnerId", "CreatedAt");
 
-                    b.ToTable("Attachments", (string)null);
+                    b.ToTable("Attachments");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Comment", b =>
@@ -165,7 +165,7 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("OwnerType", "OwnerId", "CreatedAt");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.Permission", b =>
@@ -201,16 +201,6 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            Id = 3,
-                            Code = "ProjectDelete"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Code = "TicketView"
-                        },
-                        new
-                        {
                             Id = 5,
                             Code = "TicketEdit"
                         },
@@ -218,11 +208,6 @@ namespace ATMS.Project.Data.Migrations
                         {
                             Id = 6,
                             Code = "TicketDelete"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Code = "TaskView"
                         },
                         new
                         {
@@ -236,11 +221,6 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            Id = 10,
-                            Code = "CommentView"
-                        },
-                        new
-                        {
                             Id = 11,
                             Code = "CommentEdit"
                         },
@@ -248,11 +228,6 @@ namespace ATMS.Project.Data.Migrations
                         {
                             Id = 12,
                             Code = "CommentDelete"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Code = "NotificationView"
                         },
                         new
                         {
@@ -266,68 +241,33 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            Id = 16,
-                            Code = "GroupView"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Code = "GroupEdit"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Code = "GroupDelete"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Code = "DictionaryView"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Code = "DictionaryEdit"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Code = "DictionaryDelete"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Code = "OrganizationView"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Code = "OrganizationEdit"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Code = "OrganizationDelete"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Code = "UserView"
-                        },
-                        new
-                        {
                             Id = 26,
-                            Code = "UserEdit"
+                            Code = "ParticipantEdit"
                         },
                         new
                         {
                             Id = 27,
-                            Code = "UserDelete"
+                            Code = "ParticipantDelete"
                         },
                         new
                         {
                             Id = 28,
-                            Code = "UserInvite"
+                            Code = "ParticipantInviteClient"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Code = "ParticipantInviteEmployee"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Code = "TicketCreate"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Code = "TaskCreate"
                         });
                 });
 
@@ -371,7 +311,7 @@ namespace ATMS.Project.Data.Migrations
                         {
                             Id = 2,
                             Language = "ru",
-                            Name = "Просмотр проектов",
+                            Name = "Просмотр проекта",
                             PermissionId = 1
                         },
                         new
@@ -392,7 +332,7 @@ namespace ATMS.Project.Data.Migrations
                         {
                             Id = 5,
                             Language = "ru",
-                            Name = "Редактирование проектов",
+                            Name = "Редактирование проекта",
                             PermissionId = 2
                         },
                         new
@@ -401,48 +341,6 @@ namespace ATMS.Project.Data.Migrations
                             Language = "az",
                             Name = "Layihəni redaktə et",
                             PermissionId = 2
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Language = "en",
-                            Name = "Project delete",
-                            PermissionId = 3
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Language = "ru",
-                            Name = "Удаление проектов",
-                            PermissionId = 3
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Language = "az",
-                            Name = "Layihəni sil",
-                            PermissionId = 3
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Language = "en",
-                            Name = "Ticket view",
-                            PermissionId = 4
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Language = "ru",
-                            Name = "Просмотр тикетов",
-                            PermissionId = 4
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Language = "az",
-                            Name = "Tiketi baxış",
-                            PermissionId = 4
                         },
                         new
                         {
@@ -488,27 +386,6 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            Id = 19,
-                            Language = "en",
-                            Name = "Task view",
-                            PermissionId = 7
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Language = "ru",
-                            Name = "Просмотр задач",
-                            PermissionId = 7
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Language = "az",
-                            Name = "Tapşırığa baxış",
-                            PermissionId = 7
-                        },
-                        new
-                        {
                             Id = 22,
                             Language = "en",
                             Name = "Task edit",
@@ -548,27 +425,6 @@ namespace ATMS.Project.Data.Migrations
                             Language = "az",
                             Name = "Tapşırığı sil",
                             PermissionId = 9
-                        },
-                        new
-                        {
-                            Id = 28,
-                            Language = "en",
-                            Name = "Comment view",
-                            PermissionId = 10
-                        },
-                        new
-                        {
-                            Id = 29,
-                            Language = "ru",
-                            Name = "Просмотр комментариев",
-                            PermissionId = 10
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Language = "az",
-                            Name = "Şərhə baxış",
-                            PermissionId = 10
                         },
                         new
                         {
@@ -614,27 +470,6 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            Id = 37,
-                            Language = "en",
-                            Name = "Notification view",
-                            PermissionId = 13
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Language = "ru",
-                            Name = "Просмотр уведомлений",
-                            PermissionId = 13
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Language = "az",
-                            Name = "Bildirişə baxış",
-                            PermissionId = 13
-                        },
-                        new
-                        {
                             Id = 40,
                             Language = "en",
                             Name = "Notification edit",
@@ -677,255 +512,129 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            Id = 46,
-                            Language = "en",
-                            Name = "Group view",
-                            PermissionId = 16
-                        },
-                        new
-                        {
-                            Id = 47,
-                            Language = "ru",
-                            Name = "Просмотр групп",
-                            PermissionId = 16
-                        },
-                        new
-                        {
-                            Id = 48,
-                            Language = "az",
-                            Name = "Qrupa baxış",
-                            PermissionId = 16
-                        },
-                        new
-                        {
-                            Id = 49,
-                            Language = "en",
-                            Name = "Group edit",
-                            PermissionId = 17
-                        },
-                        new
-                        {
-                            Id = 50,
-                            Language = "ru",
-                            Name = "Редактирование групп",
-                            PermissionId = 17
-                        },
-                        new
-                        {
-                            Id = 51,
-                            Language = "az",
-                            Name = "Qrupu redaktə et",
-                            PermissionId = 17
-                        },
-                        new
-                        {
-                            Id = 52,
-                            Language = "en",
-                            Name = "Group delete",
-                            PermissionId = 18
-                        },
-                        new
-                        {
-                            Id = 53,
-                            Language = "ru",
-                            Name = "Удаление групп",
-                            PermissionId = 18
-                        },
-                        new
-                        {
-                            Id = 54,
-                            Language = "az",
-                            Name = "Qrupu sil",
-                            PermissionId = 18
-                        },
-                        new
-                        {
-                            Id = 55,
-                            Language = "en",
-                            Name = "Dictionary view",
-                            PermissionId = 19
-                        },
-                        new
-                        {
-                            Id = 56,
-                            Language = "ru",
-                            Name = "Просмотр справочников",
-                            PermissionId = 19
-                        },
-                        new
-                        {
-                            Id = 57,
-                            Language = "az",
-                            Name = "Lüğətə baxış",
-                            PermissionId = 19
-                        },
-                        new
-                        {
-                            Id = 58,
-                            Language = "en",
-                            Name = "Dictionary edit",
-                            PermissionId = 20
-                        },
-                        new
-                        {
-                            Id = 59,
-                            Language = "ru",
-                            Name = "Редактирование справочников",
-                            PermissionId = 20
-                        },
-                        new
-                        {
-                            Id = 60,
-                            Language = "az",
-                            Name = "Lüğəti redaktə et",
-                            PermissionId = 20
-                        },
-                        new
-                        {
-                            Id = 61,
-                            Language = "en",
-                            Name = "Dictionary delete",
-                            PermissionId = 21
-                        },
-                        new
-                        {
-                            Id = 62,
-                            Language = "ru",
-                            Name = "Удаление справочников",
-                            PermissionId = 21
-                        },
-                        new
-                        {
-                            Id = 63,
-                            Language = "az",
-                            Name = "Lüğəti sil",
-                            PermissionId = 21
-                        },
-                        new
-                        {
-                            Id = 64,
-                            Language = "en",
-                            Name = "Organization view",
-                            PermissionId = 22
-                        },
-                        new
-                        {
-                            Id = 65,
-                            Language = "ru",
-                            Name = "Просмотр организаций",
-                            PermissionId = 22
-                        },
-                        new
-                        {
-                            Id = 66,
-                            Language = "az",
-                            Name = "Təşkilata baxış",
-                            PermissionId = 22
-                        },
-                        new
-                        {
-                            Id = 67,
-                            Language = "en",
-                            Name = "Organization edit",
-                            PermissionId = 23
-                        },
-                        new
-                        {
-                            Id = 68,
-                            Language = "ru",
-                            Name = "Редактирование организаций",
-                            PermissionId = 23
-                        },
-                        new
-                        {
-                            Id = 69,
-                            Language = "az",
-                            Name = "Təşkilatı redaktə et",
-                            PermissionId = 23
-                        },
-                        new
-                        {
-                            Id = 70,
-                            Language = "en",
-                            Name = "Organization delete",
-                            PermissionId = 24
-                        },
-                        new
-                        {
-                            Id = 71,
-                            Language = "ru",
-                            Name = "Удаление организаций",
-                            PermissionId = 24
-                        },
-                        new
-                        {
-                            Id = 72,
-                            Language = "az",
-                            Name = "Təşkilatı sil",
-                            PermissionId = 24
-                        },
-                        new
-                        {
-                            Id = 73,
-                            Language = "en",
-                            Name = "User view",
-                            PermissionId = 25
-                        },
-                        new
-                        {
-                            Id = 74,
-                            Language = "ru",
-                            Name = "Просмотр пользователей",
-                            PermissionId = 25
-                        },
-                        new
-                        {
-                            Id = 75,
-                            Language = "az",
-                            Name = "İstifadəçiyə baxış",
-                            PermissionId = 25
-                        },
-                        new
-                        {
                             Id = 76,
                             Language = "en",
-                            Name = "User edit",
+                            Name = "Participant edit",
                             PermissionId = 26
                         },
                         new
                         {
                             Id = 77,
                             Language = "ru",
-                            Name = "Редактирование польз.",
+                            Name = "Изменение роли участника",
                             PermissionId = 26
                         },
                         new
                         {
                             Id = 78,
                             Language = "az",
-                            Name = "İstifadəçini redaktə",
+                            Name = "İştirakçını redaktə et",
                             PermissionId = 26
                         },
                         new
                         {
                             Id = 79,
                             Language = "en",
-                            Name = "User delete",
+                            Name = "Participant delete",
                             PermissionId = 27
                         },
                         new
                         {
                             Id = 80,
                             Language = "ru",
-                            Name = "Удаление пользователей",
+                            Name = "Удаление участника",
                             PermissionId = 27
                         },
                         new
                         {
                             Id = 81,
                             Language = "az",
-                            Name = "İstifadəçини sil",
+                            Name = "İştirakçını sil",
                             PermissionId = 27
+                        },
+                        new
+                        {
+                            Id = 82,
+                            Language = "en",
+                            Name = "Invite client participant",
+                            PermissionId = 28
+                        },
+                        new
+                        {
+                            Id = 83,
+                            Language = "ru",
+                            Name = "Приглашение участника клиента",
+                            PermissionId = 28
+                        },
+                        new
+                        {
+                            Id = 84,
+                            Language = "az",
+                            Name = "Müştəri iştirakçısını dəvət et",
+                            PermissionId = 28
+                        },
+                        new
+                        {
+                            Id = 97,
+                            Language = "en",
+                            Name = "Invite employee participant",
+                            PermissionId = 33
+                        },
+                        new
+                        {
+                            Id = 98,
+                            Language = "ru",
+                            Name = "Приглашение сотрудника",
+                            PermissionId = 33
+                        },
+                        new
+                        {
+                            Id = 99,
+                            Language = "az",
+                            Name = "Əməkdaş iştirakçını dəvət et",
+                            PermissionId = 33
+                        },
+                        new
+                        {
+                            Id = 85,
+                            Language = "en",
+                            Name = "Ticket create",
+                            PermissionId = 29
+                        },
+                        new
+                        {
+                            Id = 86,
+                            Language = "ru",
+                            Name = "Создание тикетов",
+                            PermissionId = 29
+                        },
+                        new
+                        {
+                            Id = 87,
+                            Language = "az",
+                            Name = "Tiket yarat",
+                            PermissionId = 29
+                        },
+                        new
+                        {
+                            Id = 88,
+                            Language = "en",
+                            Name = "Task create",
+                            PermissionId = 30
+                        },
+                        new
+                        {
+                            Id = 89,
+                            Language = "ru",
+                            Name = "Создание задач",
+                            PermissionId = 30
+                        },
+                        new
+                        {
+                            Id = 90,
+                            Language = "az",
+                            Name = "Tapşırıq yarat",
+                            PermissionId = 30
                         });
                 });
 
@@ -2017,7 +1726,7 @@ namespace ATMS.Project.Data.Migrations
                         new
                         {
                             Id = 3,
-                            Code = "Task"
+                            Code = "Project"
                         });
                 });
 
@@ -2096,21 +1805,21 @@ namespace ATMS.Project.Data.Migrations
                         {
                             Id = 7,
                             Language = "en",
-                            Name = "Task",
+                            Name = "Project",
                             WorkTicketTypeId = 3
                         },
                         new
                         {
                             Id = 8,
                             Language = "ru",
-                            Name = "Задача",
+                            Name = "Проект",
                             WorkTicketTypeId = 3
                         },
                         new
                         {
                             Id = 9,
                             Language = "az",
-                            Name = "Tapşırıq",
+                            Name = "Layihə",
                             WorkTicketTypeId = 3
                         });
                 });
@@ -2188,7 +1897,7 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("WorkProjectId", "StartsAt");
 
-                    b.ToTable("Meetings", (string)null);
+                    b.ToTable("Meetings");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingAgendaItem", b =>
@@ -2213,7 +1922,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("MeetingId", "Order")
                         .IsUnique();
 
-                    b.ToTable("MeetingAgendaItems", (string)null);
+                    b.ToTable("MeetingAgendaItems");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingMinute", b =>
@@ -2254,7 +1963,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("MeetingId", "Order")
                         .IsUnique();
 
-                    b.ToTable("MeetingMinutes", (string)null);
+                    b.ToTable("MeetingMinutes");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingParticipant", b =>
@@ -2281,7 +1990,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("MeetingId", "ParticipantId")
                         .IsUnique();
 
-                    b.ToTable("MeetingParticipants", (string)null);
+                    b.ToTable("MeetingParticipants");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Organization", b =>
@@ -2335,12 +2044,14 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("DeletedById");
 
                     b.HasIndex("Title")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.HasIndex("UpdatedById");
 
                     b.HasIndex("Voen")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("Organizations");
                 });
@@ -2436,27 +2147,7 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 3,
-                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
-                        },
-                        new
-                        {
-                            PermissionId = 16,
-                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
-                        },
-                        new
-                        {
-                            PermissionId = 17,
-                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
-                        },
-                        new
-                        {
-                            PermissionId = 18,
-                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
-                        },
-                        new
-                        {
-                            PermissionId = 4,
+                            PermissionId = 29,
                             RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
                         },
                         new
@@ -2471,7 +2162,7 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 7,
+                            PermissionId = 30,
                             RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
                         },
                         new
@@ -2486,11 +2177,6 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 10,
-                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
-                        },
-                        new
-                        {
                             PermissionId = 11,
                             RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
                         },
@@ -2501,7 +2187,22 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 13,
+                            PermissionId = 26,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 27,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 28,
+                            RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
+                        },
+                        new
+                        {
+                            PermissionId = 33,
                             RoleId = new Guid("869cbfbe-f0ad-4357-b369-71b3ece4a890")
                         },
                         new
@@ -2511,157 +2212,7 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 2,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 3,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 16,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 17,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 18,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 4,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 5,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 6,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 7,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 8,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 9,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 10,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 11,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 12,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
-                            PermissionId = 13,
-                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
-                        },
-                        new
-                        {
                             PermissionId = 1,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 2,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 3,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 16,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 17,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 18,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 4,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 5,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 6,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 7,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 8,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 9,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 10,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 11,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 12,
-                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
-                        },
-                        new
-                        {
-                            PermissionId = 13,
                             RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
                         },
                         new
@@ -2671,27 +2222,7 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 16,
-                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
-                        },
-                        new
-                        {
-                            PermissionId = 4,
-                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
-                        },
-                        new
-                        {
-                            PermissionId = 7,
-                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
-                        },
-                        new
-                        {
-                            PermissionId = 10,
-                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
-                        },
-                        new
-                        {
-                            PermissionId = 13,
+                            PermissionId = 29,
                             RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
                         },
                         new
@@ -2712,31 +2243,6 @@ namespace ATMS.Project.Data.Migrations
                         new
                         {
                             PermissionId = 1,
-                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
-                        },
-                        new
-                        {
-                            PermissionId = 16,
-                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
-                        },
-                        new
-                        {
-                            PermissionId = 4,
-                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
-                        },
-                        new
-                        {
-                            PermissionId = 7,
-                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
-                        },
-                        new
-                        {
-                            PermissionId = 10,
-                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
-                        },
-                        new
-                        {
-                            PermissionId = 13,
                             RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
                         },
                         new

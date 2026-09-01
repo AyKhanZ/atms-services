@@ -22,6 +22,21 @@ public class DictionariesRepository(ProjectDbContext context) : IDictionariesRep
         return context.ProjectTypes.AnyAsync(x => x.Id == id, cancellationToken);
     }
 
+    public Task<bool> IsWorkItemPriorityExistAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return context.WorkItemPriorities.AnyAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public Task<bool> IsWorkTicketTypeExistAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return context.WorkTicketTypes.AnyAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public Task<bool> IsWorkTicketStatusExistAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return context.WorkTicketStatuses.AnyAsync(x => x.Id == id, cancellationToken);
+    }
+
     public Task<List<ProjectKind>> GetProjectKindsAsync(CancellationToken cancellationToken = default)
     {
         return context.ProjectKinds
