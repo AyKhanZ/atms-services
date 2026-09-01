@@ -27,11 +27,6 @@ public class User : AuditableUserBase
     public DateTime? LockoutEnd { get; set; }
 
 
-    public string? RefreshToken { get; set; }
-
-    public DateTime? RefreshTokenExpiresAt { get; set; }
-
-    
     public int LanguageId { get; set; }
 
     public Language Language { get; set; }

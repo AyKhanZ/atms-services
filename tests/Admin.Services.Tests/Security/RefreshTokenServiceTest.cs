@@ -5,59 +5,70 @@ namespace Admin.Services.Tests.Security;
 
 public class RefreshTokenServiceTest : BaseServiceTest
 {
-    
-    private readonly RefreshTokenService _refreshTokenService;
-    
+    private readonly RefreshTokenService _service;
+
     public RefreshTokenServiceTest()
     {
-        _refreshTokenService = new RefreshTokenService(
-            UserRepositoryMock.Object,
+        _service = new RefreshTokenService(
+            UserSessionRepositoryMock.Object,
             UniqueTokenServiceMock.Object,
             BuildConfiguration());
     }
-    
+
     [Fact]
-    public async Task GenerateTokenAsync_ReturnsTokenFromUniqueTokenService()
+    public async Task GenerateTokenAsync_ReturnsHashedTokenWithoutPersistingRawToken()
     {
-        var user = CreateUser();
-        var token = Faker.Random.AlphaNumeric(100);
+        const string token = "raw-refresh-token";
         UniqueTokenServiceMock
-            .Setup(s => s.GenerateUniqueAsync(It.IsAny<Func<string, Task<bool>>>(),5))
+            .Setup(service => service.GenerateUniqueAsync(
+                It.IsAny<Func<string, Task<bool>>>(),
+                It.IsAny<int>()))
             .ReturnsAsync(token);
- 
-        var result = await _refreshTokenService.GenerateTokenAsync(user, CancellationToken.None);
- 
-        Assert.Equal(token, result);
+
+        var result = await _service.GenerateTokenAsync(null, CancellationToken.None);
+
+        Assert.Equal(token, result.Token);
+        Assert.NotEqual(token, result.TokenHash);
+        Assert.Equal(_service.HashToken(token), result.TokenHash);
     }
-    
+
     [Fact]
-    public async Task GenerateTokenAsync_SetsCorrectRefreshTokenExpiration()
+    public async Task GenerateTokenAsync_ForNewFamily_UsesConfiguredLifetimes()
     {
-        var user = CreateUser();
-        var token = Faker.Random.AlphaNumeric(100);
         UniqueTokenServiceMock
-            .Setup(s => s.GenerateUniqueAsync(It.IsAny<Func<string, Task<bool>>>(),5))
-            .ReturnsAsync(token);
- 
-        var before = DateTime.UtcNow.AddDays(ValidRefreshExpirationInDays);
-        await _refreshTokenService.GenerateTokenAsync(user, CancellationToken.None);
-        var after = DateTime.UtcNow.AddDays(ValidRefreshExpirationInDays);
- 
-        Assert.True(user.RefreshTokenExpiresAt.HasValue);
-        Assert.InRange(user.RefreshTokenExpiresAt.Value, before, after);
+            .Setup(service => service.GenerateUniqueAsync(
+                It.IsAny<Func<string, Task<bool>>>(),
+                It.IsAny<int>()))
+            .ReturnsAsync("token");
+        var before = DateTime.UtcNow;
+
+        var result = await _service.GenerateTokenAsync(null, CancellationToken.None);
+
+        Assert.InRange(
+            result.ExpiresAt,
+            before.AddDays(ValidRefreshExpirationInDays),
+            DateTime.UtcNow.AddDays(ValidRefreshExpirationInDays));
+        Assert.InRange(
+            result.FamilyExpiresAt,
+            before.AddDays(MaxRefreshExpirationInDays),
+            DateTime.UtcNow.AddDays(MaxRefreshExpirationInDays));
     }
-    
+
     [Fact]
-    public async Task GenerateTokenAsync_SetsRefreshTokenOnUser()
+    public async Task GenerateTokenAsync_NeverExtendsPastFamilyExpiration()
     {
-        var user = CreateUser();
-        var token = Faker.Random.AlphaNumeric(100);
         UniqueTokenServiceMock
-            .Setup(s => s.GenerateUniqueAsync(It.IsAny<Func<string, Task<bool>>>(),5))
-            .ReturnsAsync(token);
- 
-        await _refreshTokenService.GenerateTokenAsync(user, CancellationToken.None);
- 
-        Assert.Equal(token, user.RefreshToken);
+            .Setup(service => service.GenerateUniqueAsync(
+                It.IsAny<Func<string, Task<bool>>>(),
+                It.IsAny<int>()))
+            .ReturnsAsync("token");
+        var familyExpiration = DateTime.UtcNow.AddMinutes(5);
+
+        var result = await _service.GenerateTokenAsync(
+            familyExpiration,
+            CancellationToken.None);
+
+        Assert.Equal(familyExpiration, result.ExpiresAt);
+        Assert.Equal(familyExpiration, result.FamilyExpiresAt);
     }
 }

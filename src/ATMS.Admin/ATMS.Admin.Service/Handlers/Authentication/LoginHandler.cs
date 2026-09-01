@@ -1,6 +1,7 @@
 ﻿using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Contracts.Models;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
@@ -12,6 +13,7 @@ namespace ATMS.Admin.Service.Handlers.Authentication;
 
 public class LoginHandler(
     IUserRepository userRepository,
+    IUserSessionRepository userSessionRepository,
     IAccessTokenService accessTokenService,
     IRefreshTokenService refreshTokenService,
     IPasswordHasherService passwordHasherService) : IRequestHandler<LoginCommand, AccessInfoModel>
@@ -33,7 +35,20 @@ public class LoginHandler(
         VerifyPasswords(user, command);
 
         var accessTokenResult = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
-        var refreshToken = await refreshTokenService.GenerateTokenAsync(user, cancellationToken);
+        var refreshToken = await refreshTokenService.GenerateTokenAsync(null, cancellationToken);
+
+        await userSessionRepository.AddAsync(
+            new UserSession
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                FamilyId = Guid.NewGuid(),
+                TokenHash = refreshToken.TokenHash,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = refreshToken.ExpiresAt,
+                FamilyExpiresAt = refreshToken.FamilyExpiresAt
+            },
+            cancellationToken);
 
         await userRepository.SaveAsync(cancellationToken);
 
@@ -41,7 +56,7 @@ public class LoginHandler(
         {
             AccessToken = accessTokenResult.Token,
             AccessTokenExpireTime = accessTokenResult.ExpiresInMinutes,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken.Token
         };
     }
 

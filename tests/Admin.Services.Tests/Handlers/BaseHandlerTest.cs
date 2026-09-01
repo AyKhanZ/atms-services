@@ -23,13 +23,6 @@ public abstract class BaseHandlerTest
         CurrentUserMock.SetupGet(x => x.RoleId).Returns(Guid.NewGuid());
         CurrentUserMock.SetupGet(x => x.OrganizationId).Returns((Guid?)null);
         CurrentUserMock.SetupGet(x => x.UserType).Returns("Client");
-        BlackListServiceMock
-            .Setup(x => x.TryAddToListAsync(
-                It.IsAny<Guid>(),
-                It.IsAny<string>(),
-                It.IsAny<DateTime>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
     }
     
     protected readonly Mock<IMapper> MapperMock = new();
@@ -39,6 +32,7 @@ public abstract class BaseHandlerTest
     protected readonly Mock<ICacheService> CacheServiceMock = new();
     
     protected readonly Mock<IUserRepository> UserRepositoryMock = new();
+    protected readonly Mock<IUserSessionRepository> UserSessionRepositoryMock = new();
     protected readonly Mock<IRoleRepository> RoleRepositoryMock = new();
     protected readonly Mock<IOutboxRepository> OutboxRepositoryMock = new();
     protected readonly Mock<IOnboardingRepository> OnboardingRepositoryMock = new();
@@ -48,7 +42,6 @@ public abstract class BaseHandlerTest
     
     protected readonly Mock<IMigrationRunner> MigrationRunnerMock = new();
     protected readonly Mock<IPasswordService> PasswordServiceMock = new();
-    protected readonly Mock<IBlackListService> BlackListServiceMock = new();
     protected readonly Mock<IAccessTokenService> AccessTokenServiceMock = new();
     protected readonly Mock<IRefreshTokenService> RefreshTokenServiceMock = new();
     protected readonly Mock<IPasswordHasherService> PasswordHasherServiceMock = new();

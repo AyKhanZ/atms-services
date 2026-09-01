@@ -16,9 +16,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(e => e.NormalizedEmail)
             .IsUnique();
 
-        builder.HasIndex(e => e.RefreshToken)
-            .IsUnique();
-        
         builder.HasIndex(u => u.UserStatusId);
         
         builder.HasIndex(u => u.CreatedAt);

@@ -1,4 +1,5 @@
 ﻿using ATMS.Admin.Service.Security;
+using ATMS.Admin.Service.Infrastructure;
 using ATMS.Admin.Service.Security.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,9 +16,9 @@ public static class SecurityModule
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<IResetPasswordTokenService, ResetPasswordTokenService>();
         services.AddScoped<IEmailConfirmationTokenService, EmailConfirmationTokenService>();
-        services.AddScoped<IBlackListService, BlackListService>();
-
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+
+        services.AddHostedService<UserSessionCleanupBackgroundService>();
 
         return services;
     }

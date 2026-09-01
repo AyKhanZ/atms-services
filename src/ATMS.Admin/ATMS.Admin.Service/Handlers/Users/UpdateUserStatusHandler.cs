@@ -12,6 +12,7 @@ namespace ATMS.Admin.Service.Handlers.Users;
 
 public class UpdateUserStatusHandler(
     IUserRepository userRepository,
+    IUserSessionRepository userSessionRepository,
     ICacheService cache) : IRequestHandler<UpdateUserStatusCommand>
 {
     public async Task Handle(UpdateUserStatusCommand command, CancellationToken cancellationToken)
@@ -24,13 +25,15 @@ public class UpdateUserStatusHandler(
 
         entity.UserStatusId = command.UserStatusId;
 
+        await userRepository.SaveAsync(cancellationToken);
+
         if (entity.UserStatusId != (int)UserStatusEnum.Active)
         {
-            entity.RefreshToken = null;
-            entity.RefreshTokenExpiresAt = null;
+            await userSessionRepository.RevokeAllAsync(
+                entity.Id,
+                DateTime.UtcNow,
+                cancellationToken);
         }
-
-        await userRepository.SaveAsync(cancellationToken);
 
         await InvalidateUserCacheAsync(command, cancellationToken);
     }
