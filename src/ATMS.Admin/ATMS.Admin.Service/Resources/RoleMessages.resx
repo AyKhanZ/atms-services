@@ -20,20 +20,20 @@
     </resheader>
     
     <data name="PermissionsNotFound" xml:space="preserve">
-        <value>One or more permissions do not exist .</value>
+        <value>One or more permissions do not exist.</value>
     </data>
     
     <data name="NotFound" xml:space="preserve">
-        <value>Role not found .</value>
+        <value>Role not found.</value>
     </data>
     
     
     <data name="AlreadyExists" xml:space="preserve">
-        <value>Role with this name already exists .</value>
+        <value>Role with this name already exists.</value>
     </data>
     
     
     <data name="PermissionsRequired" xml:space="preserve">
-        <value>At least one permission should be entered .</value>
+        <value>At least one permission should be entered.</value>
     </data>
 </root>

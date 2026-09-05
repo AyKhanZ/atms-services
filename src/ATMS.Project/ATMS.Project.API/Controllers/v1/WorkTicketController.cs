@@ -143,19 +143,21 @@ public class WorkTicketController(IMediator mediator) : ControllerBase
     /// Deletes a ticket from the selected project.
     /// </summary>
     /// <remarks>
-    /// The ticket is soft-deleted only when it belongs to the project from the route and the current user has the
-    /// ticket delete permission for that project.
+    /// The ticket is soft-deleted only when it belongs to the project from the route, has no tasks and the current
+    /// user has the ticket delete permission for that project.
     /// </remarks>
     /// <param name="projectId">Project ID.</param>
     /// <param name="workTicketId">Ticket ID.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">Ticket successfully deleted.</response>
+    /// <response code="400">The ticket still has tasks and cannot be deleted.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
     /// <response code="403">Resource forbidden, user cannot delete tickets in this project.</response>
     /// <response code="404">Project or ticket with the specified ID was not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpDelete("{workTicketId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]

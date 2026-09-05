@@ -10,11 +10,16 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 {
     public void Configure(EntityTypeBuilder<WorkTask> builder)
     {
-        builder.ToTable("Tasks", t =>
-            t.HasCheckConstraint("CK_Tasks_Level", "\"Level\" <= 1"));
+        builder.ToTable("Tasks");
 
         builder.HasIndex(e => e.Code)
             .IsUnique();
+
+        builder.HasIndex(e => new { e.WorkTicketId, e.ParentWorkTaskId, e.CreatedAt, e.Id });
+
+        builder.HasIndex(e => new { e.ParentWorkTaskId, e.CreatedAt, e.Id });
+
+        builder.HasIndex(e => new { e.WorkProjectId, e.CreatedAt, e.Id });
 
 
         builder.Property(e => e.Code)
@@ -23,10 +28,10 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 
         builder.Property(e => e.Title)
             .IsRequired()
-            .HasMaxLength(300);
+            .HasMaxLength(100);
 
         builder.Property(e => e.Description)
-            .HasMaxLength(4000);
+            .HasMaxLength(2000);
 
         builder.Property(e => e.StatusId)
             .HasDefaultValue((int)WorkTaskStatusEnum.New)
@@ -34,9 +39,6 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 
         builder.Property(e => e.PriorityId)
             .HasDefaultValue((int)WorkItemPriorityEnum.Low)
-            .IsRequired();
-
-        builder.Property(e => e.Level)
             .IsRequired();
 
         builder.Property(e => e.CreatedAt)

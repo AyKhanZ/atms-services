@@ -37,11 +37,7 @@ public class DeleteWorkTicketHandlerTest : BaseHandlerTest
         WorkTicketRepositoryMock.Verify(
             repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Once);
-        CacheServiceMock.Verify(
-            cache => cache.RemoveAsync(
-                CacheKeys.Project.TicketById(ticket.Id),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        VerifyAllLocalizedCacheEntriesRemoved(language => CacheKeys.Project.TicketById(ticket.Id, language));
     }
 
     [Fact]

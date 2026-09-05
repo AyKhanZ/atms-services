@@ -1,10 +1,10 @@
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Interfaces;
-using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
+using ATMS.Project.Services.Caching;
 using ATMS.Project.Services.Security.Interfaces;
 using MediatR;
 
@@ -45,7 +45,7 @@ public class DeleteWorkProjectParticipantHandler(
         workProjectRepository.Touch(project);
 
         await workProjectRepository.SaveAsync(cancellationToken);
-        await cache.RemoveAsync(CacheKeys.Project.ProjectById(project.Id), cancellationToken);
+        await cache.RemoveWorkProjectAsync(project.Id, cancellationToken);
         await projectPermissionService.RemoveUserPermissionsAsync(project.Id, participant.UserId, cancellationToken);
     }
 }

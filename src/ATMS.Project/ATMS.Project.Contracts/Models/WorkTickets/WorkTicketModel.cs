@@ -1,4 +1,5 @@
 using ATMS.Application.Models;
+using ATMS.Project.Contracts.Models.WorkItems;
 
 namespace ATMS.Project.Contracts.Models.WorkTickets;
 
@@ -30,5 +31,9 @@ public class WorkTicketModel
 
     public DateTime? Deadline { get; set; }
 
-    public WorkTicketAssigneeModel? Assignee { get; set; }
+    public WorkItemAssigneeModel? Assignee { get; set; }
+
+    public int TotalTaskCount { get; set; }
+
+    public int DoneTaskCount { get; set; }
 }

@@ -40,6 +40,7 @@ public class GetWorkTicketsHandlerTest : BaseHandlerTest
         var handler = new GetWorkTicketsHandler(
             WorkProjectRepositoryMock.Object,
             WorkTicketRepositoryMock.Object,
+            WorkTaskRepositoryMock.Object,
             MapperMock.Object);
 
         var result = await handler.Handle(request, CancellationToken.None);
@@ -61,6 +62,7 @@ public class GetWorkTicketsHandlerTest : BaseHandlerTest
         var handler = new GetWorkTicketsHandler(
             WorkProjectRepositoryMock.Object,
             WorkTicketRepositoryMock.Object,
+            WorkTaskRepositoryMock.Object,
             MapperMock.Object);
 
         await Assert.ThrowsAsync<EntityException>(() =>

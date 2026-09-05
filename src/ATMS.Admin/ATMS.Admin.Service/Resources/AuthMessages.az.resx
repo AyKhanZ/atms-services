@@ -22,10 +22,10 @@
         <value>Token etibarsızdır.</value>
     </data>
     <data name="AccountInactive" xml:space="preserve">
-        <value>Hesab bloklanıb. {0} dəqiqədən sonra yenidən cəhd edin.</value>
+        <value>Hesabınız artıq aktiv deyil. Zəhmət olmasa dəstək xidməti ilə əlaqə saxlayın.</value>
     </data>
     <data name="AccountLocked" xml:space="preserve">
-        <value>Hesabınız artıq aktiv deyil. Zəhmət olmasa dəstək xidməti ilə əlaqə saxlayın.</value>
+        <value>Hesab bloklanıb. {0} dəqiqədən sonra yenidən cəhd edin.</value>
     </data>
     <data name="EmailNotConfirmed" xml:space="preserve">
         <value>Email təsdiqlənməyib.</value>

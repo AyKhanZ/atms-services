@@ -19,6 +19,10 @@ public interface IWorkTicketRepository
 
     Task<bool> IsProjectParticipantExistAsync(Guid projectId, Guid participantId, CancellationToken cancellationToken);
 
+    Task<bool> HasTasksAsync(Guid projectId, Guid workTicketId, CancellationToken cancellationToken);
+
+    Task<Guid[]> GetIdsByWorkGroupAsync(Guid projectId, Guid workGroupId, CancellationToken cancellationToken);
+
     Task CreateAsync(WorkTicket workTicket, CancellationToken cancellationToken);
 
     Task SaveChangesAsync(CancellationToken cancellationToken);

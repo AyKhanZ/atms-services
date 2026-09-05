@@ -22,10 +22,10 @@
         <value>Недействительный токен.</value>
     </data>
     <data name="AccountInactive" xml:space="preserve">
-        <value>Аккаунт заблокирован. Попробуйте снова через {0} минут.</value>
+        <value>Ваш аккаунт больше не активен. Пожалуйста, свяжитесь с поддержкой.</value>
     </data>
     <data name="AccountLocked" xml:space="preserve">
-        <value>Ваш аккаунт больше не активен. Пожалуйста, свяжитесь с поддержкой.</value>
+        <value>Аккаунт заблокирован. Попробуйте снова через {0} минут.</value>
     </data>
     <data name="EmailNotConfirmed" xml:space="preserve">
         <value>Электронная почта не подтверждена.</value>

@@ -1,6 +1,7 @@
 using ATMS.Project.Contracts.Commands.WorkGroups;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Services.Handlers.WorkGroups;
+using ATMS.Caching.Constants;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.WorkGroups;
@@ -13,6 +14,8 @@ public class UpdateWorkGroupHandlerTest : BaseHandlerTest
         var projectId = Guid.NewGuid();
         var workGroupId = Guid.NewGuid();
         var parentId = Guid.NewGuid();
+        var ticketIds = new[] { Guid.NewGuid(), Guid.NewGuid() };
+        var taskIds = new[] { Guid.NewGuid(), Guid.NewGuid() };
         var entity = new WorkGroup
         {
             Id = workGroupId,
@@ -23,6 +26,17 @@ public class UpdateWorkGroupHandlerTest : BaseHandlerTest
         WorkGroupRepositoryMock
             .Setup(x => x.FindAsync(projectId, workGroupId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(entity);
+        WorkTicketRepositoryMock
+            .Setup(repository => repository.GetIdsByWorkGroupAsync(
+                projectId,
+                workGroupId,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ticketIds);
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.GetIdsByTicketsAsync(
+                It.Is<IReadOnlyCollection<Guid>>(ids => ids.SequenceEqual(ticketIds)),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(taskIds);
         var handler = CreateHandler();
 
         await handler.Handle(new UpdateWorkGroupCommand
@@ -37,11 +51,24 @@ public class UpdateWorkGroupHandlerTest : BaseHandlerTest
         WorkGroupRepositoryMock.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Once);
+        foreach (var ticketId in ticketIds)
+        {
+            VerifyAllLocalizedCacheEntriesRemoved(
+                language => CacheKeys.Project.TicketById(ticketId, language));
+        }
+        foreach (var taskId in taskIds)
+        {
+            VerifyAllLocalizedCacheEntriesRemoved(
+                language => CacheKeys.Project.TaskById(taskId, language));
+        }
     }
 
     private UpdateWorkGroupHandler CreateHandler()
     {
         return new UpdateWorkGroupHandler(
-            WorkGroupRepositoryMock.Object);
+            WorkGroupRepositoryMock.Object,
+            WorkTicketRepositoryMock.Object,
+            WorkTaskRepositoryMock.Object,
+            CacheServiceMock.Object);
     }
 }

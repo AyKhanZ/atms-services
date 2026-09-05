@@ -1,5 +1,6 @@
 using ATMS.Project.Contracts.Commands.Organizations;
 using ATMS.Project.Contracts.Commands.WorkTickets;
+using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
 using AutoMapper;
@@ -25,5 +26,11 @@ public class CommandToEntityProfile : Profile
         CreateMap<UpdateWorkTicketCommand, WorkTicket>()
             .ForMember(destination => destination.WorkGroupId,
                 options => options.MapFrom(source => source.MilestoneId));
+
+        CreateMap<CreateWorkTaskCommand, WorkTask>()
+            .ForMember(destination => destination.WorkProjectId,
+                options => options.MapFrom(source => source.ProjectId));
+
+        CreateMap<UpdateWorkTaskCommand, WorkTask>();
     }
 }

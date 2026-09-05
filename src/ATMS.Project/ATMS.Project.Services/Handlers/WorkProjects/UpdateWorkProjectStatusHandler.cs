@@ -1,9 +1,9 @@
 using ATMS.Application.Exceptions.Entity;
-using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
+using ATMS.Project.Services.Caching;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkProjects;
@@ -23,6 +23,6 @@ public class UpdateWorkProjectStatusHandler(
 
         project.ProjectStatusId = command.ProjectStatusId;
         await workProjectRepository.SaveAsync(cancellationToken);
-        await cache.RemoveAsync(CacheKeys.Project.ProjectById(project.Id), cancellationToken);
+        await cache.RemoveWorkProjectAsync(project.Id, cancellationToken);
     }
 }

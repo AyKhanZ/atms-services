@@ -16,8 +16,6 @@ public sealed class ValidationBehavior<TRequest, TResponse>(
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (!validators.Any()) return await next(cancellationToken);
-        
         var context = new ValidationContext<TRequest>(request);
 
         var failures = (await Task.WhenAll(

@@ -1,7 +1,9 @@
 using ATMS.Caching.Constants;
+using ATMS.Application.Localization;
 using ATMS.Project.Contracts.Models.WorkTickets;
 using ATMS.Project.Contracts.Requests.WorkTickets;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Models.WorkTasks;
 using ATMS.Project.Services.Handlers.WorkTickets;
 using Moq;
 
@@ -29,14 +31,18 @@ public class GetWorkTicketHandlerTest : BaseHandlerTest
         MapperMock.Setup(mapper => mapper.Map<WorkTicketModel>(entity)).Returns(expected);
         var handler = new GetWorkTicketHandler(
             WorkTicketRepositoryMock.Object,
+            WorkTaskRepositoryMock.Object,
             CacheServiceMock.Object,
             MapperMock.Object);
 
         var result = await handler.Handle(request, CancellationToken.None);
 
         Assert.Same(expected, result);
+        WorkTaskRepositoryMock.Verify(repository => repository.GetProgressByTicketAsync(
+            It.Is<IReadOnlyCollection<Guid>>(ids => ids.Single() == expected.Id),
+            It.IsAny<CancellationToken>()), Times.Once);
         CacheServiceMock.Verify(cache => cache.GetOrSetAsync(
-            CacheKeys.Project.TicketById(request.WorkTicketId),
+            CacheKeys.Project.TicketById(request.WorkTicketId, CultureHelper.CurrentLanguage),
             It.IsAny<Func<Task<WorkTicketModel>>>(),
             CacheTtl.Entity,
             It.IsAny<CancellationToken>()), Times.Once);
@@ -50,6 +56,7 @@ public class GetWorkTicketHandlerTest : BaseHandlerTest
         SetupCacheHit(expected);
         var handler = new GetWorkTicketHandler(
             WorkTicketRepositoryMock.Object,
+            WorkTaskRepositoryMock.Object,
             CacheServiceMock.Object,
             MapperMock.Object);
 
@@ -75,6 +82,7 @@ public class GetWorkTicketHandlerTest : BaseHandlerTest
         SetupCacheHit(expected);
         var handler = new GetWorkTicketHandler(
             WorkTicketRepositoryMock.Object,
+            WorkTaskRepositoryMock.Object,
             CacheServiceMock.Object,
             MapperMock.Object);
 
@@ -93,6 +101,7 @@ public class GetWorkTicketHandlerTest : BaseHandlerTest
             .ReturnsAsync((WorkTicket?)null);
         var handler = new GetWorkTicketHandler(
             WorkTicketRepositoryMock.Object,
+            WorkTaskRepositoryMock.Object,
             CacheServiceMock.Object,
             MapperMock.Object);
 

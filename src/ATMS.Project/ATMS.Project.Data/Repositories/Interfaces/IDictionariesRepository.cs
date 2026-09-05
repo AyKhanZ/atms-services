@@ -16,6 +16,8 @@ public interface IDictionariesRepository
 
     Task<bool> IsWorkTicketStatusExistAsync(int id, CancellationToken cancellationToken = default);
 
+    Task<bool> IsWorkTaskStatusExistAsync(int id, CancellationToken cancellationToken = default);
+
     Task<List<ProjectKind>> GetProjectKindsAsync(CancellationToken cancellationToken = default);
     
     Task<List<ProjectStatus>> GetProjectStatusesAsync(CancellationToken cancellationToken = default);

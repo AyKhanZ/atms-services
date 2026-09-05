@@ -1,3 +1,5 @@
+using ATMS.Application.Localization;
+using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Data.Constants;
 using ATMS.Project.Contracts.Commands.WorkProjects;
@@ -32,6 +34,14 @@ public class AddWorkProjectParticipantHandlerTest
         workProjectRepository.Verify(
             repository => repository.SaveAsync(It.IsAny<CancellationToken>()),
             Times.Once);
+        foreach (var language in SupportedLanguages.All)
+        {
+            cache.Verify(
+                service => service.RemoveAsync(
+                    CacheKeys.Project.ProjectById(project.Id, language),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
     }
 
     private AddWorkProjectParticipantHandler CreateHandler() => new(

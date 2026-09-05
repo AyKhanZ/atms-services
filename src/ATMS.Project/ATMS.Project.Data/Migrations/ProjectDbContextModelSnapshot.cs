@@ -2563,14 +2563,11 @@ namespace ATMS.Project.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(4000)
-                        .HasColumnType("character varying(4000)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
-
-                    b.Property<long>("Level")
-                        .HasColumnType("bigint");
 
                     b.Property<Guid?>("ParentWorkTaskId")
                         .HasColumnType("uuid");
@@ -2587,8 +2584,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -2613,22 +2610,19 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("DeletedById");
 
-                    b.HasIndex("ParentWorkTaskId");
-
                     b.HasIndex("PriorityId");
 
                     b.HasIndex("StatusId");
 
                     b.HasIndex("UpdatedById");
 
-                    b.HasIndex("WorkProjectId");
+                    b.HasIndex("ParentWorkTaskId", "CreatedAt", "Id");
 
-                    b.HasIndex("WorkTicketId");
+                    b.HasIndex("WorkProjectId", "CreatedAt", "Id");
 
-                    b.ToTable("Tasks", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Tasks_Level", "\"Level\" <= 1");
-                        });
+                    b.HasIndex("WorkTicketId", "ParentWorkTaskId", "CreatedAt", "Id");
+
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkTicket", b =>

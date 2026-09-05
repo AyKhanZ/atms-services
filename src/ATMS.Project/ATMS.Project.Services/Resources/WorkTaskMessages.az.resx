@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"><xsd:element name="root" msdata:IsDataSet="true" /></xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="NotFound" xml:space="preserve"><value>Seçilmiş layihədə bu tapşırıq tapılmadı. Səhifəni yeniləyib bir daha cəhd edin.</value></data>
+  <data name="ProjectRequired" xml:space="preserve"><value>Layihəni müəyyən etmək mümkün olmadı. Layihələr siyahısına qayıdıb layihəni yenidən açın.</value></data>
+  <data name="TaskRequired" xml:space="preserve"><value>Tapşırığı müəyyən etmək mümkün olmadı. Tiketə qayıdıb tapşırığı yenidən açın.</value></data>
+  <data name="TicketRequired" xml:space="preserve"><value>Tiketi müəyyən etmək mümkün olmadı. Layihə planına qayıdıb tiketi yenidən açın.</value></data>
+  <data name="TicketNotFound" xml:space="preserve"><value>Seçilmiş tiket artıq bu layihədə mövcud deyil. Planı yeniləyib bir daha cəhd edin.</value></data>
+  <data name="ParentNotFound" xml:space="preserve"><value>Ana tapşırıq artıq mövcud deyil. Tapşırıqlar siyahısını yeniləyib bir daha cəhd edin.</value></data>
+  <data name="ParentIsSubtask" xml:space="preserve"><value>Alt tapşırığın başqa alt tapşırığı ola bilməz. Onu əsas tapşırığa əlavə edin.</value></data>
+  <data name="ParentTicketMismatch" xml:space="preserve"><value>Seçilmiş tiket ana tapşırığın tiketinə uyğun deyil. Tapşırıq səhifəsini yeniləyib bir daha cəhd edin.</value></data>
+  <data name="HasSubtasks" xml:space="preserve"><value>Bu tapşırığın alt tapşırıqları olduğu üçün onu silmək mümkün deyil. Əvvəlcə alt tapşırıqları silib yenidən cəhd edin.</value></data>
+  <data name="TitleRequired" xml:space="preserve"><value>Tapşırığın adını daxil edin.</value></data>
+  <data name="TitleTooLong" xml:space="preserve"><value>Tapşırığın adı ən çox {0} simvol ola bilər. Adı qısaldıb bir daha cəhd edin.</value></data>
+  <data name="DescriptionTooLong" xml:space="preserve"><value>Tapşırığın təsviri ən çox {0} simvol ola bilər. Təsviri qısaldıb bir daha cəhd edin.</value></data>
+  <data name="StatusRequired" xml:space="preserve"><value>Tapşırığın statusunu seçin.</value></data>
+  <data name="StatusUnsupported" xml:space="preserve"><value>Seçilmiş tapşırıq statusu artıq mövcud deyil. Başqa status seçin.</value></data>
+  <data name="PriorityRequired" xml:space="preserve"><value>Tapşırığın prioritetini seçin.</value></data>
+  <data name="PriorityUnsupported" xml:space="preserve"><value>Seçilmiş prioritet artıq mövcud deyil. Başqa prioritet seçin.</value></data>
+  <data name="AssigneeNotFound" xml:space="preserve"><value>Seçilmiş icraçı bu layihənin iştirakçısı deyil. Layihə iştirakçısı seçin.</value></data>
+  <data name="AssigneeMustBeStaff" xml:space="preserve"><value>Tapşırıq yalnız əməkdaşa təyin edilə bilər. Layihə iştirakçıları arasından əməkdaş seçin.</value></data>
+  <data name="DeadlineOutOfRange" xml:space="preserve"><value>Son tarixi 01.01.1900 ilə 31.12.2100 arasında daxil edin.</value></data>
+  <data name="HierarchyFilterConflict" xml:space="preserve"><value>Ya əsas tapşırıqları, ya da ana tapşırığı seçin; hər ikisini birlikdə seçməyin.</value></data>
+</root>

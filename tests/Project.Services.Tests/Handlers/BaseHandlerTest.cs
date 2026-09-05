@@ -1,4 +1,5 @@
 using ATMS.Application.Interfaces;
+using ATMS.Application.Localization;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Infrastructure.Images;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -23,7 +24,33 @@ public abstract class BaseHandlerTest
     protected readonly Mock<IWorkProjectRepository> WorkProjectRepositoryMock = new();
     protected readonly Mock<IWorkGroupRepository> WorkGroupRepositoryMock = new();
     protected readonly Mock<IWorkTicketRepository> WorkTicketRepositoryMock = new();
+    protected readonly Mock<IWorkTaskRepository> WorkTaskRepositoryMock = new();
     protected readonly Mock<IEntityCodeGenerator> EntityCodeGeneratorMock = new();
+
+    protected BaseHandlerTest()
+    {
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.GetProgressByTicketAsync(
+                It.IsAny<IReadOnlyCollection<Guid>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<Guid, ATMS.Project.Data.Models.WorkTasks.WorkTaskProgress>());
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.GetIdsByTicketsAsync(
+                It.IsAny<IReadOnlyCollection<Guid>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.GetChildIdsAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+        WorkTicketRepositoryMock
+            .Setup(repository => repository.GetIdsByWorkGroupAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+    }
     
     // Simulates cache miss — factory is called, repository will be hit
     protected void SetupCacheMiss<T>()
@@ -48,5 +75,15 @@ public abstract class BaseHandlerTest
                 It.IsAny<TimeSpan>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(value);
+    }
+
+    protected void VerifyAllLocalizedCacheEntriesRemoved(Func<string, string> keyFactory)
+    {
+        foreach (var language in SupportedLanguages.All)
+        {
+            CacheServiceMock.Verify(
+                cache => cache.RemoveAsync(keyFactory(language), It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
     }
 }

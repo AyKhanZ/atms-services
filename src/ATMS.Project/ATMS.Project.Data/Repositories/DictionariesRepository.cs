@@ -37,6 +37,11 @@ public class DictionariesRepository(ProjectDbContext context) : IDictionariesRep
         return context.WorkTicketStatuses.AnyAsync(x => x.Id == id, cancellationToken);
     }
 
+    public Task<bool> IsWorkTaskStatusExistAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return context.WorkTaskStatuses.AnyAsync(x => x.Id == id, cancellationToken);
+    }
+
     public Task<List<ProjectKind>> GetProjectKindsAsync(CancellationToken cancellationToken = default)
     {
         return context.ProjectKinds
