@@ -9,4 +9,6 @@ public class UserModel
     public string Surname { get; set; }
     
     public string Email { get; set; }
+
+    public string? AvatarPath { get; set; }
 }

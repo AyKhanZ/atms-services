@@ -22,6 +22,8 @@ internal static class WorkTaskMessages
     internal static string ParentIsSubtask => Get(nameof(ParentIsSubtask));
     internal static string ParentTicketMismatch => Get(nameof(ParentTicketMismatch));
     internal static string HasSubtasks => Get(nameof(HasSubtasks));
+    internal static string ParentIsSelf => Get(nameof(ParentIsSelf));
+    internal static string ParentHasSubtasks => Get(nameof(ParentHasSubtasks));
     internal static string TitleRequired => Get(nameof(TitleRequired));
     internal static string TitleTooLong => Get(nameof(TitleTooLong));
     internal static string DescriptionTooLong => Get(nameof(DescriptionTooLong));

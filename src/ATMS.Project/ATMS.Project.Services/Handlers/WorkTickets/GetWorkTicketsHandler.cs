@@ -26,7 +26,7 @@ public class GetWorkTicketsHandler(
             throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
         }
 
-        var criteria = new WorkTicketsByProjectCriteria(request.ProjectId, request.MilestoneId);
+        var criteria = new WorkTicketsByProjectCriteria(request.ProjectId, request.MilestoneId, request.Search);
         var pagination = new KeysetPaginationCriteria<WorkTicket>(request.Cursor, request.PageSize, request.SortDirection);
         var workTickets = await workTicketRepository.GetManyAsync(criteria, pagination, cancellationToken);
 

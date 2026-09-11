@@ -1,10 +1,38 @@
 using ATMS.Project.Data.Criteria.WorkTickets;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.DbContexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Project.Services.Tests.Criteria.WorkTickets;
 
 public class WorkTicketsByProjectCriteriaTest
 {
+    [Theory]
+    [InlineData("  Payment  ", "%Payment%")]
+    [InlineData("STRIPE", "%STRIPE%")]
+    [InlineData("оплата", "%оплата%")]
+    [InlineData("51", "%51%")]
+    [InlineData("50%_done", "%50\\%\\_done%")]
+    public void Apply_WithSearch_TranslatesToScopedCaseInsensitiveSql(string search, string expectedPattern)
+    {
+        var options = new DbContextOptionsBuilder<ProjectDbContext>()
+            .UseNpgsql("Host=localhost;Database=query-generation;Username=test")
+            .Options;
+        using var context = new ProjectDbContext(options);
+        var projectId = Guid.NewGuid();
+        var scopeId = Guid.NewGuid();
+        var criteria = new WorkTicketsByProjectCriteria(projectId, scopeId, search);
+
+        var sql = criteria.Apply(context.WorkTickets).ToQueryString();
+
+        Assert.Contains("ILIKE", sql);
+        Assert.Contains("\"Code\"", sql);
+        Assert.Contains("\"Title\"", sql);
+        Assert.Contains(projectId.ToString(), sql);
+        Assert.Contains(scopeId.ToString(), sql);
+        Assert.Contains(expectedPattern, sql);
+    }
+
     [Fact]
     public void Apply_WithoutMilestone_ReturnsOnlyProjectTickets()
     {

@@ -19,6 +19,7 @@ public class WorkTaskController(IMediator mediator) : ControllerBase
     /// <remarks>
     /// Filter by workTicketId with rootTasksOnly=true for a ticket's top-level tasks, or by
     /// parentWorkTaskId for one task's subtasks. Progress counts are included for every returned task.
+    /// Optional search matches code or title case-insensitively within these hierarchy filters.
     /// </remarks>
     /// <response code="200">Returns tasks visible in the selected project.</response>
     /// <response code="400">The hierarchy filters or pagination settings are invalid.</response>

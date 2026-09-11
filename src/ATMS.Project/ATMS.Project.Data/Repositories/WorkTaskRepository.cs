@@ -84,6 +84,17 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
             cancellationToken);
     }
 
+    /// <summary>Tracked children, so moving a task to another ticket can take them along.</summary>
+    public Task<WorkTask[]> FindChildrenAsync(
+        Guid projectId,
+        Guid parentWorkTaskId,
+        CancellationToken cancellationToken)
+    {
+        return context.WorkTasks
+            .Where(task => task.WorkProjectId == projectId && task.ParentWorkTaskId == parentWorkTaskId)
+            .ToArrayAsync(cancellationToken);
+    }
+
     public Task<Guid[]> GetIdsByTicketsAsync(IReadOnlyCollection<Guid> workTicketIds, CancellationToken cancellationToken)
     {
         if (workTicketIds.Count == 0)

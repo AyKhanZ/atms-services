@@ -21,7 +21,7 @@ public class WorkTicketController(IMediator mediator) : ControllerBase
     /// Only users with permission to view the selected project can access the list.
     /// </remarks>
     /// <param name="projectId">Project ID.</param>
-    /// <param name="request">Cursor pagination settings and optional milestone filter.</param>
+    /// <param name="request">Cursor pagination, optional milestone filter and case-insensitive code/title search.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Returns the tickets in the selected project.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>

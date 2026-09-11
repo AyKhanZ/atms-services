@@ -31,6 +31,9 @@ public class CommandToEntityProfile : Profile
             .ForMember(destination => destination.WorkProjectId,
                 options => options.MapFrom(source => source.ProjectId));
 
-        CreateMap<UpdateWorkTaskCommand, WorkTask>();
+        // Hierarchy is derived in the handler, not copied: a subtask takes its parent's ticket.
+        CreateMap<UpdateWorkTaskCommand, WorkTask>()
+            .ForMember(destination => destination.WorkTicketId, options => options.Ignore())
+            .ForMember(destination => destination.ParentWorkTaskId, options => options.Ignore());
     }
 }

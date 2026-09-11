@@ -25,4 +25,10 @@
   <data name="AssigneeMustBeStaff" xml:space="preserve"><value>Tasks can only be assigned to a staff member. Choose a staff participant.</value></data>
   <data name="DeadlineOutOfRange" xml:space="preserve"><value>Enter a deadline between 01.01.1900 and 31.12.2100.</value></data>
   <data name="HierarchyFilterConflict" xml:space="preserve"><value>Choose either top-level tasks or a parent task, not both.</value></data>
+  <data name="ParentIsSelf" xml:space="preserve">
+    <value>A task cannot be its own parent. Choose a different task.</value>
+  </data>
+  <data name="ParentHasSubtasks" xml:space="preserve">
+    <value>This task has subtasks of its own, so it cannot become a subtask. Move or delete its subtasks first.</value>
+  </data>
 </root>

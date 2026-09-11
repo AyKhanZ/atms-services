@@ -24,4 +24,7 @@ public class GetWorkTasksRequest : GetKeysetPaginationRequest,
 
     /// <summary>When true, return only top-level tasks. Cannot be combined with parentWorkTaskId.</summary>
     public bool RootTasksOnly { get; init; }
+
+    /// <summary>Case-insensitive substring search by code or title within the selected hierarchy filters.</summary>
+    public string? Search { get; init; }
 }

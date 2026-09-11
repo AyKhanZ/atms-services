@@ -26,13 +26,11 @@ public class AddWorkProjectParticipantHandler(
 
         project.WorkProjectParticipants.Add(new WorkProjectParticipant
         {
-            Id = Guid.NewGuid(),
             UserId = command.UserId,
             WorkProjectParticipantRoles =
             [
                 new WorkProjectParticipantRole
                 {
-                    Id = Guid.NewGuid(),
                     RoleId = command.RoleId
                 }
             ]

@@ -33,7 +33,12 @@ public class GetWorkTasksHandler(
             throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
         }
 
-        var criteria = new WorkTasksByProjectCriteria(request.ProjectId, request.WorkTicketId, request.ParentWorkTaskId, request.RootTasksOnly);
+        var criteria = new WorkTasksByProjectCriteria(
+            request.ProjectId,
+            request.WorkTicketId,
+            request.ParentWorkTaskId,
+            request.RootTasksOnly,
+            request.Search);
         var pagination = new KeysetPaginationCriteria<WorkTask>(request.Cursor, request.PageSize, request.SortDirection);
         var result = await workTaskRepository.GetManyAsync(criteria, pagination, cancellationToken);
         var page = result.Page.Map(mapper.Map<WorkTaskModel>);

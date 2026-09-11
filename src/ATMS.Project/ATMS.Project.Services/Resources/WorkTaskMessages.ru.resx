@@ -22,4 +22,10 @@
   <data name="AssigneeMustBeStaff" xml:space="preserve"><value>Задачу можно назначить только сотруднику. Выберите сотрудника среди участников проекта.</value></data>
   <data name="DeadlineOutOfRange" xml:space="preserve"><value>Укажите срок с 01.01.1900 по 31.12.2100.</value></data>
   <data name="HierarchyFilterConflict" xml:space="preserve"><value>Выберите либо задачи верхнего уровня, либо родительскую задачу, но не оба варианта.</value></data>
+  <data name="ParentIsSelf" xml:space="preserve">
+    <value>Задача не может быть родителем самой себе. Выберите другую задачу.</value>
+  </data>
+  <data name="ParentHasSubtasks" xml:space="preserve">
+    <value>У этой задачи есть свои подзадачи, поэтому она не может стать подзадачей. Сначала перенесите или удалите их.</value>
+  </data>
 </root>

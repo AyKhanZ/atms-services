@@ -20,6 +20,11 @@ public interface IWorkTaskRepository
 
     Task<bool> HasChildrenAsync(Guid projectId, Guid parentWorkTaskId, CancellationToken cancellationToken);
 
+    Task<WorkTask[]> FindChildrenAsync(
+        Guid projectId,
+        Guid parentWorkTaskId,
+        CancellationToken cancellationToken);
+
     Task<Guid[]> GetIdsByTicketsAsync(IReadOnlyCollection<Guid> workTicketIds, CancellationToken cancellationToken);
 
     Task<Guid[]> GetChildIdsAsync(Guid parentWorkTaskId, CancellationToken cancellationToken);
