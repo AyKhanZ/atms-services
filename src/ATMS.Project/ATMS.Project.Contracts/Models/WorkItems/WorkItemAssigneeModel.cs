@@ -1,10 +1,8 @@
-namespace ATMS.Project.Contracts.Models.WorkTickets;
+namespace ATMS.Project.Contracts.Models.WorkItems;
 
-public class WorkTicketAssigneeModel
+public class WorkItemAssigneeModel
 {
     public Guid Id { get; set; }
-
-    public Guid UserId { get; set; }
 
     public string Name { get; set; }
 

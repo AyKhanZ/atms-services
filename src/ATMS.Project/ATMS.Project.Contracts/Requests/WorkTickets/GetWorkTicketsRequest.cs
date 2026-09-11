@@ -18,4 +18,7 @@ public class GetWorkTicketsRequest : GetKeysetPaginationRequest,
 
     /// <summary>Filter tickets by milestone. Omit to return tickets from all milestones in the project.</summary>
     public Guid? MilestoneId { get; init; }
+
+    /// <summary>Case-insensitive substring search by code or title within the selected project and milestone.</summary>
+    public string? Search { get; init; }
 }

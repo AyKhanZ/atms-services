@@ -5,11 +5,8 @@ public class WorkTask : WorkItemEntity
     public Guid? ParentWorkTaskId { get; set; }
     
     public WorkTask? ParentWorkTask { get; set; }
-    
-    
-    public uint Level { get; set; }
-    
-    
+
+
     public ICollection<WorkTask> Children { get; set; } = [];
     
     

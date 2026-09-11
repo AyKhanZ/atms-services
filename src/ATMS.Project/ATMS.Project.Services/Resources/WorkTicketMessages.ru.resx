@@ -10,6 +10,7 @@
   <data name="NotFound" xml:space="preserve"><value>Не удалось найти этот тикет в выбранном проекте. Обновите план проекта и попробуйте снова.</value></data>
   <data name="ProjectRequired" xml:space="preserve"><value>Не удалось определить проект. Вернитесь к списку проектов и откройте проект снова.</value></data>
   <data name="TicketRequired" xml:space="preserve"><value>Не удалось определить тикет. Вернитесь к плану проекта и откройте тикет снова.</value></data>
+  <data name="HasTasks" xml:space="preserve"><value>Нельзя удалить тикет, пока в нём есть задачи. Сначала удалите задачи и попробуйте снова.</value></data>
   <data name="TitleRequired" xml:space="preserve"><value>Укажите название тикета.</value></data>
   <data name="TitleTooLong" xml:space="preserve"><value>Название тикета должно содержать не более {0} символов. Сократите название и попробуйте снова.</value></data>
   <data name="DescriptionTooLong" xml:space="preserve"><value>Описание тикета должно содержать не более {0} символов. Сократите описание и попробуйте снова.</value></data>

@@ -14,6 +14,7 @@ namespace ATMS.Project.Services.Handlers.WorkTickets;
 public class GetWorkTicketsHandler(
     IWorkProjectRepository workProjectRepository,
     IWorkTicketRepository workTicketRepository,
+    IWorkTaskRepository workTaskRepository,
     IMapper mapper) : IRequestHandler<GetWorkTicketsRequest, KeysetPagedResult<WorkTicketModel>>
 {
     public async Task<KeysetPagedResult<WorkTicketModel>> Handle(
@@ -25,13 +26,22 @@ public class GetWorkTicketsHandler(
             throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
         }
 
-        var criteria = new WorkTicketsByProjectCriteria(request.ProjectId, request.MilestoneId);
-        var pagination = new KeysetPaginationCriteria<WorkTicket>(
-            request.Cursor,
-            request.PageSize,
-            request.SortDirection);
+        var criteria = new WorkTicketsByProjectCriteria(request.ProjectId, request.MilestoneId, request.Search);
+        var pagination = new KeysetPaginationCriteria<WorkTicket>(request.Cursor, request.PageSize, request.SortDirection);
         var workTickets = await workTicketRepository.GetManyAsync(criteria, pagination, cancellationToken);
 
-        return workTickets.Map(mapper.Map<WorkTicketModel>);
+        var page = workTickets.Map(mapper.Map<WorkTicketModel>);
+        var progress = await workTaskRepository.GetProgressByTicketAsync(page.Items.Select(ticket => ticket.Id).ToArray(), cancellationToken);
+
+        foreach (var ticket in page.Items)
+        {
+            if (progress.TryGetValue(ticket.Id, out var taskProgress))
+            {
+                ticket.TotalTaskCount = taskProgress.Total;
+                ticket.DoneTaskCount = taskProgress.Done;
+            }
+        }
+
+        return page;
     }
 }

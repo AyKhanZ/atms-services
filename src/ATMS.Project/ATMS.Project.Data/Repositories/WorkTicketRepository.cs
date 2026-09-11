@@ -74,6 +74,24 @@ public class WorkTicketRepository(ProjectDbContext context) : IWorkTicketReposit
             cancellationToken);
     }
 
+    public Task<bool> HasTasksAsync(Guid projectId, Guid workTicketId, CancellationToken cancellationToken)
+    {
+        return context.WorkTasks.AnyAsync(
+            task => task.WorkProjectId == projectId && task.WorkTicketId == workTicketId,
+            cancellationToken);
+    }
+
+    public Task<Guid[]> GetIdsByWorkGroupAsync(Guid projectId, Guid workGroupId, CancellationToken cancellationToken)
+    {
+        return context.WorkTickets
+            .Where(ticket =>
+                ticket.WorkProjectId == projectId &&
+                (ticket.WorkGroupId == workGroupId ||
+                 ticket.WorkGroup.ParentWorkGroupId == workGroupId))
+            .Select(ticket => ticket.Id)
+            .ToArrayAsync(cancellationToken);
+    }
+
     public async Task CreateAsync(WorkTicket workTicket, CancellationToken cancellationToken)
     {
         await context.WorkTickets.AddAsync(workTicket, cancellationToken);

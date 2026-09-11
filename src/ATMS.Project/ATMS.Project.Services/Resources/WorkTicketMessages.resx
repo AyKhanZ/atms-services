@@ -10,6 +10,7 @@
   <data name="NotFound" xml:space="preserve"><value>We couldn't find this ticket in the selected project. Refresh the project plan and try again.</value></data>
   <data name="ProjectRequired" xml:space="preserve"><value>We couldn't identify the project. Return to the project list and open the project again.</value></data>
   <data name="TicketRequired" xml:space="preserve"><value>We couldn't identify the ticket. Return to the project plan and open the ticket again.</value></data>
+  <data name="HasTasks" xml:space="preserve"><value>This ticket cannot be deleted because it still has tasks. Delete the tasks first and try again.</value></data>
   <data name="TitleRequired" xml:space="preserve"><value>Enter a name for the ticket.</value></data>
   <data name="TitleTooLong" xml:space="preserve"><value>The ticket name must be {0} characters or fewer. Shorten the name and try again.</value></data>
   <data name="DescriptionTooLong" xml:space="preserve"><value>The ticket description must be {0} characters or fewer. Shorten the description and try again.</value></data>

@@ -10,6 +10,7 @@
   <data name="NotFound" xml:space="preserve"><value>Seçilmiş layihədə bu tiket tapılmadı. Layihə planını yeniləyib yenidən cəhd edin.</value></data>
   <data name="ProjectRequired" xml:space="preserve"><value>Layihəni müəyyən etmək mümkün olmadı. Layihələr siyahısına qayıdıb layihəni yenidən açın.</value></data>
   <data name="TicketRequired" xml:space="preserve"><value>Tiketi müəyyən etmək mümkün olmadı. Layihə planına qayıdıb tiketi yenidən açın.</value></data>
+  <data name="HasTasks" xml:space="preserve"><value>Bu tiketdə tapşırıqlar olduğu üçün onu silmək mümkün deyil. Əvvəlcə tapşırıqları silib yenidən cəhd edin.</value></data>
   <data name="TitleRequired" xml:space="preserve"><value>Tiketin adını daxil edin.</value></data>
   <data name="TitleTooLong" xml:space="preserve"><value>Tiketin adı {0} simvoldan çox olmamalıdır. Adı qısaldıb yenidən cəhd edin.</value></data>
   <data name="DescriptionTooLong" xml:space="preserve"><value>Tiketin təsviri {0} simvoldan çox olmamalıdır. Təsviri qısaldıb yenidən cəhd edin.</value></data>

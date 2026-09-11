@@ -32,11 +32,11 @@ public static class CacheKeys
         public static string UserPermissions(Guid projectId, Guid userId)
             => $"work-project:{projectId}:user:{userId}:permissions";
 
-        public static string ProjectById(Guid id) => $"work-project:{id}";
+        public static string ProjectById(Guid id, string language) => $"work-project:{id}:{language}";
 
-        public static string TicketById(Guid id) => $"work-ticket:{id}";
+        public static string TicketById(Guid id, string language) => $"work-ticket:{id}:{language}";
         
-        public static string TaskById(Guid id) => $"work-task:{id}";
+        public static string TaskById(Guid id, string language) => $"work-task:{id}:{language}";
         
         // Dictionaries
         public static string AllProjectRoles(string language) => $"dict:project-roles:{language}";

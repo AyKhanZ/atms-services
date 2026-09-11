@@ -1,6 +1,7 @@
 using ATMS.Project.Contracts.Commands.WorkTickets;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Services.Handlers.WorkTickets;
+using ATMS.Caching.Constants;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.WorkTickets;
@@ -12,6 +13,7 @@ public class UpdateWorkTicketHandlerTest : BaseHandlerTest
     {
         var projectId = Guid.NewGuid();
         var ticket = new WorkTicket { Id = Guid.NewGuid(), WorkProjectId = projectId };
+        var taskIds = new[] { Guid.NewGuid(), Guid.NewGuid() };
         var command = new UpdateWorkTicketCommand
         {
             ProjectId = projectId,
@@ -31,6 +33,11 @@ public class UpdateWorkTicketHandlerTest : BaseHandlerTest
                 ticket.Id,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(ticket);
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.GetIdsByTicketsAsync(
+                It.Is<IReadOnlyCollection<Guid>>(ids => ids.SequenceEqual(new[] { ticket.Id })),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(taskIds);
         MapperMock
             .Setup(mapper => mapper.Map(command, ticket))
             .Callback<UpdateWorkTicketCommand, WorkTicket>((source, destination) =>
@@ -47,6 +54,7 @@ public class UpdateWorkTicketHandlerTest : BaseHandlerTest
         var handler = new UpdateWorkTicketHandler(
             MapperMock.Object,
             WorkTicketRepositoryMock.Object,
+            WorkTaskRepositoryMock.Object,
             CacheServiceMock.Object);
 
         await handler.Handle(command, CancellationToken.None);
@@ -58,11 +66,13 @@ public class UpdateWorkTicketHandlerTest : BaseHandlerTest
         WorkTicketRepositoryMock.Verify(
             repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Once);
-        CacheServiceMock.Verify(
-            cache => cache.RemoveAsync(
-                ATMS.Caching.Constants.CacheKeys.Project.TicketById(ticket.Id),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
+        VerifyAllLocalizedCacheEntriesRemoved(
+            language => CacheKeys.Project.TicketById(ticket.Id, language));
+        foreach (var taskId in taskIds)
+        {
+            VerifyAllLocalizedCacheEntriesRemoved(
+                language => CacheKeys.Project.TaskById(taskId, language));
+        }
     }
 
     [Fact]
@@ -75,6 +85,7 @@ public class UpdateWorkTicketHandlerTest : BaseHandlerTest
         var handler = new UpdateWorkTicketHandler(
             MapperMock.Object,
             WorkTicketRepositoryMock.Object,
+            WorkTaskRepositoryMock.Object,
             CacheServiceMock.Object);
 
         await Assert.ThrowsAsync<ATMS.Application.Exceptions.Entity.EntityException>(() => handler.Handle(

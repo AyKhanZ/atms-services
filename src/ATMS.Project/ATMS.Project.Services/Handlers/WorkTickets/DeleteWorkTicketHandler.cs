@@ -1,10 +1,10 @@
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Interfaces;
-using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkTickets;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
+using ATMS.Project.Services.Caching;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTickets;
@@ -27,6 +27,6 @@ public class DeleteWorkTicketHandler(
         workTicket.DeletedById = currentUser.Id;
 
         await workTicketRepository.SaveChangesAsync(cancellationToken);
-        await cache.RemoveAsync(CacheKeys.Project.TicketById(workTicket.Id), cancellationToken);
+        await cache.RemoveWorkTicketAsync(workTicket.Id, cancellationToken);
     }
 }

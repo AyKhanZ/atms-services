@@ -21,23 +21,23 @@
     
     
     <data name="InvalidToken" xml:space="preserve">
-        <value>Invalid token .</value>
+        <value>Invalid token.</value>
     </data>
     
     <data name="AccountLocked" xml:space="preserve">
-        <value>Account is locked. Try again in {0} minutes .</value>
+        <value>Account is locked. Try again in {0} minutes.</value>
     </data>
     
     <data name="AccountInactive" xml:space="preserve">
-        <value>Your account is not active anymore. Please contact support .</value>
+        <value>Your account is not active anymore. Please contact support.</value>
     </data>
     
     <data name="EmailNotConfirmed" xml:space="preserve">
-        <value>Email not confirmed .</value>
+        <value>Email not confirmed.</value>
     </data>
     
     <data name="InvalidLoginCredentials" xml:space="preserve">
-        <value>Invalid email or password .</value>
+        <value>Invalid email or password.</value>
     </data>
     <data name="UserProgressAlreadyCompleted" xml:space="preserve">
         <value>You have already completed the survey. Please contact support.</value>

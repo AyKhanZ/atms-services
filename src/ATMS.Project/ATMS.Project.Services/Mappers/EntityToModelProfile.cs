@@ -1,9 +1,12 @@
 using ATMS.Application.Models;
 using ATMS.Application.Localization;
+using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.Organizations;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Models.WorkProjects;
 using ATMS.Project.Contracts.Models.WorkGroups;
+using ATMS.Project.Contracts.Models.WorkItems;
+using ATMS.Project.Contracts.Models.WorkTasks;
 using ATMS.Project.Contracts.Models.WorkTickets;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Entities.Dictionaries;
@@ -60,7 +63,7 @@ public class EntityToModelProfile : Profile
                 x => x.Name,
                 expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
 
-        CreateMap<WorkProjectParticipant, WorkTicketAssigneeModel>()
+        CreateMap<WorkProjectParticipant, WorkItemAssigneeModel>()
             .ForMember(x => x.Name, expression => expression.MapFrom(x => x.User.Name))
             .ForMember(x => x.Surname, expression => expression.MapFrom(x => x.User.Surname))
             .ForMember(x => x.AvatarPath, expression => expression.MapFrom(x => x.User.AvatarPath));
@@ -76,13 +79,29 @@ public class EntityToModelProfile : Profile
                 expression => expression.MapFrom(x =>
                     x.WorkGroup.ParentWorkGroup == null ? null : x.WorkGroup.ParentWorkGroup.Title));
 
+        CreateMap<WorkTaskStatus, DictionaryModel>()
+            .ForMember(
+                x => x.Name,
+                expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
+
+        CreateMap<WorkTask, WorkTaskModel>()
+            .ForMember(x => x.WorkTicketCode, expression => expression.MapFrom(x => x.WorkTicket.Code))
+            .ForMember(x => x.WorkTicketTitle, expression => expression.MapFrom(x => x.WorkTicket.Title))
+            .ForMember(x => x.MilestoneId, expression => expression.MapFrom(x => x.WorkTicket.WorkGroupId))
+            .ForMember(x => x.MilestoneTitle, expression => expression.MapFrom(x => x.WorkTicket.WorkGroup.Title))
+            .ForMember(
+                x => x.GroupId,
+                expression => expression.MapFrom(x => x.WorkTicket.WorkGroup.ParentWorkGroupId.Value))
+            .ForMember(
+                x => x.GroupTitle,
+                expression => expression.MapFrom(x => x.WorkTicket.WorkGroup.ParentWorkGroup.Title))
+            .ForMember(x => x.ParentWorkTaskCode, expression => expression.MapFrom(x => x.ParentWorkTask == null ? null : x.ParentWorkTask.Code))
+            .ForMember(x => x.ParentWorkTaskTitle, expression => expression.MapFrom(x => x.ParentWorkTask == null ? null : x.ParentWorkTask.Title));
+
         CreateMap<WorkGroup, WorkGroupModel>()
             .ForMember(
                 x => x.Milestones,
-                expression => expression.MapFrom(x => x.Children))
-            .ForMember(
-                x => x.TicketCount,
-                expression => expression.Ignore());
+                expression => expression.MapFrom(x => x.Children));
 
         CreateMap<WorkGroup, MilestoneOptionModel>()
             .ForMember(
@@ -105,7 +124,12 @@ public class EntityToModelProfile : Profile
             .ForMember(x => x.AvatarPath, expression => expression.MapFrom(x => x.User.AvatarPath))
             .ForMember(
                 x => x.Category,
-                expression => expression.MapFrom(x => x.User.OrganizationId.HasValue ? "client" : "staff"))
+                expression => expression.MapFrom(x =>
+                    x.User.UserType == (int)UserTypeEnum.Employee
+                        ? "staff"
+                        : x.User.UserType == (int)UserTypeEnum.Client
+                            ? "client"
+                            : "admin"))
             .ForMember(
                 x => x.Role,
                 expression => expression.MapFrom(x => x.WorkProjectParticipantRoles.Single().Role));

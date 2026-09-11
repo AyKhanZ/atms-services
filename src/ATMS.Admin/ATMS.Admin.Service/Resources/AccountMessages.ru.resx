@@ -100,7 +100,7 @@
         <value>Организация не найдена.</value>
     </data>
     <data name="OrganizationIdRequired" xml:space="preserve">
-        <value>Организация не обязательна.</value>
+        <value>Организация обязательна.</value>
     </data>
     <data name="EmailShouldBeLessThan" xml:space="preserve">
         <value>Email должен содержать не более {0} символов.</value>

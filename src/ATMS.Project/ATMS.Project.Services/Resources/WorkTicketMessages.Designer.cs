@@ -16,6 +16,7 @@ internal static class WorkTicketMessages
     internal static string NotFound => Get(nameof(NotFound));
     internal static string ProjectRequired => Get(nameof(ProjectRequired));
     internal static string TicketRequired => Get(nameof(TicketRequired));
+    internal static string HasTasks => Get(nameof(HasTasks));
     internal static string TitleRequired => Get(nameof(TitleRequired));
     internal static string TitleTooLong => Get(nameof(TitleTooLong));
     internal static string DescriptionTooLong => Get(nameof(DescriptionTooLong));
