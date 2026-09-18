@@ -11,6 +11,10 @@ public class WorkProjectConfiguration : IEntityTypeConfiguration<WorkProject>
     {
         builder.ToTable("Projects");
 
+        builder.HasIndex(project => project.Title)
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+
         builder.HasIndex(e => new { e.OrganizationId, e.Title })
             .IsUnique()
             .AreNullsDistinct(false)

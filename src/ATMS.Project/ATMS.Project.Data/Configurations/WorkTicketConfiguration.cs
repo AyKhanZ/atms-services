@@ -12,9 +12,12 @@ public class WorkTicketConfiguration : IEntityTypeConfiguration<WorkTicket>
     {
         builder.ToTable("Tickets");
 
+        builder.HasIndex(ticket => ticket.Title)
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+
         builder.HasIndex(e => e.Code)
             .IsUnique();
-
 
         builder.Property(e => e.Code)
             .IsRequired()

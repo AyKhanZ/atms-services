@@ -12,6 +12,10 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
     {
         builder.ToTable("Tasks");
 
+        builder.HasIndex(task => task.Title)
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+
         builder.HasIndex(e => e.Code)
             .IsUnique();
 
