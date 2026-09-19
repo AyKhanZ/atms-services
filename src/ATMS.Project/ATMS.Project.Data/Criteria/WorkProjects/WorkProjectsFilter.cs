@@ -27,11 +27,12 @@ public class WorkProjectsFilter : ACriteria<WorkProject>
     {
         if (!string.IsNullOrWhiteSpace(Search))
         {
-            var search = Search.Trim();
+            var search = Search.Trim().Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
+            var pattern = $"%{search}%";
             query = query.Where(x =>
-                EF.Functions.ILike(x.Title, $"%{search}%") ||
-                EF.Functions.ILike(x.Code, $"%{search}%") ||
-                (x.Organization != null && EF.Functions.ILike(x.Organization.Title, $"%{search}%")));
+                EF.Functions.ILike(x.Title, pattern, "\\") ||
+                EF.Functions.ILike(x.Code, pattern, "\\") ||
+                (x.Organization != null && EF.Functions.ILike(x.Organization.Title, pattern, "\\")));
         }
 
         if (StartDate.HasValue)
@@ -70,7 +71,11 @@ public class WorkProjectsFilter : ACriteria<WorkProject>
 
         return SortBy?.ToLowerInvariant() switch
         {
-            "code" => ascending ? query.OrderBy(x => x.Code) : query.OrderByDescending(x => x.Code),
+            // Length first, then the text. The code is a number kept as text, so sorting it as
+            // text alone would put #100 before #99; within one length the two orders agree.
+            "code" => ascending
+                ? query.OrderBy(x => x.Code.Length).ThenBy(x => x.Code)
+                : query.OrderByDescending(x => x.Code.Length).ThenByDescending(x => x.Code),
             "title" => ascending ? query.OrderBy(x => x.Title) : query.OrderByDescending(x => x.Title),
             "organization" => ascending
                 ? query.OrderBy(x => x.Organization == null ? null : x.Organization.Title)

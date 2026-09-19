@@ -8,6 +8,8 @@ using ATMS.Project.Contracts.Models.WorkGroups;
 using ATMS.Project.Contracts.Models.WorkItems;
 using ATMS.Project.Contracts.Models.WorkTasks;
 using ATMS.Project.Contracts.Models.WorkTickets;
+using ATMS.Project.Contracts.Models.Search;
+using ATMS.Project.Data.Models.Search;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Entities.Dictionaries;
 using AutoMapper;
@@ -23,6 +25,57 @@ public class EntityToModelProfile : Profile
         CreateMap<Organization, OrganizationItemModel>();
 
         CreateMap<User, UserModel>();
+
+        CreateMap<GlobalSearchRow, GlobalSearchItemModel>()
+            .ForMember(x => x.Project, expression => expression.MapFrom(row => new DictionaryModel<Guid>
+            {
+                Id = row.ProjectId,
+                Code = row.ProjectCode,
+                Name = row.ProjectTitle
+            }))
+            .ForMember(x => x.Status, expression => expression.MapFrom(row => new DictionaryModel
+            {
+                Id = row.StatusId,
+                Code = row.StatusCode,
+                Name = row.StatusName
+            }))
+            .ForMember(x => x.Assignee, expression => expression.MapFrom(row =>
+                row.AssigneeId.HasValue && row.AssigneeName != null && row.AssigneeSurname != null && row.AssigneeEmail != null
+                    ? new UserModel
+                    {
+                        Id = row.AssigneeId.Value,
+                        Name = row.AssigneeName,
+                        Surname = row.AssigneeSurname,
+                        Email = row.AssigneeEmail,
+                        AvatarPath = row.AssigneeAvatarPath
+                    }
+                    : null))
+            .ForMember(x => x.Group, expression => expression.MapFrom(row =>
+                row.GroupId.HasValue && row.GroupTitle != null
+                    ? new GlobalSearchLocationModel { Id = row.GroupId.Value, Name = row.GroupTitle }
+                    : null))
+            .ForMember(x => x.Milestone, expression => expression.MapFrom(row =>
+                row.MilestoneId.HasValue && row.MilestoneTitle != null
+                    ? new GlobalSearchLocationModel { Id = row.MilestoneId.Value, Name = row.MilestoneTitle }
+                    : null))
+            .ForMember(x => x.Ticket, expression => expression.MapFrom(row =>
+                row.TicketId.HasValue && row.TicketCode != null && row.TicketTitle != null
+                    ? new DictionaryModel<Guid>
+                    {
+                        Id = row.TicketId.Value,
+                        Code = row.TicketCode,
+                        Name = row.TicketTitle
+                    }
+                    : null))
+            .ForMember(x => x.ParentTask, expression => expression.MapFrom(row =>
+                row.ParentTaskId.HasValue && row.ParentTaskCode != null && row.ParentTaskTitle != null
+                    ? new DictionaryModel<Guid>
+                    {
+                        Id = row.ParentTaskId.Value,
+                        Code = row.ParentTaskCode,
+                        Name = row.ParentTaskTitle
+                    }
+                    : null));
 
         CreateMap<Organization, WorkProjectOrganizationModel>();
 

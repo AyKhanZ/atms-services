@@ -75,6 +75,8 @@ public class ProjectDbContext : DbContext
     public DbSet<RolePermission> RolePermissions { get; set; }
 
     public DbSet<InboxMessage> InboxMessages { get; set; }
+
+    public DbSet<GlobalSearchRecentItem> GlobalSearchRecentItems { get; set; }
     
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -97,6 +99,8 @@ public class ProjectDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.HasSequence<long>("EntityCodeSequence");
+
+        modelBuilder.HasPostgresExtension("pg_trgm");
 
         #region Global Query Filters
         
