@@ -1,3 +1,4 @@
+using ATMS.Project.Services.Board;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Entities;
@@ -42,7 +43,8 @@ public class CreateWorkTaskHandlerTest : BaseHandlerTest
         var handler = new CreateWorkTaskHandler(
             MapperMock.Object,
             WorkTaskRepositoryMock.Object,
-            EntityCodeGeneratorMock.Object);
+            EntityCodeGeneratorMock.Object,
+            new WorkTaskBoardPositionService());
 
         var id = await handler.Handle(command, CancellationToken.None);
 

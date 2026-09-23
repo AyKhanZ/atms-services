@@ -1,7 +1,9 @@
 using ATMS.Project.Contracts.Requests.Organizations;
 using ATMS.Project.Contracts.Requests.WorkProjects;
+using ATMS.Project.Contracts.Requests.WorkTaskBoard;
 using ATMS.Project.Data.Criteria.Organizations;
 using ATMS.Project.Data.Criteria.WorkProjects;
+using ATMS.Project.Data.Criteria.WorkTasks;
 using AutoMapper;
 
 namespace ATMS.Project.Services.Mappers;
@@ -10,6 +12,10 @@ public class RequestToFilterProfile : Profile
 {
     public RequestToFilterProfile()
     {
+        CreateMap<GetWorkTaskBoardRequest, WorkTaskBoardFilter>();
+
+        CreateMap<GetWorkTaskBoardCountsRequest, WorkTaskBoardFilter>();
+
         CreateMap<GetOrganizationsRequest, OrganizationFilter>();
         CreateMap<GetWorkProjectsRequest, WorkProjectsFilter>();
     }

@@ -9,6 +9,9 @@ public abstract class BaseValidatorTest
 {
     protected readonly Faker Faker = new();
     protected readonly Mock<IOrganizationRepository> OrganizationRepositoryMock = new();
+    protected readonly Mock<IWorkProjectRepository> WorkProjectsRepositoryMock = new();
+    protected readonly Mock<IWorkTaskRepository> WorkTasksRepositoryMock = new();
+    protected readonly Mock<IDictionariesRepository> DictionariesRepositoryMock = new();
 
     protected static IConfiguration CreateImagesConfiguration()
     {

@@ -20,8 +20,6 @@ internal static class WorkTaskMessages
     internal static string TicketNotFound => Get(nameof(TicketNotFound));
     internal static string ParentNotFound => Get(nameof(ParentNotFound));
     internal static string ParentIsSubtask => Get(nameof(ParentIsSubtask));
-    internal static string ParentTicketMismatch => Get(nameof(ParentTicketMismatch));
-    internal static string HasSubtasks => Get(nameof(HasSubtasks));
     internal static string ParentIsSelf => Get(nameof(ParentIsSelf));
     internal static string ParentHasSubtasks => Get(nameof(ParentHasSubtasks));
     internal static string TitleRequired => Get(nameof(TitleRequired));
@@ -35,4 +33,6 @@ internal static class WorkTaskMessages
     internal static string AssigneeMustBeStaff => Get(nameof(AssigneeMustBeStaff));
     internal static string DeadlineOutOfRange => Get(nameof(DeadlineOutOfRange));
     internal static string HierarchyFilterConflict => Get(nameof(HierarchyFilterConflict));
+    internal static string BoardPositionChanged => Get(nameof(BoardPositionChanged));
+    internal static string BoardPositionUnavailable => Get(nameof(BoardPositionUnavailable));
 }

@@ -1,4 +1,4 @@
-﻿using ATMS.Data.Enums;
+using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
 using ATMS.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +25,18 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 
         builder.HasIndex(e => new { e.WorkProjectId, e.CreatedAt, e.Id });
 
+        builder.HasIndex(e => new { e.StatusId, e.Rank, e.Id });
+
+        builder.HasIndex(e => new { e.StatusId, e.DoneAt, e.Id });
+
+        builder.HasIndex(e => new { e.Deadline, e.Id });
+
+
+        builder.HasIndex(e => new { e.Rank, e.Id });
+
+        builder.HasIndex(e => new { e.PriorityId, e.Id })
+            .IsDescending(true, false);
+
 
         builder.Property(e => e.Code)
             .IsRequired()
@@ -36,6 +48,11 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 
         builder.Property(e => e.Description)
             .HasMaxLength(2000);
+
+        builder.Property(e => e.Rank)
+            .IsRequired()
+            .HasMaxLength(64)
+            .UseCollation("C");
 
         builder.Property(e => e.StatusId)
             .HasDefaultValue((int)WorkTaskStatusEnum.New)

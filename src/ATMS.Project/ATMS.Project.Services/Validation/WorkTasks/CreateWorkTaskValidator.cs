@@ -21,7 +21,7 @@ public class CreateWorkTaskValidator : AbstractValidator<CreateWorkTaskCommand>
         RuleFor(command => command.WorkTicketId).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(WorkTaskMessages.TicketRequired)
             .MustAsync(IsTicketExistsAsync).WithMessage(WorkTaskMessages.TicketNotFound)
-            .When(command => command.ProjectId != Guid.Empty && !command.ParentWorkTaskId.HasValue, ApplyConditionTo.CurrentValidator);
+            .When(command => command.ProjectId != Guid.Empty && !command.ParentWorkTaskId.HasValue);
 
         RuleFor(command => command.ParentWorkTaskId)
             .CustomAsync(ValidateParentAsync)
@@ -60,13 +60,6 @@ public class CreateWorkTaskValidator : AbstractValidator<CreateWorkTaskCommand>
         if (parent.ParentWorkTaskId.HasValue)
         {
             context.AddFailure(nameof(CreateWorkTaskCommand.ParentWorkTaskId), WorkTaskMessages.ParentIsSubtask);
-            return;
-        }
-
-        if (context.InstanceToValidate.WorkTicketId != Guid.Empty &&
-            context.InstanceToValidate.WorkTicketId != parent.WorkTicketId)
-        {
-            context.AddFailure(nameof(CreateWorkTaskCommand.WorkTicketId), WorkTaskMessages.ParentTicketMismatch);
         }
     }
 }

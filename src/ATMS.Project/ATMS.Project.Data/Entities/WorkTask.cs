@@ -1,4 +1,4 @@
-﻿namespace ATMS.Project.Data.Entities;
+namespace ATMS.Project.Data.Entities;
 
 public class WorkTask : WorkItemEntity
 {
@@ -13,4 +13,8 @@ public class WorkTask : WorkItemEntity
     public Guid WorkTicketId { get; set; }
     
     public WorkTicket WorkTicket { get; set; }
+
+    public string Rank { get; set; }
+    
+    public DateTime? DoneAt { get; set; }
 }

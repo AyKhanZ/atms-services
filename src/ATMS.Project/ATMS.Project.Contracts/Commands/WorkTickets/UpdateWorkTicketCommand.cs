@@ -12,4 +12,6 @@ public class UpdateWorkTicketCommand : WorkTicketCommand, IRequest, IProjectScop
     public Guid WorkTicketId { get; set; }
 
     public int WorkTicketStatusId { get; set; }
+
+    public bool CompleteTasks { get; set; }
 }

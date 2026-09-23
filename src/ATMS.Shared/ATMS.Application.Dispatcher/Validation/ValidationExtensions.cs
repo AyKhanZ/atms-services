@@ -5,6 +5,12 @@ namespace ATMS.Application.Dispatcher.Validation;
 
 public static class ValidationExtensions
 {
+    public static IRuleBuilderOptions<T, int> IsPageSize<T>(this IRuleBuilder<T, int> ruleBuilder)
+    {
+        return ruleBuilder.InclusiveBetween(1, 50)
+            .WithMessage(_ => ValidationMessages.PageSizeOutOfRange);
+    }
+
     public static IRuleBuilderOptions<T, DateTime> IsInDateRange<T>(
         this IRuleBuilder<T, DateTime> ruleBuilder,
         DateTime? minimum = null,

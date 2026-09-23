@@ -6,6 +6,8 @@ using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Models.WorkProjects;
 using ATMS.Project.Contracts.Models.WorkGroups;
 using ATMS.Project.Contracts.Models.WorkItems;
+using ATMS.Project.Data.Models.WorkTasks;
+using ATMS.Project.Contracts.Models.WorkTaskBoard;
 using ATMS.Project.Contracts.Models.WorkTasks;
 using ATMS.Project.Contracts.Models.WorkTickets;
 using ATMS.Project.Contracts.Models.Search;
@@ -121,6 +123,9 @@ public class EntityToModelProfile : Profile
             .ForMember(x => x.Surname, expression => expression.MapFrom(x => x.User.Surname))
             .ForMember(x => x.AvatarPath, expression => expression.MapFrom(x => x.User.AvatarPath));
 
+        CreateMap<WorkTaskBoardAssignee, WorkTaskBoardAssigneeModel>()
+            .ForMember(x => x.Id, expression => expression.MapFrom(x => x.UserId));
+
         CreateMap<WorkTicket, WorkTicketModel>()
             .ForMember(x => x.MilestoneId, expression => expression.MapFrom(x => x.WorkGroupId))
             .ForMember(x => x.MilestoneTitle, expression => expression.MapFrom(x => x.WorkGroup.Title))
@@ -137,9 +142,12 @@ public class EntityToModelProfile : Profile
                 x => x.Name,
                 expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
 
+        CreateMap<WorkTicket, DictionaryModel<Guid>>()
+            .ForMember(x => x.Name, options => options.MapFrom(x => x.Title));
+        CreateMap<WorkTask, DictionaryModel<Guid>>()
+            .ForMember(x => x.Name, options => options.MapFrom(x => x.Title));
+
         CreateMap<WorkTask, WorkTaskModel>()
-            .ForMember(x => x.WorkTicketCode, expression => expression.MapFrom(x => x.WorkTicket.Code))
-            .ForMember(x => x.WorkTicketTitle, expression => expression.MapFrom(x => x.WorkTicket.Title))
             .ForMember(x => x.MilestoneId, expression => expression.MapFrom(x => x.WorkTicket.WorkGroupId))
             .ForMember(x => x.MilestoneTitle, expression => expression.MapFrom(x => x.WorkTicket.WorkGroup.Title))
             .ForMember(
@@ -147,9 +155,7 @@ public class EntityToModelProfile : Profile
                 expression => expression.MapFrom(x => x.WorkTicket.WorkGroup.ParentWorkGroupId.Value))
             .ForMember(
                 x => x.GroupTitle,
-                expression => expression.MapFrom(x => x.WorkTicket.WorkGroup.ParentWorkGroup.Title))
-            .ForMember(x => x.ParentWorkTaskCode, expression => expression.MapFrom(x => x.ParentWorkTask == null ? null : x.ParentWorkTask.Code))
-            .ForMember(x => x.ParentWorkTaskTitle, expression => expression.MapFrom(x => x.ParentWorkTask == null ? null : x.ParentWorkTask.Title));
+                expression => expression.MapFrom(x => x.WorkTicket.WorkGroup.ParentWorkGroup.Title));
 
         CreateMap<WorkGroup, WorkGroupModel>()
             .ForMember(

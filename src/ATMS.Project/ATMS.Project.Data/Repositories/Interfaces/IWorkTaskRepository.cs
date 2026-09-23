@@ -1,3 +1,5 @@
+using ATMS.Data.Criteria.Interfaces;
+using ATMS.Data.Enums;
 using ATMS.Data.Criteria;
 using ATMS.Project.Data.Criteria.WorkTasks;
 using ATMS.Project.Data.Entities;
@@ -29,17 +31,26 @@ public interface IWorkTaskRepository
 
     Task<Guid[]> GetChildIdsAsync(Guid parentWorkTaskId, CancellationToken cancellationToken);
 
+    Task<bool> IsWorkTaskExistAsync(Guid projectId, Guid workTaskId, CancellationToken cancellationToken);
+
     Task<bool> IsWorkTicketExistAsync(Guid projectId, Guid workTicketId, CancellationToken cancellationToken);
 
     Task<bool> IsProjectParticipantExistAsync(Guid projectId, Guid participantId, CancellationToken cancellationToken);
 
     Task<bool> IsStaffProjectParticipantExistAsync(Guid projectId, Guid participantId, CancellationToken cancellationToken);
 
+    Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByParentAsync(
+        IReadOnlyCollection<Guid> parentWorkTaskIds, CancellationToken cancellationToken);
+
     Task<WorkTaskProgress> GetProgressAsync(Guid parentWorkTaskId, CancellationToken cancellationToken);
 
     Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByTicketAsync(
         IReadOnlyCollection<Guid> workTicketIds,
         CancellationToken cancellationToken);
+    Task<string?> GetTopRankAsync(CancellationToken cancellationToken);
+
+    Task<Dictionary<Guid, string>> GetRanksAsync(IReadOnlyCollection<Guid> workTaskIds, ICriteria<WorkTask> criteria, CancellationToken cancellationToken);
+    Task<WorkTask[]> FindByTicketAsync(Guid projectId, Guid workTicketId, CancellationToken cancellationToken);
 
     Task CreateAsync(WorkTask workTask, CancellationToken cancellationToken);
 

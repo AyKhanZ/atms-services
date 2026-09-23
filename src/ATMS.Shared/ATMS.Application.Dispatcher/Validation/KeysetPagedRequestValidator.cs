@@ -12,8 +12,7 @@ public abstract class KeysetPagedRequestValidator<TRequest> : AbstractValidator<
     protected KeysetPagedRequestValidator()
     {
         RuleFor(request => request.PageSize)
-            .InclusiveBetween(1, 50)
-            .WithMessage(ValidationMessages.PageSizeOutOfRange);
+            .IsPageSize();
 
         RuleFor(request => request.SortDirection)
             .IsInEnum()

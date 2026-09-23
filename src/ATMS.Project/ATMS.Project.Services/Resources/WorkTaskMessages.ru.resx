@@ -5,15 +5,13 @@
   <data name="NotFound" xml:space="preserve"><value>Не удалось найти эту задачу в выбранном проекте. Обновите страницу и попробуйте снова.</value></data>
   <data name="ProjectRequired" xml:space="preserve"><value>Не удалось определить проект. Вернитесь к списку проектов и откройте проект снова.</value></data>
   <data name="TaskRequired" xml:space="preserve"><value>Не удалось определить задачу. Вернитесь к тикету и откройте задачу снова.</value></data>
-  <data name="TicketRequired" xml:space="preserve"><value>Не удалось определить тикет. Вернитесь к плану проекта и откройте тикет снова.</value></data>
+  <data name="TicketRequired" xml:space="preserve"><value>Выберите тикет для задачи.</value></data>
   <data name="TicketNotFound" xml:space="preserve"><value>Выбранный тикет больше недоступен в этом проекте. Обновите план и попробуйте снова.</value></data>
   <data name="ParentNotFound" xml:space="preserve"><value>Родительская задача больше недоступна. Обновите список задач и попробуйте снова.</value></data>
-  <data name="ParentIsSubtask" xml:space="preserve"><value>У подзадачи не может быть своей подзадачи. Добавьте её к задаче верхнего уровня.</value></data>
-  <data name="ParentTicketMismatch" xml:space="preserve"><value>Выбранный тикет не совпадает с тикетом родительской задачи. Обновите страницу задачи и попробуйте снова.</value></data>
-  <data name="HasSubtasks" xml:space="preserve"><value>Нельзя удалить задачу, пока у неё есть подзадачи. Сначала удалите подзадачи и попробуйте снова.</value></data>
+  <data name="ParentIsSubtask" xml:space="preserve"><value>У подзадачи не может быть своих подзадач. Выберите основную задачу.</value></data>
   <data name="TitleRequired" xml:space="preserve"><value>Введите название задачи.</value></data>
-  <data name="TitleTooLong" xml:space="preserve"><value>Название задачи должно содержать не более {0} символов. Сократите название и попробуйте снова.</value></data>
-  <data name="DescriptionTooLong" xml:space="preserve"><value>Описание задачи должно содержать не более {0} символов. Сократите описание и попробуйте снова.</value></data>
+  <data name="TitleTooLong" xml:space="preserve"><value>Название задачи должно содержать не более {0} символов.</value></data>
+  <data name="DescriptionTooLong" xml:space="preserve"><value>Описание задачи должно содержать не более {0} символов.</value></data>
   <data name="StatusRequired" xml:space="preserve"><value>Выберите статус задачи.</value></data>
   <data name="StatusUnsupported" xml:space="preserve"><value>Выбранный статус задачи больше недоступен. Выберите другой статус.</value></data>
   <data name="PriorityRequired" xml:space="preserve"><value>Выберите приоритет задачи.</value></data>
@@ -23,9 +21,11 @@
   <data name="DeadlineOutOfRange" xml:space="preserve"><value>Укажите срок с 01.01.1900 по 31.12.2100.</value></data>
   <data name="HierarchyFilterConflict" xml:space="preserve"><value>Выберите либо задачи верхнего уровня, либо родительскую задачу, но не оба варианта.</value></data>
   <data name="ParentIsSelf" xml:space="preserve">
-    <value>Задача не может быть родителем самой себе. Выберите другую задачу.</value>
+    <value>Нельзя вложить задачу в саму себя. Выберите другую задачу.</value>
   </data>
   <data name="ParentHasSubtasks" xml:space="preserve">
     <value>У этой задачи есть свои подзадачи, поэтому она не может стать подзадачей. Сначала перенесите или удалите их.</value>
   </data>
+  <data name="BoardPositionChanged" xml:space="preserve"><value>Порядок задач изменился. Обновите доску и повторите попытку.</value></data>
+  <data name="BoardPositionUnavailable" xml:space="preserve"><value>Не удалось переместить задачу сюда. Выберите другое место на доске.</value></data>
 </root>

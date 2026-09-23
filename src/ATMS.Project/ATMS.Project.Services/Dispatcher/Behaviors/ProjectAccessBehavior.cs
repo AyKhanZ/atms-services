@@ -1,9 +1,9 @@
+using ATMS.Application.Security;
+using ATMS.Data.Constants;
 using System.Diagnostics.CodeAnalysis;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
-using ATMS.Application.Security;
-using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Requests.Security;
 using ATMS.Project.Services.Security.Interfaces;

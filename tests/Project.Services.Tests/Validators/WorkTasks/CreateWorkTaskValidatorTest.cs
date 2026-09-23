@@ -1,22 +1,18 @@
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Entities;
-using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Validation.WorkTasks;
 using Moq;
 
 namespace Project.Services.Tests.Validators.WorkTasks;
 
-public class CreateWorkTaskValidatorTest
+public class CreateWorkTaskValidatorTest : BaseValidatorTest
 {
-    private readonly Mock<IWorkTaskRepository> _tasks = new();
-    private readonly Mock<IDictionariesRepository> _dictionaries = new();
-
     public CreateWorkTaskValidatorTest()
     {
-        _tasks.Setup(x => x.IsWorkTicketExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _tasks.Setup(x => x.IsProjectParticipantExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _tasks.Setup(x => x.IsStaffProjectParticipantExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
-        _dictionaries.Setup(x => x.IsWorkItemPriorityExistAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        WorkTasksRepositoryMock.Setup(x => x.IsWorkTicketExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        WorkTasksRepositoryMock.Setup(x => x.IsProjectParticipantExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        WorkTasksRepositoryMock.Setup(x => x.IsStaffProjectParticipantExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        DictionariesRepositoryMock.Setup(x => x.IsWorkItemPriorityExistAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
     }
 
     [Theory]
@@ -51,7 +47,7 @@ public class CreateWorkTaskValidatorTest
     {
         var command = ValidCommand();
         command.ParentWorkTaskId = Guid.NewGuid();
-        _tasks.Setup(x => x.FindParentAsync(command.ProjectId, command.ParentWorkTaskId.Value, It.IsAny<CancellationToken>()))
+        WorkTasksRepositoryMock.Setup(x => x.FindParentAsync(command.ProjectId, command.ParentWorkTaskId.Value, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new WorkTask { ParentWorkTaskId = Guid.NewGuid() });
 
         var result = await Validator().ValidateAsync(command);
@@ -64,45 +60,45 @@ public class CreateWorkTaskValidatorTest
     {
         var command = ValidCommand();
         command.ParentWorkTaskId = Guid.NewGuid();
-        _tasks.Setup(x => x.FindParentAsync(command.ProjectId, command.ParentWorkTaskId.Value, It.IsAny<CancellationToken>()))
+        WorkTasksRepositoryMock.Setup(x => x.FindParentAsync(command.ProjectId, command.ParentWorkTaskId.Value, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new WorkTask { ParentWorkTaskId = null, WorkTicketId = command.WorkTicketId });
 
         var result = await Validator().ValidateAsync(command);
 
         Assert.True(result.IsValid);
-        _tasks.Verify(
+        WorkTasksRepositoryMock.Verify(
             x => x.IsWorkTicketExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
             Times.Never);
-        _tasks.Verify(
+        WorkTasksRepositoryMock.Verify(
             x => x.FindParentAsync(command.ProjectId, command.ParentWorkTaskId.Value, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
     [Fact]
-    public async Task Validate_WhenSubtaskTicketDiffersFromParent_FailsTicketValidation()
+    public async Task Validate_WhenSubtaskTicketDiffersFromParent_UsesParentTicket()
     {
         var command = ValidCommand();
         command.ParentWorkTaskId = Guid.NewGuid();
-        _tasks.Setup(x => x.FindParentAsync(command.ProjectId, command.ParentWorkTaskId.Value, It.IsAny<CancellationToken>()))
+        WorkTasksRepositoryMock.Setup(x => x.FindParentAsync(command.ProjectId, command.ParentWorkTaskId.Value, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new WorkTask { WorkTicketId = Guid.NewGuid() });
 
         var result = await Validator().ValidateAsync(command);
 
-        Assert.Contains(result.Errors, error => error.PropertyName == nameof(command.WorkTicketId));
+        Assert.True(result.IsValid);
     }
 
     [Fact]
-    public async Task Validate_WhenSubtaskTicketIsMissing_FailsTicketValidation()
+    public async Task Validate_WhenSubtaskTicketIsMissing_UsesParentTicket()
     {
         var command = ValidCommand();
         command.WorkTicketId = Guid.Empty;
         command.ParentWorkTaskId = Guid.NewGuid();
-        _tasks.Setup(x => x.FindParentAsync(command.ProjectId, command.ParentWorkTaskId.Value, It.IsAny<CancellationToken>()))
+        WorkTasksRepositoryMock.Setup(x => x.FindParentAsync(command.ProjectId, command.ParentWorkTaskId.Value, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new WorkTask { WorkTicketId = Guid.NewGuid() });
 
         var result = await Validator().ValidateAsync(command);
 
-        Assert.Contains(result.Errors, error => error.PropertyName == nameof(command.WorkTicketId));
+        Assert.True(result.IsValid);
     }
 
     [Fact]
@@ -110,7 +106,7 @@ public class CreateWorkTaskValidatorTest
     {
         var command = ValidCommand();
         command.AssigneeId = Guid.NewGuid();
-        _tasks.Setup(x => x.IsStaffProjectParticipantExistAsync(
+        WorkTasksRepositoryMock.Setup(x => x.IsStaffProjectParticipantExistAsync(
                 command.ProjectId,
                 command.AssigneeId.Value,
                 It.IsAny<CancellationToken>()))
@@ -121,7 +117,7 @@ public class CreateWorkTaskValidatorTest
         Assert.Contains(result.Errors, error => error.PropertyName == nameof(command.AssigneeId));
     }
 
-    private CreateWorkTaskValidator Validator() => new(_tasks.Object, _dictionaries.Object);
+    private CreateWorkTaskValidator Validator() => new(WorkTasksRepositoryMock.Object, DictionariesRepositoryMock.Object);
 
     private static CreateWorkTaskCommand ValidCommand() => new()
     {

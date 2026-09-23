@@ -1,9 +1,11 @@
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Caching.Services.Interfaces;
+using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkTickets;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
 using ATMS.Project.Services.Caching;
+using ATMS.Project.Services.Handlers.WorkTasks;
 using AutoMapper;
 using MediatR;
 
@@ -24,6 +26,18 @@ public class UpdateWorkTicketHandler(
         }
 
         mapper.Map(command, workTicket);
+
+        if (command.CompleteTasks && command.WorkTicketStatusId == (int)WorkTicketStatusEnum.Closed)
+        {
+            var tasks = await workTaskRepository.FindByTicketAsync(command.ProjectId, workTicket.Id, cancellationToken);
+            var now = DateTime.UtcNow;
+
+            foreach (var task in tasks.Where(task => task.StatusId != (int)WorkTaskStatusEnum.Done))
+            {
+                task.StatusId = (int)WorkTaskStatusEnum.Done;
+                task.DoneAt = now;
+            }
+        }
 
         await workTicketRepository.SaveChangesAsync(cancellationToken);
 

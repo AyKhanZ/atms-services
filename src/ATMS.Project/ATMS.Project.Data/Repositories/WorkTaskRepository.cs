@@ -1,5 +1,5 @@
+using ATMS.Data.Criteria.Interfaces;
 using ATMS.Data.Criteria;
-using ATMS.Data.Criteria.Users;
 using ATMS.Data.Enums;
 using ATMS.Project.Data.Criteria.Users;
 using ATMS.Project.Data.Criteria.WorkTasks;
@@ -84,7 +84,6 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
             cancellationToken);
     }
 
-    /// <summary>Tracked children, so moving a task to another ticket can take them along.</summary>
     public Task<WorkTask[]> FindChildrenAsync(
         Guid projectId,
         Guid parentWorkTaskId,
@@ -114,6 +113,13 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
             .Where(task => task.ParentWorkTaskId == parentWorkTaskId)
             .Select(task => task.Id)
             .ToArrayAsync(cancellationToken);
+    }
+
+    public Task<bool> IsWorkTaskExistAsync(Guid projectId, Guid workTaskId, CancellationToken cancellationToken)
+    {
+        return context.WorkTasks.AnyAsync(
+            task => task.Id == workTaskId && task.WorkProjectId == projectId,
+            cancellationToken);
     }
 
     public Task<bool> IsWorkTicketExistAsync(Guid projectId, Guid workTicketId, CancellationToken cancellationToken)
@@ -154,7 +160,9 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
         return progress ?? new WorkTaskProgress(0, 0);
     }
 
-    public async Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByTicketAsync(IReadOnlyCollection<Guid> workTicketIds, CancellationToken cancellationToken)
+    public async Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByTicketAsync(
+        IReadOnlyCollection<Guid> workTicketIds,
+        CancellationToken cancellationToken)
     {
         if (workTicketIds.Count == 0)
         {
@@ -164,12 +172,39 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
         return await context.WorkTasks
             .Where(task => workTicketIds.Contains(task.WorkTicketId) && task.ParentWorkTaskId == null)
             .GroupBy(task => task.WorkTicketId)
-            .ToDictionaryAsync(
-                group => group.Key,
-                group => new WorkTaskProgress(
-                    group.Count(),
-                    group.Count(task => task.StatusId == (int)WorkTaskStatusEnum.Done)),
-                cancellationToken);
+            .Select(group => new
+            {
+                Id = group.Key,
+                Total = group.Count(),
+                Done = group.Count(task => task.StatusId == (int)WorkTaskStatusEnum.Done)
+            })
+            .ToDictionaryAsync(row => row.Id, row => new WorkTaskProgress(row.Total, row.Done), cancellationToken);
+    }
+
+    public Task<string?> GetTopRankAsync(CancellationToken cancellationToken)
+    {
+        return context.WorkTasks
+            .Where(task => task.StatusId == (int)WorkTaskStatusEnum.New)
+            .OrderBy(task => task.Rank)
+            .Select(task => task.Rank)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public Task<Dictionary<Guid, string>> GetRanksAsync(
+        IReadOnlyCollection<Guid> workTaskIds,
+        ICriteria<WorkTask> criteria,
+        CancellationToken cancellationToken)
+    {
+        return criteria.Apply(context.WorkTasks)
+            .Where(task => workTaskIds.Contains(task.Id))
+            .ToDictionaryAsync(task => task.Id, task => task.Rank, cancellationToken);
+    }
+
+    public Task<WorkTask[]> FindByTicketAsync(Guid projectId, Guid workTicketId, CancellationToken cancellationToken)
+    {
+        return context.WorkTasks
+            .Where(task => task.WorkProjectId == projectId && task.WorkTicketId == workTicketId)
+            .ToArrayAsync(cancellationToken);
     }
 
     public async Task CreateAsync(WorkTask workTask, CancellationToken cancellationToken)
@@ -183,7 +218,9 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
         return context.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByParentAsync(IReadOnlyCollection<Guid> parentWorkTaskIds, CancellationToken cancellationToken)
+    public async Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByParentAsync(
+        IReadOnlyCollection<Guid> parentWorkTaskIds,
+        CancellationToken cancellationToken)
     {
         if (parentWorkTaskIds.Count == 0)
         {
@@ -192,12 +229,13 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
 
         return await context.WorkTasks
             .Where(task => task.ParentWorkTaskId.HasValue && parentWorkTaskIds.Contains(task.ParentWorkTaskId.Value))
-            .GroupBy(task => task.ParentWorkTaskId!.Value)
-            .ToDictionaryAsync(
-                group => group.Key,
-                group => new WorkTaskProgress(
-                    group.Count(),
-                    group.Count(task => task.StatusId == (int)WorkTaskStatusEnum.Done)),
-                cancellationToken);
+            .GroupBy(task => task.ParentWorkTaskId.Value)
+            .Select(group => new
+            {
+                Id = group.Key,
+                Total = group.Count(),
+                Done = group.Count(task => task.StatusId == (int)WorkTaskStatusEnum.Done)
+            })
+            .ToDictionaryAsync(row => row.Id, row => new WorkTaskProgress(row.Total, row.Done), cancellationToken);
     }
 }
