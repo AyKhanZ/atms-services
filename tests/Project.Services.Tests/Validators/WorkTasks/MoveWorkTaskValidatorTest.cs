@@ -27,6 +27,9 @@ public class MoveWorkTaskValidatorTest: BaseValidatorTest
                 It.IsAny<Guid>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
+        WorkTasksRepositoryMock
+            .Setup(repository => repository.IsWorkTaskExistAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
     }
 
     private MoveWorkTaskValidator Validator() =>
@@ -82,10 +85,29 @@ public class MoveWorkTaskValidatorTest: BaseValidatorTest
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task Validate_RejectsANeighbourFromOutsideTheProject(bool above)
+    public async Task Validate_AcceptsANeighbourFromAnotherProject(bool above)
     {
+        // The Tasks page shows every project on one board: the card next to the drop may be anyone's.
         var neighbour = Guid.NewGuid();
         Missing(neighbour);
+        var command = Command();
+        command.PreviousWorkTaskId = above ? neighbour : null;
+        command.NextWorkTaskId = above ? null : neighbour;
+
+        var result = await Validator().ValidateAsync(command);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Validate_RejectsANeighbourThatNoLongerExists(bool above)
+    {
+        var neighbour = Guid.NewGuid();
+        WorkTasksRepositoryMock
+            .Setup(repository => repository.IsWorkTaskExistAsync(neighbour, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
         var command = Command();
         command.PreviousWorkTaskId = above ? neighbour : null;
         command.NextWorkTaskId = above ? null : neighbour;

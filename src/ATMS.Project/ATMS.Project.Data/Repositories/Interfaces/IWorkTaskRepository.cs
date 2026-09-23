@@ -33,6 +33,8 @@ public interface IWorkTaskRepository
 
     Task<bool> IsWorkTaskExistAsync(Guid projectId, Guid workTaskId, CancellationToken cancellationToken);
 
+    Task<bool> IsWorkTaskExistAsync(Guid workTaskId, CancellationToken cancellationToken);
+
     Task<bool> IsWorkTicketExistAsync(Guid projectId, Guid workTicketId, CancellationToken cancellationToken);
 
     Task<bool> IsProjectParticipantExistAsync(Guid projectId, Guid participantId, CancellationToken cancellationToken);

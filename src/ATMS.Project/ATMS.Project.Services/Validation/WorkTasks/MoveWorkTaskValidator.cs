@@ -34,11 +34,11 @@ public class MoveWorkTaskValidator : AbstractValidator<MoveWorkTaskCommand>
 
         RuleFor(command => command.PreviousWorkTaskId)
             .MustAsync(IsNeighbourExistsAsync).WithMessage(WorkTaskMessages.BoardPositionChanged)
-            .When(command => command.ProjectId != Guid.Empty && command.PreviousWorkTaskId.HasValue);
+            .When(command => command.PreviousWorkTaskId.HasValue);
 
         RuleFor(command => command.NextWorkTaskId)
             .MustAsync(IsNeighbourExistsAsync).WithMessage(WorkTaskMessages.BoardPositionChanged)
-            .When(command => command.ProjectId != Guid.Empty && command.NextWorkTaskId.HasValue);
+            .When(command => command.NextWorkTaskId.HasValue);
     }
 
     private Task<bool> IsProjectExistsAsync(Guid projectId, CancellationToken cancellationToken)
@@ -51,8 +51,10 @@ public class MoveWorkTaskValidator : AbstractValidator<MoveWorkTaskCommand>
         return _workTaskRepository.IsWorkTaskExistAsync(command.ProjectId, workTaskId, cancellationToken);
     }
 
-    private Task<bool> IsNeighbourExistsAsync(MoveWorkTaskCommand command, Guid? workTaskId, CancellationToken cancellationToken)
+    // A neighbour may belong to another project: the Tasks page lays out every project the user
+    // sees on one board. Whether the user may see it is checked by the handler, with the ranks.
+    private Task<bool> IsNeighbourExistsAsync(Guid? workTaskId, CancellationToken cancellationToken)
     {
-        return _workTaskRepository.IsWorkTaskExistAsync(command.ProjectId, workTaskId!.Value, cancellationToken);
+        return _workTaskRepository.IsWorkTaskExistAsync(workTaskId!.Value, cancellationToken);
     }
 }

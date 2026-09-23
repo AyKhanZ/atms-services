@@ -122,6 +122,11 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
             cancellationToken);
     }
 
+    public Task<bool> IsWorkTaskExistAsync(Guid workTaskId, CancellationToken cancellationToken)
+    {
+        return context.WorkTasks.AnyAsync(task => task.Id == workTaskId, cancellationToken);
+    }
+
     public Task<bool> IsWorkTicketExistAsync(Guid projectId, Guid workTicketId, CancellationToken cancellationToken)
     {
         return context.WorkTickets.AnyAsync(
