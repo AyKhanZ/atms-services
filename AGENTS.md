@@ -172,6 +172,9 @@ These were decided in review. Breaking one is a defect, not a style preference.
   with `.And(...)` the way `NotAdminCriteria` is. Do not put `UserId` or `IsSuperAdmin` fields on a filter.
 - A role is read by a criteria too, never by an `if` in a handler or a helper method: wrap the rule that
   binds ordinary users in `ExceptSuperAdminCriteria<T>` and compose it with `.And(...)`.
+- A rule written once for one entity is reused on another through a criteria that takes the first
+  entity's query, not by copying its conditions: `ParticipantsAmongUsersCriteria` applies
+  `EmployeeUsersCriteria` to project participants.
 - Build criteria inside the handler, like every other handler does. No "criteria factory" or similar helper
   class invented for one feature.
 - A cursor-paged list inherits `GetKeysetPaginationRequest` and is paged by `KeysetPaginationCriteria`,

@@ -1,7 +1,9 @@
-using ATMS.Data.Constants;
 using ATMS.Application.Interfaces;
+using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Models.WorkTaskBoard;
 using ATMS.Project.Contracts.Requests.WorkTaskBoard;
+using ATMS.Project.Data.Criteria.WorkProjectParticipants;
+using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -15,7 +17,12 @@ public class GetWorkTaskBoardAssigneesHandler(
 {
     public async Task<WorkTaskBoardAssigneeModel[]> Handle(GetWorkTaskBoardAssigneesRequest request, CancellationToken cancellationToken)
     {
-        var people = await workTaskBoardRepository.GetAssigneesAsync(currentUser.Id, currentUser.RoleId == RoleIds.SuperAdmin, request.ProjectIds, cancellationToken);
+        var filter = mapper.Map<WorkTaskBoardAssigneesFilter>(request);
+        var criteria = filter.And(new ExceptSuperAdminCriteria<WorkProjectParticipant>(
+            currentUser.RoleId,
+            new ParticipantsOfMyProjectsCriteria(currentUser.Id)));
+
+        var people = await workTaskBoardRepository.GetAssigneesAsync(criteria, cancellationToken);
 
         return mapper.Map<WorkTaskBoardAssigneeModel[]>(people);
     }

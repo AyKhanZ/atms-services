@@ -14,8 +14,6 @@ public interface IWorkTaskBoardRepository
     Task<Dictionary<int, int>> GetCountsByStatusAsync(ICriteria<WorkTask> criteria, CancellationToken cancellationToken);
 
     Task<WorkTaskBoardAssignee[]> GetAssigneesAsync(
-        Guid userId,
-        bool isSuperAdmin,
-        IReadOnlyCollection<Guid> projectIds,
+        ICriteria<WorkProjectParticipant> criteria,
         CancellationToken cancellationToken);
 }

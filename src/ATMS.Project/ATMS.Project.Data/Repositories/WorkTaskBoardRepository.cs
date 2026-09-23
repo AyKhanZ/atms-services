@@ -1,5 +1,6 @@
 using ATMS.Data.Criteria.Interfaces;
 using ATMS.Project.Data.Criteria.Users;
+using ATMS.Project.Data.Criteria.WorkProjectParticipants;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.WorkTasks;
@@ -50,26 +51,12 @@ public class WorkTaskBoardRepository(ProjectDbContext context, IWorkTaskReposito
     }
 
     public async Task<WorkTaskBoardAssignee[]> GetAssigneesAsync(
-        Guid userId,
-        bool isSuperAdmin,
-        IReadOnlyCollection<Guid> projectIds,
+        ICriteria<WorkProjectParticipant> criteria,
         CancellationToken cancellationToken)
     {
-        var employees = new EmployeeUsersCriteria().Apply(context.Users);
-        var participants = context.WorkProjectParticipants
-            .AsNoTracking()
-            .Where(participant => employees.Any(user => user.Id == participant.UserId));
-
-        if (!isSuperAdmin)
-        {
-            participants = participants.Where(participant => participant.WorkProject.WorkProjectParticipants
-                .Any(member => member.UserId == userId));
-        }
-
-        if (projectIds.Count > 0)
-        {
-            participants = participants.Where(participant => projectIds.Contains(participant.WorkProjectId));
-        }
+        // Only employees can be assigned work: the rule is the data's, not the caller's.
+        var employees = new ParticipantsAmongUsersCriteria(new EmployeeUsersCriteria().Apply(context.Users));
+        var participants = employees.Apply(criteria.Apply(context.WorkProjectParticipants.AsNoTracking()));
 
         var people = await participants
             .Select(participant => new
