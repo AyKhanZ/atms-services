@@ -19,7 +19,8 @@ public class WorkTaskBoardController(IMediator mediator) : ControllerBase
     /// <remarks>
     /// Only projects the caller participates in are included; a super administrator sees all.
     /// Every list filter is "any of" and an empty one does not filter. sort=1 (Rank) is the board's
-    /// own order, 2 (DoneAt) the Done column, 3 (Deadline) the calendar and 4 (Priority) the list;
+    /// own order, 2 (DoneAt) the Done column, 3 (Deadline) the calendar, 4 (Priority), 5 (Title)
+    /// 6 (State: New, In Progress, Done) and 7 (numeric Code) are available for the list;
     /// sortDirection turns any of them round, and tasks without a deadline stay last either way.
     /// The cursor belongs to the sort and direction it was issued for.
     /// </remarks>

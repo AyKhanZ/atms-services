@@ -44,6 +44,9 @@ public class GetWorkTaskBoardCountsRequest : IRequest<Dictionary<int, int>>
     /// </summary>
     public DateTime? OverdueBefore { get; init; }
 
+    /// <summary>Everything except overdue work: done, without a deadline, or due on or after this moment.</summary>
+    public DateTime? ExcludeOverdueBefore { get; init; }
+
     /// <summary>Case-insensitive substring search by code or title.</summary>
     public string? Search { get; init; }
 }

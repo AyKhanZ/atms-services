@@ -9,5 +9,11 @@ public enum WorkTaskBoardSortEnum
 
     Deadline = 3,
 
-    Priority = 4
+    Priority = 4,
+
+    Title = 5,
+
+    State = 6,
+
+    Code = 7
 }

@@ -17,6 +17,9 @@ public class GetWorkTaskBoardHandler(
     IWorkTaskBoardRepository workTaskBoardRepository,
     IMapper mapper) : IRequestHandler<GetWorkTaskBoardRequest, KeysetPagedResult<WorkTaskModel>>
 {
+    /// <summary>The code column's length: padding to it never cuts a code short.</summary>
+    private const int CodeWidth = 50;
+
     public async Task<KeysetPagedResult<WorkTaskModel>> Handle(GetWorkTaskBoardRequest request, CancellationToken cancellationToken)
     {
         var filter = mapper.Map<WorkTaskBoardFilter>(request);
@@ -52,6 +55,17 @@ public class GetWorkTaskBoardHandler(
 
         return sort switch
         {
+            // The code stays text, ordered like the Projects list: shorter first, then by text, so #9
+            // comes before #10 and #100. Padded to the column's width that is one key the cursor can hold.
+            WorkTaskBoardSortEnum.Code => new KeysetPaginationCriteria<WorkTask, string>(
+                request.Cursor, request.PageSize, request.SortDirection,
+                task => task.Code.PadLeft(CodeWidth, '0'), task => task.Id),
+            WorkTaskBoardSortEnum.Title => new KeysetPaginationCriteria<WorkTask, string>(
+                request.Cursor, request.PageSize, request.SortDirection,
+                task => task.Title, task => task.Id),
+            WorkTaskBoardSortEnum.State => new KeysetPaginationCriteria<WorkTask, int>(
+                request.Cursor, request.PageSize, request.SortDirection,
+                task => task.StatusId, task => task.Id),
             WorkTaskBoardSortEnum.DoneAt => new KeysetPaginationCriteria<WorkTask, DateTime?>(
                 request.Cursor, request.PageSize, request.SortDirection,
                 task => task.DoneAt, task => task.Id, emptyKeysLast: true),

@@ -31,6 +31,8 @@ public class WorkTaskBoardFilter : ACriteria<WorkTask>
 
     public DateTime? OverdueBefore { get; init; }
 
+    public DateTime? ExcludeOverdueBefore { get; init; }
+
     public string? Search { get; init; }
 
     public override IQueryable<WorkTask> Apply(IQueryable<WorkTask> query)
@@ -97,6 +99,15 @@ public class WorkTaskBoardFilter : ACriteria<WorkTask>
             var before = OverdueBefore.Value;
             query = query.Where(task =>
                 task.Deadline < before && task.StatusId != (int)WorkTaskStatusEnum.Done);
+        }
+
+        if (ExcludeOverdueBefore.HasValue)
+        {
+            var before = ExcludeOverdueBefore.Value;
+            query = query.Where(task =>
+                task.Deadline == null ||
+                task.Deadline >= before ||
+                task.StatusId == (int)WorkTaskStatusEnum.Done);
         }
 
         if (!string.IsNullOrWhiteSpace(Search))

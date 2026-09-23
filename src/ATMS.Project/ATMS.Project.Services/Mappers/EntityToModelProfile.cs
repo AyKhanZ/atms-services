@@ -146,6 +146,8 @@ public class EntityToModelProfile : Profile
             .ForMember(x => x.Name, options => options.MapFrom(x => x.Title));
         CreateMap<WorkTask, DictionaryModel<Guid>>()
             .ForMember(x => x.Name, options => options.MapFrom(x => x.Title));
+        CreateMap<WorkProject, DictionaryModel<Guid>>()
+            .ForMember(x => x.Name, options => options.MapFrom(x => x.Title));
 
         CreateMap<WorkTask, WorkTaskModel>()
             .ForMember(x => x.MilestoneId, expression => expression.MapFrom(x => x.WorkTicket.WorkGroupId))

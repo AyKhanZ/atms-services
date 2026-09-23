@@ -14,7 +14,7 @@ public class WorkTaskModel
     public string MilestoneTitle { get; set; }
     public Guid GroupId { get; set; }
     public string GroupTitle { get; set; }
-    public string? WorkProjectTitle { get; set; }
+    public DictionaryModel<Guid>? WorkProject { get; set; }
     public DictionaryModel<Guid> WorkTicket { get; set; }
     public DictionaryModel<Guid>? ParentWorkTask { get; set; }
     public bool IsSubtask => ParentWorkTask is not null;
