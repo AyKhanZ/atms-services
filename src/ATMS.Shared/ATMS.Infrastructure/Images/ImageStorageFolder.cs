@@ -6,6 +6,5 @@ public enum ImageStorageFolder
     Organizations,
     Projects,
     Tickets,
-    Tasks,
-    Attachments
+    Tasks
 }

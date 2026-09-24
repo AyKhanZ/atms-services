@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"><xsd:element name="root" msdata:IsDataSet="true" /></xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="NotFound" xml:space="preserve"><value>Не удалось найти этот файл. Возможно, его удалили. Обновите страницу и попробуйте снова.</value></data>
+  <data name="AttachmentRequired" xml:space="preserve"><value>Не удалось определить файл. Обновите страницу и попробуйте снова.</value></data>
+  <data name="FileMissing" xml:space="preserve"><value>Этого файла больше нет на сервере. Попросите того, кто его загрузил, добавить его снова.</value></data>
+  <data name="FileRequired" xml:space="preserve"><value>Выберите файл для загрузки.</value></data>
+  <data name="FileEmpty" xml:space="preserve"><value>Этот файл пустой. Выберите другой файл.</value></data>
+  <data name="FileTooLarge" xml:space="preserve"><value>Этот файл больше {0} МБ. Выберите файл поменьше.</value></data>
+  <data name="FileTypeUnsupported" xml:space="preserve"><value>Такой тип файла не поддерживается. Используйте PDF, Word, Excel, PowerPoint, изображения, текст или ZIP.</value></data>
+  <data name="FileContentMismatch" xml:space="preserve"><value>Содержимое файла не совпадает с его расширением. Проверьте файл и попробуйте снова.</value></data>
+  <data name="TooManyFiles" xml:space="preserve"><value>У этой задачи уже {0} файлов. Удалите лишние, чтобы добавить новые.</value></data>
+  <data name="NameRequired" xml:space="preserve"><value>Введите имя файла.</value></data>
+  <data name="NameTooLong" xml:space="preserve"><value>Имя файла должно быть не длиннее {0} символов.</value></data>
+  <data name="NameInvalidCharacters" xml:space="preserve"><value>Имя файла не может содержать символы: \ / : * ? " &lt; &gt; |</value></data>
+  <data name="FilterRequired" xml:space="preserve"><value>Выберите одну задачу, подзадачу или тикет, чтобы увидеть их файлы.</value></data>
+</root>

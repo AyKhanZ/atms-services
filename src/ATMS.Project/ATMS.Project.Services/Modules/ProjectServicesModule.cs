@@ -20,6 +20,7 @@ public static class ProjectServicesModule
         services.AddProjectData(configuration);
         services.AddProjectSecurityServices();
         services.AddBoardServices();
+        services.AddAttachmentServices();
         services.AddEmailServices(configuration);
         services.AddHandlerServices();
         services.AddMapperServices();
