@@ -9,6 +9,7 @@ public interface IWorkTaskBoardRepository
     Task<WorkTasksQueryResult> GetManyAsync(
         ICriteria<WorkTask> criteria,
         IKeysetPagination<WorkTask> pagination,
+        IReadOnlyCollection<string> languages,
         CancellationToken cancellationToken);
 
     Task<Dictionary<int, int>> GetCountsByStatusAsync(ICriteria<WorkTask> criteria, CancellationToken cancellationToken);

@@ -14,22 +14,27 @@ public class WorkTaskBoardRepository(ProjectDbContext context, IWorkTaskReposito
     public async Task<WorkTasksQueryResult> GetManyAsync(
         ICriteria<WorkTask> criteria,
         IKeysetPagination<WorkTask> pagination,
+        IReadOnlyCollection<string> languages,
         CancellationToken cancellationToken)
     {
+        // Only what a card shows, in one query. The milestone and group are not on the board, and a
+        // status or priority needs its name in the caller's language and the English fallback only:
+        // with at most two translation rows each, a single query stays small where all of them
+        // forced a split into eight round trips per page.
         var query = criteria.Apply(context.WorkTasks
             .AsNoTracking()
             .Include(task => task.Status)
-                .ThenInclude(status => status.Translations)
+                .ThenInclude(status => status.Translations
+                    .Where(translation => languages.Contains(translation.Language)))
             .Include(task => task.Priority)
-                .ThenInclude(priority => priority.Translations)
+                .ThenInclude(priority => priority.Translations
+                    .Where(translation => languages.Contains(translation.Language)))
             .Include(task => task.Assignee)
                 .ThenInclude(participant => participant.User)
             .Include(task => task.WorkTicket)
-                .ThenInclude(ticket => ticket.WorkGroup)
-                .ThenInclude(milestone => milestone.ParentWorkGroup)
             .Include(task => task.ParentWorkTask)
             .Include(task => task.WorkProject)
-            .AsSplitQuery());
+            .AsSingleQuery());
 
         var items = await pagination.Apply(query).ToArrayAsync(cancellationToken);
         var page = pagination.ToResult(items);

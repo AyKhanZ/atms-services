@@ -10,6 +10,7 @@ public static class BoardModule
         this IServiceCollection services)
     {
         services.AddScoped<IWorkTaskBoardPositionService, WorkTaskBoardPositionService>();
+        services.AddScoped<IWorkTaskBoardPlacementService, WorkTaskBoardPlacementService>();
 
         return services;
     }

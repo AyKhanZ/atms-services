@@ -5,14 +5,29 @@ using ATMS.Data.Enums;
 
 namespace ATMS.Data.Criteria;
 
-public sealed record KeysetCursor(string Key, Guid Id, SortDirectionEnum SortDirection)
+/// <summary>Where the next page starts: the last row's key and id, the direction, and which order they belong to.</summary>
+public sealed record KeysetCursor(string Key, Guid Id, SortDirectionEnum SortDirection, string? Order = null)
 {
     private static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web);
 
-    public static KeysetCursor For<TKey>(TKey key, Guid id, SortDirectionEnum sortDirection)
-        => new(Write(key), id, sortDirection);
+    public static KeysetCursor For<TKey>(TKey key, Guid id, SortDirectionEnum sortDirection, string? order = null)
+        => new(Write(key), id, sortDirection, order);
 
     public TKey KeyAs<TKey>() => Read<TKey>(Key);
+
+    /// <summary>Whether the key reads as this type at all: a date that is not a date, for one, does not.</summary>
+    public bool TryKeyAs<TKey>()
+    {
+        try
+        {
+            Read<TKey>(Key);
+            return true;
+        }
+        catch (Exception exception) when (exception is FormatException or OverflowException or NotSupportedException)
+        {
+            return false;
+        }
+    }
 
     public static bool TryDecode(string? value, out KeysetCursor? cursor)
     {

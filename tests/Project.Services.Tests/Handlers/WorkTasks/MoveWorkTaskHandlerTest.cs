@@ -17,7 +17,18 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
     private WorkTask NewTask(int status = (int)WorkTaskStatusEnum.New, string rank = "m5") =>
         new() { Id = Guid.NewGuid(), WorkProjectId = _projectId, StatusId = status, Rank = rank };
 
-    private MoveWorkTaskHandler Handler() => new(WorkTaskRepositoryMock.Object, CacheServiceMock.Object, CurrentUserMock.Object, new WorkTaskBoardPositionService());
+    public MoveWorkTaskHandlerTest()
+    {
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+    }
+
+    private MoveWorkTaskHandler Handler() => new(
+        WorkTaskRepositoryMock.Object,
+        CacheServiceMock.Object,
+        CurrentUserMock.Object,
+        new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()));
 
     private void Found(WorkTask task) => WorkTaskRepositoryMock
         .Setup(repository => repository.FindAsync(_projectId, task.Id, It.IsAny<CancellationToken>()))
@@ -45,14 +56,18 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
 
         Assert.Equal((int)WorkTaskStatusEnum.InProgress, task.StatusId);
         Assert.True(string.CompareOrdinal("m1", task.Rank) < 0 && string.CompareOrdinal(task.Rank, "m3") < 0);
-        WorkTaskRepositoryMock.Verify(repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        WorkTaskRepositoryMock.Verify(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WhenDroppedIntoAnEmptyColumn_KeepsItsOwnPlace()
+    public async Task Handle_WhenDroppedIntoAnEmptyColumn_TakesItsTop()
     {
+        // A key from the old column could already be held in the new one: the card gets a fresh place.
         var task = NewTask();
         Found(task);
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.GetTopRankAsync((int)WorkTaskStatusEnum.InProgress, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string?)null);
 
         await Handler().Handle(new MoveWorkTaskCommand
         {
@@ -61,7 +76,8 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
             StatusId = (int)WorkTaskStatusEnum.InProgress
         }, CancellationToken.None);
 
-        Assert.Equal("m5", task.Rank);
+        Assert.NotEqual("m5", task.Rank);
+        Assert.False(string.IsNullOrEmpty(task.Rank));
     }
 
     [Fact]
@@ -110,7 +126,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
     }
 
     [Fact]
-    public async Task Handle_WhenNeighbourIsInaccessible_DoesNotSaveOrChangeStatus()
+    public async Task Handle_WhenNeighbourIsInaccessible_SavesNothing()
     {
         var task = NewTask();
         Found(task);
@@ -126,8 +142,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
             new MoveWorkTaskCommand { ProjectId = _projectId, WorkTaskId = task.Id, StatusId = 2, NextWorkTaskId = Guid.NewGuid() },
             CancellationToken.None));
 
-        Assert.Equal((int)WorkTaskStatusEnum.New, task.StatusId);
-        WorkTaskRepositoryMock.Verify(repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        WorkTaskRepositoryMock.Verify(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         CacheServiceMock.VerifyNoOtherCalls();
     }
 
@@ -148,7 +163,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
     }
 
     [Fact]
-    public async Task Handle_WhenRankIntervalIsFull_AsksForAnotherPositionWithoutSaving()
+    public async Task Handle_WhenRankIntervalStaysFullAfterRenumbering_AsksForAnotherPositionWithoutSaving()
     {
         var task = NewTask();
         var previous = Guid.NewGuid();
@@ -178,8 +193,11 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
         var resources = new ResourceManager("ATMS.Project.Services.Resources.WorkTaskMessages", typeof(MoveWorkTaskHandler).Assembly);
         Assert.Equal(resources.GetString("BoardPositionUnavailable"), exception.Message);
         Assert.Equal("m5", task.Rank);
-        Assert.Equal((int)WorkTaskStatusEnum.New, task.StatusId);
-        WorkTaskRepositoryMock.Verify(repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        // The target column was spread once before giving up.
+        WorkTaskRepositoryMock.Verify(
+            repository => repository.RenumberColumnAsync((int)WorkTaskStatusEnum.InProgress, It.IsAny<CancellationToken>()),
+            Times.Once);
+        WorkTaskRepositoryMock.Verify(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         CacheServiceMock.VerifyNoOtherCalls();
     }
 }

@@ -7,7 +7,9 @@ using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.WorkTasks;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Project.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace ATMS.Project.Data.Repositories;
 
@@ -186,13 +188,50 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
             .ToDictionaryAsync(row => row.Id, row => new WorkTaskProgress(row.Total, row.Done), cancellationToken);
     }
 
-    public Task<string?> GetTopRankAsync(CancellationToken cancellationToken)
+    public Task<string?> GetTopRankAsync(int statusId, CancellationToken cancellationToken)
     {
         return context.WorkTasks
-            .Where(task => task.StatusId == (int)WorkTaskStatusEnum.New)
+            .Where(task => task.StatusId == statusId)
             .OrderBy(task => task.Rank)
             .Select(task => task.Rank)
             .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public Task<string?> GetNextRankAsync(int statusId, string rank, CancellationToken cancellationToken)
+    {
+        return context.WorkTasks
+            .Where(task => task.StatusId == statusId && string.Compare(task.Rank, rank) > 0)
+            .OrderBy(task => task.Rank)
+            .Select(task => task.Rank)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task RenumberColumnAsync(int statusId, CancellationToken cancellationToken)
+    {
+        // Every key in the column spread evenly again, in the same order. Two steps inside one
+        // transaction: the rank is unique within a column, and a single UPDATE could give one card
+        // a key another card still holds. '~' is never a digit of a key, so the first step cannot
+        // collide either. Deleted cards keep theirs: the unique index leaves them out.
+        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+
+        await context.Database.ExecuteSqlInterpolatedAsync($"""
+            UPDATE "Tasks" AS t
+            SET "Rank" = '~' || lpad(ordered.n::text, 12, '0')
+            FROM (
+                SELECT "Id", row_number() OVER (ORDER BY "Rank", "Id") AS n
+                FROM "Tasks"
+                WHERE "StatusId" = {statusId} AND NOT "IsDeleted"
+            ) AS ordered
+            WHERE ordered."Id" = t."Id";
+            """, cancellationToken);
+
+        await context.Database.ExecuteSqlInterpolatedAsync($"""
+            UPDATE "Tasks"
+            SET "Rank" = 'm' || lpad((substr("Rank", 2)::bigint * 1000)::text, 12, '0') || 'v'
+            WHERE "StatusId" = {statusId} AND NOT "IsDeleted" AND "Rank" LIKE '~%';
+            """, cancellationToken);
+
+        await transaction.CommitAsync(cancellationToken);
     }
 
     public Task<Dictionary<Guid, string>> GetRanksAsync(
@@ -212,15 +251,32 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
             .ToArrayAsync(cancellationToken);
     }
 
-    public async Task CreateAsync(WorkTask workTask, CancellationToken cancellationToken)
+    public async Task AddAsync(WorkTask workTask, CancellationToken cancellationToken)
     {
         await context.WorkTasks.AddAsync(workTask, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         return context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> TrySaveChangesAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+        {
+            SqlState: PostgresErrorCodes.UniqueViolation,
+            ConstraintName: WorkTaskConfiguration.UniqueRankIndex
+        })
+        {
+            // Someone took this place in the column a moment earlier; the caller picks another.
+            return false;
+        }
     }
 
     public async Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByParentAsync(

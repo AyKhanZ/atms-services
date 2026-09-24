@@ -5,6 +5,7 @@ using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
 using ATMS.Project.Services.Caching;
+using ATMS.Project.Services.Board.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -13,7 +14,8 @@ namespace ATMS.Project.Services.Handlers.WorkTasks;
 public class UpdateWorkTaskHandler(
     IMapper mapper,
     IWorkTaskRepository workTaskRepository,
-    ICacheService cache) : IRequestHandler<UpdateWorkTaskCommand>
+    ICacheService cache,
+    IWorkTaskBoardPlacementService placement) : IRequestHandler<UpdateWorkTaskCommand>
 {
     public async Task Handle(UpdateWorkTaskCommand command, CancellationToken cancellationToken)
     {
@@ -36,6 +38,12 @@ public class UpdateWorkTaskHandler(
         {
             workTask.StatusId = command.StatusId;
             workTask.DoneAt = command.StatusId == (int)WorkTaskStatusEnum.Done ? now : null;
+
+            // A new column: the card goes on top of it, the way Move to on the board puts it.
+            if (command.StatusId != (int)WorkTaskStatusEnum.Done)
+            {
+                await placement.PlaceOnTopAsync(workTask, cancellationToken);
+            }
         }
 
         workTask.ParentWorkTaskId = parent?.Id;
@@ -60,7 +68,7 @@ public class UpdateWorkTaskHandler(
             }
         }
 
-        await workTaskRepository.SaveChangesAsync(cancellationToken);
+        await placement.SaveAsync(workTask, cancellationToken);
 
         await cache.RemoveWorkTaskAsync(workTask.Id, cancellationToken);
         await cache.RemoveWorkTasksAsync(children.Select(child => child.Id).ToArray(), cancellationToken);

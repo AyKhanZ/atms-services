@@ -1,6 +1,5 @@
 using ATMS.Data.Criteria;
 using ATMS.Project.Data.Entities;
-using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Services.Interfaces;
@@ -19,7 +18,7 @@ public class MoveWorkTaskHandler(
     IWorkTaskRepository workTaskRepository,
     ICacheService cache,
     ICurrentUser currentUser,
-    IWorkTaskBoardPositionService boardPositionService) : IRequestHandler<MoveWorkTaskCommand>
+    IWorkTaskBoardPlacementService placement) : IRequestHandler<MoveWorkTaskCommand>
 {
     public async Task Handle(MoveWorkTaskCommand command, CancellationToken cancellationToken)
     {
@@ -27,16 +26,38 @@ public class MoveWorkTaskHandler(
             ?? throw new EntityException(EntityErrorType.NotFound, WorkTaskMessages.NotFound);
 
         var now = DateTime.UtcNow;
-        var rank = await RankBetweenAsync(command, cancellationToken);
-        if (rank is not null)
-        {
-            workTask.Rank = rank;
-        }
-
-        if (workTask.StatusId != command.StatusId)
+        var statusChanged = workTask.StatusId != command.StatusId;
+        if (statusChanged)
         {
             workTask.StatusId = command.StatusId;
             workTask.DoneAt = command.StatusId == (int)WorkTaskStatusEnum.Done ? now : null;
+        }
+
+        // Done keeps its own order, by close date: a card there needs no place of its own.
+        if (command.StatusId != (int)WorkTaskStatusEnum.Done)
+        {
+            var hasNeighbours = new[] { command.PreviousWorkTaskId, command.NextWorkTaskId }
+                .Any(id => id.HasValue && id.Value != workTask.Id);
+
+            if (hasNeighbours)
+            {
+                // The neighbours are looked up among the cards of that column the caller may see.
+                var neighbourCriteria = new WorkTaskBoardFilter { StatusIds = [command.StatusId] }
+                    .And(new ExceptSuperAdminCriteria<WorkTask>(
+                        currentUser.RoleId,
+                        new WorkTasksOfMyProjectsCriteria(currentUser.Id)));
+
+                await placement.PlaceBetweenAsync(
+                    workTask,
+                    command.PreviousWorkTaskId,
+                    command.NextWorkTaskId,
+                    neighbourCriteria,
+                    cancellationToken);
+            }
+            else if (statusChanged)
+            {
+                await placement.PlaceOnTopAsync(workTask, cancellationToken);
+            }
         }
 
         var closedSubtasks = Array.Empty<Guid>();
@@ -54,7 +75,7 @@ public class MoveWorkTaskHandler(
             closedSubtasks = open.Select(subtask => subtask.Id).ToArray();
         }
 
-        await workTaskRepository.SaveChangesAsync(cancellationToken);
+        await placement.SaveAsync(workTask, cancellationToken);
 
         await cache.RemoveWorkTaskAsync(workTask.Id, cancellationToken);
         await cache.RemoveWorkTasksAsync(closedSubtasks, cancellationToken);
@@ -62,52 +83,6 @@ public class MoveWorkTaskHandler(
         if (workTask.ParentWorkTaskId.HasValue)
         {
             await cache.RemoveWorkTaskAsync(workTask.ParentWorkTaskId.Value, cancellationToken);
-        }
-    }
-
-    private async Task<string?> RankBetweenAsync(MoveWorkTaskCommand command, CancellationToken cancellationToken)
-    {
-        if (command.StatusId == (int)WorkTaskStatusEnum.Done)
-        {
-            return null;
-        }
-
-        var neighbourIds = new[] { command.PreviousWorkTaskId, command.NextWorkTaskId }
-            .Where(id => id.HasValue && id.Value != command.WorkTaskId)
-            .Select(id => id!.Value)
-            .ToArray();
-
-        if (neighbourIds.Length == 0)
-        {
-            return null;
-        }
-
-        var criteria = new WorkTaskBoardFilter { StatusIds = [command.StatusId] }
-            .And(new ExceptSuperAdminCriteria<WorkTask>(
-                currentUser.RoleId,
-                new WorkTasksOfMyProjectsCriteria(currentUser.Id)));
-        var ranks = await workTaskRepository.GetRanksAsync(neighbourIds, criteria, cancellationToken);
-
-        if (ranks.Count != neighbourIds.Distinct().Count())
-        {
-            throw new ConflictException(WorkTaskMessages.BoardPositionChanged);
-        }
-
-        var above = command.PreviousWorkTaskId is { } previous && ranks.TryGetValue(previous, out var a) ? a : null;
-        var below = command.NextWorkTaskId is { } next && ranks.TryGetValue(next, out var b) ? b : null;
-
-        if (above is not null && below is not null && string.CompareOrdinal(above, below) >= 0)
-        {
-            throw new ConflictException(WorkTaskMessages.BoardPositionChanged);
-        }
-
-        try
-        {
-            return above is null && below is null ? null : boardPositionService.Between(above, below);
-        }
-        catch (InvalidOperationException)
-        {
-            throw new ConflictException(WorkTaskMessages.BoardPositionUnavailable);
         }
     }
 }

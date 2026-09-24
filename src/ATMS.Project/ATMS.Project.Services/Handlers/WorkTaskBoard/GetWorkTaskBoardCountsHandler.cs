@@ -17,9 +17,11 @@ public class GetWorkTaskBoardCountsHandler(
     public Task<Dictionary<int, int>> Handle(GetWorkTaskBoardCountsRequest request, CancellationToken cancellationToken)
     {
         var filter = mapper.Map<WorkTaskBoardFilter>(request);
-        var criteria = filter.And(new ExceptSuperAdminCriteria<WorkTask>(
-            currentUser.RoleId,
-            new WorkTasksOfMyProjectsCriteria(currentUser.Id)));
+        var criteria = filter
+            .And(new WorkTasksOfLiveWorkCriteria())
+            .And(new ExceptSuperAdminCriteria<WorkTask>(
+                currentUser.RoleId,
+                new WorkTasksOfMyProjectsCriteria(currentUser.Id)));
 
         return workTaskBoardRepository.GetCountsByStatusAsync(criteria, cancellationToken);
     }

@@ -3,6 +3,7 @@ using System;
 using ATMS.Project.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Project.Data.Migrations
 {
     [DbContext(typeof(ProjectDbContext))]
-    partial class ProjectDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260923193413_WorkTaskCodeTrigramIndex")]
+    partial class WorkTaskCodeTrigramIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2656,13 +2659,16 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("Deadline", "Id");
 
-                    b.HasIndex("PriorityId", "Id");
+                    b.HasIndex("PriorityId", "Id")
+                        .IsDescending(true, false);
 
                     b.HasIndex("Rank", "Id");
 
                     b.HasIndex("ParentWorkTaskId", "CreatedAt", "Id");
 
                     b.HasIndex("StatusId", "DoneAt", "Id");
+
+                    b.HasIndex("StatusId", "Rank", "Id");
 
                     b.HasIndex("WorkProjectId", "CreatedAt", "Id");
 
@@ -2672,10 +2678,6 @@ namespace ATMS.Project.Data.Migrations
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex(new[] { "Code" }, "IX_Tasks_Code_Trigram"), "gin");
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex(new[] { "Code" }, "IX_Tasks_Code_Trigram"), new[] { "gin_trgm_ops" });
-
-                    b.HasIndex(new[] { "StatusId", "Rank" }, "IX_Tasks_StatusId_Rank")
-                        .IsUnique()
-                        .HasFilter("\"IsDeleted\" = false AND \"StatusId\" <> 3");
 
                     b.ToTable("Tasks", (string)null);
                 });

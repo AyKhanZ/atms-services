@@ -37,8 +37,8 @@ public class GetWorkTaskBoardHandlerTest : BaseHandlerTest
         MapperMock.Setup(mapper => mapper.Map<WorkTaskModel>(It.IsAny<WorkTask>()))
             .Returns<WorkTask>(task => new WorkTaskModel { Id = task.Id, Code = task.Code, Title = task.Title });
         repository.Setup(repo => repo.GetManyAsync(
-                It.IsAny<ICriteria<WorkTask>>(), It.IsAny<IKeysetPagination<WorkTask>>(), It.IsAny<CancellationToken>()))
-            .Returns<ICriteria<WorkTask>, IKeysetPagination<WorkTask>, CancellationToken>((_, pagination, _) =>
+                It.IsAny<ICriteria<WorkTask>>(), It.IsAny<IKeysetPagination<WorkTask>>(), It.IsAny<IReadOnlyCollection<string>>(), It.IsAny<CancellationToken>()))
+            .Returns<ICriteria<WorkTask>, IKeysetPagination<WorkTask>, IReadOnlyCollection<string>, CancellationToken>((_, pagination, _, _) =>
             {
                 var page = pagination.ToResult(pagination.Apply(tasks.AsQueryable()).ToArray());
                 return Task.FromResult(new WorkTasksQueryResult(page, new Dictionary<Guid, WorkTaskProgress>()));
@@ -81,8 +81,8 @@ public class GetWorkTaskBoardHandlerTest : BaseHandlerTest
         await using var context = new ProjectDbContext(options);
         string? sql = null;
         repository.Setup(repo => repo.GetManyAsync(
-                It.IsAny<ICriteria<WorkTask>>(), It.IsAny<IKeysetPagination<WorkTask>>(), It.IsAny<CancellationToken>()))
-            .Returns<ICriteria<WorkTask>, IKeysetPagination<WorkTask>, CancellationToken>((_, pagination, _) =>
+                It.IsAny<ICriteria<WorkTask>>(), It.IsAny<IKeysetPagination<WorkTask>>(), It.IsAny<IReadOnlyCollection<string>>(), It.IsAny<CancellationToken>()))
+            .Returns<ICriteria<WorkTask>, IKeysetPagination<WorkTask>, IReadOnlyCollection<string>, CancellationToken>((_, pagination, _, _) =>
             {
                 sql = pagination.Apply(context.WorkTasks).ToQueryString();
                 return Task.FromResult(new WorkTasksQueryResult(
@@ -91,9 +91,9 @@ public class GetWorkTaskBoardHandlerTest : BaseHandlerTest
             });
         var cursor = sort switch
         {
-            WorkTaskBoardSortEnum.Title => KeysetCursor.For("Alpha", Guid.NewGuid(), SortDirectionEnum.Asc).Encode(),
-            WorkTaskBoardSortEnum.Code => KeysetCursor.For("10".PadLeft(50, '0'), Guid.NewGuid(), SortDirectionEnum.Asc).Encode(),
-            _ => KeysetCursor.For(1, Guid.NewGuid(), SortDirectionEnum.Asc).Encode()
+            WorkTaskBoardSortEnum.Title => KeysetCursor.For("Alpha", Guid.NewGuid(), SortDirectionEnum.Asc, sort.ToString()).Encode(),
+            WorkTaskBoardSortEnum.Code => KeysetCursor.For("10".PadLeft(50, '0'), Guid.NewGuid(), SortDirectionEnum.Asc, sort.ToString()).Encode(),
+            _ => KeysetCursor.For(1, Guid.NewGuid(), SortDirectionEnum.Asc, sort.ToString()).Encode()
         };
 
         await new GetWorkTaskBoardHandler(CurrentUserMock.Object, repository.Object, MapperMock.Object)

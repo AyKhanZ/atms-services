@@ -18,6 +18,7 @@ public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
     private readonly Lazy<Func<T, TKey>> _key;
     private readonly Lazy<Func<T, Guid>> _id;
     private readonly bool _emptyKeysLast;
+    private readonly string? _order;
 
     public KeysetPaginationCriteria(
         string? cursor,
@@ -25,11 +26,13 @@ public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
         SortDirectionEnum sortDirection,
         Expression<Func<T, TKey>> keySelector,
         Expression<Func<T, Guid>> idSelector,
-        bool emptyKeysLast = false)
+        bool emptyKeysLast = false,
+        string? order = null)
     {
         PageSize = ValidatePageSize(pageSize);
         SortDirection = ValidateSortDirection(sortDirection);
-        Cursor = DecodeCursor(cursor, SortDirection);
+        _order = order;
+        Cursor = DecodeCursor(cursor, SortDirection, order);
         _keySelector = keySelector;
         _idSelector = idSelector;
         _key = new Lazy<Func<T, TKey>>(keySelector.Compile);
@@ -73,7 +76,7 @@ public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
             HasMore = hasMore,
             PageSize = PageSize,
             NextCursor = hasMore && last is not null
-                ? KeysetCursor.For(_key.Value(last), _id.Value(last), SortDirection).Encode()
+                ? KeysetCursor.For(_key.Value(last), _id.Value(last), SortDirection, _order).Encode()
                 : null
         };
     }
@@ -172,14 +175,21 @@ public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
         return value;
     }
 
-    private static KeysetCursor? DecodeCursor(string? cursor, SortDirectionEnum sortDirection)
+    /// <summary>
+    /// A cursor from another order, another direction or with a key that is not this order's type is
+    /// refused with a 400 here, not left to fail as a 500 in the query or to page the wrong list.
+    /// </summary>
+    private static KeysetCursor? DecodeCursor(string? cursor, SortDirectionEnum sortDirection, string? order)
     {
         if (string.IsNullOrWhiteSpace(cursor))
         {
             return null;
         }
 
-        if (!KeysetCursor.TryDecode(cursor, out var decoded) || decoded!.SortDirection != sortDirection)
+        if (!KeysetCursor.TryDecode(cursor, out var decoded)
+            || decoded!.SortDirection != sortDirection
+            || decoded.Order != order
+            || !decoded.TryKeyAs<TKey>())
         {
             throw new CriteriaException("cursor", ValidationMessages.InvalidCursor);
         }

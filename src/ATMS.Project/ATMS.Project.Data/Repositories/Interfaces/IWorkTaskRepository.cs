@@ -49,12 +49,18 @@ public interface IWorkTaskRepository
     Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByTicketAsync(
         IReadOnlyCollection<Guid> workTicketIds,
         CancellationToken cancellationToken);
-    Task<string?> GetTopRankAsync(CancellationToken cancellationToken);
+    Task<string?> GetTopRankAsync(int statusId, CancellationToken cancellationToken);
+
+    Task<string?> GetNextRankAsync(int statusId, string rank, CancellationToken cancellationToken);
+
+    Task RenumberColumnAsync(int statusId, CancellationToken cancellationToken);
 
     Task<Dictionary<Guid, string>> GetRanksAsync(IReadOnlyCollection<Guid> workTaskIds, ICriteria<WorkTask> criteria, CancellationToken cancellationToken);
     Task<WorkTask[]> FindByTicketAsync(Guid projectId, Guid workTicketId, CancellationToken cancellationToken);
 
-    Task CreateAsync(WorkTask workTask, CancellationToken cancellationToken);
+    Task AddAsync(WorkTask workTask, CancellationToken cancellationToken);
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
+
+    Task<bool> TrySaveChangesAsync(CancellationToken cancellationToken);
 }

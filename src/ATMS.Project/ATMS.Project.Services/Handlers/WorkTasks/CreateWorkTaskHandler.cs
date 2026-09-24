@@ -15,7 +15,7 @@ public class CreateWorkTaskHandler(
     IMapper mapper,
     IWorkTaskRepository workTaskRepository,
     IEntityCodeGenerator codeGenerator,
-    IWorkTaskBoardPositionService boardPositionService) : IRequestHandler<CreateWorkTaskCommand, Guid>
+    IWorkTaskBoardPlacementService placement) : IRequestHandler<CreateWorkTaskCommand, Guid>
 {
     public async Task<Guid> Handle(CreateWorkTaskCommand command, CancellationToken cancellationToken)
     {
@@ -31,9 +31,10 @@ public class CreateWorkTaskHandler(
         workTask.Code = await codeGenerator.GetNextAsync(cancellationToken);
         workTask.StatusId = (int)WorkTaskStatusEnum.New;
         workTask.WorkTicketId = parent is null ? command.WorkTicketId : parent.WorkTicketId;
-        workTask.Rank = boardPositionService.Between(null, await workTaskRepository.GetTopRankAsync(cancellationToken));
+        await placement.PlaceOnTopAsync(workTask, cancellationToken);
 
-        await workTaskRepository.CreateAsync(workTask, cancellationToken);
+        await workTaskRepository.AddAsync(workTask, cancellationToken);
+        await placement.SaveAsync(workTask, cancellationToken);
 
         return workTask.Id;
     }
