@@ -86,8 +86,7 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
         """)
     ];
 
-    public Task<GlobalSearchRow[]> SearchAsync(
-        Guid userId, bool isSuperAdmin, string search, int take, string language, CancellationToken cancellationToken)
+    public Task<GlobalSearchRow[]> SearchAsync(Guid userId, bool isSuperAdmin, string search, int take, string language, CancellationToken cancellationToken)
     {
         var predicate = BuildPredicate(search, firstIndex: 3);
         if (predicate.Sql is null)
@@ -137,12 +136,10 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
         var where = predicate.Sql;
         if (cursor is not null)
         {
-            // Row comparison, not two conditions: it is the same key the ORDER BY uses, so the
-            // database can keep walking the index instead of re-reading what was already sent.
             var after = sortDirection == SortDirectionEnum.Asc ? ">" : "<";
             where += " AND (@@alias@@.\"CreatedAt\", @@alias@@.\"Id\") " + after + " ({"
                 + arguments.Count + "}, {" + (arguments.Count + 1) + "})";
-            arguments.Add(cursor.CreatedAt);
+            arguments.Add(cursor.KeyAs<DateTime>());
             arguments.Add(cursor.Id);
         }
 
@@ -159,8 +156,7 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
             cancellationToken);
     }
 
-    private static string Compose(
-        SearchBranch branch, string where, string limit, SortDirectionEnum sortDirection)
+    private static string Compose(SearchBranch branch, string where, string limit, SortDirectionEnum sortDirection)
     {
         return branch.Sql
             .Replace("@@where@@", "(" + where.Replace("@@alias@@", branch.Alias) + ")")

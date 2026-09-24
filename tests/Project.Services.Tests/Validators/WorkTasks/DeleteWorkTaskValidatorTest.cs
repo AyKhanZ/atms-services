@@ -1,38 +1,27 @@
 using ATMS.Project.Contracts.Commands.WorkTasks;
-using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Validation.WorkTasks;
-using Moq;
 
 namespace Project.Services.Tests.Validators.WorkTasks;
 
 public class DeleteWorkTaskValidatorTest
 {
-    private readonly Mock<IWorkTaskRepository> _tasks = new();
-
-    [Theory]
-    [InlineData(false, true)]
-    [InlineData(true, false)]
-    public async Task Validate_RejectsTaskWhenItHasSubtasks(bool hasSubtasks, bool expectedValid)
+    // Subtasks no longer block a delete: they go with the task (DeleteWorkTaskHandler).
+    [Fact]
+    public async Task Validate_AcceptsAnyTaskInTheProject()
     {
-        var command = new DeleteWorkTaskCommand
-        {
-            ProjectId = Guid.NewGuid(),
-            WorkTaskId = Guid.NewGuid()
-        };
-        _tasks.Setup(repository => repository.HasChildrenAsync(
-                command.ProjectId,
-                command.WorkTaskId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(hasSubtasks);
+        var command = new DeleteWorkTaskCommand { ProjectId = Guid.NewGuid(), WorkTaskId = Guid.NewGuid() };
 
-        var result = await new DeleteWorkTaskValidator(_tasks.Object).ValidateAsync(command);
+        var result = await new DeleteWorkTaskValidator().ValidateAsync(command);
 
-        Assert.Equal(expectedValid, result.IsValid);
-        if (hasSubtasks)
-        {
-            Assert.Contains(result.Errors, error =>
-                error.PropertyName == nameof(command.WorkTaskId) &&
-                error.ErrorMessage.Contains("subtask", StringComparison.OrdinalIgnoreCase));
-        }
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public async Task Validate_RejectsMissingIdentifiers()
+    {
+        var result = await new DeleteWorkTaskValidator().ValidateAsync(new DeleteWorkTaskCommand());
+
+        Assert.Contains(result.Errors, error => error.PropertyName == nameof(DeleteWorkTaskCommand.ProjectId));
+        Assert.Contains(result.Errors, error => error.PropertyName == nameof(DeleteWorkTaskCommand.WorkTaskId));
     }
 }

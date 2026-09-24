@@ -26,14 +26,11 @@ public class UpdateWorkTaskValidator : AbstractValidator<UpdateWorkTaskCommand>
             .MustAsync(dictionariesRepository.IsWorkTaskStatusExistAsync)
             .WithMessage(WorkTaskMessages.StatusUnsupported);
 
-        // A task keeps its own ticket; a subtask takes the parent's, so the ticket is only
-        // required when no parent is chosen.
         RuleFor(command => command.WorkTicketId).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(WorkTaskMessages.TicketRequired)
             .MustAsync(IsTicketExistsAsync).WithMessage(WorkTaskMessages.TicketNotFound)
             .When(
-                command => command.ProjectId != Guid.Empty && !command.ParentWorkTaskId.HasValue,
-                ApplyConditionTo.CurrentValidator);
+                command => command.ProjectId != Guid.Empty && !command.ParentWorkTaskId.HasValue);
 
         RuleFor(command => command.ParentWorkTaskId)
             .CustomAsync(ValidateParentAsync)
@@ -81,15 +78,12 @@ public class UpdateWorkTaskValidator : AbstractValidator<UpdateWorkTaskCommand>
             return;
         }
 
-        // Depth is capped at two levels, so the chosen parent must be a top-level task.
         if (parent.ParentWorkTaskId.HasValue)
         {
             context.AddFailure(field, WorkTaskMessages.ParentIsSubtask);
             return;
         }
 
-        // Symmetrically, an item that already has subtasks cannot become one: that would make
-        // its children grandchildren, which the two-level rule does not allow.
         if (await _workTaskRepository.HasChildrenAsync(
                 command.ProjectId,
                 command.WorkTaskId,

@@ -1,8 +1,8 @@
+using ATMS.Data.Constants;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Application.Security;
-using ATMS.Data.Constants;
 using MediatR;
 using System.Diagnostics.CodeAnalysis;
 

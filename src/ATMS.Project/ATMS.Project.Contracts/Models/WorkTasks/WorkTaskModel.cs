@@ -10,20 +10,18 @@ public class WorkTaskModel
     public string Title { get; set; }
     public string? Description { get; set; }
     public Guid WorkProjectId { get; set; }
-    public Guid WorkTicketId { get; set; }
-    public string WorkTicketCode { get; set; }
-    public string WorkTicketTitle { get; set; }
     public Guid MilestoneId { get; set; }
     public string MilestoneTitle { get; set; }
     public Guid GroupId { get; set; }
     public string GroupTitle { get; set; }
-    public Guid? ParentWorkTaskId { get; set; }
-    public string? ParentWorkTaskCode { get; set; }
-    public string? ParentWorkTaskTitle { get; set; }
-    public bool IsSubtask => ParentWorkTaskId.HasValue;
+    public DictionaryModel<Guid>? WorkProject { get; set; }
+    public DictionaryModel<Guid> WorkTicket { get; set; }
+    public DictionaryModel<Guid>? ParentWorkTask { get; set; }
+    public bool IsSubtask => ParentWorkTask is not null;
     public DictionaryModel Status { get; set; }
     public DictionaryModel Priority { get; set; }
     public DateTime? Deadline { get; set; }
+    public DateTime? DoneAt { get; set; }
     public WorkItemAssigneeModel? Assignee { get; set; }
     public int SubtaskCount { get; set; }
     public int DoneSubtaskCount { get; set; }

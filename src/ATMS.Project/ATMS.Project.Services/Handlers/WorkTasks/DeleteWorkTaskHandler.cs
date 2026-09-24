@@ -19,11 +19,23 @@ public class DeleteWorkTaskHandler(
         var workTask = await workTaskRepository.FindAsync(command.ProjectId, command.WorkTaskId, cancellationToken)
             ?? throw new EntityException(EntityErrorType.NotFound, WorkTaskMessages.NotFound);
 
-        workTask.IsDeleted = true;
-        workTask.DeletedAt = DateTime.UtcNow;
-        workTask.DeletedById = currentUser.Id;
+        var subtasks = await workTaskRepository.FindChildrenAsync(command.ProjectId, workTask.Id, cancellationToken);
+        var deletedAt = DateTime.UtcNow;
+
+        foreach (var item in subtasks.Prepend(workTask))
+        {
+            item.IsDeleted = true;
+            item.DeletedAt = deletedAt;
+            item.DeletedById = currentUser.Id;
+        }
 
         await workTaskRepository.SaveChangesAsync(cancellationToken);
         await cache.RemoveWorkTaskAsync(workTask.Id, cancellationToken);
+        await cache.RemoveWorkTasksAsync(subtasks.Select(subtask => subtask.Id).ToArray(), cancellationToken);
+
+        if (workTask.ParentWorkTaskId.HasValue)
+        {
+            await cache.RemoveWorkTaskAsync(workTask.ParentWorkTaskId.Value, cancellationToken);
+        }
     }
 }

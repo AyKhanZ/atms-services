@@ -41,7 +41,7 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("ProcessedAt");
 
-                    b.ToTable("InboxMessages", (string)null);
+                    b.ToTable("InboxMessages");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Attachment", b =>
@@ -110,7 +110,7 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("OwnerType", "OwnerId", "CreatedAt");
 
-                    b.ToTable("Attachments", (string)null);
+                    b.ToTable("Attachments");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Comment", b =>
@@ -166,7 +166,7 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("OwnerType", "OwnerId", "CreatedAt");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.Permission", b =>
@@ -187,7 +187,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
 
                     b.HasData(
                         new
@@ -298,7 +298,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("PermissionId", "Language")
                         .IsUnique();
 
-                    b.ToTable("PermissionTranslation", (string)null);
+                    b.ToTable("PermissionTranslation");
 
                     b.HasData(
                         new
@@ -657,7 +657,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("ProjectKinds", (string)null);
+                    b.ToTable("ProjectKinds");
 
                     b.HasData(
                         new
@@ -708,7 +708,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("ProjectKindId", "Language")
                         .IsUnique();
 
-                    b.ToTable("ProjectKindTranslation", (string)null);
+                    b.ToTable("ProjectKindTranslation");
 
                     b.HasData(
                         new
@@ -815,7 +815,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("ProjectStatuses", (string)null);
+                    b.ToTable("ProjectStatuses");
 
                     b.HasData(
                         new
@@ -866,7 +866,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("ProjectStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("ProjectStatusTranslation", (string)null);
+                    b.ToTable("ProjectStatusTranslation");
 
                     b.HasData(
                         new
@@ -973,7 +973,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("ProjectTypes", (string)null);
+                    b.ToTable("ProjectTypes");
 
                     b.HasData(
                         new
@@ -1019,7 +1019,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("ProjectTypeId", "Language")
                         .IsUnique();
 
-                    b.ToTable("ProjectTypeTranslation", (string)null);
+                    b.ToTable("ProjectTypeTranslation");
 
                     b.HasData(
                         new
@@ -1105,7 +1105,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("WorkGroupStatuses", (string)null);
+                    b.ToTable("WorkGroupStatuses");
 
                     b.HasData(
                         new
@@ -1151,7 +1151,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkGroupStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkGroupStatusTranslation", (string)null);
+                    b.ToTable("WorkGroupStatusTranslation");
 
                     b.HasData(
                         new
@@ -1237,7 +1237,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("WorkItemPriorities", (string)null);
+                    b.ToTable("WorkItemPriorities");
 
                     b.HasData(
                         new
@@ -1283,7 +1283,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkItemPriorityId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkItemPriorityTranslation", (string)null);
+                    b.ToTable("WorkItemPriorityTranslation");
 
                     b.HasData(
                         new
@@ -1369,7 +1369,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("WorkTaskStatuses", (string)null);
+                    b.ToTable("WorkTaskStatuses");
 
                     b.HasData(
                         new
@@ -1415,7 +1415,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkTaskStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkTaskStatusTranslation", (string)null);
+                    b.ToTable("WorkTaskStatusTranslation");
 
                     b.HasData(
                         new
@@ -1501,7 +1501,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("WorkTicketStatuses", (string)null);
+                    b.ToTable("WorkTicketStatuses");
 
                     b.HasData(
                         new
@@ -1562,7 +1562,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkTicketStatusId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkTicketStatusTranslation", (string)null);
+                    b.ToTable("WorkTicketStatusTranslation");
 
                     b.HasData(
                         new
@@ -1711,7 +1711,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("WorkTicketTypes", (string)null);
+                    b.ToTable("WorkTicketTypes");
 
                     b.HasData(
                         new
@@ -1757,7 +1757,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("WorkTicketTypeId", "Language")
                         .IsUnique();
 
-                    b.ToTable("WorkTicketTypeTranslation", (string)null);
+                    b.ToTable("WorkTicketTypeTranslation");
 
                     b.HasData(
                         new
@@ -1920,7 +1920,7 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("WorkProjectId", "StartsAt");
 
-                    b.ToTable("Meetings", (string)null);
+                    b.ToTable("Meetings");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingAgendaItem", b =>
@@ -1945,7 +1945,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("MeetingId", "Order")
                         .IsUnique();
 
-                    b.ToTable("MeetingAgendaItems", (string)null);
+                    b.ToTable("MeetingAgendaItems");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingMinute", b =>
@@ -1986,7 +1986,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("MeetingId", "Order")
                         .IsUnique();
 
-                    b.ToTable("MeetingMinutes", (string)null);
+                    b.ToTable("MeetingMinutes");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.MeetingParticipant", b =>
@@ -2013,7 +2013,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("MeetingId", "ParticipantId")
                         .IsUnique();
 
-                    b.ToTable("MeetingParticipants", (string)null);
+                    b.ToTable("MeetingParticipants");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Organization", b =>
@@ -2076,7 +2076,7 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique()
                         .HasFilter("\"IsDeleted\" = false");
 
-                    b.ToTable("Organizations", (string)null);
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Role", b =>
@@ -2108,7 +2108,7 @@ namespace ATMS.Project.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
 
                     b.HasData(
                         new
@@ -2155,7 +2155,7 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
 
                     b.HasData(
                         new
@@ -2334,7 +2334,7 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("UserType");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkGroup", b =>
@@ -2594,6 +2594,9 @@ namespace ATMS.Project.Data.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
+                    b.Property<DateTime?>("DoneAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -2604,6 +2607,12 @@ namespace ATMS.Project.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(1);
+
+                    b.Property<string>("Rank")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .UseCollation("C");
 
                     b.Property<int>("StatusId")
                         .ValueGeneratedOnAdd()
@@ -2638,10 +2647,6 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("DeletedById");
 
-                    b.HasIndex("PriorityId");
-
-                    b.HasIndex("StatusId");
-
                     b.HasIndex("Title");
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Title"), "gin");
@@ -2649,11 +2654,28 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("UpdatedById");
 
+                    b.HasIndex("Deadline", "Id");
+
+                    b.HasIndex("PriorityId", "Id");
+
+                    b.HasIndex("Rank", "Id");
+
                     b.HasIndex("ParentWorkTaskId", "CreatedAt", "Id");
+
+                    b.HasIndex("StatusId", "DoneAt", "Id");
 
                     b.HasIndex("WorkProjectId", "CreatedAt", "Id");
 
                     b.HasIndex("WorkTicketId", "ParentWorkTaskId", "CreatedAt", "Id");
+
+                    b.HasIndex(new[] { "Code" }, "IX_Tasks_Code_Trigram");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex(new[] { "Code" }, "IX_Tasks_Code_Trigram"), "gin");
+                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex(new[] { "Code" }, "IX_Tasks_Code_Trigram"), new[] { "gin_trgm_ops" });
+
+                    b.HasIndex(new[] { "StatusId", "Rank" }, "IX_Tasks_StatusId_Rank")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false AND \"StatusId\" <> 3");
 
                     b.ToTable("Tasks", (string)null);
                 });

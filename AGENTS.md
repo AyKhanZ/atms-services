@@ -121,6 +121,91 @@ This applies regardless of who wrote the code — including commits an agent aut
 
 ---
 
+# Settled conventions — follow them without asking
+
+These were decided in review. Breaking one is a defect, not a style preference.
+
+## Shapes that already exist
+
+- A reference to another entity in a contract model is `DictionaryModel<TId>` (`Id`, `Code`, `Name`), never a
+  flat `XId` + `XCode` + `XTitle` trio. `WorkTaskModel.WorkTicket` and `WorkTaskModel.ParentWorkTask` are the
+  examples to copy.
+- Before writing a model, look for one to derive from — `AuditUserModel` already carries `Id`, `Name`,
+  `Surname`. Add only the fields it lacks.
+- Requests and commands carry `int` / `int?` for dictionary and enum values, never the enum type itself. The
+  validator checks the value with `Enum.IsDefined`.
+
+## Validation
+
+- Messages come from `.resx` in all three languages. An inline English string in a validator is never correct.
+- Reuse the shared rule extensions (`IsPageSize()`, `IsInDateRange()`, the cursor rules) instead of writing
+  page-size, date-range or paging checks again.
+- **No validator for a GET request and no validator for a filter.** Reading is guarded by the shared
+  pipeline and by the handler, not by a class per query. `ValidationBehavior` already validates anything
+  deriving from `GetPaginationRequest` or `GetKeysetPaginationRequest` — page size, sort direction, cursor —
+  so a cursor-paged GET only has to inherit the right base.
+- What a shared rule cannot express belongs in the handler: an unknown sort falls back to the default order,
+  a cursor that does not decode raises a localized `ValidationException`, a search term is capped where it is
+  used. Do not add a validator class to say the same thing.
+- Validators stay for commands — create, update, delete, move — where the request changes data.
+- A command that carries an id — the project it belongs to, the row it changes, a neighbour, a parent —
+  takes the repository through the constructor and checks that id in a private `IsXExistsAsync`. Checking
+  only `NotEmpty` and leaving the rest to the handler is not enough.
+- One chain per field: `Cascade(CascadeMode.Stop)`, `NotEmpty`, then the lookup. When the lookup needs
+  another field, add `When(..., ApplyConditionTo.CurrentValidator)` so the condition covers the lookup only —
+  a plain `When` silences `NotEmpty` as well, and an empty id stops being reported.
+
+## Comments and documentation
+
+- XML documentation goes over endpoints, and over request contracts that expose filtering, search or sorting.
+  Nowhere else: not over a controller class, an attribute, a command, a model, an entity, a criteria, a
+  repository or its interface.
+- Do not write comments that restate the name of the thing below them. A comment earns its place only when it
+  records a **why** the code cannot state — a chosen trade-off, a non-obvious constraint, a workaround.
+
+## Mapping and handlers
+
+- Do not add an AutoMapper `Ignore` for a member the source does not have; there is nothing to ignore.
+- A request is mapped to a filter — `mapper.Map<XFilter>(request)` — and the filter is an `ACriteria<T>` in
+  `Data/Criteria`. A request never inherits a filter, and a filter never lives in `Contracts`.
+- Anything the request cannot carry — the caller, their role, a scope — is a criteria of its own, composed
+  with `.And(...)` the way `NotAdminCriteria` is. Do not put `UserId` or `IsSuperAdmin` fields on a filter.
+- A role is read by a criteria too, never by an `if` in a handler or a helper method: wrap the rule that
+  binds ordinary users in `ExceptSuperAdminCriteria<T>` and compose it with `.And(...)`.
+- A rule written once for one entity is reused on another through a criteria that takes the first
+  entity's query, not by copying its conditions: `ParticipantsAmongUsersCriteria` applies
+  `EmployeeUsersCriteria` to project participants.
+- Build criteria inside the handler, like every other handler does. No "criteria factory" or similar helper
+  class invented for one feature.
+- A cursor-paged list inherits `GetKeysetPaginationRequest` and is paged by `KeysetPaginationCriteria`,
+  which orders by any key the list needs. The repository takes the criteria and the pagination and stays as
+  short as `GetManyAsync`.
+
+## Shared behaviour between handlers
+
+- There is no static utility class. A rule that needs a home is a service: an interface in `Interfaces`, a
+  `sealed class` beside it, registered in the module and taken through the constructor — like
+  `ProjectPermissionService`. Name it after what it decides (`WorkTaskBoardPositionService`), not after the
+  column it writes.
+- A few lines shared by two or three handlers are not a reason for a helper class. Write them where they
+  happen: a handler reads top to bottom without a jump into a static somewhere else.
+- Keep the private methods of a service to the ones that earn it — a recursion, a genuinely separate step.
+  Do not split a single algorithm into five named pieces used once each.
+
+## Registration
+
+- A service is registered in a module of its own area (`SecurityModule`, `BoardModule`, …), not in a
+  growing list inside `AddProjectServices`. That entry point only calls the modules.
+
+## Entities and cache keys
+
+- Entities carry no default values. A column that must be filled is filled by the handler that creates the
+  row, so a missing value fails loudly instead of being saved as someone's placeholder.
+- A cache key keeps its name when the cached shape changes. Do not add `:v2`; change the key's content and
+  flush the old entries on deploy.
+
+---
+
 # String properties and nullability
 
 - Do not initialize mandatory string properties with `string.Empty` merely to silence nullable warnings.

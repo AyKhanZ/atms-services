@@ -70,8 +70,8 @@ public class WorkTaskController(IMediator mediator) : ControllerBase
     /// Creates a task/subtask.
     /// </summary>
     /// <remarks>
-    /// New items always start in New status. parentWorkTaskId creates a subtask; workTicketId remains required
-    /// and must match the parent task's ticket. A subtask cannot contain another subtask. Assignees must be staff participants.
+    /// New items always start in New status. parentWorkTaskId creates a subtask; its ticket is taken from the parent
+    /// and workTicketId is ignored. A subtask cannot contain another subtask. Assignees must be staff participants.
     /// </remarks>
     /// <response code="201">The task was created.</response>
     /// <response code="400">The task data, hierarchy, dictionary value or assignee is invalid.</response>
@@ -126,10 +126,11 @@ public class WorkTaskController(IMediator mediator) : ControllerBase
     /// Deletes a task/subtask.
     /// </summary>
     /// <remarks>
-    /// A task with subtasks cannot be deleted. Delete its subtasks first.
+    /// A task is deleted together with its subtasks. The deletion is soft and can be undone with
+    /// POST {workTaskId}/restore, which brings back everything this delete removed.
     /// </remarks>
     /// <response code="204">The task was deleted.</response>
-    /// <response code="400">The task still has subtasks and cannot be deleted.</response>
+    /// <response code="400">The identifiers are invalid.</response>
     /// <response code="401">The user is not authenticated.</response>
     /// <response code="403">The user cannot delete tasks in this project.</response>
     /// <response code="404">The project or task was not found.</response>
@@ -147,6 +148,68 @@ public class WorkTaskController(IMediator mediator) : ControllerBase
             ProjectId = projectId,
             WorkTaskId = workTaskId
         }, cancellationToken);
+        return NoContent();
+    }
+
+
+    /// <summary>
+    /// Moves a task on the board: its status and its place between two neighbours.
+    /// </summary>
+    /// <remarks>
+    /// Changes only the status and the board order, never the rest of the task. previousWorkTaskId
+    /// and nextWorkTaskId are the cards right above and below the drop; both may be omitted.
+    /// completeSubtasks closes the task's open subtasks when it moves to Done.
+    /// </remarks>
+    /// <response code="204">The task was moved.</response>
+    /// <response code="400">The status is invalid.</response>
+    /// <response code="401">The user is not authenticated.</response>
+    /// <response code="403">The user cannot edit tasks in this project.</response>
+    /// <response code="404">The task was not found.</response>
+    /// <response code="409">The neighbours changed or cannot be used. Refresh the board.</response>
+    [HttpPatch("{workTaskId:guid}/position")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Move(Guid projectId, Guid workTaskId, [FromBody] MoveWorkTaskCommand command, CancellationToken cancellationToken)
+    {
+        command.ProjectId = projectId;
+        command.WorkTaskId = workTaskId;
+
+        await mediator.Send(command, cancellationToken);
+
+        return NoContent();
+    }
+
+
+    /// <summary>
+    /// Changes only a task's deadline.
+    /// </summary>
+    /// <remarks>
+    /// Used when a card is dropped on another day of the calendar. An empty deadline removes it.
+    /// </remarks>
+    /// <response code="204">The deadline was changed.</response>
+    /// <response code="400">The deadline is out of range.</response>
+    /// <response code="401">The user is not authenticated.</response>
+    /// <response code="403">The user cannot edit tasks in this project.</response>
+    /// <response code="404">The task was not found.</response>
+    [HttpPatch("{workTaskId:guid}/deadline")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateDeadline(Guid projectId, Guid workTaskId, [FromBody] UpdateWorkTaskDeadlineCommand command, CancellationToken cancellationToken)
+    {
+        command.ProjectId = projectId;
+        command.WorkTaskId = workTaskId;
+
+        await mediator.Send(command, cancellationToken);
+
         return NoContent();
     }
 }

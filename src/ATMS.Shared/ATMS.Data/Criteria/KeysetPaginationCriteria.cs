@@ -1,31 +1,70 @@
 using System.Linq.Expressions;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Criteria.Interfaces;
 using ATMS.Data.Enums;
 
 namespace ATMS.Data.Criteria;
 
-public sealed class KeysetPaginationCriteria<T>(string? cursor, int pageSize, SortDirectionEnum sortDirection)
+/// <summary>
+/// One page of a list ordered by a key and the id behind it. The key is whatever column the list is
+/// ordered by: a creation date, a deadline, a priority, a manual rank.
+/// </summary>
+public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
 {
     private const int MaxPageSize = 50;
 
-    public int PageSize { get; } = ValidatePageSize(pageSize);
-    public SortDirectionEnum SortDirection { get; } = ValidateSortDirection(sortDirection);
-    public KeysetCursor? Cursor { get; } = DecodeCursor(cursor, sortDirection);
-    public int QuerySize => PageSize + 1;
+    private readonly Expression<Func<T, TKey>> _keySelector;
+    private readonly Expression<Func<T, Guid>> _idSelector;
+    private readonly Lazy<Func<T, TKey>> _key;
+    private readonly Lazy<Func<T, Guid>> _id;
+    private readonly bool _emptyKeysLast;
+    private readonly string? _order;
 
-    public IQueryable<T> Apply(
-        IQueryable<T> query,
-        Expression<Func<T, DateTime>> createdAtSelector,
-        Expression<Func<T, Guid>> idSelector)
+    public KeysetPaginationCriteria(
+        string? cursor,
+        int pageSize,
+        SortDirectionEnum sortDirection,
+        Expression<Func<T, TKey>> keySelector,
+        Expression<Func<T, Guid>> idSelector,
+        bool emptyKeysLast = false,
+        string? order = null)
     {
-        query = ApplyCursor(query, createdAtSelector, idSelector);
-
-        return SortDirection == SortDirectionEnum.Asc
-            ? query.OrderBy(createdAtSelector).ThenBy(idSelector).Take(QuerySize)
-            : query.OrderByDescending(createdAtSelector).ThenByDescending(idSelector).Take(QuerySize);
+        PageSize = ValidatePageSize(pageSize);
+        SortDirection = ValidateSortDirection(sortDirection);
+        _order = order;
+        Cursor = DecodeCursor(cursor, SortDirection, order);
+        _keySelector = keySelector;
+        _idSelector = idSelector;
+        _key = new Lazy<Func<T, TKey>>(keySelector.Compile);
+        _id = new Lazy<Func<T, Guid>>(idSelector.Compile);
+        _emptyKeysLast = emptyKeysLast;
     }
 
-    public KeysetPagedResult<T> ToResult(IReadOnlyList<T> items, Func<T, DateTime> createdAtSelector, Func<T, Guid> idSelector)
+    public int PageSize { get; }
+    public SortDirectionEnum SortDirection { get; }
+    public KeysetCursor? Cursor { get; }
+    public int QuerySize => PageSize + 1;
+
+    public IQueryable<T> Apply(IQueryable<T> query)
+    {
+        var ascending = SortDirection == SortDirectionEnum.Asc;
+        query = ApplyCursor(query);
+
+        // Rows without a key go last whichever way the rest is ordered; otherwise a page of empty
+        // deadlines would open the list.
+        var ordered = _emptyKeysLast
+            ? query.OrderBy(EmptyKeySelector())
+            : null;
+
+        var byKey = ordered is null
+            ? (ascending ? query.OrderBy(_keySelector) : query.OrderByDescending(_keySelector))
+            : (ascending ? ordered.ThenBy(_keySelector) : ordered.ThenByDescending(_keySelector));
+
+        return (ascending ? byKey.ThenBy(_idSelector) : byKey.ThenByDescending(_idSelector))
+            .Take(QuerySize);
+    }
+
+    public KeysetPagedResult<T> ToResult(IReadOnlyList<T> items)
     {
         var hasMore = items.Count > PageSize;
         var pageItems = items.Take(PageSize).ToArray();
@@ -37,43 +76,80 @@ public sealed class KeysetPaginationCriteria<T>(string? cursor, int pageSize, So
             HasMore = hasMore,
             PageSize = PageSize,
             NextCursor = hasMore && last is not null
-                ? new KeysetCursor(createdAtSelector(last), idSelector(last), SortDirection).Encode()
+                ? KeysetCursor.For(_key.Value(last), _id.Value(last), SortDirection, _order).Encode()
                 : null
         };
     }
 
-    private IQueryable<T> ApplyCursor(
-        IQueryable<T> query,
-        Expression<Func<T, DateTime>> createdAtSelector,
-        Expression<Func<T, Guid>> idSelector)
+    private Expression<Func<T, bool>> EmptyKeySelector()
+    {
+        var parameter = _keySelector.Parameters[0];
+
+        return Expression.Lambda<Func<T, bool>>(
+            Expression.Equal(_keySelector.Body, Expression.Constant(null, typeof(TKey))),
+            parameter);
+    }
+
+    private IQueryable<T> ApplyCursor(IQueryable<T> query)
     {
         if (Cursor is null || Cursor.SortDirection != SortDirection)
         {
             return query;
         }
 
-        var parameter = createdAtSelector.Parameters[0];
-        var createdAt = createdAtSelector.Body;
-        var id = ReplaceParameter(idSelector.Body, idSelector.Parameters[0], parameter);
-
-        var cursorCreatedAt = Expression.Constant(Cursor.CreatedAt, typeof(DateTime));
+        var parameter = _keySelector.Parameters[0];
+        var key = _keySelector.Body;
+        var id = ReplaceParameter(_idSelector.Body, _idSelector.Parameters[0], parameter);
         var cursorId = Expression.Constant(Cursor.Id, typeof(Guid));
-
-        var dateComparison = SortDirection == SortDirectionEnum.Asc
-            ? Expression.GreaterThan(createdAt, cursorCreatedAt)
-            : Expression.LessThan(createdAt, cursorCreatedAt);
-
-        var idComparison = SortDirection == SortDirectionEnum.Asc
+        var ascending = SortDirection == SortDirectionEnum.Asc;
+        var idComparison = ascending
             ? Expression.GreaterThan(id, cursorId)
             : Expression.LessThan(id, cursorId);
 
-        var predicate = Expression.Lambda<Func<T, bool>>(
-            Expression.OrElse(
-                dateComparison,
-                Expression.AndAlso(Expression.Equal(createdAt, cursorCreatedAt), idComparison)),
-            parameter);
+        // The page ended among the rows without a key: only they are left.
+        if (_emptyKeysLast && Cursor.Key.Length == 0)
+        {
+            var noKey = Expression.Equal(key, Expression.Constant(null, typeof(TKey)));
 
-        return query.Where(predicate);
+            return query.Where(Expression.Lambda<Func<T, bool>>(
+                Expression.AndAlso(noKey, idComparison),
+                parameter));
+        }
+
+        var cursorKey = Expression.Constant(Cursor.KeyAs<TKey>(), typeof(TKey));
+        var keyComparison = Compare(key, cursorKey, ascending);
+
+        Expression predicate = Expression.OrElse(
+            keyComparison,
+            Expression.AndAlso(Expression.Equal(key, cursorKey), idComparison));
+
+        if (_emptyKeysLast)
+        {
+            predicate = Expression.OrElse(
+                predicate,
+                Expression.Equal(key, Expression.Constant(null, typeof(TKey))));
+        }
+
+        return query.Where(Expression.Lambda<Func<T, bool>>(predicate, parameter));
+    }
+
+    /// <summary>Text is compared by the database's own order; everything else by its operators.</summary>
+    private static Expression Compare(Expression key, Expression cursorKey, bool ascending)
+    {
+        if (typeof(TKey) != typeof(string))
+        {
+            return ascending
+                ? Expression.GreaterThan(key, cursorKey, liftToNull: false, method: null)
+                : Expression.LessThan(key, cursorKey, liftToNull: false, method: null);
+        }
+
+        var compare = Expression.Call(
+            typeof(string).GetMethod(nameof(string.Compare), [typeof(string), typeof(string)])!,
+            key,
+            cursorKey);
+        var zero = Expression.Constant(0);
+
+        return ascending ? Expression.GreaterThan(compare, zero) : Expression.LessThan(compare, zero);
     }
 
     private static Expression ReplaceParameter(Expression expression, ParameterExpression source, ParameterExpression target)
@@ -99,14 +175,21 @@ public sealed class KeysetPaginationCriteria<T>(string? cursor, int pageSize, So
         return value;
     }
 
-    private static KeysetCursor? DecodeCursor(string? value, SortDirectionEnum direction)
+    /// <summary>
+    /// A cursor from another order, another direction or with a key that is not this order's type is
+    /// refused with a 400 here, not left to fail as a 500 in the query or to page the wrong list.
+    /// </summary>
+    private static KeysetCursor? DecodeCursor(string? cursor, SortDirectionEnum sortDirection, string? order)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(cursor))
         {
             return null;
         }
 
-        if (!KeysetCursor.TryDecode(value, out var decoded) || decoded?.SortDirection != direction)
+        if (!KeysetCursor.TryDecode(cursor, out var decoded)
+            || decoded!.SortDirection != sortDirection
+            || decoded.Order != order
+            || !decoded.TryKeyAs<TKey>())
         {
             throw new CriteriaException("cursor", ValidationMessages.InvalidCursor);
         }
@@ -119,4 +202,31 @@ public sealed class KeysetPaginationCriteria<T>(string? cursor, int pageSize, So
         protected override Expression VisitParameter(ParameterExpression node)
             => node == source ? target : base.VisitParameter(node);
     }
+}
+
+/// <summary>The usual list: newest or oldest first by creation date.</summary>
+public sealed class KeysetPaginationCriteria<T>(
+    string? cursor,
+    int pageSize,
+    SortDirectionEnum sortDirection)
+{
+    public int PageSize { get; } = pageSize;
+    public SortDirectionEnum SortDirection { get; } = sortDirection;
+
+    public IQueryable<T> Apply(
+        IQueryable<T> query,
+        Expression<Func<T, DateTime>> createdAtSelector,
+        Expression<Func<T, Guid>> idSelector)
+        => By(createdAtSelector, idSelector).Apply(query);
+
+    public KeysetPagedResult<T> ToResult(
+        IReadOnlyList<T> items,
+        Expression<Func<T, DateTime>> createdAtSelector,
+        Expression<Func<T, Guid>> idSelector)
+        => By(createdAtSelector, idSelector).ToResult(items);
+
+    private KeysetPaginationCriteria<T, DateTime> By(
+        Expression<Func<T, DateTime>> createdAtSelector,
+        Expression<Func<T, Guid>> idSelector)
+        => new(cursor, PageSize, SortDirection, createdAtSelector, idSelector);
 }

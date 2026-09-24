@@ -1,6 +1,6 @@
+using ATMS.Data.Constants;
 using ATMS.Application.Interfaces;
 using ATMS.Application.Localization;
-using ATMS.Data.Constants;
 using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Models.Search;
 using ATMS.Project.Contracts.Requests.Search;
@@ -45,7 +45,7 @@ public class GetGlobalSearchPageHandler(
             PageSize = request.PageSize,
             HasMore = hasMore,
             NextCursor = hasMore && last is not null
-                ? new KeysetCursor(last.CreatedAt, last.Id, request.SortDirection).Encode()
+                ? KeysetCursor.For(last.CreatedAt, last.Id, request.SortDirection).Encode()
                 : null,
         };
     }

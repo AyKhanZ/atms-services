@@ -21,7 +21,8 @@ public class WorkTicketRepository(ProjectDbContext context) : IWorkTicketReposit
             .Include(ticket => ticket.WorkTicketStatus)
                 .ThenInclude(status => status.Translations)
             .Include(ticket => ticket.Assignee)
-                .ThenInclude(participant => participant.User));
+                .ThenInclude(participant => participant.User)
+            .AsSplitQuery());
 
         var items = await pagination
             .Apply(query, ticket => ticket.CreatedAt, ticket => ticket.Id)

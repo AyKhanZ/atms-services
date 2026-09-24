@@ -1,3 +1,4 @@
+using ATMS.Project.Services.Board;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Entities;
@@ -37,12 +38,16 @@ public class CreateWorkTaskHandlerTest : BaseHandlerTest
                 });
         }
         var entity = new WorkTask();
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
         MapperMock.Setup(mapper => mapper.Map<WorkTask>(command)).Returns(entity);
         EntityCodeGeneratorMock.Setup(generator => generator.GetNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync("42");
         var handler = new CreateWorkTaskHandler(
             MapperMock.Object,
             WorkTaskRepositoryMock.Object,
-            EntityCodeGeneratorMock.Object);
+            EntityCodeGeneratorMock.Object,
+            new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()));
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -50,6 +55,8 @@ public class CreateWorkTaskHandlerTest : BaseHandlerTest
         Assert.Equal("42", entity.Code);
         Assert.Equal((int)WorkTaskStatusEnum.New, entity.StatusId);
         Assert.Equal(hasParent ? parentTicketId : command.WorkTicketId, entity.WorkTicketId);
-        WorkTaskRepositoryMock.Verify(repository => repository.CreateAsync(entity, It.IsAny<CancellationToken>()), Times.Once);
+        Assert.False(string.IsNullOrEmpty(entity.Rank));
+        WorkTaskRepositoryMock.Verify(repository => repository.AddAsync(entity, It.IsAny<CancellationToken>()), Times.Once);
+        WorkTaskRepositoryMock.Verify(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

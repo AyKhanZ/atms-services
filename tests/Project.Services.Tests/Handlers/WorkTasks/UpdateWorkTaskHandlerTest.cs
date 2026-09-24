@@ -1,4 +1,5 @@
 using ATMS.Caching.Constants;
+using ATMS.Project.Services.Board;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Services.Handlers.WorkTasks;
@@ -11,8 +12,19 @@ public class UpdateWorkTaskHandlerTest : BaseHandlerTest
     private readonly Guid _projectId = Guid.NewGuid();
     private readonly Guid _ticketId = Guid.NewGuid();
 
+    public UpdateWorkTaskHandlerTest()
+    {
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+    }
+
     private UpdateWorkTaskHandler Handler() =>
-        new(MapperMock.Object, WorkTaskRepositoryMock.Object, CacheServiceMock.Object);
+        new(
+            MapperMock.Object,
+            WorkTaskRepositoryMock.Object,
+            CacheServiceMock.Object,
+            new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()));
 
     private WorkTask Existing(Guid? parentId = null) =>
         new()
@@ -53,7 +65,7 @@ public class UpdateWorkTaskHandlerTest : BaseHandlerTest
 
         MapperMock.Verify(mapper => mapper.Map(command, task), Times.Once);
         WorkTaskRepositoryMock.Verify(
-            repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()),
+            repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Once);
         VerifyAllLocalizedCacheEntriesRemoved(language => CacheKeys.Project.TaskById(task.Id, language));
         foreach (var child in children)
