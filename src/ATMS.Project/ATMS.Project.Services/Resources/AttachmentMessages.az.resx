@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"><xsd:element name="root" msdata:IsDataSet="true" /></xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="NotFound" xml:space="preserve"><value>Bu fayl tapılmadı. Ola bilsin ki, silinib. Səhifəni yeniləyib bir daha cəhd edin.</value></data>
+  <data name="AttachmentRequired" xml:space="preserve"><value>Faylı müəyyən etmək mümkün olmadı. Səhifəni yeniləyib bir daha cəhd edin.</value></data>
+  <data name="FileMissing" xml:space="preserve"><value>Bu fayl artıq serverdə yoxdur. Onu yükləyən şəxsdən faylı yenidən əlavə etməsini xahiş edin.</value></data>
+  <data name="FileRequired" xml:space="preserve"><value>Yükləmək üçün fayl seçin.</value></data>
+  <data name="FileEmpty" xml:space="preserve"><value>Bu fayl boşdur. Başqa fayl seçin.</value></data>
+  <data name="FileTooLarge" xml:space="preserve"><value>Bu fayl {0} MB-dan böyükdür. Daha kiçik fayl seçin.</value></data>
+  <data name="FileTypeUnsupported" xml:space="preserve"><value>Bu fayl növü dəstəklənmir. PDF, Word, Excel, PowerPoint, şəkillər, mətn və ya ZIP istifadə edin.</value></data>
+  <data name="FileContentMismatch" xml:space="preserve"><value>Faylın məzmunu onun uzantısına uyğun gəlmir. Faylı yoxlayıb bir daha cəhd edin.</value></data>
+  <data name="TooManyFiles" xml:space="preserve"><value>Bu tapşırıqda artıq {0} fayl var. Yenilərini əlavə etmək üçün bəzilərini silin.</value></data>
+  <data name="NameRequired" xml:space="preserve"><value>Faylın adını daxil edin.</value></data>
+  <data name="NameTooLong" xml:space="preserve"><value>Faylın adı {0} simvoldan çox olmamalıdır.</value></data>
+  <data name="NameInvalidCharacters" xml:space="preserve"><value>Faylın adında bu simvollar ola bilməz: \ / : * ? " &lt; &gt; |</value></data>
+  <data name="FilterRequired" xml:space="preserve"><value>Fayllarını görmək üçün bir tapşırıq, alt tapşırıq və ya tiket seçin.</value></data>
+</root>

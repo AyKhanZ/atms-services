@@ -10,5 +10,6 @@ public enum ConfigurationErrorType
     RedirectUrlSectionNotFound,
     ProviderSectionNotFound,
     DatabaseSectionNotFound,
+    AttachmentsSectionNotFound,
     MissingSeedData
 }

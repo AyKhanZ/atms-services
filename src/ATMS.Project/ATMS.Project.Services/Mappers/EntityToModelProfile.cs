@@ -1,3 +1,5 @@
+using ATMS.Project.Contracts.Models.Attachments;
+using ATMS.Project.Data.Models.Attachments;
 using ATMS.Application.Models;
 using ATMS.Application.Localization;
 using ATMS.Data.Enums;
@@ -148,6 +150,11 @@ public class EntityToModelProfile : Profile
             .ForMember(x => x.Name, options => options.MapFrom(x => x.Title));
         CreateMap<WorkProject, DictionaryModel<Guid>>()
             .ForMember(x => x.Name, options => options.MapFrom(x => x.Title));
+
+        CreateMap<AttachmentOwnerTask, DictionaryModel<Guid>>()
+            .ForMember(x => x.Name, options => options.MapFrom(x => x.Title));
+        CreateMap<AttachmentAuthor, AttachmentAuthorModel>();
+        CreateMap<AttachmentListItem, AttachmentModel>();
 
         CreateMap<WorkTask, WorkTaskModel>()
             .ForMember(x => x.MilestoneId, expression => expression.MapFrom(x => x.WorkTicket.WorkGroupId))

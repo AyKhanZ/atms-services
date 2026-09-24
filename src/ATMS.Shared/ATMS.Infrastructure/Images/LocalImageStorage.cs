@@ -107,7 +107,6 @@ public sealed class LocalImageStorage(
             ImageStorageFolder.Projects => "projects",
             ImageStorageFolder.Tickets => "tickets",
             ImageStorageFolder.Tasks => "tasks",
-            ImageStorageFolder.Attachments => "attachments",
             _ => throw new ArgumentOutOfRangeException(nameof(folder), folder, null)
         };
 
