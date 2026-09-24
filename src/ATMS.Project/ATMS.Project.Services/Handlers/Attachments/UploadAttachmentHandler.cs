@@ -1,7 +1,10 @@
 using System.Globalization;
+using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Enums;
 using ATMS.Infrastructure.Files;
+using ATMS.Infrastructure.Options;
 using ATMS.Project.Contracts.Commands.Attachments;
 using ATMS.Project.Contracts.Models.Attachments;
 using ATMS.Project.Data.Entities;
@@ -9,7 +12,10 @@ using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Attachments.Interfaces;
 using ATMS.Project.Services.Resources;
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Project.Services.Handlers.Attachments;
 
@@ -18,8 +24,14 @@ public class UploadAttachmentHandler(
     IFileStorage fileStorage,
     IFileSignatureService fileSignatureService,
     IAttachmentFileNameService fileNameService,
+    IConfiguration configuration,
     IMapper mapper) : IRequestHandler<UploadAttachmentCommand, AttachmentModel>
 {
+    private readonly AttachmentsOptions _options =
+        configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()
+        ?? throw new ConfigurationException(ConfigurationErrorType.AttachmentsSectionNotFound,
+            string.Format(LogMessages.ConfigSectionNotFound, nameof(AttachmentsOptions)));
+
     public async Task<AttachmentModel> Handle(UploadAttachmentCommand command, CancellationToken cancellationToken)
     {
         var file = command.File!;
@@ -45,15 +57,27 @@ public class UploadAttachmentHandler(
             Size = file.Length
         };
 
+        bool added;
         try
         {
-            await attachmentRepository.AddAsync(attachment, cancellationToken);
-            await attachmentRepository.SaveChangesAsync(cancellationToken);
+            added = await attachmentRepository.AddWithinLimitAsync(attachment, _options.MaxFilesPerOwner, cancellationToken);
         }
         catch
         {
             await fileStorage.DeleteAsync(relativePath, CancellationToken.None);
             throw;
+        }
+
+        // Another upload took the last place while this file was being written.
+        if (!added)
+        {
+            await fileStorage.DeleteAsync(relativePath, CancellationToken.None);
+            throw new ValidationException(
+            [
+                new ValidationFailure(
+                    nameof(UploadAttachmentCommand.WorkTaskId),
+                    string.Format(AttachmentMessages.TooManyFiles, _options.MaxFilesPerOwner))
+            ]);
         }
 
         var item = await attachmentRepository.GetAsync(attachment.Id, cancellationToken)

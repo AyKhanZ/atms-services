@@ -13,4 +13,6 @@ public interface IFileStorage
     string GetFullPath(string relativePath);
 
     Task DeleteAsync(string? relativePath, CancellationToken cancellationToken);
+
+    Task<bool> IsWritableAsync(CancellationToken cancellationToken);
 }

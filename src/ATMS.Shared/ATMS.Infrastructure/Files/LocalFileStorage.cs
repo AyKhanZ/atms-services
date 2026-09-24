@@ -83,4 +83,23 @@ public sealed class LocalFileStorage(IConfiguration configuration) : IFileStorag
 
         return Task.CompletedTask;
     }
+
+    // Several API instances must share one root (a mounted volume); an instance whose volume did
+    // not mount would save files nobody else can read. Writing a probe fails such an instance's
+    // readiness check, so the gateway never sends it traffic.
+    public async Task<bool> IsWritableAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            Directory.CreateDirectory(_options.RootPath);
+            var probePath = Path.Combine(_options.RootPath, $".ready-{Guid.NewGuid():N}.tmp");
+            await File.WriteAllBytesAsync(probePath, [], cancellationToken);
+            File.Delete(probePath);
+            return true;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
 }

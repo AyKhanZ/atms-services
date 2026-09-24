@@ -1,11 +1,11 @@
 using ATMS.Application.Models;
+using ATMS.Project.API.Results;
 using ATMS.Project.Contracts.Commands.Attachments;
 using ATMS.Project.Contracts.Models.Attachments;
 using ATMS.Project.Contracts.Requests.Attachments;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -28,6 +28,7 @@ public class AttachmentController(IMediator mediator) : ControllerBase
     /// <response code="400">The file is missing, empty, too large, of an unsupported type, or the task is full.</response>
     /// <response code="401">The user is not authenticated.</response>
     /// <response code="403">The user cannot edit tasks in this project.</response>
+    /// <response code="404">The task or the file was not found.</response>
     /// <response code="413">The request is larger than the upload limit.</response>
     [HttpPost("work-tasks/{workTaskId:guid}/attachments")]
     [Consumes("multipart/form-data")]
@@ -38,12 +39,9 @@ public class AttachmentController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<AttachmentModel>> Upload(
-        Guid projectId,
-        Guid workTaskId,
-        [FromForm] UploadAttachmentCommand command,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<AttachmentModel>> Upload(Guid projectId, Guid workTaskId, [FromForm] UploadAttachmentCommand command, CancellationToken cancellationToken)
     {
         command.ProjectId = projectId;
         command.WorkTaskId = workTaskId;
@@ -72,10 +70,7 @@ public class AttachmentController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<AttachmentListModel>> GetMany(
-        Guid projectId,
-        [FromQuery] GetAttachmentsRequest request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<AttachmentListModel>> GetMany(Guid projectId, [FromQuery] GetAttachmentsRequest request, CancellationToken cancellationToken)
     {
         request.ProjectId = projectId;
         return Ok(await mediator.Send(request, cancellationToken));
@@ -120,11 +115,7 @@ public class AttachmentController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetContent(
-        Guid projectId,
-        Guid attachmentId,
-        [FromQuery] bool inline,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GetContent(Guid projectId, Guid attachmentId, [FromQuery] bool inline, CancellationToken cancellationToken)
     {
         var content = await mediator.Send(new GetAttachmentContentRequest
         {
@@ -132,19 +123,7 @@ public class AttachmentController(IMediator mediator) : ControllerBase
             AttachmentId = attachmentId
         }, cancellationToken);
 
-        Response.Headers.XContentTypeOptions = "nosniff";
-
-        if (!inline || !content.CanPreview)
-        {
-            return PhysicalFile(content.PhysicalPath, content.ContentType, content.FileName, enableRangeProcessing: true);
-        }
-
-        Response.Headers.ContentDisposition = new ContentDispositionHeaderValue("inline")
-        {
-            FileNameStar = content.FileName
-        }.ToString();
-
-        return PhysicalFile(content.PhysicalPath, content.ContentType, enableRangeProcessing: true);
+        return new AttachmentContentResult(content, attachmentId, inline);
     }
 
 
@@ -158,17 +137,15 @@ public class AttachmentController(IMediator mediator) : ControllerBase
     /// <response code="400">The name is empty, too long or has characters a file name cannot have.</response>
     /// <response code="401">The user is not authenticated.</response>
     /// <response code="403">The user cannot edit tasks in this project.</response>
+    /// <response code="404">The file was not found; it may have been deleted.</response>
     [HttpPatch("attachments/{attachmentId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Rename(
-        Guid projectId,
-        Guid attachmentId,
-        [FromBody] RenameAttachmentCommand command,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Rename(Guid projectId, Guid attachmentId, [FromBody] RenameAttachmentCommand command, CancellationToken cancellationToken)
     {
         command.ProjectId = projectId;
         command.AttachmentId = attachmentId;
@@ -189,11 +166,13 @@ public class AttachmentController(IMediator mediator) : ControllerBase
     /// <response code="400">The file was not found in this project.</response>
     /// <response code="401">The user is not authenticated.</response>
     /// <response code="403">The user cannot edit tasks in this project.</response>
+    /// <response code="404">The file was not found; it may have been deleted.</response>
     [HttpDelete("attachments/{attachmentId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete(Guid projectId, Guid attachmentId, CancellationToken cancellationToken)
     {

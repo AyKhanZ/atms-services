@@ -67,24 +67,22 @@ public class AttachmentRepository(ProjectDbContext context) : IAttachmentReposit
 
     public Task<Attachment?> FindAsync(Guid projectId, Guid attachmentId, CancellationToken cancellationToken)
     {
-        var ownerTasks = LiveProjectTasks(projectId);
+        return OfProject(context.Attachments, projectId, attachmentId).FirstOrDefaultAsync(cancellationToken);
+    }
 
-        return context.Attachments.FirstOrDefaultAsync(
-            attachment => attachment.Id == attachmentId &&
-                          attachment.OwnerType == AttachmentOwnerTypeEnum.Task &&
-                          ownerTasks.Any(task => task.Id == attachment.OwnerId),
-            cancellationToken);
+    public Task<Attachment?> GetStoredAsync(Guid projectId, Guid attachmentId, CancellationToken cancellationToken)
+    {
+        return OfProject(context.Attachments.AsNoTracking(), projectId, attachmentId).FirstOrDefaultAsync(cancellationToken);
     }
 
     public Task<bool> IsAttachmentExistAsync(Guid projectId, Guid attachmentId, CancellationToken cancellationToken)
     {
-        var ownerTasks = LiveProjectTasks(projectId);
+        return OfProject(context.Attachments, projectId, attachmentId).AnyAsync(cancellationToken);
+    }
 
-        return context.Attachments.AnyAsync(
-            attachment => attachment.Id == attachmentId &&
-                          attachment.OwnerType == AttachmentOwnerTypeEnum.Task &&
-                          ownerTasks.Any(task => task.Id == attachment.OwnerId),
-            cancellationToken);
+    public Task<bool> IsOwnerTaskLiveAsync(Guid projectId, Guid workTaskId, CancellationToken cancellationToken)
+    {
+        return LiveProjectTasks(projectId).AnyAsync(task => task.Id == workTaskId, cancellationToken);
     }
 
     public Task<int> CountByWorkTaskAsync(Guid workTaskId, CancellationToken cancellationToken)
@@ -99,16 +97,49 @@ public class AttachmentRepository(ProjectDbContext context) : IAttachmentReposit
         await context.Attachments.AddAsync(attachment, cancellationToken);
     }
 
+    // The validator's count alone let two uploads at 99 files both pass and both save. The count
+    // and the insert run here under a lock on the task's row: a second upload to the same task
+    // waits for the first to commit, then counts 100 and is refused. Other tasks are not held up.
+    public async Task<bool> AddWithinLimitAsync(Attachment attachment, int limit, CancellationToken cancellationToken)
+    {
+        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        await context.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT 1 FROM \"Tasks\" WHERE \"Id\" = {attachment.OwnerId} FOR UPDATE",
+            cancellationToken);
+
+        if (await CountByWorkTaskAsync(attachment.OwnerId, cancellationToken) >= limit)
+        {
+            return false;
+        }
+
+        await context.Attachments.AddAsync(attachment, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return true;
+    }
+
     public Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         return context.SaveChangesAsync(cancellationToken);
     }
 
+    // A file is found only through a live task of the project: a file of a deleted task, ticket or
+    // project, or of another project, does not exist as far as any request is concerned.
     private IQueryable<WorkTask> LiveProjectTasks(Guid projectId)
     {
         return new WorkTasksOfLiveWorkCriteria()
             .Apply(context.WorkTasks)
             .Where(task => task.WorkProjectId == projectId);
+    }
+
+    private IQueryable<Attachment> OfProject(IQueryable<Attachment> attachments, Guid projectId, Guid attachmentId)
+    {
+        var ownerTasks = LiveProjectTasks(projectId);
+
+        return attachments.Where(attachment =>
+            attachment.Id == attachmentId &&
+            attachment.OwnerType == AttachmentOwnerTypeEnum.Task &&
+            ownerTasks.Any(task => task.Id == attachment.OwnerId));
     }
 
     // The author is read past the soft-delete filter: a file stays in the list after the person

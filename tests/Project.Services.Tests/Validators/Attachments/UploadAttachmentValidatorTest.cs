@@ -26,8 +26,8 @@ public class UploadAttachmentValidatorTest : BaseValidatorTest
                 It.IsAny<Expression<Func<WorkProject, bool>>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        WorkTasksRepositoryMock
-            .Setup(repository => repository.IsWorkTaskExistAsync(_projectId, _workTaskId, It.IsAny<CancellationToken>()))
+        _attachmentRepositoryMock
+            .Setup(repository => repository.IsOwnerTaskLiveAsync(_projectId, _workTaskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
     }
 
@@ -45,7 +45,6 @@ public class UploadAttachmentValidatorTest : BaseValidatorTest
         return new UploadAttachmentValidator(
             configuration,
             WorkProjectsRepositoryMock.Object,
-            WorkTasksRepositoryMock.Object,
             _attachmentRepositoryMock.Object,
             new FileSignatureService(configuration));
     }
@@ -105,8 +104,9 @@ public class UploadAttachmentValidatorTest : BaseValidatorTest
         Assert.Equal(nameof(UploadAttachmentCommand.WorkTaskId), error.PropertyName);
     }
 
+    // A task whose ticket or project was deleted is gone for the user; files must not land on it.
     [Fact]
-    public async Task Validate_WhenTaskIsNotInTheProject_ReportsTheTask()
+    public async Task Validate_WhenTaskIsNotLiveInTheProject_ReportsTheTask()
     {
         var command = Command(File(Pdf, "spec.pdf"));
         command.WorkTaskId = Guid.NewGuid();

@@ -19,11 +19,17 @@ public interface IAttachmentRepository
 
     Task<Attachment?> FindAsync(Guid projectId, Guid attachmentId, CancellationToken cancellationToken);
 
+    Task<Attachment?> GetStoredAsync(Guid projectId, Guid attachmentId, CancellationToken cancellationToken);
+
     Task<bool> IsAttachmentExistAsync(Guid projectId, Guid attachmentId, CancellationToken cancellationToken);
+
+    Task<bool> IsOwnerTaskLiveAsync(Guid projectId, Guid workTaskId, CancellationToken cancellationToken);
 
     Task<int> CountByWorkTaskAsync(Guid workTaskId, CancellationToken cancellationToken);
 
     Task AddAsync(Attachment attachment, CancellationToken cancellationToken);
+
+    Task<bool> AddWithinLimitAsync(Attachment attachment, int limit, CancellationToken cancellationToken);
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

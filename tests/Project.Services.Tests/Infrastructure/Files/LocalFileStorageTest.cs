@@ -50,6 +50,29 @@ public sealed class LocalFileStorageTest : IDisposable
     }
 
     [Fact]
+    public async Task IsWritableAsync_WhenRootCanBeWritten_ReturnsTrueAndLeavesNothingBehind()
+    {
+        Assert.True(await Storage().IsWritableAsync(CancellationToken.None));
+        Assert.Empty(Directory.GetFiles(_root));
+    }
+
+    [Fact]
+    public async Task IsWritableAsync_WhenRootIsNotADirectory_ReturnsFalse()
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(_root)!);
+        await File.WriteAllTextAsync(_root, "a file where the folder should be");
+
+        try
+        {
+            Assert.False(await Storage().IsWritableAsync(CancellationToken.None));
+        }
+        finally
+        {
+            File.Delete(_root);
+        }
+    }
+
+    [Fact]
     public void Constructor_WhenSectionIsMissing_ThrowsConfigurationException()
     {
         var exception = Assert.Throws<ConfigurationException>(

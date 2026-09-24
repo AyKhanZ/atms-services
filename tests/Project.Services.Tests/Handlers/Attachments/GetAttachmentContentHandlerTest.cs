@@ -40,7 +40,7 @@ public sealed class GetAttachmentContentHandlerTest : BaseHandlerTest, IDisposab
             RelativePath = "p/2026/09/file.pdf"
         };
         _attachmentRepositoryMock
-            .Setup(repository => repository.FindAsync(_projectId, attachment.Id, It.IsAny<CancellationToken>()))
+            .Setup(repository => repository.GetStoredAsync(_projectId, attachment.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(attachment);
         _fileStorageMock.Setup(storage => storage.GetFullPath(attachment.RelativePath)).Returns(_physicalPath);
         return attachment;

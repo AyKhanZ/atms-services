@@ -17,7 +17,7 @@ public class GetAttachmentContentHandler(
 {
     public async Task<AttachmentContentModel> Handle(GetAttachmentContentRequest request, CancellationToken cancellationToken)
     {
-        var attachment = await attachmentRepository.FindAsync(request.ProjectId, request.AttachmentId, cancellationToken)
+        var attachment = await attachmentRepository.GetStoredAsync(request.ProjectId, request.AttachmentId, cancellationToken)
                          ?? throw new EntityException(EntityErrorType.NotFound, AttachmentMessages.NotFound);
 
         var physicalPath = fileStorage.GetFullPath(attachment.RelativePath);

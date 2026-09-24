@@ -12,7 +12,6 @@ namespace ATMS.Project.Services.Validation.Attachments;
 public class UploadAttachmentValidator : AbstractValidator<UploadAttachmentCommand>
 {
     private readonly IWorkProjectRepository _workProjectRepository;
-    private readonly IWorkTaskRepository _workTaskRepository;
     private readonly IAttachmentRepository _attachmentRepository;
     private readonly IFileSignatureService _fileSignatureService;
     private readonly AttachmentsOptions _options;
@@ -20,12 +19,10 @@ public class UploadAttachmentValidator : AbstractValidator<UploadAttachmentComma
     public UploadAttachmentValidator(
         IConfiguration configuration,
         IWorkProjectRepository workProjectRepository,
-        IWorkTaskRepository workTaskRepository,
         IAttachmentRepository attachmentRepository,
         IFileSignatureService fileSignatureService)
     {
         _workProjectRepository = workProjectRepository;
-        _workTaskRepository = workTaskRepository;
         _attachmentRepository = attachmentRepository;
         _fileSignatureService = fileSignatureService;
         _options = configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()
@@ -66,7 +63,7 @@ public class UploadAttachmentValidator : AbstractValidator<UploadAttachmentComma
 
     private Task<bool> IsWorkTaskExistsAsync(UploadAttachmentCommand command, Guid workTaskId, CancellationToken cancellationToken)
     {
-        return _workTaskRepository.IsWorkTaskExistAsync(command.ProjectId, workTaskId, cancellationToken);
+        return _attachmentRepository.IsOwnerTaskLiveAsync(command.ProjectId, workTaskId, cancellationToken);
     }
 
     private async Task<bool> HasRoomForFileAsync(Guid workTaskId, CancellationToken cancellationToken)

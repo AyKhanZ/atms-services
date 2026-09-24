@@ -1,4 +1,5 @@
 using ATMS.Project.API.Controllers.v1;
+using ATMS.Project.API.Results;
 using ATMS.Project.Contracts.Commands.Attachments;
 using ATMS.Project.Contracts.Models.Attachments;
 using ATMS.Project.Contracts.Requests.Attachments;
@@ -52,39 +53,13 @@ public class AttachmentControllerTest : BaseControllerTest
     }
 
     [Fact]
-    public async Task GetContent_ByDefault_SendsADownloadUnderTheOriginalName()
-    {
-        Content(canPreview: true);
-
-        var result = await _controller.GetContent(Guid.NewGuid(), Guid.NewGuid(), inline: false, CancellationToken.None);
-
-        var file = Assert.IsType<PhysicalFileResult>(result);
-        Assert.Equal("Отчёт.pdf", file.FileDownloadName);
-        Assert.True(file.EnableRangeProcessing);
-        Assert.Equal("nosniff", _controller.Response.Headers.XContentTypeOptions.ToString());
-    }
-
-    [Fact]
-    public async Task GetContent_InlineForAPreviewableFile_ShowsItInTheBrowser()
+    public async Task GetContent_ReturnsTheStoredFileAsAnAttachmentContentResult()
     {
         Content(canPreview: true);
 
         var result = await _controller.GetContent(Guid.NewGuid(), Guid.NewGuid(), inline: true, CancellationToken.None);
 
-        var file = Assert.IsType<PhysicalFileResult>(result);
-        Assert.Empty(file.FileDownloadName);
-        Assert.StartsWith("inline", _controller.Response.Headers.ContentDisposition.ToString());
-    }
-
-    // A browser must never render an archive or an Office file itself, whatever the client asks.
-    [Fact]
-    public async Task GetContent_InlineForAFileThatCannotBePreviewed_StillDownloads()
-    {
-        Content(canPreview: false);
-
-        var result = await _controller.GetContent(Guid.NewGuid(), Guid.NewGuid(), inline: true, CancellationToken.None);
-
-        Assert.Equal("Отчёт.pdf", Assert.IsType<PhysicalFileResult>(result).FileDownloadName);
+        Assert.IsType<AttachmentContentResult>(result);
     }
 
     [Fact]

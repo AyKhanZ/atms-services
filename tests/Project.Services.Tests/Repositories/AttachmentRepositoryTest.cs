@@ -36,8 +36,20 @@ public class AttachmentRepositoryTest
             repository => repository.FindAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None)
         },
         {
+            nameof(AttachmentRepository.GetStoredAsync),
+            repository => repository.GetStoredAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None)
+        },
+        {
+            nameof(AttachmentRepository.IsOwnerTaskLiveAsync),
+            repository => repository.IsOwnerTaskLiveAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None)
+        },
+        {
             nameof(AttachmentRepository.IsAttachmentExistAsync),
             repository => repository.IsAttachmentExistAsync(Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None)
+        },
+        {
+            nameof(AttachmentRepository.AddWithinLimitAsync),
+            repository => repository.AddWithinLimitAsync(new ATMS.Project.Data.Entities.Attachment { OwnerId = Guid.NewGuid() }, 100, CancellationToken.None)
         },
         {
             nameof(AttachmentRepository.CountByWorkTaskAsync),
