@@ -188,12 +188,12 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
             .ToDictionaryAsync(row => row.Id, row => new WorkTaskProgress(row.Total, row.Done), cancellationToken);
     }
 
-    public Task<string?> GetTopRankAsync(int statusId, CancellationToken cancellationToken)
+    public Task<WorkTaskBoardPlace?> GetTopPlaceAsync(int statusId, CancellationToken cancellationToken)
     {
         return context.WorkTasks
             .Where(task => task.StatusId == statusId)
             .OrderBy(task => task.Rank)
-            .Select(task => task.Rank)
+            .Select(task => new WorkTaskBoardPlace(task.Id, task.Rank))
             .FirstOrDefaultAsync(cancellationToken);
     }
 

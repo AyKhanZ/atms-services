@@ -20,14 +20,15 @@ public sealed class WorkTaskBoardPlacementService(
 
     public async Task PlaceOnTopAsync(WorkTask workTask, CancellationToken cancellationToken)
     {
-        var top = await workTaskRepository.GetTopRankAsync(workTask.StatusId, cancellationToken);
-        // Already the first card of this column: nothing to move.
-        if (top is not null && top == workTask.Rank)
+        var top = await workTaskRepository.GetTopPlaceAsync(workTask.StatusId, cancellationToken);
+        // Already the first card of this column: nothing to move. Compared by id, not by key: a card
+        // coming from another column can carry the same key as the first card of this one.
+        if (top is not null && top.Id == workTask.Id)
         {
             return;
         }
 
-        workTask.Rank = positions.Between(null, top);
+        workTask.Rank = positions.Between(null, top?.Rank);
     }
 
     public async Task PlaceBetweenAsync(
