@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="PeriodUnsupported" xml:space="preserve"><value>Dövr seçin: 7, 30 və ya 90 gün.</value></data>
+  <data name="ProjectIdInvalid" xml:space="preserve"><value>Belə layihə tapılmadı. Siyahıdan layihə seçin.</value></data>
+</root>
