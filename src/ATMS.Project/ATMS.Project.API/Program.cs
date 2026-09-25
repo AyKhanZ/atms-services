@@ -3,6 +3,9 @@ using ATMS.Swagger.Extensions;
 using ATMS.Swagger.Middlewares;
 using ATMS.Project.Services.Modules;
 using ATMS.Swagger.Constants;
+using ATMS.Application.Realtime;
+using ATMS.Project.API.Hubs;
+using ATMS.Project.API.Realtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,7 @@ builder.Services
     .AddProjectServices(builder.Configuration)
     .AddJwtSecurityServices(builder.Configuration)
     .AddAuthorizationPolicies()
+    .AddRealtime()
     .AddSwaggerDocumentation(SwaggerConstants.ApiProjectTitle);
 
 var app = builder.Build();
@@ -42,5 +46,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<RealtimeHub>(RealtimeConstants.HubPath);
 
 app.Run();

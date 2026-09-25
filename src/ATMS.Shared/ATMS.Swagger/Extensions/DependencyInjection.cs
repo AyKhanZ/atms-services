@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi;
 using ATMS.Swagger.Constants;
 using Microsoft.AspNetCore.Authorization;
+using ATMS.Application.Realtime;
 
 namespace ATMS.Swagger.Extensions;
 
@@ -57,6 +58,19 @@ public static class DependencyInjection
 
                 options.RequireHttpsMetadata = true;
                 options.MapInboundClaims = false;
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Path.StartsWithSegments(RealtimeConstants.HubPath) &&
+                            !string.IsNullOrWhiteSpace(context.Request.Query["access_token"]))
+                        {
+                            context.Token = context.Request.Query["access_token"];
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,

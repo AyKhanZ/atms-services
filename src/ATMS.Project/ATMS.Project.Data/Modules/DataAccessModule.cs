@@ -23,9 +23,12 @@ public static class DataAccessModule
                             string.Format(LogMessages.ConfigSectionNotFound, nameof(ProjectDatabaseOptions)));
         
         services.AddHistoryRecording();
+        services.AddScoped<ProjectRealtimeInterceptor>();
         services.AddDbContext<ProjectDbContext>((provider, options) => options
             .UseNpgsql(dbOptions.SqlConnection)
-            .AddInterceptors(provider.GetRequiredService<ProjectHistoryInterceptor>()));
+            .AddInterceptors(
+                provider.GetRequiredService<ProjectHistoryInterceptor>(),
+                provider.GetRequiredService<ProjectRealtimeInterceptor>()));
 
         services.AddScoped<IDictionariesRepository, DictionariesRepository>();
         

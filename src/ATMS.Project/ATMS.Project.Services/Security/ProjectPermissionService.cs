@@ -2,6 +2,7 @@ using ATMS.Application.Interfaces;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Data.Enums;
+using ATMS.Data.Constants;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Security.Interfaces;
 
@@ -12,6 +13,18 @@ public sealed class ProjectPermissionService(
     IProjectPermissionRepository permissionRepository,
     ICacheService cache) : IProjectPermissionService
 {
+    public bool IsSuperAdmin => currentUser.RoleId == RoleIds.SuperAdmin;
+
+    public Task<bool> IsClientAsync(Guid projectId, CancellationToken cancellationToken)
+    {
+        if (currentUser.RoleId == RoleIds.Client || currentUser.RoleId == RoleIds.ClientManager)
+        {
+            return Task.FromResult(true);
+        }
+
+        return permissionRepository.HasClientRoleAsync(projectId, currentUser.Id, cancellationToken);
+    }
+
     public async Task<IReadOnlySet<string>> GetPermissionCodesAsync(
         Guid projectId,
         CancellationToken cancellationToken)
@@ -30,6 +43,11 @@ public sealed class ProjectPermissionService(
         IReadOnlyCollection<ProjectPermissionEnum> permissions,
         CancellationToken cancellationToken)
     {
+        if (IsSuperAdmin)
+        {
+            return true;
+        }
+
         var permissionSet = await GetPermissionCodesAsync(projectId, cancellationToken);
         return permissions.Any(permission => permissionSet.Contains(permission.ToString()));
     }

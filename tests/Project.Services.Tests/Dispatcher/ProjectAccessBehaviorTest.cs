@@ -1,7 +1,5 @@
 using ATMS.Application.Exceptions.Auth;
-using ATMS.Application.Interfaces;
 using ATMS.Application.Security;
-using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Requests.Security;
 using ATMS.Project.Contracts.Requests.WorkTickets;
@@ -14,14 +12,8 @@ namespace Project.Services.Tests.Dispatcher;
 
 public class ProjectAccessBehaviorTest
 {
-    private readonly Mock<ICurrentUser> _currentUser = new();
     private readonly Mock<IProjectPermissionService> _projectPermissions = new();
     private readonly Mock<IProjectAccessPolicyResolver> _policyResolver = new();
-
-    public ProjectAccessBehaviorTest()
-    {
-        _currentUser.SetupGet(user => user.RoleId).Returns(Guid.NewGuid());
-    }
 
     [Fact]
     public async Task Handle_RequestWithoutProjectAccessRequirement_ContinuesPipeline()
@@ -30,7 +22,7 @@ public class ProjectAccessBehaviorTest
         var result = await behavior.Handle(new PublicRequest(), Next, CancellationToken.None);
 
         Assert.Equal("handled", result);
-        _projectPermissions.VerifyNoOtherCalls();
+        _projectPermissions.VerifyGet(service => service.IsSuperAdmin, Times.Once);
     }
 
     [Fact]
@@ -59,13 +51,13 @@ public class ProjectAccessBehaviorTest
     [Fact]
     public async Task Handle_SuperAdmin_BypassesProjectPermissionCheck()
     {
-        _currentUser.SetupGet(user => user.RoleId).Returns(RoleIds.SuperAdmin);
+        _projectPermissions.SetupGet(service => service.IsSuperAdmin).Returns(true);
         var behavior = CreateBehavior<ProjectRequest>();
 
         var result = await behavior.Handle(new ProjectRequest(Guid.NewGuid()), Next, CancellationToken.None);
 
         Assert.Equal("handled", result);
-        _projectPermissions.VerifyNoOtherCalls();
+        _projectPermissions.VerifyGet(service => service.IsSuperAdmin, Times.Once);
     }
 
     [Fact]
@@ -119,6 +111,9 @@ public class ProjectAccessBehaviorTest
             new CumulativeProjectRequest(projectId),
             Next,
             CancellationToken.None));
+
+        _projectPermissions.Verify(service => service.GetPermissionCodesAsync(
+            projectId, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -152,7 +147,8 @@ public class ProjectAccessBehaviorTest
     private void SetupPermissions(Guid projectId, params ProjectPermissionEnum[] permissions)
     {
         _projectPermissions
-            .Setup(provider => provider.GetPermissionCodesAsync(projectId, It.IsAny<CancellationToken>()))
+            .Setup(provider => provider.GetPermissionCodesAsync(
+                projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(permissions.Select(permission => permission.ToString()).ToHashSet());
     }
 
@@ -167,7 +163,7 @@ public class ProjectAccessBehaviorTest
     }
 
     private ProjectAccessBehavior<TRequest, string> CreateBehavior<TRequest>() where TRequest : notnull
-        => new(_currentUser.Object, _projectPermissions.Object, _policyResolver.Object);
+        => new(_projectPermissions.Object, _policyResolver.Object);
 
     private static Task<string> Next(CancellationToken _) => Task.FromResult("handled");
 
