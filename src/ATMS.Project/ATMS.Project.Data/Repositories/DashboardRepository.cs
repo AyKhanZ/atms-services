@@ -210,29 +210,68 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
             .Take(15)
             .Include(entry => entry.Changes)
             .ToArrayAsync(cancellationToken);
+        var activityProjectIds = entries
+            .Select(entry => entry.WorkProjectId)
+            .Distinct()
+            .ToArray();
         var taskIds = entries
             .Where(entry => entry.EntityType == (int)HistoryEntityTypeEnum.WorkTask)
             .Select(entry => entry.EntityId)
             .ToArray();
-        var taskTickets = taskIds.Length == 0
-            ? new Dictionary<Guid, Guid>()
+        var taskSubjects = taskIds.Length == 0
+            ? new Dictionary<Guid, DashboardActivitySubjectRow>()
             : await context.WorkTasks
                 .IgnoreQueryFilters()
                 .AsNoTracking()
-                .Where(task => taskIds.Contains(task.Id))
-                .Select(task => new { task.Id, task.WorkTicketId })
-                .ToDictionaryAsync(task => task.Id, task => task.WorkTicketId, cancellationToken);
-        var activities = entries
-            .Select(entry => new DashboardActivityRow(
-                entry,
-                entry.EntityType switch
-                {
-                    (int)HistoryEntityTypeEnum.WorkTask =>
-                        taskTickets.TryGetValue(entry.EntityId, out var ticketId) ? ticketId : null,
-                    (int)HistoryEntityTypeEnum.WorkTicket => entry.EntityId,
-                    _ => null
-                }))
+                .Where(task => taskIds.Contains(task.Id) && activityProjectIds.Contains(task.WorkProjectId))
+                .Select(task => new DashboardActivitySubjectRow(
+                    task.Id, "task", task.Code, task.Title, task.IsDeleted, task.WorkTicketId))
+                .ToDictionaryAsync(subject => subject.Id, cancellationToken);
+        var ticketIds = entries
+            .Where(entry => entry.EntityType == (int)HistoryEntityTypeEnum.WorkTicket)
+            .Select(entry => entry.EntityId)
             .ToArray();
+        var ticketSubjects = ticketIds.Length == 0
+            ? new Dictionary<Guid, DashboardActivitySubjectRow>()
+            : await context.WorkTickets
+                .IgnoreQueryFilters()
+                .AsNoTracking()
+                .Where(ticket => ticketIds.Contains(ticket.Id) && activityProjectIds.Contains(ticket.WorkProjectId))
+                .Select(ticket => new DashboardActivitySubjectRow(
+                    ticket.Id, "ticket", ticket.Code, ticket.Title, ticket.IsDeleted, ticket.Id))
+                .ToDictionaryAsync(subject => subject.Id, cancellationToken);
+        var projectIds = entries
+            .Where(entry => entry.EntityType != (int)HistoryEntityTypeEnum.WorkTask &&
+                            entry.EntityType != (int)HistoryEntityTypeEnum.WorkTicket)
+            .Select(entry => entry.WorkProjectId)
+            .Distinct()
+            .ToArray();
+        var projectSubjects = projectIds.Length == 0
+            ? new Dictionary<Guid, DashboardActivitySubjectRow>()
+            : await context.WorkProjects
+                .IgnoreQueryFilters()
+                .AsNoTracking()
+                .Where(project => projectIds.Contains(project.Id))
+                .Select(project => new DashboardActivitySubjectRow(
+                    project.Id, "project", project.Code, project.Title, project.IsDeleted, null))
+                .ToDictionaryAsync(subject => subject.Id, cancellationToken);
+        // A history row can outlive its subject after a manual cleanup of the database; one such row
+        // must drop out of the feed instead of failing the whole dashboard.
+        var activities = new List<DashboardActivityRow>(entries.Length);
+        foreach (var entry in entries)
+        {
+            var subject = entry.EntityType switch
+            {
+                (int)HistoryEntityTypeEnum.WorkTask => taskSubjects.GetValueOrDefault(entry.EntityId),
+                (int)HistoryEntityTypeEnum.WorkTicket => ticketSubjects.GetValueOrDefault(entry.EntityId),
+                _ => projectSubjects.GetValueOrDefault(entry.WorkProjectId)
+            };
+
+            if (subject is not null)
+            {
+                activities.Add(new DashboardActivityRow(entry, subject));
+            }
+        }
 
         return new DashboardData
         {
@@ -245,7 +284,7 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
             Workload = workload,
             Secondary = secondary,
             Deadlines = deadlines,
-            Activities = activities
+            Activities = activities.ToArray()
         };
     }
 }

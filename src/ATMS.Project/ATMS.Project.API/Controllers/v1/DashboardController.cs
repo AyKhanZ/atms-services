@@ -15,7 +15,8 @@ public sealed class DashboardController(IMediator mediator) : ControllerBase
     /// <remarks>
     /// Includes tasks and subtasks from all projects the caller may view, or only projectId when
     /// supplied. Period is 7, 30 or 90 business days, including today in the business time zone.
-    /// Client users receive a null workload.
+    /// Recent activity includes the current subject code and title; deleted subjects are marked
+    /// so clients can show the entry without linking to the deleted item. Client users receive a null workload.
     /// </remarks>
     /// <response code="200">The complete dashboard.</response>
     /// <response code="400">Period is not 7, 30 or 90.</response>

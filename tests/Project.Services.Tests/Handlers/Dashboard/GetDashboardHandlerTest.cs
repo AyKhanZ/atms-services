@@ -2,6 +2,7 @@ using ATMS.Application.Models;
 using System.Text.Json;
 using ATMS.Data.Constants;
 using ATMS.Data.Criteria.Interfaces;
+using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.History;
 using ATMS.Project.Contracts.Models.Dashboard;
 using ATMS.Project.Contracts.Requests.Dashboard;
@@ -184,6 +185,84 @@ public sealed class GetDashboardHandlerTest : BaseHandlerTest
         Assert.False(segment.TryGetProperty("name", out _));
     }
 
+    [Fact]
+    public async Task Handle_DeletedTaskActivity_KeepsSubjectAndTaskReference()
+    {
+        var projectId = Guid.NewGuid();
+        var ticketId = Guid.NewGuid();
+        var taskId = Guid.NewGuid();
+        var entry = new HistoryEntry
+        {
+            Id = Guid.NewGuid(),
+            WorkProjectId = projectId,
+            EntityId = taskId,
+            EntityType = (int)HistoryEntityTypeEnum.WorkTask
+        };
+        SetupActivity(new DashboardActivityRow(entry,
+            new DashboardActivitySubjectRow(taskId, "task", "41", "Payment form", true, ticketId)));
+
+        var result = await Handler().Handle(new GetDashboardRequest(), CancellationToken.None);
+
+        var activity = Assert.Single(result.Activities);
+        Assert.Equal("task", activity.Subject.Type);
+        Assert.Equal("41", activity.Subject.Code);
+        Assert.Equal("Payment form", activity.Subject.Title);
+        Assert.True(activity.Subject.IsDeleted);
+        Assert.Equal(projectId, activity.Ref.ProjectId);
+        Assert.Equal(ticketId, activity.Ref.WorkTicketId);
+        Assert.Equal(taskId, activity.Ref.WorkTaskId);
+        var json = JsonSerializer.Serialize(result, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        using var document = JsonDocument.Parse(json);
+        var subject = document.RootElement.GetProperty("activities")[0].GetProperty("subject");
+        Assert.True(subject.GetProperty("isDeleted").GetBoolean());
+        Assert.Equal("41", subject.GetProperty("code").GetString());
+    }
+
+    [Theory]
+    [InlineData(HistoryEntityTypeEnum.Project)]
+    [InlineData(HistoryEntityTypeEnum.WorkGroup)]
+    public async Task Handle_ProjectHistoryActivity_UsesProjectSubject(HistoryEntityTypeEnum entityType)
+    {
+        var projectId = Guid.NewGuid();
+        var entry = new HistoryEntry
+        {
+            Id = Guid.NewGuid(),
+            WorkProjectId = projectId,
+            EntityId = entityType == HistoryEntityTypeEnum.Project ? projectId : Guid.NewGuid(),
+            EntityType = (int)entityType
+        };
+        SetupActivity(new DashboardActivityRow(entry,
+            new DashboardActivitySubjectRow(projectId, "project", "7", "Alpha", false, null)));
+
+        var result = await Handler().Handle(new GetDashboardRequest(), CancellationToken.None);
+
+        var activity = Assert.Single(result.Activities);
+        Assert.Equal("project", activity.Subject.Type);
+        Assert.Equal("7", activity.Subject.Code);
+        Assert.Equal("Alpha", activity.Subject.Title);
+        Assert.False(activity.Subject.IsDeleted);
+        Assert.Equal(projectId, activity.Ref.ProjectId);
+        Assert.Null(activity.Ref.WorkTicketId);
+        Assert.Null(activity.Ref.WorkTaskId);
+    }
+
+    private void SetupActivity(DashboardActivityRow activity)
+    {
+        _repository.Setup(repository => repository.GetAsync(
+                It.IsAny<ICriteria<WorkProject>>(), It.IsAny<Guid?>(),
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<double>(),
+                It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(EmptyData(activities: [activity]));
+        _history.Setup(service => service.ResolveEntriesAsync(
+                It.IsAny<IReadOnlyCollection<HistoryEntry>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new HistoryEntryModel
+            {
+                Id = activity.Entry.Id,
+                EntityType = activity.Entry.EntityType
+            }]);
+    }
+
     private GetDashboardHandler Handler() => new(
         CurrentUserMock.Object, _httpContextAccessor.Object, _zone,
         _repository.Object, _dictionaries.Object, _history.Object);
@@ -197,7 +276,8 @@ public sealed class GetDashboardHandlerTest : BaseHandlerTest
     private static DashboardData EmptyData(
         Dictionary<int, DashboardStatusCount>? counts = null,
         DashboardWorkloadRow[]? workload = null,
-        DashboardEntityRow[]? secondary = null) => new()
+        DashboardEntityRow[]? secondary = null,
+        DashboardActivityRow[]? activities = null) => new()
     {
         StatusCounts = counts ?? [],
         PriorityCounts = [],
@@ -206,6 +286,6 @@ public sealed class GetDashboardHandlerTest : BaseHandlerTest
         Workload = workload ?? [],
         Secondary = secondary ?? [],
         Deadlines = [],
-        Activities = []
+        Activities = activities ?? []
     };
 }

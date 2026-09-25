@@ -221,9 +221,16 @@ public sealed class GetDashboardHandler(
                 Ref = new DashboardRefModel
                 {
                     ProjectId = row.Entry.WorkProjectId,
-                    WorkTicketId = row.WorkTicketId,
+                    WorkTicketId = row.Subject.WorkTicketId,
                     WorkTaskId = row.Entry.EntityType == (int)HistoryEntityTypeEnum.WorkTask
                         ? row.Entry.EntityId : null
+                },
+                Subject = new DashboardActivitySubjectModel
+                {
+                    Type = row.Subject.Type,
+                    Code = row.Subject.Code,
+                    Title = row.Subject.Title,
+                    IsDeleted = row.Subject.IsDeleted
                 },
                 Entry = historyById[row.Entry.Id]
             }).ToArray()
