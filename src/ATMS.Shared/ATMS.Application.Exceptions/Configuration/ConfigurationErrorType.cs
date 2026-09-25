@@ -11,5 +11,7 @@ public enum ConfigurationErrorType
     ProviderSectionNotFound,
     DatabaseSectionNotFound,
     AttachmentsSectionNotFound,
-    MissingSeedData
+    MissingSeedData,
+    BusinessTimeZoneNotFound,
+    BusinessTimeZoneUnavailable
 }
