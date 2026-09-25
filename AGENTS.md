@@ -204,6 +204,18 @@ These were decided in review. Breaking one is a defect, not a style preference.
 - A cache key keeps its name when the cached shape changes. Do not add `:v2`; change the key's content and
   flush the old entries on deploy.
 
+## History is written by SaveChanges — do not go around it
+
+- `ProjectHistoryInterceptor` records every change of a project, group, milestone, ticket, task, subtask,
+  stakeholder and file from the change tracker, in the same `SaveChanges`. Anything that bypasses the change
+  tracker is invisible to it.
+- Change these rows through tracked entities and `SaveChanges`. No `ExecuteUpdate`, `ExecuteDelete` or raw
+  SQL `UPDATE`/`DELETE` on them: the change would happen and the history would never know.
+- The one exception is a column the history ignores on purpose — `Rank`, renumbered in
+  `WorkTaskRepository.RenumberColumnAsync`. A new exception needs the same reason, written next to it.
+- A new column on these entities is added to `HistoryFieldMap` as recorded or ignored; `HistoryFieldMapTest`
+  fails until it is. See `Specs/11-history.md`.
+
 ---
 
 # String properties and nullability

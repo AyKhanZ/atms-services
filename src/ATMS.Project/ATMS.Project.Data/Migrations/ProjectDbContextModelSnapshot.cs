@@ -1847,6 +1847,72 @@ namespace ATMS.Project.Data.Migrations
                     b.ToTable("GlobalSearchRecentItems", (string)null);
                 });
 
+            modelBuilder.Entity("ATMS.Project.Data.Entities.HistoryChange", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Field")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("HistoryEntryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("SubjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HistoryEntryId");
+
+                    b.ToTable("HistoryChanges", (string)null);
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.HistoryEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Action")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("EntityType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("WorkProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("WorkProjectId", "CreatedAt", "Id")
+                        .IsDescending(false, true, true)
+                        .HasFilter("\"EntityType\" IN (1, 2, 3)");
+
+                    b.HasIndex("EntityType", "EntityId", "CreatedAt", "Id")
+                        .IsDescending(false, false, true, true);
+
+                    b.ToTable("HistoryEntries", (string)null);
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.Meeting", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2954,6 +3020,31 @@ namespace ATMS.Project.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ATMS.Project.Data.Entities.HistoryChange", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.HistoryEntry", "HistoryEntry")
+                        .WithMany("Changes")
+                        .HasForeignKey("HistoryEntryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HistoryEntry");
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.HistoryEntry", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ATMS.Project.Data.Entities.WorkProject", null)
+                        .WithMany()
+                        .HasForeignKey("WorkProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.Meeting", b =>
                 {
                     b.HasOne("ATMS.Project.Data.Entities.User", "CreatedBy")
@@ -3449,6 +3540,11 @@ namespace ATMS.Project.Data.Migrations
             modelBuilder.Entity("ATMS.Project.Data.Entities.Dictionaries.WorkTicketType", b =>
                 {
                     b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.HistoryEntry", b =>
+                {
+                    b.Navigation("Changes");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Meeting", b =>

@@ -77,7 +77,11 @@ public class ProjectDbContext : DbContext
     public DbSet<InboxMessage> InboxMessages { get; set; }
 
     public DbSet<GlobalSearchRecentItem> GlobalSearchRecentItems { get; set; }
-    
+
+    public DbSet<HistoryEntry> HistoryEntries { get; set; }
+
+    public DbSet<HistoryChange> HistoryChanges { get; set; }
+
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

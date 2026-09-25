@@ -2,6 +2,7 @@ using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using ATMS.Project.Data.DbContexts;
+using ATMS.Project.Data.Interceptors;
 using ATMS.Project.Data.Repositories;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Data.Services;
@@ -21,7 +22,10 @@ public static class DataAccessModule
                         ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
                             string.Format(LogMessages.ConfigSectionNotFound, nameof(ProjectDatabaseOptions)));
         
-        services.AddDbContext<ProjectDbContext>(options => options.UseNpgsql(dbOptions.SqlConnection));
+        services.AddHistoryRecording();
+        services.AddDbContext<ProjectDbContext>((provider, options) => options
+            .UseNpgsql(dbOptions.SqlConnection)
+            .AddInterceptors(provider.GetRequiredService<ProjectHistoryInterceptor>()));
 
         services.AddScoped<IDictionariesRepository, DictionariesRepository>();
         
@@ -34,6 +38,7 @@ public static class DataAccessModule
         services.AddScoped<IWorkTaskRepository, WorkTaskRepository>();
         services.AddScoped<IWorkTaskBoardRepository, WorkTaskBoardRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+        services.AddScoped<IHistoryRepository, HistoryRepository>();
         services.AddScoped<IGlobalSearchRepository, GlobalSearchRepository>();
         services.AddScoped<IGlobalSearchRecentRepository, GlobalSearchRecentRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
