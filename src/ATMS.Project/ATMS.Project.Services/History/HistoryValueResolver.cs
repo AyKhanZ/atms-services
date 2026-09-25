@@ -4,6 +4,7 @@ using ATMS.Project.Contracts.Models.History;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.History;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Project.Services.Dictionaries.Interfaces;
 using ATMS.Project.Services.History.Interfaces;
 using AutoMapper;
 
@@ -12,9 +13,10 @@ namespace ATMS.Project.Services.History;
 // The history stores raw values — a status id, a participant id, a date — so that a status reads in
 // the caller's language and a renamed milestone shows its current title. Here they become what the
 // screen shows, one query per kind of value on the page and none for a kind the page does not hold.
+// Statuses, types and priorities come from the dictionary cache, not from the database.
 public sealed class HistoryValueResolver(
     IHistoryRepository historyRepository,
-    IDictionariesRepository dictionariesRepository,
+    IDictionaryCacheService dictionaries,
     IMapper mapper) : IHistoryValueResolver
 {
     public async Task<IReadOnlyCollection<HistoryEntryModel>> ResolveEntriesAsync(
@@ -155,28 +157,28 @@ public sealed class HistoryValueResolver(
             Organizations = await LoadAsync(Ids(HistoryFieldEnum.Organization), historyRepository.GetOrganizationsAsync, cancellationToken),
             Roles = await LoadAsync(Ids(HistoryFieldEnum.Stakeholder), historyRepository.GetRolesAsync, cancellationToken),
             ProjectStatuses = Has(HistoryFieldEnum.Status, HistoryEntityTypeEnum.Project)
-                ? Translated(await dictionariesRepository.GetProjectStatusesAsync(cancellationToken))
+                ? ById(await dictionaries.GetProjectStatusesAsync(cancellationToken))
                 : [],
             WorkGroupStatuses = Has(HistoryFieldEnum.Status, HistoryEntityTypeEnum.WorkGroup, HistoryEntityTypeEnum.Milestone)
-                ? Translated(await dictionariesRepository.GetWorkGroupStatusesAsync(cancellationToken))
+                ? ById(await dictionaries.GetWorkGroupStatusesAsync(cancellationToken))
                 : [],
             WorkTicketStatuses = Has(HistoryFieldEnum.Status, HistoryEntityTypeEnum.WorkTicket)
-                ? Translated(await dictionariesRepository.GetWorkTicketStatusesAsync(cancellationToken))
+                ? ById(await dictionaries.GetWorkTicketStatusesAsync(cancellationToken))
                 : [],
             WorkTaskStatuses = Has(HistoryFieldEnum.Status, HistoryEntityTypeEnum.WorkTask)
-                ? Translated(await dictionariesRepository.GetWorkTaskStatusesAsync(cancellationToken))
+                ? ById(await dictionaries.GetWorkTaskStatusesAsync(cancellationToken))
                 : [],
             Priorities = Has(HistoryFieldEnum.Priority, HistoryEntityTypeEnum.WorkTicket, HistoryEntityTypeEnum.WorkTask)
-                ? Translated(await dictionariesRepository.GetWorkItemPrioritiesAsync(cancellationToken))
+                ? ById(await dictionaries.GetWorkItemPrioritiesAsync(cancellationToken))
                 : [],
             ProjectTypes = Has(HistoryFieldEnum.Type, HistoryEntityTypeEnum.Project)
-                ? Translated(await dictionariesRepository.GetProjectTypesAsync(cancellationToken))
+                ? ById(await dictionaries.GetProjectTypesAsync(cancellationToken))
                 : [],
             WorkTicketTypes = Has(HistoryFieldEnum.Type, HistoryEntityTypeEnum.WorkTicket)
-                ? Translated(await dictionariesRepository.GetWorkTicketTypesAsync(cancellationToken))
+                ? ById(await dictionaries.GetWorkTicketTypesAsync(cancellationToken))
                 : [],
             ProjectKinds = Has(HistoryFieldEnum.Kind, HistoryEntityTypeEnum.Project)
-                ? Translated(await dictionariesRepository.GetProjectKindsAsync(cancellationToken))
+                ? ById(await dictionaries.GetProjectKindsAsync(cancellationToken))
                 : [],
             Mapper = mapper
         };
@@ -188,10 +190,8 @@ public sealed class HistoryValueResolver(
         CancellationToken cancellationToken) =>
         ids.Length == 0 ? [] : await load(ids, cancellationToken);
 
-    private Dictionary<int, DictionaryModel> Translated<T>(IEnumerable<T> items) =>
-        items
-            .Select(item => mapper.Map<DictionaryModel>(item))
-            .ToDictionary(item => item.Id);
+    private static Dictionary<int, DictionaryModel> ById(IEnumerable<DictionaryModel> items) =>
+        items.ToDictionary(item => item.Id);
 
     private static bool IsGroup(HistoryEntityTypeEnum entityType) =>
         entityType is HistoryEntityTypeEnum.WorkGroup or HistoryEntityTypeEnum.Milestone;

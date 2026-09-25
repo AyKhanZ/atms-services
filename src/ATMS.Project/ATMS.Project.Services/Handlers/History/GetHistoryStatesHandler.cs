@@ -12,7 +12,7 @@ public class GetHistoryStatesHandler(
     IHistoryValueResolver historyValueResolver)
     : IRequestHandler<GetHistoryStatesRequest, IReadOnlyCollection<HistoryStateModel>>
 {
-    // The status bar shows the latest six and folds the rest; 200 is far past what anyone unfolds.
+    // The status graph opens on the latest ones; 200 is far past what anyone scrolls back to.
     private const int MaxStates = 200;
 
     public async Task<IReadOnlyCollection<HistoryStateModel>> Handle(
@@ -25,17 +25,20 @@ public class GetHistoryStatesHandler(
             request.WorkTaskId,
             cancellationToken);
 
-        var changes = await historyRepository.GetStatusChangesAsync(
+        // One more than is shown, to tell a list of exactly 200 from one cut at 200.
+        var latest = await historyRepository.GetStatusChangesAsync(
             scope.EntityType,
             scope.EntityId,
-            MaxStates,
+            MaxStates + 1,
             cancellationToken);
+        var cut = latest.Length > MaxStates;
+        var changes = cut ? latest[1..] : latest;
 
         // Every status since the creation is here: the one the item started with was set when it was
-        // created. A list cut at the limit starts somewhere later, and that start has no date.
-        var creation = changes.Length < MaxStates
-            ? await historyRepository.GetCreationAsync(scope.EntityType, scope.EntityId, cancellationToken)
-            : null;
+        // created. A cut list starts somewhere later, and that start has no date.
+        var creation = cut
+            ? null
+            : await historyRepository.GetCreationAsync(scope.EntityType, scope.EntityId, cancellationToken);
 
         return await historyValueResolver.ResolveStatesAsync(
             scope.EntityType,

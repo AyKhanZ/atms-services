@@ -1,3 +1,6 @@
+using ATMS.Application.Models;
+using ATMS.Caching.Services.Interfaces;
+using ATMS.Project.Services.Dictionaries;
 using System.Globalization;
 using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
@@ -39,7 +42,19 @@ public sealed class HistoryValueResolverTest
         services.AddMapperServices();
         var mapper = services.BuildServiceProvider().GetRequiredService<IMapper>();
 
-        return new HistoryValueResolver(_historyRepository.Object, _dictionariesRepository.Object, mapper);
+        // The dictionary cache always misses here, so the statuses come translated from the repository.
+        var cache = new Mock<ICacheService>();
+        cache
+            .Setup(service => service.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<DictionaryModel[]>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<DictionaryModel[]>>, TimeSpan, CancellationToken>(
+                async (_, factory, _, _) => await factory());
+        var dictionaries = new DictionaryCacheService(_dictionariesRepository.Object, cache.Object);
+
+        return new HistoryValueResolver(_historyRepository.Object, dictionaries, mapper);
     }
 
     [Fact]

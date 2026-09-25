@@ -54,10 +54,13 @@ public class GetHistoryStatesHandlerTest : BaseHandlerTest
                 .ToArray());
     }
 
-    [Fact]
-    public async Task Handle_EveryStatusSinceTheCreation_DatesTheFirstOneByTheCreation()
+    /* Exactly 200 changes is a whole list, not a cut one: its first status was left without a date. */
+    [Theory]
+    [InlineData(3)]
+    [InlineData(200)]
+    public async Task Handle_EveryStatusSinceTheCreation_DatesTheFirstOneByTheCreation(int count)
     {
-        Changes(3);
+        Changes(count);
 
         await Handler().Handle(new GetHistoryStatesRequest { ProjectId = _projectId, WorkTaskId = _taskId }, CancellationToken.None);
 
@@ -71,13 +74,13 @@ public class GetHistoryStatesHandlerTest : BaseHandlerTest
     [Fact]
     public async Task Handle_ListCutAtTheLimit_LeavesTheCreationOut()
     {
-        Changes(200);
+        Changes(201);
 
         await Handler().Handle(new GetHistoryStatesRequest { ProjectId = _projectId, WorkTaskId = _taskId }, CancellationToken.None);
 
         _valueResolverMock.Verify(resolver => resolver.ResolveStatesAsync(
             HistoryEntityTypeEnum.WorkTask,
-            It.IsAny<IReadOnlyCollection<HistoryStatusChange>>(),
+            It.Is<IReadOnlyCollection<HistoryStatusChange>>(changes => changes.Count == 200),
             null,
             It.IsAny<CancellationToken>()));
         _historyRepositoryMock.Verify(

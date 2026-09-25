@@ -1,3 +1,4 @@
+using ATMS.Project.Services.Dictionaries;
 using ATMS.Application.Models;
 using ATMS.Project.Contracts.Requests.Dictionaries;
 using ATMS.Project.Services.Handlers.Dictionaries;
@@ -11,9 +12,7 @@ public class GetWorkTaskStatusDictionariesHandlerTest : BaseHandlerTest
 
     public GetWorkTaskStatusDictionariesHandlerTest()
     {
-        _handler = new GetWorkTaskStatusDictionariesHandler(
-            DictionariesRepositoryMock.Object,
-            CacheServiceMock.Object);
+        _handler = new GetWorkTaskStatusDictionariesHandler(new DictionaryCacheService(DictionariesRepositoryMock.Object, CacheServiceMock.Object));
     }
 
     [Fact]
