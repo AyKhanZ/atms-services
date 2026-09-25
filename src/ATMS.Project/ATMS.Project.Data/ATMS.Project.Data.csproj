@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Data\ATMS.Data.csproj" />
       <ProjectReference Include="..\..\ATMS.Shared\ATMS.Infrastructure\ATMS.Infrastructure.csproj" />
     </ItemGroup>

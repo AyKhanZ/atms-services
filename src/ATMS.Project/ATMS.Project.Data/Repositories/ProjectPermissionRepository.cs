@@ -1,11 +1,23 @@
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Data.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
 public sealed class ProjectPermissionRepository(ProjectDbContext context) : IProjectPermissionRepository
 {
+    public Task<bool> HasClientRoleAsync(Guid projectId, Guid userId, CancellationToken cancellationToken)
+    {
+        return context.WorkProjectParticipants
+            .AsNoTracking()
+            .Where(participant => participant.WorkProjectId == projectId && participant.UserId == userId)
+            .SelectMany(participant => participant.WorkProjectParticipantRoles)
+            .AnyAsync(role =>
+                role.RoleId == RoleIds.OrgClientManager || role.RoleId == RoleIds.OrgClientViewer,
+                cancellationToken);
+    }
+
     public Task<string[]> GetPermissionCodesAsync(
         Guid projectId,
         Guid userId,

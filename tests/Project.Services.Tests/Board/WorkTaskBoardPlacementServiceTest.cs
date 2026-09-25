@@ -2,6 +2,7 @@ using ATMS.Application.Exceptions.Conflict;
 using ATMS.Data.Criteria.Interfaces;
 using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Models.WorkTasks;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Board;
 using Moq;
@@ -70,8 +71,8 @@ public class WorkTaskBoardPlacementServiceTest
     public async Task PlaceOnTopAsync_InAnEmptyColumn_GivesTheCardAPlace()
     {
         var card = new WorkTask { Id = Guid.NewGuid(), StatusId = (int)WorkTaskStatusEnum.New };
-        _repository.Setup(repository => repository.GetTopRankAsync(card.StatusId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string?)null);
+        _repository.Setup(repository => repository.GetTopPlaceAsync(card.StatusId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((WorkTaskBoardPlace?)null);
 
         await Service().PlaceOnTopAsync(card, CancellationToken.None);
 
@@ -82,11 +83,36 @@ public class WorkTaskBoardPlacementServiceTest
     public async Task PlaceOnTopAsync_GoesAboveTheCurrentFirstCard()
     {
         var card = Card("m9");
-        _repository.Setup(repository => repository.GetTopRankAsync(card.StatusId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync("m1");
+        _repository.Setup(repository => repository.GetTopPlaceAsync(card.StatusId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new WorkTaskBoardPlace(Guid.NewGuid(), "m1"));
 
         await Service().PlaceOnTopAsync(card, CancellationToken.None);
 
         Assert.True(string.CompareOrdinal(card.Rank, "m1") < 0);
+    }
+
+    [Fact]
+    public async Task PlaceOnTopAsync_WhenAnotherFirstCardHasTheSameKey_GoesAboveIt()
+    {
+        // A card back from Done keeps its old key, and a card placed on top since then can hold it.
+        var card = Card("m5");
+        _repository.Setup(repository => repository.GetTopPlaceAsync(card.StatusId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new WorkTaskBoardPlace(Guid.NewGuid(), "m5"));
+
+        await Service().PlaceOnTopAsync(card, CancellationToken.None);
+
+        Assert.True(string.CompareOrdinal(card.Rank, "m5") < 0);
+    }
+
+    [Fact]
+    public async Task PlaceOnTopAsync_WhenTheCardIsAlreadyFirst_KeepsItsKey()
+    {
+        var card = Card("m5");
+        _repository.Setup(repository => repository.GetTopPlaceAsync(card.StatusId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new WorkTaskBoardPlace(card.Id, "m5"));
+
+        await Service().PlaceOnTopAsync(card, CancellationToken.None);
+
+        Assert.Equal("m5", card.Rank);
     }
 }

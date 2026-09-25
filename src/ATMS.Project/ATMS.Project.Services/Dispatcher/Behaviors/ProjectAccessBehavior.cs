@@ -1,9 +1,7 @@
 using ATMS.Application.Security;
-using ATMS.Data.Constants;
 using System.Diagnostics.CodeAnalysis;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Resources;
-using ATMS.Application.Interfaces;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Requests.Security;
 using ATMS.Project.Services.Security.Interfaces;
@@ -12,7 +10,6 @@ using MediatR;
 namespace ATMS.Project.Services.Dispatcher.Behaviors;
 
 public sealed class ProjectAccessBehavior<TRequest, TResponse>(
-    ICurrentUser currentUser,
     IProjectPermissionService projectPermissionService,
     IProjectAccessPolicyResolver projectAccessPolicyResolver)
     : IPipelineBehavior<TRequest, TResponse>
@@ -28,7 +25,7 @@ public sealed class ProjectAccessBehavior<TRequest, TResponse>(
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (currentUser.RoleId == RoleIds.SuperAdmin)
+        if (projectPermissionService.IsSuperAdmin)
         {
             return await next(cancellationToken);
         }
@@ -50,9 +47,7 @@ public sealed class ProjectAccessBehavior<TRequest, TResponse>(
 
         var requirements = await ResolveRequirementsAsync(projectRequest, cancellationToken);
         var permissionCodes = await projectPermissionService.GetPermissionCodesAsync(
-            projectRequest.ProjectId,
-            cancellationToken);
-
+            projectRequest.ProjectId, cancellationToken);
         var hasAccess = requirements.All(requirement =>
             requirement.Count > 0 &&
             requirement.Any(permission => permissionCodes.Contains(permission.ToString())));

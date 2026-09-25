@@ -5,6 +5,7 @@ using ATMS.Data.Enums;
 using System.Resources;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Models.WorkTasks;
 using ATMS.Project.Services.Handlers.WorkTasks;
 using Moq;
 
@@ -66,8 +67,8 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
         var task = NewTask();
         Found(task);
         WorkTaskRepositoryMock
-            .Setup(repository => repository.GetTopRankAsync((int)WorkTaskStatusEnum.InProgress, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string?)null);
+            .Setup(repository => repository.GetTopPlaceAsync((int)WorkTaskStatusEnum.InProgress, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((WorkTaskBoardPlace?)null);
 
         await Handler().Handle(new MoveWorkTaskCommand
         {

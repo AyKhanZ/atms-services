@@ -49,7 +49,7 @@ public interface IWorkTaskRepository
     Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByTicketAsync(
         IReadOnlyCollection<Guid> workTicketIds,
         CancellationToken cancellationToken);
-    Task<string?> GetTopRankAsync(int statusId, CancellationToken cancellationToken);
+    Task<WorkTaskBoardPlace?> GetTopPlaceAsync(int statusId, CancellationToken cancellationToken);
 
     Task<string?> GetNextRankAsync(int statusId, string rank, CancellationToken cancellationToken);
 
