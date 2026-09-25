@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <data name="PeriodUnsupported" xml:space="preserve"><value>Выберите период: 7, 30 или 90 дней.</value></data>
+  <data name="PeriodUnsupported" xml:space="preserve"><value>Выберите период из списка.</value></data>
   <data name="ProjectIdInvalid" xml:space="preserve"><value>Такой проект не найден. Выберите проект из списка.</value></data>
+  <data name="DateInvalid" xml:space="preserve"><value>Выберите дату в календаре.</value></data>
+  <data name="RangeRequired" xml:space="preserve"><value>Выберите дату начала и дату конца.</value></data>
+  <data name="RangeReversed" xml:space="preserve"><value>Дата начала не может быть позже даты конца.</value></data>
+  <data name="RangeInFuture" xml:space="preserve"><value>Выберите даты не позже сегодняшней.</value></data>
+  <data name="RangeTooLong" xml:space="preserve"><value>Выберите период не длиннее года.</value></data>
 </root>

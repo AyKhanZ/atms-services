@@ -11,10 +11,10 @@ public sealed class DashboardControllerTest : BaseControllerTest
     [Fact]
     public async Task Get_ReturnsCompleteDashboardFromMediator()
     {
-        var request = new GetDashboardRequest { ProjectId = Guid.NewGuid(), Period = 7 };
+        var request = new GetDashboardRequest { ProjectId = Guid.NewGuid(), Period = "7d" };
         var dashboard = new DashboardModel
         {
-            Period = 7,
+            Period = "7d",
             Kpis = [],
             MainChart = new DashboardSeriesChartModel { Labels = [], Series = [] },
             Donuts = [],

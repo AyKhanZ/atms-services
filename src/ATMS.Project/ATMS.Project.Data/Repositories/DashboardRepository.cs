@@ -21,15 +21,17 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
     public async Task<DashboardData> GetAsync(
         ICriteria<WorkProject> accessibleProjects,
         Guid? projectId,
-        DateTime todayStartUtc,
-        DateTime periodStartUtc,
-        DateTime previousStartUtc,
-        DateTime periodEndUtc,
-        DateTime dueEndUtc,
-        double offsetHours,
+        DashboardDataWindow window,
         bool includeWorkload,
         CancellationToken cancellationToken)
     {
+        var todayStartUtc = window.TodayStartUtc;
+        var periodStartUtc = window.PeriodStartUtc;
+        var previousStartUtc = window.PreviousStartUtc;
+        var periodEndUtc = window.PeriodEndUtc;
+        var dueEndUtc = window.DueEndUtc;
+        var offsetHours = window.OffsetHours;
+
         var visibleProjectIds = accessibleProjects
             .Apply(context.WorkProjects.AsNoTracking())
             .Select(project => project.Id);
@@ -74,18 +76,44 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
             })
             .FirstOrDefaultAsync(cancellationToken);
 
-        var createdByDay = await tasks
-            .Where(task => task.CreatedAt >= periodStartUtc && task.CreatedAt < periodEndUtc)
-            .GroupBy(task => task.CreatedAt.AddHours(offsetHours).Date)
-            .Select(group => new { Day = group.Key, Count = group.Count() })
-            .ToDictionaryAsync(row => row.Day, row => row.Count, cancellationToken);
+        var createdCounts = await tasks
+            .Where(task => task.CreatedAt >= previousStartUtc && task.CreatedAt < periodEndUtc)
+            .GroupBy(task => 1)
+            .Select(group => new
+            {
+                Current = group.Count(task => task.CreatedAt >= periodStartUtc),
+                Previous = group.Count(task => task.CreatedAt < periodStartUtc)
+            })
+            .FirstOrDefaultAsync(cancellationToken);
 
-        var doneByDay = await tasks
-            .Where(task => task.StatusId == (int)WorkTaskStatusEnum.Done &&
-                           task.DoneAt >= periodStartUtc && task.DoneAt < periodEndUtc)
-            .GroupBy(task => task.DoneAt!.Value.AddHours(offsetHours).Date)
-            .Select(group => new { Day = group.Key, Count = group.Count() })
-            .ToDictionaryAsync(row => row.Day, row => row.Count, cancellationToken);
+        var createdByBucket = await CountByBucketAsync(
+            tasks.Where(task => task.CreatedAt >= periodStartUtc && task.CreatedAt < periodEndUtc)
+                .Select(task => task.CreatedAt),
+            window,
+            cancellationToken);
+
+        var doneByBucket = await CountByBucketAsync(
+            tasks.Where(task => task.StatusId == (int)WorkTaskStatusEnum.Done &&
+                                task.DoneAt >= periodStartUtc && task.DoneAt < periodEndUtc)
+                .Select(task => task.DoneAt!.Value),
+            window,
+            cancellationToken);
+
+        // A task has no "started at" column: a move to In progress is known only from its history.
+        // Every move counts, so a task taken back to work twice is started twice.
+        var inProgress = ((int)WorkTaskStatusEnum.InProgress).ToString();
+        var liveTaskIds = tasks.Select(task => task.Id);
+        var startedByBucket = await CountByBucketAsync(
+            context.HistoryEntries
+                .AsNoTracking()
+                .Where(entry => entry.EntityType == (int)HistoryEntityTypeEnum.WorkTask &&
+                                entry.CreatedAt >= periodStartUtc && entry.CreatedAt < periodEndUtc &&
+                                liveTaskIds.Contains(entry.EntityId) &&
+                                entry.Changes.Any(change => change.Field == (int)HistoryFieldEnum.Status &&
+                                                            change.NewValue == inProgress))
+                .Select(entry => entry.CreatedAt),
+            window,
+            cancellationToken);
 
         DashboardWorkloadRow[] workload = [];
         if (includeWorkload)
@@ -176,8 +204,9 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                 .ToArray();
         }
 
-        var deadlines = await open
-            .Where(task => task.Deadline >= todayStartUtc && task.Deadline < dueEndUtc)
+        var upcoming = open.Where(task => task.Deadline >= todayStartUtc && task.Deadline < dueEndUtc);
+        var deadlineCount = await upcoming.CountAsync(cancellationToken);
+        var deadlines = await upcoming
             .OrderBy(task => task.Deadline)
             .ThenBy(task => task.Id)
             .Take(10)
@@ -207,7 +236,7 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
         var entries = await history
             .OrderByDescending(entry => entry.CreatedAt)
             .ThenByDescending(entry => entry.Id)
-            .Take(15)
+            .Take(10)
             .Include(entry => entry.Changes)
             .ToArrayAsync(cancellationToken);
         var activityProjectIds = entries
@@ -225,7 +254,13 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                 .AsNoTracking()
                 .Where(task => taskIds.Contains(task.Id) && activityProjectIds.Contains(task.WorkProjectId))
                 .Select(task => new DashboardActivitySubjectRow(
-                    task.Id, "task", task.Code, task.Title, task.IsDeleted, task.WorkTicketId))
+                    task.Id,
+                    "task",
+                    task.Code,
+                    task.Title,
+                    task.IsDeleted,
+                    task.WorkTicketId,
+                    task.ParentWorkTaskId != null))
                 .ToDictionaryAsync(subject => subject.Id, cancellationToken);
         var ticketIds = entries
             .Where(entry => entry.EntityType == (int)HistoryEntityTypeEnum.WorkTicket)
@@ -277,14 +312,48 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
         {
             StatusCounts = statusCounts,
             PriorityCounts = priorityCounts,
+            Created = createdCounts?.Current ?? 0,
+            PreviousCreated = createdCounts?.Previous ?? 0,
             Done = doneCounts?.Current ?? 0,
             PreviousDone = doneCounts?.Previous ?? 0,
-            CreatedByDay = createdByDay,
-            DoneByDay = doneByDay,
+            CreatedByBucket = createdByBucket,
+            DoneByBucket = doneByBucket,
+            StartedByBucket = startedByBucket,
             Workload = workload,
             Secondary = secondary,
             Deadlines = deadlines,
+            DeadlineCount = deadlineCount,
             Activities = activities.ToArray()
+        };
+    }
+
+    // Buckets are keyed by their start in business time: an hour of today, a day or the first day of
+    // a month. The database groups; only the few bucket counts come back.
+    private static async Task<Dictionary<DateTime, int>> CountByBucketAsync(
+        IQueryable<DateTime> moments,
+        DashboardDataWindow window,
+        CancellationToken cancellationToken)
+    {
+        var local = moments.Select(moment => moment.AddHours(window.OffsetHours));
+
+        return window.Granularity switch
+        {
+            DashboardGranularity.Hour => (await local
+                    .GroupBy(moment => moment.Hour)
+                    .Select(group => new { Hour = group.Key, Count = group.Count() })
+                    .ToArrayAsync(cancellationToken))
+                .ToDictionary(
+                    row => window.TodayStartUtc.AddHours(window.OffsetHours).Date.AddHours(row.Hour),
+                    row => row.Count),
+            DashboardGranularity.Month => (await local
+                    .GroupBy(moment => new { moment.Year, moment.Month })
+                    .Select(group => new { group.Key.Year, group.Key.Month, Count = group.Count() })
+                    .ToArrayAsync(cancellationToken))
+                .ToDictionary(row => new DateTime(row.Year, row.Month, 1), row => row.Count),
+            _ => await local
+                .GroupBy(moment => moment.Date)
+                .Select(group => new { Day = group.Key, Count = group.Count() })
+                .ToDictionaryAsync(row => row.Day, row => row.Count, cancellationToken)
         };
     }
 }

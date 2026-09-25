@@ -6,4 +6,5 @@ public sealed record DashboardActivitySubjectRow(
     string Code,
     string Title,
     bool IsDeleted,
-    Guid? WorkTicketId);
+    Guid? WorkTicketId,
+    bool IsSubtask = false);

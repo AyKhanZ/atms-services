@@ -9,4 +9,6 @@ public sealed class DashboardActivitySubjectModel
     public required string Title { get; init; }
 
     public bool IsDeleted { get; init; }
+
+    public bool IsSubtask { get; init; }
 }

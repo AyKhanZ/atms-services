@@ -14,12 +14,7 @@ public interface IDashboardRepository
     Task<DashboardData> GetAsync(
         ICriteria<WorkProject> accessibleProjects,
         Guid? projectId,
-        DateTime todayStartUtc,
-        DateTime periodStartUtc,
-        DateTime previousStartUtc,
-        DateTime periodEndUtc,
-        DateTime dueEndUtc,
-        double offsetHours,
+        DashboardDataWindow window,
         bool includeWorkload,
         CancellationToken cancellationToken);
 }

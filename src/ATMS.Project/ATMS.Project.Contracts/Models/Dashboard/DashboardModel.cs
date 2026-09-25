@@ -4,7 +4,13 @@ public sealed class DashboardModel
 {
     public DateTime GeneratedAt { get; init; }
 
-    public int Period { get; init; }
+    public string Period { get; init; }
+
+    public DateOnly From { get; init; }
+
+    public DateOnly To { get; init; }
+
+    public string Granularity { get; init; }
 
     public DashboardKpiModel[] Kpis { get; init; }
 
@@ -18,6 +24,7 @@ public sealed class DashboardModel
 
     public DashboardDeadlineModel[] Deadlines { get; init; }
 
+    public int DeadlineCount { get; init; }
+
     public DashboardActivityModel[] Activities { get; init; }
 }
-
