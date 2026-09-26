@@ -60,6 +60,7 @@ public sealed class DashboardRepositoryTest
                 CancellationToken.None);
 
             Assert.NotNull(data.CreatedByBucket);
+            Assert.NotNull(data.StartedByBucket);
             Assert.NotNull(data.DoneByBucket);
         }
     }

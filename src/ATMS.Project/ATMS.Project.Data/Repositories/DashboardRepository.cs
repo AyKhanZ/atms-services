@@ -92,13 +92,6 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
             window,
             cancellationToken);
 
-        var doneByBucket = await CountByBucketAsync(
-            tasks.Where(task => task.StatusId == (int)WorkTaskStatusEnum.Done &&
-                                task.DoneAt >= periodStartUtc && task.DoneAt < periodEndUtc)
-                .Select(task => task.DoneAt!.Value),
-            window,
-            cancellationToken);
-
         // A task has no "started at" column: a move to In progress is known only from its history.
         // Every move counts, so a task taken back to work twice is started twice.
         var inProgress = ((int)WorkTaskStatusEnum.InProgress).ToString();
@@ -111,6 +104,19 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                                 liveTaskIds.Contains(entry.EntityId) &&
                                 entry.Changes.Any(change => change.Field == (int)HistoryFieldEnum.Status &&
                                                             change.NewValue == inProgress))
+                .Select(entry => entry.CreatedAt),
+            window,
+            cancellationToken);
+
+        var done = ((int)WorkTaskStatusEnum.Done).ToString();
+        var doneByBucket = await CountByBucketAsync(
+            context.HistoryEntries
+                .AsNoTracking()
+                .Where(entry => entry.EntityType == (int)HistoryEntityTypeEnum.WorkTask &&
+                                entry.CreatedAt >= periodStartUtc && entry.CreatedAt < periodEndUtc &&
+                                liveTaskIds.Contains(entry.EntityId) &&
+                                entry.Changes.Any(change => change.Field == (int)HistoryFieldEnum.Status &&
+                                                            change.NewValue == done))
                 .Select(entry => entry.CreatedAt),
             window,
             cancellationToken);

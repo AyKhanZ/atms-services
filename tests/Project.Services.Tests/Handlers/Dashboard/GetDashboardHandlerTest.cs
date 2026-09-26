@@ -135,6 +135,27 @@ public sealed class GetDashboardHandlerTest : BaseHandlerTest
         Assert.Equal(JsonValueKind.Null, change.ValueKind);
     }
 
+    [Fact]
+    public async Task Handle_DoneLine_UsesHistoryBucketsWhileDoneKpiUsesCurrentClosures()
+    {
+        _repository.Setup(repository => repository.GetAsync(
+                It.IsAny<ICriteria<WorkProject>>(), It.IsAny<Guid?>(),
+                It.IsAny<DashboardDataWindow>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ICriteria<WorkProject> _, Guid? _, DashboardDataWindow window,
+                bool _, CancellationToken _) => EmptyData(
+                done: 1,
+                doneByBucket: new Dictionary<DateTime, int>
+                {
+                    [window.TodayStartUtc.AddHours(window.OffsetHours).Date.AddHours(9)] = 2
+                }));
+
+        var result = await Handler().Handle(
+            new GetDashboardRequest { Period = "today" }, CancellationToken.None);
+
+        Assert.Equal(1, Assert.Single(result.Kpis, kpi => kpi.Key == "done").Value);
+        Assert.Equal(2, Assert.Single(result.MainChart.Series, series => series.Key == "done").Data[9]);
+    }
+
     [Theory]
     [InlineData("today", "hour", 24)]
     [InlineData("30d", "day", 30)]
@@ -319,16 +340,19 @@ public sealed class GetDashboardHandlerTest : BaseHandlerTest
         DashboardActivityRow[]? activities = null,
         int created = 0,
         int previousCreated = 0,
-        int deadlineCount = 0) => new()
+        int deadlineCount = 0,
+        int done = 0,
+        Dictionary<DateTime, int>? doneByBucket = null) => new()
     {
         DeadlineCount = deadlineCount,
         StatusCounts = counts ?? [],
         PriorityCounts = [],
         Created = created,
         PreviousCreated = previousCreated,
+        Done = done,
         CreatedByBucket = [],
         StartedByBucket = [],
-        DoneByBucket = [],
+        DoneByBucket = doneByBucket ?? [],
         Workload = workload ?? [],
         Secondary = secondary ?? [],
         Deadlines = [],
