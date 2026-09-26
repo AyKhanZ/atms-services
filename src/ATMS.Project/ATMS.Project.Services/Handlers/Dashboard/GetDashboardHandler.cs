@@ -34,11 +34,21 @@ public sealed class GetDashboardHandler(
         var query = httpContextAccessor.HttpContext?.Request.Query;
         if (query is not null)
         {
-            if (query.TryGetValue(nameof(request.Period), out var period) &&
-                !int.TryParse(period.ToString(), out _))
+            // A malformed date never reaches the request: model binding drops it, and the range would
+            // then read as "pick both dates" instead of what actually went wrong.
+            foreach (var field in new[] { nameof(request.From), nameof(request.To) })
             {
-                throw new ValidationException(
-                [new ValidationFailure(nameof(request.Period), DashboardMessages.PeriodUnsupported)]);
+                if (query.TryGetValue(field, out var rawDate) &&
+                    !string.IsNullOrWhiteSpace(rawDate.ToString()) &&
+                    !DateOnly.TryParseExact(
+                        rawDate.ToString(),
+                        "yyyy-MM-dd",
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.None,
+                        out _))
+                {
+                    throw new ValidationException([new ValidationFailure(field, DashboardMessages.DateInvalid)]);
+                }
             }
 
             if (query.TryGetValue(nameof(request.ProjectId), out var rawProjectId) &&
@@ -50,11 +60,7 @@ public sealed class GetDashboardHandler(
             }
         }
 
-        if (request.Period is not (7 or 30 or 90))
-        {
-            throw new ValidationException(
-            [new ValidationFailure(nameof(request.Period), DashboardMessages.PeriodUnsupported)]);
-        }
+        var window = businessTimeZone.GetWindow(DateTime.UtcNow, request.Period, request.From, request.To);
 
         var accessibleProjects = new AccessibleWorkProjectsCriteria(currentUser.Id, currentUser.RoleId);
         if (request.ProjectId is { } projectId &&
@@ -63,17 +69,11 @@ public sealed class GetDashboardHandler(
             throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
         }
 
-        var window = businessTimeZone.GetWindow(DateTime.UtcNow, request.Period);
         var isClient = currentUser.RoleId == RoleIds.Client || currentUser.RoleId == RoleIds.ClientManager;
         var data = await dashboardRepository.GetAsync(
             accessibleProjects,
             request.ProjectId,
-            window.TodayStartUtc,
-            window.PeriodStartUtc,
-            window.PreviousStartUtc,
-            window.PeriodEndUtc,
-            window.DueEndUtc,
-            window.OffsetHours,
+            window.Data,
             !isClient,
             cancellationToken);
         var statuses = await dictionaries.GetWorkTaskStatusesAsync(cancellationToken);
@@ -90,14 +90,21 @@ public sealed class GetDashboardHandler(
         unassigned += data.StatusCounts.GetValueOrDefault((int)WorkTaskStatusEnum.InProgress)?.Unassigned ?? 0;
         var others = openCount - unassigned - data.Workload.Sum(row => row.Count);
 
-        var days = Enumerable.Range(0, request.Period)
-            .Select(offset => window.FirstDay.AddDays(offset))
-            .ToArray();
+        var buckets = Buckets(window);
+        var labelFormat = window.Data.Granularity switch
+        {
+            DashboardGranularity.Hour => "yyyy-MM-ddTHH:mm",
+            DashboardGranularity.Month => "yyyy-MM",
+            _ => "yyyy-MM-dd"
+        };
 
         return new DashboardModel
         {
             GeneratedAt = window.GeneratedAt,
-            Period = request.Period,
+            Period = window.Period,
+            From = window.FirstDay,
+            To = window.LastDay,
+            Granularity = window.Data.Granularity.ToString().ToLowerInvariant(),
             Kpis =
             [
                 new() { Key = "open", Value = openCount },
@@ -108,25 +115,32 @@ public sealed class GetDashboardHandler(
                     Value = (data.StatusCounts.GetValueOrDefault((int)WorkTaskStatusEnum.New)?.Overdue ?? 0) +
                             (data.StatusCounts.GetValueOrDefault((int)WorkTaskStatusEnum.InProgress)?.Overdue ?? 0)
                 },
-                new DashboardDoneKpiModel
-                {
-                    Key = "done",
-                    Value = data.Done,
-                    PreviousValue = data.PreviousDone,
-                    ChangePercent = data.PreviousDone == 0
-                        ? null
-                        : (int)Math.Round(
-                            (data.Done - data.PreviousDone) * 100d / data.PreviousDone,
-                            MidpointRounding.AwayFromZero)
-                }
+                new() { Key = "unassigned", Value = unassigned },
+                Trend("created", data.Created, data.PreviousCreated),
+                Trend("done", data.Done, data.PreviousDone)
             ],
             MainChart = new DashboardSeriesChartModel
             {
-                Labels = days.Select(day => day.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)).ToArray(),
+                Labels = buckets
+                    .Select(bucket => bucket.ToString(labelFormat, CultureInfo.InvariantCulture))
+                    .ToArray(),
                 Series =
                 [
-                    new() { Key = "created", Data = days.Select(day => data.CreatedByDay.GetValueOrDefault(day.ToDateTime(TimeOnly.MinValue))).ToArray() },
-                    new() { Key = "done", Data = days.Select(day => data.DoneByDay.GetValueOrDefault(day.ToDateTime(TimeOnly.MinValue))).ToArray() }
+                    new()
+                    {
+                        Key = "created",
+                        Data = buckets.Select(bucket => data.CreatedByBucket.GetValueOrDefault(bucket)).ToArray()
+                    },
+                    new()
+                    {
+                        Key = "started",
+                        Data = buckets.Select(bucket => data.StartedByBucket.GetValueOrDefault(bucket)).ToArray()
+                    },
+                    new()
+                    {
+                        Key = "done",
+                        Data = buckets.Select(bucket => data.DoneByBucket.GetValueOrDefault(bucket)).ToArray()
+                    }
                 ]
             },
             Donuts =
@@ -189,6 +203,7 @@ public sealed class GetDashboardHandler(
                     Value = row.Count
                 }).ToArray()
             },
+            DeadlineCount = data.DeadlineCount,
             Deadlines = data.Deadlines.Select(row => new DashboardDeadlineModel
             {
                 Ref = new DashboardRefModel
@@ -221,12 +236,48 @@ public sealed class GetDashboardHandler(
                 Ref = new DashboardRefModel
                 {
                     ProjectId = row.Entry.WorkProjectId,
-                    WorkTicketId = row.WorkTicketId,
+                    WorkTicketId = row.Subject.WorkTicketId,
                     WorkTaskId = row.Entry.EntityType == (int)HistoryEntityTypeEnum.WorkTask
                         ? row.Entry.EntityId : null
                 },
+                Subject = new DashboardActivitySubjectModel
+                {
+                    Type = row.Subject.Type,
+                    Code = row.Subject.Code,
+                    Title = row.Subject.Title,
+                    IsDeleted = row.Subject.IsDeleted,
+                    IsSubtask = row.Subject.IsSubtask
+                },
                 Entry = historyById[row.Entry.Id]
             }).ToArray()
+        };
+    }
+
+    private static DashboardTrendKpiModel Trend(string key, int value, int previousValue) => new()
+    {
+        Key = key,
+        Value = value,
+        PreviousValue = previousValue,
+        ChangePercent = previousValue == 0
+            ? null
+            : (int)Math.Round((value - previousValue) * 100d / previousValue, MidpointRounding.AwayFromZero)
+    };
+
+    // Every bucket of the period is present, empty ones as zero, so the line never breaks.
+    private static DateTime[] Buckets(DashboardPeriodWindow window)
+    {
+        var first = window.FirstDay.ToDateTime(TimeOnly.MinValue);
+        var monthStart = new DateTime(window.FirstDay.Year, window.FirstDay.Month, 1);
+        var months = (window.LastDay.Year - window.FirstDay.Year) * 12 +
+                     window.LastDay.Month - window.FirstDay.Month + 1;
+
+        return window.Data.Granularity switch
+        {
+            DashboardGranularity.Hour => Enumerable.Range(0, 24).Select(hour => first.AddHours(hour)).ToArray(),
+            DashboardGranularity.Month => Enumerable.Range(0, months).Select(monthStart.AddMonths).ToArray(),
+            _ => Enumerable.Range(0, window.LastDay.DayNumber - window.FirstDay.DayNumber + 1)
+                .Select(offset => first.AddDays(offset))
+                .ToArray()
         };
     }
 

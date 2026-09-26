@@ -1,6 +1,6 @@
 namespace ATMS.Project.Contracts.Models.Dashboard;
 
-public sealed class DashboardDoneKpiModel : DashboardKpiModel
+public sealed class DashboardTrendKpiModel : DashboardKpiModel
 {
     public int PreviousValue { get; init; }
 

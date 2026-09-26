@@ -16,4 +16,14 @@ internal static class DashboardMessages
     internal static string PeriodUnsupported => Get(nameof(PeriodUnsupported));
 
     internal static string ProjectIdInvalid => Get(nameof(ProjectIdInvalid));
+
+    internal static string DateInvalid => Get(nameof(DateInvalid));
+
+    internal static string RangeRequired => Get(nameof(RangeRequired));
+
+    internal static string RangeReversed => Get(nameof(RangeReversed));
+
+    internal static string RangeInFuture => Get(nameof(RangeInFuture));
+
+    internal static string RangeTooLong => Get(nameof(RangeTooLong));
 }

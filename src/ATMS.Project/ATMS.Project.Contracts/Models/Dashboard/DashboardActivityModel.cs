@@ -6,6 +6,8 @@ public sealed class DashboardActivityModel
 {
     public DashboardRefModel Ref { get; init; }
 
+    public required DashboardActivitySubjectModel Subject { get; init; }
+
     public HistoryEntryModel Entry { get; init; }
 }
 
