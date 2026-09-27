@@ -6,8 +6,6 @@ public interface IProjectPermissionService
 {
     bool IsSuperAdmin { get; }
 
-    Task<bool> IsClientAsync(Guid projectId, CancellationToken cancellationToken);
-
     Task<IReadOnlySet<string>> GetPermissionCodesAsync(
         Guid projectId,
         CancellationToken cancellationToken);

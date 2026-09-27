@@ -1,5 +1,7 @@
 using ATMS.Project.Contracts.Requests.Attachments;
+using ATMS.Project.Contracts.Requests.Comments;
 using ATMS.Project.Data.Criteria.Attachments;
+using ATMS.Project.Data.Criteria.Comments;
 using ATMS.Project.Contracts.Requests.Organizations;
 using ATMS.Project.Contracts.Requests.WorkProjects;
 using ATMS.Project.Contracts.Requests.WorkTaskBoard;
@@ -25,5 +27,6 @@ public class RequestToFilterProfile : Profile
         CreateMap<GetWorkProjectsRequest, WorkProjectsFilter>();
 
         CreateMap<GetAttachmentsRequest, AttachmentOwnerTasksFilter>();
+        CreateMap<GetCommentsRequest, CommentFilter>();
     }
 }

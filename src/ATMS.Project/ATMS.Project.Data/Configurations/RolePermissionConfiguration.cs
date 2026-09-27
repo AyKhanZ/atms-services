@@ -28,22 +28,16 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
                 ProjectPermissionEnum.ParticipantInviteClient,
                 ProjectPermissionEnum.ParticipantInviteEmployee
             ],
-            [RoleIds.BusinessConsultant] = [ProjectPermissionEnum.ProjectView],
-            [RoleIds.Developer] = [ProjectPermissionEnum.ProjectView],
+            [RoleIds.BusinessConsultant] = [ProjectPermissionEnum.ProjectView, ProjectPermissionEnum.CommentEdit],
+            [RoleIds.Developer] = [ProjectPermissionEnum.ProjectView, ProjectPermissionEnum.CommentEdit],
             [RoleIds.OrgClientManager] =
             [
                 ProjectPermissionEnum.ProjectView,
                 ProjectPermissionEnum.TicketCreate,
                 ProjectPermissionEnum.CommentEdit,
-                ProjectPermissionEnum.CommentDelete,
                 ProjectPermissionEnum.ParticipantInviteClient
             ],
-            [RoleIds.OrgClientViewer] =
-            [
-                ProjectPermissionEnum.ProjectView,
-                ProjectPermissionEnum.CommentEdit,
-                ProjectPermissionEnum.CommentDelete
-            ]
+            [RoleIds.OrgClientViewer] = [ProjectPermissionEnum.ProjectView, ProjectPermissionEnum.CommentEdit]
         };
 
     public void Configure(EntityTypeBuilder<RolePermission> builder)

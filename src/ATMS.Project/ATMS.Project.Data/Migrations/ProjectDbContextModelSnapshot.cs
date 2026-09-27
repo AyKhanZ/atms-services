@@ -164,7 +164,9 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.HasIndex("OwnerType", "OwnerId", "CreatedAt");
+                    b.HasIndex("OwnerType", "OwnerId", "CreatedAt", "Id")
+                        .IsDescending(false, false, true, true)
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("Comments");
                 });
@@ -2304,7 +2306,17 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
+                            PermissionId = 11,
+                            RoleId = new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca")
+                        },
+                        new
+                        {
                             PermissionId = 1,
+                            RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
+                        },
+                        new
+                        {
+                            PermissionId = 11,
                             RoleId = new Guid("51805e71-420c-40c4-a074-76b4f29eee7a")
                         },
                         new
@@ -2324,11 +2336,6 @@ namespace ATMS.Project.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 12,
-                            RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
-                        },
-                        new
-                        {
                             PermissionId = 28,
                             RoleId = new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346")
                         },
@@ -2340,11 +2347,6 @@ namespace ATMS.Project.Data.Migrations
                         new
                         {
                             PermissionId = 11,
-                            RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
-                        },
-                        new
-                        {
-                            PermissionId = 12,
                             RoleId = new Guid("6b738142-0c09-47d0-848b-f2d5e411b266")
                         });
                 });

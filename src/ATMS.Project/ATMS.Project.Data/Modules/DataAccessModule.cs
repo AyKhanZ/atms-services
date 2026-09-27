@@ -42,6 +42,7 @@ public static class DataAccessModule
         services.AddScoped<IWorkTaskBoardRepository, WorkTaskBoardRepository>();
         services.AddScoped<IDashboardRepository, DashboardRepository>();
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IHistoryRepository, HistoryRepository>();
         services.AddScoped<IGlobalSearchRepository, GlobalSearchRepository>();
         services.AddScoped<IGlobalSearchRecentRepository, GlobalSearchRecentRepository>();

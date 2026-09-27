@@ -3,6 +3,8 @@ using ATMS.Application.Realtime;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using ATMS.Data.Interfaces;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 
@@ -14,6 +16,8 @@ public sealed class ProjectRealtimeInterceptor(
 {
     private readonly Dictionary<(string EntityType, Guid Id), WorkItemChangedEvent> _currentSave = [];
     private readonly Dictionary<(string EntityType, Guid Id), WorkItemChangedEvent> _pending = [];
+    private readonly Dictionary<Guid, CommentChangedEvent> _currentComments = [];
+    private readonly Dictionary<Guid, CommentChangedEvent> _pendingComments = [];
 
     public override InterceptionResult<int> SavingChanges(
         DbContextEventData eventData,
@@ -62,7 +66,7 @@ public sealed class ProjectRealtimeInterceptor(
         TransactionEndEventData eventData,
         DbTransaction result)
     {
-        _pending.Clear();
+        ClearPending();
         return result;
     }
 
@@ -72,7 +76,7 @@ public sealed class ProjectRealtimeInterceptor(
         DbTransaction result,
         CancellationToken cancellationToken = default)
     {
-        _pending.Clear();
+        ClearPending();
         return ValueTask.FromResult(result);
     }
 
@@ -98,6 +102,7 @@ public sealed class ProjectRealtimeInterceptor(
     private void Collect(DbContext? dbContext)
     {
         _currentSave.Clear();
+        _currentComments.Clear();
         if (dbContext is not ProjectDbContext context)
         {
             return;
@@ -108,6 +113,13 @@ public sealed class ProjectRealtimeInterceptor(
         {
             if (entry.State is not (EntityState.Added or EntityState.Modified))
             {
+                continue;
+            }
+
+            if (entry.Entity is Comment comment)
+            {
+                _currentComments[comment.Id] = new CommentChangedEvent(
+                    comment.OwnerId, comment.Id, ActionOf(entry));
                 continue;
             }
 
@@ -123,12 +135,7 @@ public sealed class ProjectRealtimeInterceptor(
                 continue;
             }
 
-            var deleted = entry.Property(nameof(WorkTask.IsDeleted));
-            var action = deleted.OriginalValue is false && deleted.CurrentValue is true
-                ? "deleted"
-                : entry.State == EntityState.Added ? "created" : "updated";
-
-            _currentSave[(entityType, id)] = new WorkItemChangedEvent(projectId, entityType, id, action);
+            _currentSave[(entityType, id)] = new WorkItemChangedEvent(projectId, entityType, id, ActionOf(entry));
         }
     }
 
@@ -159,13 +166,48 @@ public sealed class ProjectRealtimeInterceptor(
                 : change;
         }
 
+        foreach (var (id, change) in _currentComments)
+        {
+            _pendingComments[id] = _pendingComments.TryGetValue(id, out var earlier) &&
+                                   earlier.Action == "created" && change.Action == "updated"
+                ? earlier
+                : change;
+        }
+
         _currentSave.Clear();
+        _currentComments.Clear();
+    }
+
+    // A soft delete is an update of IsDeleted from false to true.
+    private static string ActionOf(EntityEntry entry)
+    {
+        var deleted = entry.Property(nameof(ISoftDeletable.IsDeleted));
+        return deleted.OriginalValue is false && deleted.CurrentValue is true
+            ? "deleted"
+            : entry.State == EntityState.Added ? "created" : "updated";
     }
 
     private async Task PublishPendingAsync()
     {
         var changes = _pending.Values.ToArray();
-        _pending.Clear();
+        var comments = _pendingComments.Values.ToArray();
+        ClearPending();
+
+        foreach (var comment in comments)
+        {
+            try
+            {
+                await publisher.PublishToTaskAsync(
+                    comment.WorkTaskId,
+                    RealtimeEventNames.CommentChanged,
+                    comment,
+                    CancellationToken.None);
+            }
+            catch (Exception exception)
+            {
+                logger.LogWarning(exception, "Realtime push failed for comment {CommentId}", comment.CommentId);
+            }
+        }
 
         foreach (var change in changes)
         {
@@ -187,6 +229,13 @@ public sealed class ProjectRealtimeInterceptor(
     private void Clear()
     {
         _currentSave.Clear();
+        _currentComments.Clear();
+        ClearPending();
+    }
+
+    private void ClearPending()
+    {
         _pending.Clear();
+        _pendingComments.Clear();
     }
 }

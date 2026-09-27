@@ -25,6 +25,7 @@ public class WorkTaskModel
     public WorkItemAssigneeModel? Assignee { get; set; }
     public int SubtaskCount { get; set; }
     public int DoneSubtaskCount { get; set; }
+    public int CommentsCount { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public AuditUserModel? UpdatedBy { get; set; }
 }

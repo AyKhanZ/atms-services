@@ -13,6 +13,7 @@ namespace ATMS.Project.Services.Handlers.WorkTasks;
 
 public class GetWorkTaskHandler(
     IWorkTaskRepository workTaskRepository,
+    ICommentRepository commentRepository,
     ICacheService cache,
     IMapper mapper) : IRequestHandler<GetWorkTaskRequest, WorkTaskModel>
 {
@@ -42,6 +43,7 @@ public class GetWorkTaskHandler(
         var progress = await workTaskRepository.GetProgressAsync(workTask.Id, cancellationToken);
         workTask.SubtaskCount = progress.Total;
         workTask.DoneSubtaskCount = progress.Done;
+        workTask.CommentsCount = await commentRepository.CountAsync(workTask.Id, cancellationToken);
 
         return workTask;
     }

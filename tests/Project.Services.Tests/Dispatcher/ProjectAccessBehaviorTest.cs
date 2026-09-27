@@ -1,6 +1,8 @@
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Security;
 using ATMS.Data.Enums;
+using ATMS.Project.Contracts.Commands.Comments;
+using ATMS.Project.Contracts.Models.Comments;
 using ATMS.Project.Contracts.Requests.Security;
 using ATMS.Project.Contracts.Requests.WorkTickets;
 using ATMS.Project.Services.Dispatcher.Behaviors;
@@ -46,6 +48,22 @@ public class ProjectAccessBehaviorTest
 
         await Assert.ThrowsAsync<AuthException>(() =>
             behavior.Handle(new ProjectRequest(projectId), Next, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Handle_ClientViewerWithoutCommentEdit_CannotCreateComment()
+    {
+        var projectId = Guid.NewGuid();
+        SetupPermissions(projectId, ProjectPermissionEnum.ProjectView);
+        var behavior = new ProjectAccessBehavior<CreateCommentCommand, CommentModel>(
+            _projectPermissions.Object, _policyResolver.Object);
+
+        var error = await Assert.ThrowsAsync<AuthException>(() => behavior.Handle(
+            new CreateCommentCommand { ProjectId = projectId, WorkTaskId = Guid.NewGuid(), Text = "Text" },
+            _ => Task.FromResult(new CommentModel { CreatedBy = new() }),
+            CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.Forbidden, error.AuthErrorType);
     }
 
     [Fact]

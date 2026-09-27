@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="TextRequired" xml:space="preserve"><value>Напишите комментарий перед отправкой.</value></data>
+  <data name="TextTooLong" xml:space="preserve"><value>Комментарий — не больше 2000 символов. Сократите его и отправьте снова.</value></data>
+  <data name="EditOwnOnly" xml:space="preserve"><value>Изменить можно только свой комментарий.</value></data>
+  <data name="NotFound" xml:space="preserve"><value>Комментарий удалён или больше недоступен. Обновите страницу.</value></data>
+  <data name="CommentRequired" xml:space="preserve"><value>Выберите комментарий.</value></data>
+</root>

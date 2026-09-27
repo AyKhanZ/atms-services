@@ -9,7 +9,9 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
-        builder.HasIndex(e => new { e.OwnerType, e.OwnerId, e.CreatedAt });
+        builder.HasIndex(e => new { e.OwnerType, e.OwnerId, e.CreatedAt, e.Id })
+            .IsDescending(false, false, true, true)
+            .HasFilter("\"IsDeleted\" = false");
 
         builder.Property(e => e.OwnerType)
             .HasConversion<int>()

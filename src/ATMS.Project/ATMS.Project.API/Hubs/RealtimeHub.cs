@@ -43,31 +43,17 @@ public sealed class RealtimeHub(
         }
 
         var taskGroup = RealtimeConstants.Groups.Task(taskId);
-        var teamGroup = RealtimeConstants.Groups.TaskTeam(taskId);
-        var isClient = await permissions.IsClientAsync(projectId, Context.ConnectionAborted);
-        var groups = ConnectionGroups;
-        var needed = (groups.Contains(taskGroup) ? 0 : 1) +
-                     (isClient || groups.Contains(teamGroup) ? 0 : 1);
-
-        if (groups.Count + needed > MaxGroups)
+        if (!ConnectionGroups.Contains(taskGroup) && ConnectionGroups.Count >= MaxGroups)
         {
             return;
         }
 
         await JoinAsync(taskGroup);
-        if (!isClient)
-        {
-            await JoinAsync(teamGroup);
-        }
     }
 
     /// <summary>Stops receiving comment changes for the specified task on this connection.</summary>
     /// <param name="taskId">The task to stop watching.</param>
-    public async Task UnwatchTask(Guid taskId)
-    {
-        await LeaveAsync(RealtimeConstants.Groups.Task(taskId));
-        await LeaveAsync(RealtimeConstants.Groups.TaskTeam(taskId));
-    }
+    public Task UnwatchTask(Guid taskId) => LeaveAsync(RealtimeConstants.Groups.Task(taskId));
 
     private Task<bool> CanViewProjectAsync(Guid projectId) =>
         permissions.HasAnyPermissionAsync(

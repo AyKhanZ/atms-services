@@ -1366,11 +1366,6 @@ namespace ATMS.Admin.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 15,
-                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
-                        },
-                        new
-                        {
                             PermissionId = 1,
                             RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
                         },

@@ -22,6 +22,7 @@ public static class ProjectServicesModule
         services.AddDashboardServices(configuration);
         services.AddBoardServices();
         services.AddAttachmentServices();
+        services.AddCommentServices();
         services.AddHistoryServices();
         services.AddDictionaryServices();
         services.AddEmailServices(configuration);

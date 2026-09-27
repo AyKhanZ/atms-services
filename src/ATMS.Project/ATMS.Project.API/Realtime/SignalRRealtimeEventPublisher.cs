@@ -16,13 +16,10 @@ public sealed class SignalRRealtimeEventPublisher(IHubContext<RealtimeHub> hubCo
 
     public Task PublishToTaskAsync<T>(
         Guid taskId,
-        bool teamOnly,
         string eventName,
         T payload,
         CancellationToken cancellationToken) =>
-        hubContext.Clients.Group(teamOnly
-                ? RealtimeConstants.Groups.TaskTeam(taskId)
-                : RealtimeConstants.Groups.Task(taskId))
+        hubContext.Clients.Group(RealtimeConstants.Groups.Task(taskId))
             .SendAsync(eventName, payload, cancellationToken);
 
     public Task PublishToProjectAsync<T>(

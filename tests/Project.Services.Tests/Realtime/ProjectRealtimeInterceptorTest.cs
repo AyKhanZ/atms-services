@@ -323,7 +323,7 @@ public sealed class ProjectRealtimeInterceptorTest
             Task.CompletedTask;
 
         public Task PublishToTaskAsync<T>(
-            Guid taskId, bool teamOnly, string eventName, T payload, CancellationToken cancellationToken) =>
+            Guid taskId, string eventName, T payload, CancellationToken cancellationToken) =>
             Task.CompletedTask;
 
         public Task PublishToProjectAsync<T>(

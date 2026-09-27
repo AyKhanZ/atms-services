@@ -5,6 +5,7 @@ using ATMS.Project.Contracts.Requests.WorkTasks;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.WorkTasks;
 using ATMS.Project.Services.Handlers.WorkTasks;
+using ATMS.Project.Data.Repositories.Interfaces;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.WorkTasks;
@@ -14,7 +15,7 @@ public class GetWorkTaskHandlerTest : BaseHandlerTest
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task Handle_UsesActiveItemCacheAndAlwaysRefreshesProgress(bool cacheHit)
+    public async Task Handle_UsesActiveItemCacheAndAlwaysRefreshesProgressAndComments(bool cacheHit)
     {
         var request = new GetWorkTaskRequest { ProjectId = Guid.NewGuid(), WorkTaskId = Guid.NewGuid() };
         var model = new WorkTaskModel
@@ -41,12 +42,23 @@ public class GetWorkTaskHandlerTest : BaseHandlerTest
             MapperMock.Setup(mapper => mapper.Map<WorkTaskModel>(entity)).Returns(model);
         }
         WorkTaskRepositoryMock.Setup(repository => repository.GetProgressAsync(request.WorkTaskId, It.IsAny<CancellationToken>())).ReturnsAsync(new WorkTaskProgress(3, 2));
-        var handler = new GetWorkTaskHandler(WorkTaskRepositoryMock.Object, CacheServiceMock.Object, MapperMock.Object);
+        var comments = new Mock<ICommentRepository>();
+        comments.Setup(repository => repository.CountAsync(
+                request.WorkTaskId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(4);
+        var handler = new GetWorkTaskHandler(
+            WorkTaskRepositoryMock.Object,
+            comments.Object,
+            CacheServiceMock.Object,
+            MapperMock.Object);
 
         var result = await handler.Handle(request, CancellationToken.None);
 
         Assert.Equal(3, result.SubtaskCount);
         Assert.Equal(2, result.DoneSubtaskCount);
+        Assert.Equal(4, result.CommentsCount);
+        comments.Verify(repository => repository.CountAsync(
+            request.WorkTaskId, It.IsAny<CancellationToken>()), Times.Once);
         CacheServiceMock.Verify(cache => cache.GetOrSetAsync(
             CacheKeys.Project.TaskById(request.WorkTaskId, CultureHelper.CurrentLanguage),
             It.IsAny<Func<Task<WorkTaskModel>>>(),
