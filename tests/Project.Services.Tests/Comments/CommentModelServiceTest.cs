@@ -22,6 +22,8 @@ public sealed class CommentModelServiceTest
             .ReturnsAsync([new DictionaryModel { Id = 2, Code = "InProgress", Name = "In progress" }]);
         _dictionaries.Setup(value => value.GetWorkTicketStatusesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync([new DictionaryModel { Id = 3, Code = "Review", Name = "Review" }]);
+        _dictionaries.Setup(value => value.GetProjectStatusesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new DictionaryModel { Id = 1, Code = "Active", Name = "Active" }]);
     }
 
     [Fact]
@@ -75,7 +77,7 @@ public sealed class CommentModelServiceTest
         var comment = new Comment
         {
             Id = Guid.NewGuid(), CreatedById = authorId,
-            Text = "See #41 and `#42` and [#43](https://example.com/#44), then #45."
+            Text = "See #41 and `#42` and [#43](https://example.com/#44), then #45 in #180."
         };
         var repository = new Mock<ICommentRepository>();
         var permissions = new Mock<IProjectPermissionService>();
@@ -92,16 +94,18 @@ public sealed class CommentModelServiceTest
                 It.IsAny<ICriteria<WorkProject>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync([
-                new CommentWorkItemReferenceRow("41", false, true, "Task title", 2,
+                new CommentWorkItemReferenceRow("41", CommentReferenceKind.Task, true, "Task title", 2,
                     projectId, ticketId, taskId),
-                new CommentWorkItemReferenceRow("45", true, false, "Ticket title", 3,
-                    projectId, ticketId, null)
+                new CommentWorkItemReferenceRow("45", CommentReferenceKind.Ticket, false, "Ticket title", 3,
+                    projectId, ticketId, null),
+                new CommentWorkItemReferenceRow("180", CommentReferenceKind.Project, false, "Resort", 1,
+                    projectId, null, null)
             ]);
 
         var model = (await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object)
             .BuildAsync(projectId, [comment], CancellationToken.None))[comment.Id];
 
-        Assert.Equal(["41", "45"], model.References.Select(reference => reference.Code));
+        Assert.Equal(["41", "45", "180"], model.References.Select(reference => reference.Code));
         Assert.Equal("task", model.References[0].Type);
         Assert.True(model.References[0].IsSubtask);
         Assert.Equal("Task title", model.References[0].Title);
@@ -111,9 +115,48 @@ public sealed class CommentModelServiceTest
         Assert.Equal("ticket", model.References[1].Type);
         Assert.Equal(ticketId, model.References[1].Ref.WorkTicketId);
         Assert.Equal("Review", model.References[1].Status.Name);
+        Assert.Equal("project", model.References[2].Type);
+        Assert.Equal("Active", model.References[2].Status.Name);
+        Assert.Null(model.References[2].Ref.WorkTicketId);
         repository.Verify(value => value.GetReferencesAsync(
-            It.Is<IReadOnlyCollection<string>>(codes => codes.SequenceEqual(new[] { "41", "45" })),
+            It.Is<IReadOnlyCollection<string>>(codes => codes.SequenceEqual(new[] { "41", "45", "180" })),
             It.IsAny<ICriteria<WorkProject>>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Build_OddRows_SkipsThemInsteadOfFailing()
+    {
+        var projectId = Guid.NewGuid();
+        var authorId = Guid.NewGuid();
+        var comment = new Comment { Id = Guid.NewGuid(), CreatedById = authorId, Text = "See #41, #42 and #43" };
+        var repository = new Mock<ICommentRepository>();
+        repository.Setup(value => value.GetAuthorsAsync(
+                It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+        repository.Setup(value => value.GetReferencesAsync(
+                It.IsAny<IReadOnlyCollection<string>>(), It.IsAny<ICriteria<WorkProject>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([
+                new CommentWorkItemReferenceRow("41", CommentReferenceKind.Task, false, "First", 2,
+                    projectId, null, Guid.NewGuid()),
+                new CommentWorkItemReferenceRow("41", CommentReferenceKind.Ticket, false, "Second", 3,
+                    projectId, Guid.NewGuid(), null),
+                new CommentWorkItemReferenceRow("42", CommentReferenceKind.Task, false, "Unknown status", 99,
+                    projectId, null, Guid.NewGuid())
+            ]);
+        var user = new Mock<ICurrentUser>();
+        user.SetupGet(value => value.Id).Returns(Guid.NewGuid());
+        var permissions = new Mock<IProjectPermissionService>();
+        permissions.Setup(value => value.GetPermissionCodesAsync(projectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HashSet<string>());
+
+        var model = (await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object)
+            .BuildAsync(projectId, [comment], CancellationToken.None))[comment.Id];
+
+        Assert.Equal(authorId, model.CreatedBy.Id);
+        Assert.Equal(string.Empty, model.CreatedBy.Name);
+        var reference = Assert.Single(model.References);
+        Assert.Equal("First", reference.Title);
     }
 
     [Fact]

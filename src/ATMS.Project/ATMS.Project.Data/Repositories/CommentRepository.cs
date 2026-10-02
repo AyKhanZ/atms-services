@@ -81,20 +81,21 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
         var visibleProjectIds = accessibleProjects
             .Apply(context.WorkProjects.AsNoTracking())
             .Select(project => project.Id);
-        // Anonymous rows on both sides: a UNION ALL is translated only from plain column projections.
-        var tasks = new WorkTasksOfLiveWorkCriteria()
-            .Apply(context.WorkTasks.AsNoTracking())
-            .Where(task => codes.Contains(task.Code) && visibleProjectIds.Contains(task.WorkProjectId))
-            .Select(task => new
+        // Anonymous rows on every side: a UNION ALL is translated only from plain column projections.
+        // One sequence numbers projects, tickets and tasks, so a code names one of them at most.
+        var projects = context.WorkProjects
+            .AsNoTracking()
+            .Where(project => codes.Contains(project.Code) && visibleProjectIds.Contains(project.Id))
+            .Select(project => new
             {
-                task.Code,
-                IsTicket = false,
-                IsSubtask = task.ParentWorkTaskId != null,
-                task.Title,
-                task.StatusId,
-                ProjectId = task.WorkProjectId,
-                WorkTicketId = task.WorkTicketId,
-                WorkTaskId = (Guid?)task.Id
+                project.Code,
+                Kind = CommentReferenceKind.Project,
+                IsSubtask = false,
+                project.Title,
+                StatusId = project.ProjectStatusId,
+                ProjectId = project.Id,
+                WorkTicketId = (Guid?)null,
+                WorkTaskId = (Guid?)null
             });
         var tickets = context.WorkTickets
             .AsNoTracking()
@@ -102,20 +103,34 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
             .Select(ticket => new
             {
                 ticket.Code,
-                IsTicket = true,
+                Kind = CommentReferenceKind.Ticket,
                 IsSubtask = false,
                 ticket.Title,
                 StatusId = ticket.WorkTicketStatusId,
                 ProjectId = ticket.WorkProjectId,
-                WorkTicketId = ticket.Id,
+                WorkTicketId = (Guid?)ticket.Id,
                 WorkTaskId = (Guid?)null
             });
+        var tasks = new WorkTasksOfLiveWorkCriteria()
+            .Apply(context.WorkTasks.AsNoTracking())
+            .Where(task => codes.Contains(task.Code) && visibleProjectIds.Contains(task.WorkProjectId))
+            .Select(task => new
+            {
+                task.Code,
+                Kind = CommentReferenceKind.Task,
+                IsSubtask = task.ParentWorkTaskId != null,
+                task.Title,
+                task.StatusId,
+                ProjectId = task.WorkProjectId,
+                WorkTicketId = (Guid?)task.WorkTicketId,
+                WorkTaskId = (Guid?)task.Id
+            });
 
-        var rows = await tasks.Concat(tickets).ToArrayAsync(cancellationToken);
+        var rows = await projects.Concat(tickets).Concat(tasks).ToArrayAsync(cancellationToken);
         return rows
             .Select(row => new CommentWorkItemReferenceRow(
                 row.Code,
-                row.IsTicket,
+                row.Kind,
                 row.IsSubtask,
                 row.Title,
                 row.StatusId,

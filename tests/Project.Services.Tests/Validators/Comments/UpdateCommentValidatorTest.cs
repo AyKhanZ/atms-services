@@ -22,9 +22,6 @@ public sealed class UpdateCommentValidatorTest : BaseValidatorTest
         WorkProjectsRepositoryMock.Setup(repository => repository.IsExistAsync(
                 It.IsAny<Expression<Func<WorkProject, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        _comments.Setup(repository => repository.IsLiveCommentAsync(
-                _projectId, _commentId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
         _comments.Setup(repository => repository.GetAuthorIdAsync(
                 _projectId, _commentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(_authorId);
@@ -55,7 +52,11 @@ public sealed class UpdateCommentValidatorTest : BaseValidatorTest
             ProjectId = _projectId, CommentId = Guid.NewGuid(), Text = "Edited"
         });
 
-        Assert.Contains(result.Errors, error => error.PropertyName == nameof(UpdateCommentCommand.CommentId));
+        Assert.Contains(result.Errors, error =>
+            error.PropertyName == nameof(UpdateCommentCommand.CommentId) &&
+            error.ErrorMessage == "This comment was deleted or is no longer available. Refresh the page.");
+        _comments.Verify(repository => repository.IsLiveCommentAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

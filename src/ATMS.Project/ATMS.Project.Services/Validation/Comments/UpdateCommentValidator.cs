@@ -27,8 +27,7 @@ public sealed class UpdateCommentValidator : AbstractValidator<UpdateCommentComm
 
         RuleFor(command => command.CommentId).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(CommentMessages.CommentRequired)
-            .MustAsync(IsCommentExistsAsync).WithMessage(CommentMessages.NotFound)
-            .MustAsync(IsOwnCommentAsync).WithMessage(CommentMessages.EditOwnOnly)
+            .CustomAsync(CheckAuthorAsync)
             .When(command => command.ProjectId != Guid.Empty, ApplyConditionTo.CurrentValidator);
 
         RuleFor(command => command.Text).Cascade(CascadeMode.Stop)
@@ -42,13 +41,20 @@ public sealed class UpdateCommentValidator : AbstractValidator<UpdateCommentComm
         return _projectRepository.IsExistAsync(project => project.Id == id, token);
     }
 
-    private Task<bool> IsCommentExistsAsync(UpdateCommentCommand command, Guid id, CancellationToken token)
+    // One read answers both: no author means no live comment, another author means not one's own.
+    private async Task CheckAuthorAsync(
+        Guid id,
+        ValidationContext<UpdateCommentCommand> context,
+        CancellationToken token)
     {
-        return _commentRepository.IsLiveCommentAsync(command.ProjectId, id, token);
-    }
-
-    private async Task<bool> IsOwnCommentAsync(UpdateCommentCommand command, Guid id, CancellationToken token)
-    {
-        return await _commentRepository.GetAuthorIdAsync(command.ProjectId, id, token) == _currentUser.Id;
+        var authorId = await _commentRepository.GetAuthorIdAsync(context.InstanceToValidate.ProjectId, id, token);
+        if (authorId is null)
+        {
+            context.AddFailure(CommentMessages.NotFound);
+        }
+        else if (authorId != _currentUser.Id)
+        {
+            context.AddFailure(CommentMessages.EditOwnOnly);
+        }
     }
 }

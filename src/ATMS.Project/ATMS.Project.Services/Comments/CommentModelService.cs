@@ -72,7 +72,10 @@ public sealed class CommentModelService(
                 Id = item.Id,
                 Text = item.Text,
                 CreatedAt = item.CreatedAt,
-                CreatedBy = ToPerson(authors[item.CreatedById]),
+                // An author gone from the users table still leaves the comment readable, unnamed.
+                CreatedBy = authors.TryGetValue(item.CreatedById, out var author)
+                    ? ToPerson(author)
+                    : new HistoryPersonModel { Id = item.CreatedById, Name = string.Empty, Surname = string.Empty },
                 UpdatedAt = item.UpdatedAt,
                 CanEdit = isOwn && canWrite,
                 CanDelete = isOwn ? canWrite : canDeleteOthers,
@@ -124,27 +127,51 @@ public sealed class CommentModelService(
             return [];
         }
 
-        var taskStatuses = rows.Any(row => !row.IsTicket)
-            ? (await dictionaries.GetWorkTaskStatusesAsync(cancellationToken)).ToDictionary(status => status.Id)
-            : [];
-        var ticketStatuses = rows.Any(row => row.IsTicket)
-            ? (await dictionaries.GetWorkTicketStatusesAsync(cancellationToken)).ToDictionary(status => status.Id)
-            : [];
-
-        return rows.ToDictionary(row => row.Code, row => new CommentReferenceModel
+        // Each kind has statuses of its own; only the kinds found are read.
+        var statuses = new Dictionary<CommentReferenceKind, Dictionary<int, DictionaryModel>>();
+        foreach (var kind in rows.Select(row => row.Kind).Distinct())
         {
-            Code = row.Code,
-            Type = row.IsTicket ? "ticket" : "task",
-            IsSubtask = row.IsSubtask,
-            Title = row.Title,
-            Status = (row.IsTicket ? ticketStatuses : taskStatuses)[row.StatusId],
-            Ref = new DashboardRefModel
+            var list = kind switch
             {
-                ProjectId = row.ProjectId,
-                WorkTicketId = row.WorkTicketId,
-                WorkTaskId = row.WorkTaskId
+                CommentReferenceKind.Project => await dictionaries.GetProjectStatusesAsync(cancellationToken),
+                CommentReferenceKind.Ticket => await dictionaries.GetWorkTicketStatusesAsync(cancellationToken),
+                _ => await dictionaries.GetWorkTaskStatusesAsync(cancellationToken)
+            };
+            statuses[kind] = list.ToDictionary(status => status.Id);
+        }
+
+        // A row that cannot be shown — a code met twice, a status the cache does not know yet — is
+        // left as plain text, so one odd row never takes the whole list down.
+        var references = new Dictionary<string, CommentReferenceModel>();
+        foreach (var row in rows)
+        {
+            if (references.ContainsKey(row.Code) || !statuses[row.Kind].TryGetValue(row.StatusId, out var status))
+            {
+                continue;
             }
-        });
+
+            references[row.Code] = new CommentReferenceModel
+            {
+                Code = row.Code,
+                Type = row.Kind switch
+                {
+                    CommentReferenceKind.Project => "project",
+                    CommentReferenceKind.Ticket => "ticket",
+                    _ => "task"
+                },
+                IsSubtask = row.IsSubtask,
+                Title = row.Title,
+                Status = status,
+                Ref = new DashboardRefModel
+                {
+                    ProjectId = row.ProjectId,
+                    WorkTicketId = row.WorkTicketId,
+                    WorkTaskId = row.WorkTaskId
+                }
+            };
+        }
+
+        return references;
     }
 
     private static HistoryPersonModel ToPerson(User user) => new()
