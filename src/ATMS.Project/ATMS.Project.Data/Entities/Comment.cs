@@ -11,11 +11,5 @@ public class Comment : SoftDeletableAuditableEntity<User>
 
     public string Text { get; set; }
 
-    public Guid? ParentCommentId { get; set; }
-
-    public Comment? ParentComment { get; set; }
-
-    public ICollection<Comment> Replies { get; set; } = [];
-
     public ICollection<Attachment> Attachments { get; set; } = [];
 }

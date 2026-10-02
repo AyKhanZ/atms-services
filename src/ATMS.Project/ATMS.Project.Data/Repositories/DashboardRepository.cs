@@ -74,7 +74,7 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                 Current = group.Count(task => task.DoneAt >= periodStartUtc),
                 Previous = group.Count(task => task.DoneAt < periodStartUtc)
             })
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
 
         var createdCounts = await tasks
             .Where(task => task.CreatedAt >= previousStartUtc && task.CreatedAt < periodEndUtc)
@@ -84,7 +84,7 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                 Current = group.Count(task => task.CreatedAt >= periodStartUtc),
                 Previous = group.Count(task => task.CreatedAt < periodStartUtc)
             })
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
 
         var createdByBucket = await CountByBucketAsync(
             tasks.Where(task => task.CreatedAt >= periodStartUtc && task.CreatedAt < periodEndUtc)

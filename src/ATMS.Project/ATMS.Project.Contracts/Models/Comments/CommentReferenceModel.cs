@@ -1,5 +1,5 @@
 using ATMS.Application.Models;
-using ATMS.Project.Contracts.Models.Dashboard;
+using ATMS.Project.Contracts.Models.WorkItems;
 
 namespace ATMS.Project.Contracts.Models.Comments;
 
@@ -15,5 +15,5 @@ public sealed class CommentReferenceModel
 
     public DictionaryModel Status { get; set; }
 
-    public DashboardRefModel Ref { get; set; }
+    public WorkItemRefModel Ref { get; set; }
 }

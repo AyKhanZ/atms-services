@@ -1,4 +1,4 @@
-using ATMS.Project.Contracts.Models.History;
+using ATMS.Project.Contracts.Models.Users;
 
 namespace ATMS.Project.Contracts.Models.Comments;
 
@@ -10,7 +10,7 @@ public sealed class CommentModel
 
     public DateTime CreatedAt { get; set; }
 
-    public HistoryPersonModel CreatedBy { get; set; }
+    public PersonModel CreatedBy { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
@@ -18,7 +18,7 @@ public sealed class CommentModel
 
     public bool CanDelete { get; set; }
 
-    public HistoryPersonModel[] Mentions { get; set; } = [];
+    public PersonModel[] Mentions { get; set; } = [];
 
     public CommentReferenceModel[] References { get; set; } = [];
 }

@@ -1,6 +1,6 @@
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Project.Contracts.Models.Comments;
-using ATMS.Project.Contracts.Models.History;
+using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Requests.Comments;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -24,7 +24,7 @@ public sealed class GetCommentHandlerTest
     [Fact]
     public async Task LiveComment_ReturnsItsModel()
     {
-        var model = new CommentModel { Id = _commentId, CreatedBy = new HistoryPersonModel() };
+        var model = new CommentModel { Id = _commentId, CreatedBy = new PersonModel() };
         _comments.Setup(value => value.GetAsync(_projectId, _commentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Comment { Id = _commentId, Text = "Hi" });
         _models.Setup(value => value.BuildAsync(

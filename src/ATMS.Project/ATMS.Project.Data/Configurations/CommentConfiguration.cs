@@ -27,11 +27,6 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
         builder.Property(e => e.CreatedById)
             .IsRequired();
 
-        builder.HasOne(e => e.ParentComment)
-            .WithMany(e => e.Replies)
-            .HasForeignKey(e => e.ParentCommentId)
-            .OnDelete(DeleteBehavior.NoAction);
-
         builder.ConfigureSoftDeletableAuditUserRelationships<Comment, User>();
     }
 }

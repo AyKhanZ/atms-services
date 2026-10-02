@@ -1,7 +1,7 @@
 using ATMS.Data.Criteria;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.Comments;
-using ATMS.Project.Contracts.Models.History;
+using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Requests.Comments;
 using ATMS.Project.Data.Criteria.Comments;
 using ATMS.Project.Data.Entities;
@@ -82,5 +82,5 @@ public sealed class GetCommentsHandlerTest
         Assert.Equal(SortDirectionEnum.Desc, usedPagination?.SortDirection);
     }
 
-    private static CommentModel Model(Guid id) => new() { Id = id, CreatedBy = new HistoryPersonModel() };
+    private static CommentModel Model(Guid id) => new() { Id = id, CreatedBy = new PersonModel() };
 }

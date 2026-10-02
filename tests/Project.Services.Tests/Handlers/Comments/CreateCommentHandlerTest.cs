@@ -1,6 +1,6 @@
 using ATMS.Project.Contracts.Commands.Comments;
 using ATMS.Project.Contracts.Models.Comments;
-using ATMS.Project.Contracts.Models.History;
+using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Comments.Interfaces;
@@ -41,6 +41,6 @@ public sealed class CreateCommentHandlerTest
     private static CommentModel Model(Guid id) => new()
     {
         Id = id,
-        CreatedBy = new HistoryPersonModel()
+        CreatedBy = new PersonModel()
     };
 }

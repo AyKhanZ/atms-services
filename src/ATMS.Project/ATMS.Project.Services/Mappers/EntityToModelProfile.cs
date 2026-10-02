@@ -1,6 +1,5 @@
 using ATMS.Project.Contracts.Models.Attachments;
 using ATMS.Project.Data.Models.Attachments;
-using ATMS.Project.Contracts.Models.History;
 using ATMS.Project.Data.Models.History;
 using ATMS.Application.Models;
 using ATMS.Application.Localization;
@@ -87,7 +86,7 @@ public class EntityToModelProfile : Profile
 
         CreateMap<User, AuditUserModel>();
 
-        CreateMap<HistoryPerson, HistoryPersonModel>();
+        CreateMap<HistoryPerson, PersonModel>();
 
         CreateMap<ProjectType, DictionaryModel>()
             .ForMember(

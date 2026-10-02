@@ -1,4 +1,5 @@
 using ATMS.Application.Models;
+using ATMS.Project.Contracts.Models.Users;
 using System.Text.Json;
 using ATMS.Data.Constants;
 using ATMS.Data.Criteria.Interfaces;
@@ -235,7 +236,7 @@ public sealed class GetDashboardHandlerTest : BaseHandlerTest
         var result = await Handler().Handle(new GetDashboardRequest(), CancellationToken.None);
 
         var workload = Assert.IsType<DashboardWorkloadModel>(result.Workload);
-        var person = Assert.IsType<HistoryPersonModel>(
+        var person = Assert.IsType<PersonModel>(
             Assert.Single(workload.Segments, item => item.Kind == "user").Person);
         Assert.Equal("Leyla", person.Name);
         Assert.Equal("Alpha", Assert.Single(result.SecondaryChart.Segments).Label);

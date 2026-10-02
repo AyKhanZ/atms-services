@@ -1,10 +1,10 @@
+using ATMS.Project.Contracts.Models.Users;
+using ATMS.Project.Contracts.Models.WorkItems;
 using System.Text.RegularExpressions;
 using ATMS.Application.Interfaces;
 using ATMS.Application.Models;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.Comments;
-using ATMS.Project.Contracts.Models.Dashboard;
-using ATMS.Project.Contracts.Models.History;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.Comments;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -75,7 +75,7 @@ public sealed class CommentModelService(
                 // An author gone from the users table still leaves the comment readable, unnamed.
                 CreatedBy = authors.TryGetValue(item.CreatedById, out var author)
                     ? ToPerson(author)
-                    : new HistoryPersonModel { Id = item.CreatedById, Name = string.Empty, Surname = string.Empty },
+                    : new PersonModel { Id = item.CreatedById, Name = string.Empty, Surname = string.Empty },
                 UpdatedAt = item.UpdatedAt,
                 CanEdit = isOwn && canWrite,
                 CanDelete = isOwn ? canWrite : canDeleteOthers,
@@ -162,7 +162,7 @@ public sealed class CommentModelService(
                 IsSubtask = row.IsSubtask,
                 Title = row.Title,
                 Status = status,
-                Ref = new DashboardRefModel
+                Ref = new WorkItemRefModel
                 {
                     ProjectId = row.ProjectId,
                     WorkTicketId = row.WorkTicketId,
@@ -174,7 +174,7 @@ public sealed class CommentModelService(
         return references;
     }
 
-    private static HistoryPersonModel ToPerson(User user) => new()
+    private static PersonModel ToPerson(User user) => new()
     {
         Id = user.Id,
         Name = user.Name,
