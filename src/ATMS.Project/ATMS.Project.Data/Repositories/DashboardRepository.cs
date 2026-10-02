@@ -74,7 +74,7 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                 Current = group.Count(task => task.DoneAt >= periodStartUtc),
                 Previous = group.Count(task => task.DoneAt < periodStartUtc)
             })
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
 
         var createdCounts = await tasks
             .Where(task => task.CreatedAt >= previousStartUtc && task.CreatedAt < periodEndUtc)
@@ -84,18 +84,11 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                 Current = group.Count(task => task.CreatedAt >= periodStartUtc),
                 Previous = group.Count(task => task.CreatedAt < periodStartUtc)
             })
-            .FirstOrDefaultAsync(cancellationToken);
+            .SingleOrDefaultAsync(cancellationToken);
 
         var createdByBucket = await CountByBucketAsync(
             tasks.Where(task => task.CreatedAt >= periodStartUtc && task.CreatedAt < periodEndUtc)
                 .Select(task => task.CreatedAt),
-            window,
-            cancellationToken);
-
-        var doneByBucket = await CountByBucketAsync(
-            tasks.Where(task => task.StatusId == (int)WorkTaskStatusEnum.Done &&
-                                task.DoneAt >= periodStartUtc && task.DoneAt < periodEndUtc)
-                .Select(task => task.DoneAt!.Value),
             window,
             cancellationToken);
 
@@ -111,6 +104,19 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                                 liveTaskIds.Contains(entry.EntityId) &&
                                 entry.Changes.Any(change => change.Field == (int)HistoryFieldEnum.Status &&
                                                             change.NewValue == inProgress))
+                .Select(entry => entry.CreatedAt),
+            window,
+            cancellationToken);
+
+        var done = ((int)WorkTaskStatusEnum.Done).ToString();
+        var doneByBucket = await CountByBucketAsync(
+            context.HistoryEntries
+                .AsNoTracking()
+                .Where(entry => entry.EntityType == (int)HistoryEntityTypeEnum.WorkTask &&
+                                entry.CreatedAt >= periodStartUtc && entry.CreatedAt < periodEndUtc &&
+                                liveTaskIds.Contains(entry.EntityId) &&
+                                entry.Changes.Any(change => change.Field == (int)HistoryFieldEnum.Status &&
+                                                            change.NewValue == done))
                 .Select(entry => entry.CreatedAt),
             window,
             cancellationToken);

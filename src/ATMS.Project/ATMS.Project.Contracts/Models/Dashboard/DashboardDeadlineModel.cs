@@ -1,10 +1,11 @@
-using ATMS.Project.Contracts.Models.History;
+using ATMS.Project.Contracts.Models.Users;
+using ATMS.Project.Contracts.Models.WorkItems;
 
 namespace ATMS.Project.Contracts.Models.Dashboard;
 
 public sealed class DashboardDeadlineModel
 {
-    public DashboardRefModel Ref { get; init; }
+    public WorkItemRefModel Ref { get; init; }
 
     public string Code { get; init; }
 
@@ -16,6 +17,6 @@ public sealed class DashboardDeadlineModel
 
     public DashboardPriorityModel Priority { get; init; }
 
-    public HistoryPersonModel? Assignee { get; init; }
+    public PersonModel? Assignee { get; init; }
 }
 

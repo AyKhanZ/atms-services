@@ -2,5 +2,6 @@ namespace ATMS.Application.Security;
 
 public enum ProjectAccessPolicy
 {
-    ParticipantInvite = 1
+    ParticipantInvite = 1,
+    CommentDelete = 2
 }

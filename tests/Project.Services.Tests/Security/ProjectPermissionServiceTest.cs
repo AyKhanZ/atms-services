@@ -10,41 +10,6 @@ namespace Project.Services.Tests.Security;
 
 public sealed class ProjectPermissionServiceTest
 {
-    public static TheoryData<Guid> ClientRoles => new() { RoleIds.Client, RoleIds.ClientManager };
-
-    [Theory]
-    [MemberData(nameof(ClientRoles))]
-    public async Task IsClient_GlobalClientRole_IsClientWithoutRepositoryLookup(Guid roleId)
-    {
-        var user = new Mock<ICurrentUser>();
-        user.SetupGet(current => current.RoleId).Returns(roleId);
-        var repository = new Mock<IProjectPermissionRepository>();
-        var service = new ProjectPermissionService(user.Object, repository.Object, new Mock<ICacheService>().Object);
-
-        var isClient = await service.IsClientAsync(Guid.NewGuid(), CancellationToken.None);
-
-        Assert.True(isClient);
-        repository.VerifyNoOtherCalls();
-    }
-
-    [Fact]
-    public async Task IsClient_ProjectClientRole_IsClient()
-    {
-        var projectId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
-        var user = new Mock<ICurrentUser>();
-        user.SetupGet(current => current.RoleId).Returns(RoleIds.Employee);
-        user.SetupGet(current => current.Id).Returns(userId);
-        var repository = new Mock<IProjectPermissionRepository>();
-        repository.Setup(repo => repo.HasClientRoleAsync(projectId, userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-        var service = new ProjectPermissionService(user.Object, repository.Object, new Mock<ICacheService>().Object);
-
-        var isClient = await service.IsClientAsync(projectId, CancellationToken.None);
-
-        Assert.True(isClient);
-    }
-
     [Fact]
     public async Task HasAnyPermission_SuperAdminBypassesProjectMembership()
     {

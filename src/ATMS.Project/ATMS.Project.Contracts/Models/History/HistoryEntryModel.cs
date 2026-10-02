@@ -1,3 +1,5 @@
+using ATMS.Project.Contracts.Models.Users;
+
 namespace ATMS.Project.Contracts.Models.History;
 
 public class HistoryEntryModel
@@ -10,7 +12,7 @@ public class HistoryEntryModel
 
     public DateTime CreatedAt { get; set; }
 
-    public HistoryPersonModel? CreatedBy { get; set; }
+    public PersonModel? CreatedBy { get; set; }
 
     public HistoryValueModel? Subject { get; set; }
 

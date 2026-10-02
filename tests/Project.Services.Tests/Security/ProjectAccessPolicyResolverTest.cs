@@ -1,14 +1,26 @@
+using ATMS.Application.Interfaces;
 using ATMS.Application.Security;
 using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Requests.Security;
+using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Security;
+using Moq;
 
 namespace Project.Services.Tests.Security;
 
 public sealed class ProjectAccessPolicyResolverTest
 {
-    private readonly ProjectAccessPolicyResolver resolver = new();
+    private readonly Mock<ICommentRepository> _comments = new();
+    private readonly Mock<ICurrentUser> _currentUser = new();
+    private readonly Guid _userId = Guid.NewGuid();
+    private readonly ProjectAccessPolicyResolver resolver;
+
+    public ProjectAccessPolicyResolverTest()
+    {
+        _currentUser.SetupGet(user => user.Id).Returns(_userId);
+        resolver = new ProjectAccessPolicyResolver(_comments.Object, _currentUser.Object);
+    }
 
     [Theory]
     [InlineData(nameof(RoleIds.OrgClientManager), ProjectPermissionEnum.ParticipantInviteClient)]
@@ -43,6 +55,54 @@ public sealed class ProjectAccessPolicyResolverTest
         Assert.Empty(result);
     }
 
+    [Theory]
+    [InlineData(true, ProjectPermissionEnum.CommentEdit)]
+    [InlineData(false, ProjectPermissionEnum.CommentDelete)]
+    public async Task ResolveAsync_CommentDelete_OwnNeedsEditAndOthersNeedDelete(
+        bool own,
+        ProjectPermissionEnum expectedPermission)
+    {
+        var request = new CommentScopedRequest(Guid.NewGuid(), Guid.NewGuid());
+        _comments.Setup(repository => repository.GetAuthorIdAsync(
+                request.ProjectId, request.CommentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(own ? _userId : Guid.NewGuid());
+
+        var result = await resolver.ResolveAsync(
+            ProjectAccessPolicy.CommentDelete,
+            request,
+            CancellationToken.None);
+
+        Assert.Equal([expectedPermission], result);
+    }
+
+    [Fact]
+    public async Task ResolveAsync_CommentDeleteOfMissingComment_LeavesNotFoundToValidator()
+    {
+        var request = new CommentScopedRequest(Guid.NewGuid(), Guid.NewGuid());
+        _comments.Setup(repository => repository.GetAuthorIdAsync(
+                request.ProjectId, request.CommentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Guid?)null);
+
+        var result = await resolver.ResolveAsync(
+            ProjectAccessPolicy.CommentDelete,
+            request,
+            CancellationToken.None);
+
+        Assert.Equal([ProjectPermissionEnum.CommentEdit], result);
+    }
+
+    [Fact]
+    public async Task ResolveAsync_CommentDeleteWithoutCommentScopedRequest_ReturnsNoPermissions()
+    {
+        var result = await resolver.ResolveAsync(
+            ProjectAccessPolicy.CommentDelete,
+            new ProjectScopedRequest(Guid.NewGuid()),
+            CancellationToken.None);
+
+        Assert.Empty(result);
+        _comments.VerifyNoOtherCalls();
+    }
+
     private static Guid GetRoleId(string roleName)
     {
         return roleName switch
@@ -59,4 +119,6 @@ public sealed class ProjectAccessPolicyResolverTest
     private sealed record ProjectScopedRequest(Guid ProjectId) : IProjectScopedRequest;
 
     private sealed record RoleScopedRequest(Guid ProjectId, Guid RoleId) : IProjectRoleScopedRequest;
+
+    private sealed record CommentScopedRequest(Guid ProjectId, Guid CommentId) : IProjectCommentScopedRequest;
 }

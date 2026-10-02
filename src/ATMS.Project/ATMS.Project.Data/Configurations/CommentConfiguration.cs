@@ -9,7 +9,10 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
-        builder.HasIndex(e => new { e.OwnerType, e.OwnerId, e.CreatedAt });
+        // The discussion lists deleted comments too, as placeholders, so the page index covers every
+        // row; the count of live ones reads the same index and skips the few deleted.
+        builder.HasIndex(e => new { e.OwnerType, e.OwnerId, e.CreatedAt, e.Id })
+            .IsDescending(false, false, true, true);
 
         builder.Property(e => e.OwnerType)
             .HasConversion<int>()
@@ -24,11 +27,6 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 
         builder.Property(e => e.CreatedById)
             .IsRequired();
-
-        builder.HasOne(e => e.ParentComment)
-            .WithMany(e => e.Replies)
-            .HasForeignKey(e => e.ParentCommentId)
-            .OnDelete(DeleteBehavior.NoAction);
 
         builder.ConfigureSoftDeletableAuditUserRelationships<Comment, User>();
     }

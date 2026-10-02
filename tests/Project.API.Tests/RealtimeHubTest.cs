@@ -41,39 +41,19 @@ public sealed class RealtimeHubTest
     }
 
     [Fact]
-    public async Task WatchTask_ClientJoinsTaskButNeverTeam()
+    public async Task WatchTask_ViewerJoinsTaskGroup()
     {
         var projectId = Guid.NewGuid();
         var taskId = Guid.NewGuid();
         AllowProject(projectId, allowed: true);
         _tasks.Setup(tasks => tasks.IsWorkTaskExistAsync(projectId, taskId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        _permissions.Setup(service => service.IsClientAsync(projectId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
         await CreateHub().WatchTask(projectId, taskId);
 
         _groups.Verify(groups => groups.AddToGroupAsync(
             "connection-1", RealtimeConstants.Groups.Task(taskId), It.IsAny<CancellationToken>()), Times.Once);
         _groups.Verify(groups => groups.AddToGroupAsync(
-            "connection-1", RealtimeConstants.Groups.TaskTeam(taskId), It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task WatchTask_EmployeeJoinsTaskAndTeam()
-    {
-        var projectId = Guid.NewGuid();
-        var taskId = Guid.NewGuid();
-        AllowProject(projectId, allowed: true);
-        _tasks.Setup(tasks => tasks.IsWorkTaskExistAsync(projectId, taskId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-        _permissions.Setup(service => service.IsClientAsync(projectId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        await CreateHub().WatchTask(projectId, taskId);
-
-        _groups.Verify(groups => groups.AddToGroupAsync(
-            "connection-1", RealtimeConstants.Groups.TaskTeam(taskId), It.IsAny<CancellationToken>()), Times.Once);
+            It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

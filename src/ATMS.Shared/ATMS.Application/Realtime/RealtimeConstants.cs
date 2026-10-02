@@ -9,7 +9,5 @@ public static class RealtimeConstants
         public static string Project(Guid projectId) => $"project:{projectId}";
 
         public static string Task(Guid taskId) => $"task:{taskId}";
-
-        public static string TaskTeam(Guid taskId) => $"task:{taskId}:team";
     }
 }

@@ -1,6 +1,7 @@
 using ATMS.Application.Models;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.History;
+using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.History;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -232,9 +233,9 @@ public sealed class HistoryValueResolver(
 
         public required IMapper Mapper { get; init; }
 
-        public HistoryPersonModel? Person(Guid? userId) =>
+        public PersonModel? Person(Guid? userId) =>
             userId is { } id && Users.TryGetValue(id, out var person)
-                ? Mapper.Map<HistoryPersonModel>(person)
+                ? Mapper.Map<PersonModel>(person)
                 : null;
 
         public HistoryValueModel? Optional(HistoryEntityTypeEnum entityType, HistoryFieldEnum field, string? raw) =>
@@ -285,7 +286,7 @@ public sealed class HistoryValueResolver(
                 {
                     Id = raw,
                     Name = $"{person.Name} {person.Surname}",
-                    Person = Mapper.Map<HistoryPersonModel>(person)
+                    Person = Mapper.Map<PersonModel>(person)
                 }
                 : new HistoryValueModel { Id = raw };
     }

@@ -1,10 +1,11 @@
+using ATMS.Project.Contracts.Models.Users;
+using ATMS.Project.Contracts.Models.WorkItems;
 using System.Globalization;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.Dashboard;
-using ATMS.Project.Contracts.Models.History;
 using ATMS.Project.Contracts.Requests.Dashboard;
 using ATMS.Project.Data.Criteria.WorkProjects;
 using ATMS.Project.Data.Models.Dashboard;
@@ -176,7 +177,7 @@ public sealed class GetDashboardHandler(
                     .Select(row => new DashboardWorkloadSegmentModel
                     {
                         Kind = "user",
-                        Person = new HistoryPersonModel
+                        Person = new PersonModel
                         {
                             Id = row.Id,
                             Name = row.Name,
@@ -206,7 +207,7 @@ public sealed class GetDashboardHandler(
             DeadlineCount = data.DeadlineCount,
             Deadlines = data.Deadlines.Select(row => new DashboardDeadlineModel
             {
-                Ref = new DashboardRefModel
+                Ref = new WorkItemRefModel
                 {
                     ProjectId = row.WorkProjectId,
                     WorkTicketId = row.WorkTicketId,
@@ -222,7 +223,7 @@ public sealed class GetDashboardHandler(
                     Name = priorityNames[row.PriorityId]
                 },
                 Assignee = row.AssigneeUserId is { } userId
-                    ? new HistoryPersonModel
+                    ? new PersonModel
                     {
                         Id = userId,
                         Name = row.AssigneeName ?? throw new InvalidOperationException("Assignee name is missing."),
@@ -233,7 +234,7 @@ public sealed class GetDashboardHandler(
             }).ToArray(),
             Activities = data.Activities.Select(row => new DashboardActivityModel
             {
-                Ref = new DashboardRefModel
+                Ref = new WorkItemRefModel
                 {
                     ProjectId = row.Entry.WorkProjectId,
                     WorkTicketId = row.Subject.WorkTicketId,

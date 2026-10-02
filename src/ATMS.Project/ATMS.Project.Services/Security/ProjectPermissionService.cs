@@ -15,16 +15,6 @@ public sealed class ProjectPermissionService(
 {
     public bool IsSuperAdmin => currentUser.RoleId == RoleIds.SuperAdmin;
 
-    public Task<bool> IsClientAsync(Guid projectId, CancellationToken cancellationToken)
-    {
-        if (currentUser.RoleId == RoleIds.Client || currentUser.RoleId == RoleIds.ClientManager)
-        {
-            return Task.FromResult(true);
-        }
-
-        return permissionRepository.HasClientRoleAsync(projectId, currentUser.Id, cancellationToken);
-    }
-
     public async Task<IReadOnlySet<string>> GetPermissionCodesAsync(
         Guid projectId,
         CancellationToken cancellationToken)

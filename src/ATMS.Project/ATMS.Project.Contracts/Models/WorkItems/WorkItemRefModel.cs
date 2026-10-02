@@ -1,6 +1,6 @@
-namespace ATMS.Project.Contracts.Models.Dashboard;
+namespace ATMS.Project.Contracts.Models.WorkItems;
 
-public sealed class DashboardRefModel
+public sealed class WorkItemRefModel
 {
     public Guid ProjectId { get; init; }
 

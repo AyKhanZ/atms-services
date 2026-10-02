@@ -1,3 +1,5 @@
+using ATMS.Project.Contracts.Models.Users;
+
 namespace ATMS.Project.Contracts.Models.History;
 
 public class HistoryStateModel
@@ -6,5 +8,5 @@ public class HistoryStateModel
 
     public DateTime? ChangedAt { get; set; }
 
-    public HistoryPersonModel? ChangedBy { get; set; }
+    public PersonModel? ChangedBy { get; set; }
 }

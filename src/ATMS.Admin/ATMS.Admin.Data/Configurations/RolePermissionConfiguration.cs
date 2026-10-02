@@ -77,7 +77,6 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
            
             new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.ClientManager },
             new { PermissionId = (int)PermissionEnum.CommentEdit, RoleId = RoleIds.ClientManager },
-            new { PermissionId = (int)PermissionEnum.CommentDelete, RoleId = RoleIds.ClientManager },
             
             
             // Employee
