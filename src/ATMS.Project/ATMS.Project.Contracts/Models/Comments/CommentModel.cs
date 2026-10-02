@@ -14,6 +14,12 @@ public sealed class CommentModel
 
     public DateTime? UpdatedAt { get; set; }
 
+    public bool IsDeleted { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
+    public PersonModel? DeletedBy { get; set; }
+
     public bool CanEdit { get; set; }
 
     public bool CanDelete { get; set; }

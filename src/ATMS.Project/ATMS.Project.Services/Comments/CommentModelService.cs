@@ -44,13 +44,18 @@ public sealed class CommentModelService(
         var permissionCodes = await permissions.GetPermissionCodesAsync(projectId, cancellationToken);
         var canWrite = permissions.IsSuperAdmin || permissionCodes.Contains(nameof(ProjectPermissionEnum.CommentEdit));
         var canDeleteOthers = permissions.IsSuperAdmin || permissionCodes.Contains(nameof(ProjectPermissionEnum.CommentDelete));
-        var authors = (await comments.GetAuthorsAsync(
-            items.Select(item => item.CreatedById).Distinct().ToArray(), cancellationToken))
+        var userIds = items
+            .Select(item => item.CreatedById)
+            .Concat(items.Select(item => item.DeletedById).OfType<Guid>())
+            .Distinct()
+            .ToArray();
+        var authors = (await comments.GetAuthorsAsync(userIds, cancellationToken))
             .ToDictionary(user => user.Id);
 
+        // A deleted comment is a placeholder: its text, mentions and links are never read out.
         var mentionsByComment = items.ToDictionary(
             item => item.Id,
-            item => ParseMentions(item.Text));
+            item => item.IsDeleted ? [] : ParseMentions(item.Text));
         var mentionIds = mentionsByComment.Values.SelectMany(ids => ids).Distinct().ToArray();
         var mentioned = mentionIds.Length == 0
             ? new Dictionary<Guid, User>()
@@ -60,7 +65,7 @@ public sealed class CommentModelService(
 
         var referenceCodesByComment = items.ToDictionary(
             item => item.Id,
-            item => ParseReferenceCodes(item.Text));
+            item => item.IsDeleted ? [] : ParseReferenceCodes(item.Text));
         var codes = referenceCodesByComment.Values.SelectMany(values => values).Distinct().ToArray();
         var references = await GetReferencesAsync(codes, cancellationToken);
 
@@ -70,15 +75,17 @@ public sealed class CommentModelService(
             return new CommentModel
             {
                 Id = item.Id,
-                Text = item.Text,
+                Text = item.IsDeleted ? string.Empty : item.Text,
                 CreatedAt = item.CreatedAt,
-                // An author gone from the users table still leaves the comment readable, unnamed.
-                CreatedBy = authors.TryGetValue(item.CreatedById, out var author)
-                    ? ToPerson(author)
-                    : new PersonModel { Id = item.CreatedById, Name = string.Empty, Surname = string.Empty },
+                CreatedBy = PersonOf(authors, item.CreatedById),
                 UpdatedAt = item.UpdatedAt,
-                CanEdit = isOwn && canWrite,
-                CanDelete = isOwn ? canWrite : canDeleteOthers,
+                IsDeleted = item.IsDeleted,
+                DeletedAt = item.IsDeleted ? item.DeletedAt : null,
+                DeletedBy = item is { IsDeleted: true, DeletedById: { } deletedById }
+                    ? PersonOf(authors, deletedById)
+                    : null,
+                CanEdit = !item.IsDeleted && isOwn && canWrite,
+                CanDelete = !item.IsDeleted && (isOwn ? canWrite : canDeleteOthers),
                 Mentions = mentionsByComment[item.Id]
                     .Where(mentioned.ContainsKey)
                     .Select(id => ToPerson(mentioned[id]))
@@ -173,6 +180,12 @@ public sealed class CommentModelService(
 
         return references;
     }
+
+    // A user gone from the users table still leaves the comment readable, unnamed.
+    private static PersonModel PersonOf(Dictionary<Guid, User> users, Guid id) =>
+        users.TryGetValue(id, out var user)
+            ? ToPerson(user)
+            : new PersonModel { Id = id, Name = string.Empty, Surname = string.Empty };
 
     private static PersonModel ToPerson(User user) => new()
     {

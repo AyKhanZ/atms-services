@@ -19,7 +19,7 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
         CancellationToken cancellationToken)
     {
         var tasks = LiveTasks(projectId);
-        var query = criteria.Apply(context.Comments.AsNoTracking())
+        var query = criteria.Apply(WithDeleted())
             .Where(comment => tasks.Any(task => task.Id == comment.OwnerId));
         var items = await pagination
             .Apply(query, comment => comment.CreatedAt, comment => comment.Id)
@@ -29,7 +29,7 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
     }
 
     public Task<Comment?> GetAsync(Guid projectId, Guid commentId, CancellationToken cancellationToken) =>
-        OfProject(context.Comments.AsNoTracking(), projectId, commentId).FirstOrDefaultAsync(cancellationToken);
+        OfProject(WithDeleted(), projectId, commentId).FirstOrDefaultAsync(cancellationToken);
 
     public Task<Comment?> FindAsync(Guid projectId, Guid commentId, CancellationToken cancellationToken) =>
         OfProject(context.Comments, projectId, commentId).FirstOrDefaultAsync(cancellationToken);
@@ -144,6 +144,11 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
         await context.Comments.AddAsync(comment, cancellationToken);
 
     public Task SaveChangesAsync(CancellationToken cancellationToken) => context.SaveChangesAsync(cancellationToken);
+
+    // Deleted comments stay in the discussion as placeholders; only their own filter is lifted, so
+    // a deleted task, ticket or project still hides its comments.
+    private IQueryable<Comment> WithDeleted() =>
+        context.Comments.AsNoTracking().IgnoreQueryFilters([ProjectDbContext.CommentSoftDeleteFilter]);
 
     private IQueryable<WorkTask> LiveTasks(Guid projectId) =>
         new WorkTasksOfLiveWorkCriteria()

@@ -15,7 +15,7 @@ namespace Project.Services.Tests.Repositories;
 public sealed class CommentRepositoryTest
 {
     [PostgresFact]
-    public async Task Page_ShowsLiveCommentsOfTheTaskNewestFirstPageByPage()
+    public async Task Page_ShowsCommentsOfTheTaskNewestFirstWithDeletedOnesKept()
     {
         await using var connection = await OpenTemporaryCommentsAsync();
         await using var context = new ProjectDbContext(new DbContextOptionsBuilder<ProjectDbContext>()
@@ -52,14 +52,18 @@ public sealed class CommentRepositoryTest
             otherProjectId, criteria,
             new KeysetPaginationCriteria<Comment>(null, 20, SortDirectionEnum.Desc), CancellationToken.None);
 
-        Assert.Equal([comments[2].Id, comments[1].Id], first.Items.Select(comment => comment.Id));
+        // The deleted comment keeps its place in the list, as a placeholder; it is never counted.
+        Assert.Equal([deleted.Id, comments[2].Id], first.Items.Select(comment => comment.Id));
         Assert.True(first.HasMore);
-        Assert.Equal([comments[0].Id], second.Items.Select(comment => comment.Id));
+        Assert.Equal([comments[1].Id, comments[0].Id], second.Items.Select(comment => comment.Id));
         Assert.False(second.HasMore);
         Assert.Empty(otherProjectPage.Items);
         Assert.Equal(3, await repository.CountAsync(taskId, CancellationToken.None));
         Assert.NotNull(await repository.GetAsync(projectId, comments[0].Id, CancellationToken.None));
-        Assert.Null(await repository.GetAsync(projectId, deleted.Id, CancellationToken.None));
+        Assert.True((await repository.GetAsync(projectId, deleted.Id, CancellationToken.None))?.IsDeleted);
+        Assert.Null(await repository.FindAsync(projectId, deleted.Id, CancellationToken.None));
+        Assert.Null(await repository.GetAuthorIdAsync(projectId, deleted.Id, CancellationToken.None));
+        Assert.False(await repository.IsLiveCommentAsync(projectId, deleted.Id, CancellationToken.None));
         Assert.Null(await repository.GetAsync(otherProjectId, comments[0].Id, CancellationToken.None));
         Assert.Equal(authorId, await repository.GetAuthorIdAsync(projectId, comments[0].Id, CancellationToken.None));
     }

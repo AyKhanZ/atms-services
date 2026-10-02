@@ -18,6 +18,7 @@ public sealed class CommentController(IMediator mediator) : ControllerBase
     /// </summary>
     /// <remarks>
     /// Up to 20 comments a page, 50 at most. An unknown task returns an empty page; comments are always newest first.
+    /// A deleted comment keeps its place as a placeholder: `isDeleted`, who deleted it and when, no text.
     /// </remarks>
     /// <response code="200">Returns the task comments.</response>
     /// <response code="400">The paging values are invalid.</response>
@@ -38,7 +39,7 @@ public sealed class CommentController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>
-    /// Returns one comment that is still there.
+    /// Returns one comment, or its placeholder when it was deleted.
     /// </summary>
     /// <remarks>
     /// Read after a pushed change to put that one comment on screen instead of the whole page.
@@ -46,7 +47,7 @@ public sealed class CommentController(IMediator mediator) : ControllerBase
     /// <response code="200">Returns the comment.</response>
     /// <response code="401">The user is not authenticated.</response>
     /// <response code="403">The user cannot view this project.</response>
-    /// <response code="404">The comment was deleted or its task was not found.</response>
+    /// <response code="404">The comment or its task was not found.</response>
     /// <response code="500">Unhandled server error</response>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(CommentModel), StatusCodes.Status200OK)]
@@ -70,10 +71,10 @@ public sealed class CommentController(IMediator mediator) : ControllerBase
     /// Text is limited to 2000 characters.
     /// </remarks>
     /// <response code="201">Returns the new comment.</response>
-    /// <response code="400">The text, task or parent is invalid.</response>
+    /// <response code="400">The text or task is invalid.</response>
     /// <response code="401">The user is not authenticated.</response>
     /// <response code="403">The user cannot comment in this project.</response>
-    /// <response code="404">The task or parent comment was not found.</response>
+    /// <response code="404">The task was not found.</response>
     /// <response code="500">Unhandled server error</response>
     [HttpPost]
     [ProducesResponseType(typeof(CommentModel), StatusCodes.Status201Created)]

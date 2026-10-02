@@ -124,6 +124,54 @@ public sealed class CommentModelServiceTest
     }
 
     [Fact]
+    public async Task Build_DeletedComment_IsPlaceholderWithoutTextAndActions()
+    {
+        var projectId = Guid.NewGuid();
+        var authorId = Guid.NewGuid();
+        var managerId = Guid.NewGuid();
+        var deletedAt = new DateTime(2026, 10, 2, 9, 0, 0, DateTimeKind.Utc);
+        var comment = new Comment
+        {
+            Id = Guid.NewGuid(),
+            CreatedById = authorId,
+            Text = $"Secret for @[user:{managerId}] about #41",
+            IsDeleted = true,
+            DeletedAt = deletedAt,
+            DeletedById = managerId
+        };
+        var repository = new Mock<ICommentRepository>();
+        repository.Setup(value => value.GetAuthorsAsync(
+                It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([
+                new User { Id = authorId, Name = "Ann", Surname = "Lee" },
+                new User { Id = managerId, Name = "Rustam", Surname = "Agaev" }
+            ]);
+        var user = new Mock<ICurrentUser>();
+        user.SetupGet(value => value.Id).Returns(authorId);
+        var permissions = new Mock<IProjectPermissionService>();
+        permissions.Setup(value => value.GetPermissionCodesAsync(projectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HashSet<string> { "CommentEdit", "CommentDelete" });
+
+        var model = (await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object)
+            .BuildAsync(projectId, [comment], CancellationToken.None))[comment.Id];
+
+        Assert.True(model.IsDeleted);
+        Assert.Equal(string.Empty, model.Text);
+        Assert.Empty(model.Mentions);
+        Assert.Empty(model.References);
+        Assert.False(model.CanEdit);
+        Assert.False(model.CanDelete);
+        Assert.Equal(deletedAt, model.DeletedAt);
+        Assert.Equal("Rustam", model.DeletedBy?.Name);
+        Assert.Equal("Ann", model.CreatedBy.Name);
+        repository.Verify(value => value.GetMentionedParticipantsAsync(
+            It.IsAny<Guid>(), It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()), Times.Never);
+        repository.Verify(value => value.GetReferencesAsync(
+            It.IsAny<IReadOnlyCollection<string>>(), It.IsAny<ICriteria<WorkProject>>(),
+            It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task Build_OddRows_SkipsThemInsteadOfFailing()
     {
         var projectId = Guid.NewGuid();
