@@ -2,6 +2,7 @@ using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Data.Services.Interfaces;
+using ATMS.Project.Services.Notifications.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -10,7 +11,8 @@ namespace ATMS.Project.Services.Handlers.WorkProjects;
 public class CreateWorkProjectHandler(
     IMapper mapper,
     IWorkProjectRepository workProjectRepository,
-    IEntityCodeGenerator codeGenerator)
+    IEntityCodeGenerator codeGenerator,
+    IWorkProjectNotificationService notifications)
     : IRequestHandler<CreateWorkProjectCommand, Guid>
 {
     public async Task<Guid> Handle(CreateWorkProjectCommand command, CancellationToken cancellationToken)
@@ -21,6 +23,10 @@ public class CreateWorkProjectHandler(
         project.Title = command.Title.Trim();
         project.WorkProjectParticipants = command.Participants.Select(CreateParticipant).ToArray();
 
+        await notifications.NotifyParticipantsAddedAsync(
+            project,
+            command.Participants.Select(participant => participant.UserId),
+            cancellationToken);
         await workProjectRepository.CreateAsync(project, cancellationToken);
 
         return project.Id;

@@ -41,12 +41,12 @@ public class OnboardingModelMappingAction : IMappingAction<OnboardingProgress, O
             return "complete";
         }
 
-        if (progress.PersonalInfoStatus != OnboardingStepStatusEnum.Completed)
+        if (progress.PersonalInfoStatus != (int)OnboardingStepStatusEnum.Completed)
         {
             return "personalInfo";
         }
 
-        if (progress.SecurityStatus != OnboardingStepStatusEnum.Completed)
+        if (progress.SecurityStatus != (int)OnboardingStepStatusEnum.Completed)
         {
             return "security";
         }
@@ -54,7 +54,7 @@ public class OnboardingModelMappingAction : IMappingAction<OnboardingProgress, O
         var invitationsAvailable =
             progress.User.UserRoles.First().RoleId == RoleIds.ClientManager;
         if (invitationsAvailable &&
-            progress.InvitationsStatus == OnboardingStepStatusEnum.NotStarted)
+            progress.InvitationsStatus == (int)OnboardingStepStatusEnum.NotStarted)
         {
             return "invitations";
         }
@@ -80,7 +80,7 @@ public class OnboardingModelMappingAction : IMappingAction<OnboardingProgress, O
 
     private static OnboardingStepModel CreateStep(
         string code,
-        OnboardingStepStatusEnum status,
+        int status,
         bool required)
     {
         return new OnboardingStepModel
@@ -91,12 +91,12 @@ public class OnboardingModelMappingAction : IMappingAction<OnboardingProgress, O
         };
     }
 
-    private static string GetStepStatus(OnboardingStepStatusEnum status)
+    private static string GetStepStatus(int status)
     {
         return status switch
         {
-            OnboardingStepStatusEnum.Completed => "completed",
-            OnboardingStepStatusEnum.Skipped => "skipped",
+            (int)OnboardingStepStatusEnum.Completed => "completed",
+            (int)OnboardingStepStatusEnum.Skipped => "skipped",
             _ => "notStarted"
         };
     }

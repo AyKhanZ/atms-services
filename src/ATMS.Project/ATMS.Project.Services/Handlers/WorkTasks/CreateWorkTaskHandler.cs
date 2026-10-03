@@ -5,6 +5,7 @@ using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Data.Services.Interfaces;
 using ATMS.Project.Services.Board.Interfaces;
+using ATMS.Project.Services.Notifications.Interfaces;
 using ATMS.Project.Services.Resources;
 using AutoMapper;
 using MediatR;
@@ -15,7 +16,8 @@ public class CreateWorkTaskHandler(
     IMapper mapper,
     IWorkTaskRepository workTaskRepository,
     IEntityCodeGenerator codeGenerator,
-    IWorkTaskBoardPlacementService placement) : IRequestHandler<CreateWorkTaskCommand, Guid>
+    IWorkTaskBoardPlacementService placement,
+    IWorkTaskNotificationService notifications) : IRequestHandler<CreateWorkTaskCommand, Guid>
 {
     public async Task<Guid> Handle(CreateWorkTaskCommand command, CancellationToken cancellationToken)
     {
@@ -34,6 +36,7 @@ public class CreateWorkTaskHandler(
         await placement.PlaceOnTopAsync(workTask, cancellationToken);
 
         await workTaskRepository.AddAsync(workTask, cancellationToken);
+        await notifications.NotifyChangedAsync(workTask, null, null, cancellationToken);
         await placement.SaveAsync(workTask, cancellationToken);
 
         return workTask.Id;

@@ -1,4 +1,3 @@
-using ATMS.Data.Enums;
 
 namespace ATMS.Admin.Data.Entities.Messaging;
 
@@ -10,7 +9,7 @@ public class EmailDelivery
 
     public User User { get; set; }
 
-    public EmailDeliveryTypeEnum Type { get; set; }
+    public int Type { get; set; }
 
     public string? TemporaryPassword { get; set; }
 
@@ -18,7 +17,7 @@ public class EmailDelivery
 
     public DateTime? PasswordResetTokenExpiresAt { get; set; }
 
-    public DeliveryStatusEnum Status { get; set; }
+    public int Status { get; set; }
 
     public int AttemptCount { get; set; }
 

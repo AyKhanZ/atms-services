@@ -52,7 +52,7 @@ public sealed class SavePersonalInfoHandler(
 
         personalInfo.Email = progress.User.Email;
         personalInfo.AvatarPath = newAvatarPath ?? personalInfo.AvatarPath;
-        progress.PersonalInfoStatus = OnboardingStepStatusEnum.Completed;
+        progress.PersonalInfoStatus = (int)OnboardingStepStatusEnum.Completed;
 
         try
         {

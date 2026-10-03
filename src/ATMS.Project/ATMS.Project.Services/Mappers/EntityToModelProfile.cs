@@ -1,6 +1,8 @@
 using ATMS.Project.Contracts.Models.Attachments;
 using ATMS.Project.Data.Models.Attachments;
 using ATMS.Project.Data.Models.History;
+using ATMS.Project.Contracts.Models.Notifications;
+using ATMS.Project.Data.Models.Notifications;
 using ATMS.Application.Models;
 using ATMS.Application.Localization;
 using ATMS.Data.Enums;
@@ -87,6 +89,11 @@ public class EntityToModelProfile : Profile
         CreateMap<User, AuditUserModel>();
 
         CreateMap<HistoryPerson, PersonModel>();
+
+        CreateMap<NotificationParameters, NotificationParametersModel>();
+
+        CreateMap<NotificationRow, NotificationModel>()
+            .ForMember(model => model.ProjectId, options => options.MapFrom(row => row.WorkProjectId));
 
         CreateMap<ProjectType, DictionaryModel>()
             .ForMember(

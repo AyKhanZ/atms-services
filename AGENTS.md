@@ -201,6 +201,11 @@ These were decided in review. Breaking one is a defect, not a style preference.
 
 - Entities carry no default values. A column that must be filled is filled by the handler that creates the
   row, so a missing value fails loudly instead of being saved as someone's placeholder.
+- An entity stores a kind, type or status as `int`, never as the enum type: `public int Status { get; set; }`,
+  not `public DeliveryStatusEnum Status`, and no `HasConversion<int>()`. The enum lives in `ATMS.Data.Enums`
+  and is cast where the value is written or compared: `Status = (int)DeliveryStatusEnum.Pending`,
+  `delivery.Status == (int)DeliveryStatusEnum.Pending`. Contract models sent to the client carry `int` too.
+  Internal service models (a draft, a row read for one handler) may keep the enum.
 - A cache key keeps its name when the cached shape changes. Do not add `:v2`; change the key's content and
   flush the old entries on deploy.
 
@@ -215,6 +220,15 @@ These were decided in review. Breaking one is a defect, not a style preference.
   `WorkTaskRepository.RenumberColumnAsync`. A new exception needs the same reason, written next to it.
 - A new column on these entities is added to `HistoryFieldMap` as recorded or ignored; `HistoryFieldMapTest`
   fails until it is. See `Specs/11-history.md`.
+
+## Every email template goes into the previewer
+
+- A new or changed template in `src/ATMS.Shared/ATMS.Email/Templates` is added to
+  `tools/ATMS.Email.Previewer/Program.cs` in the same change: one `RenderTemplateAsync` call with a realistic
+  sample model — real-looking names, a long title, a working-looking link.
+- Run it (`dotnet run --project tools/ATMS.Email.Previewer/ATMS.Email.Previewer.csproj`) and look at the
+  HTML in `artifacts/email-preview` before calling the email done. The owner reviews emails there, not in a
+  mailbox: the test SMTP account has a small monthly limit.
 
 ---
 

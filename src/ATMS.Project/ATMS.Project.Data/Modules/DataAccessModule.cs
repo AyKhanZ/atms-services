@@ -24,11 +24,16 @@ public static class DataAccessModule
         
         services.AddHistoryRecording();
         services.AddScoped<ProjectRealtimeInterceptor>();
+        services.AddScoped<NotificationRealtimeInterceptor>();
+        services.AddScoped<NotificationLockInterceptor>();
         services.AddDbContext<ProjectDbContext>((provider, options) => options
             .UseNpgsql(dbOptions.SqlConnection)
             .AddInterceptors(
                 provider.GetRequiredService<ProjectHistoryInterceptor>(),
-                provider.GetRequiredService<ProjectRealtimeInterceptor>()));
+                provider.GetRequiredService<ProjectRealtimeInterceptor>(),
+                provider.GetRequiredService<NotificationRealtimeInterceptor>(),
+                // Last: it commits the transaction it opened, after the others have seen the save.
+                provider.GetRequiredService<NotificationLockInterceptor>()));
 
         services.AddScoped<IDictionariesRepository, DictionariesRepository>();
         
@@ -44,6 +49,8 @@ public static class DataAccessModule
         services.AddScoped<IAttachmentRepository, AttachmentRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IHistoryRepository, HistoryRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IEmailDeliveryRepository, EmailDeliveryRepository>();
         services.AddScoped<IGlobalSearchRepository, GlobalSearchRepository>();
         services.AddScoped<IGlobalSearchRecentRepository, GlobalSearchRecentRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();

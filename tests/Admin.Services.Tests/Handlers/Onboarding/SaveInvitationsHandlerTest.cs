@@ -57,7 +57,7 @@ public sealed class SaveInvitationsHandlerTest : BaseHandlerTest
         var invitation = Assert.Single(progress.InvitedUsers);
         Assert.Equal(userId, invitation.OnboardingUserId);
         Assert.Equal("DIANE@BAIM.AZ", invitation.NormalizedEmail);
-        Assert.Equal(OnboardingStepStatusEnum.Completed, progress.InvitationsStatus);
+        Assert.Equal((int)OnboardingStepStatusEnum.Completed, progress.InvitationsStatus);
         Assert.Equal(15, result.Version);
         OnboardingRepositoryMock.Verify(
             x => x.TrySaveAsync(progress, 14, It.IsAny<CancellationToken>()),
@@ -114,7 +114,7 @@ public sealed class SaveInvitationsHandlerTest : BaseHandlerTest
             UserId = userId,
             User = new User(),
             Version = 14,
-            InvitationsStatus = OnboardingStepStatusEnum.Skipped,
+            InvitationsStatus = (int)OnboardingStepStatusEnum.Skipped,
             UpdatedAt = DateTime.UtcNow
         };
     }

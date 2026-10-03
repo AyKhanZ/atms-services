@@ -1,14 +1,14 @@
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
-using ATMS.Project.Services.Dashboard;
+using ATMS.Project.Services.Time;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Project.Services.Modules;
 
-public static class DashboardModule
+public static class TimeModule
 {
-    public static IServiceCollection AddDashboardServices(
+    public static IServiceCollection AddTimeServices(
         this IServiceCollection services,
         IConfiguration configuration)
     {

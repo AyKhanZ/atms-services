@@ -19,10 +19,11 @@ public static class ProjectServicesModule
         services.AddValidationServices();
         services.AddProjectData(configuration);
         services.AddProjectSecurityServices();
-        services.AddDashboardServices(configuration);
+        services.AddTimeServices(configuration);
         services.AddBoardServices();
         services.AddAttachmentServices();
         services.AddCommentServices();
+        services.AddNotificationServices();
         services.AddHistoryServices();
         services.AddDictionaryServices();
         services.AddEmailServices(configuration);

@@ -9,6 +9,7 @@ using ATMS.Project.Data.Criteria.WorkTasks;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Caching;
 using ATMS.Project.Services.Board.Interfaces;
+using ATMS.Project.Services.Notifications.Interfaces;
 using ATMS.Project.Services.Resources;
 using MediatR;
 
@@ -18,7 +19,8 @@ public class MoveWorkTaskHandler(
     IWorkTaskRepository workTaskRepository,
     ICacheService cache,
     ICurrentUser currentUser,
-    IWorkTaskBoardPlacementService placement) : IRequestHandler<MoveWorkTaskCommand>
+    IWorkTaskBoardPlacementService placement,
+    IWorkTaskNotificationService notifications) : IRequestHandler<MoveWorkTaskCommand>
 {
     public async Task Handle(MoveWorkTaskCommand command, CancellationToken cancellationToken)
     {
@@ -26,6 +28,7 @@ public class MoveWorkTaskHandler(
             ?? throw new EntityException(EntityErrorType.NotFound, WorkTaskMessages.NotFound);
 
         var now = DateTime.UtcNow;
+        var previousStatusId = workTask.StatusId;
         var statusChanged = workTask.StatusId != command.StatusId;
         if (statusChanged)
         {
@@ -75,6 +78,7 @@ public class MoveWorkTaskHandler(
             closedSubtasks = open.Select(subtask => subtask.Id).ToArray();
         }
 
+        await notifications.NotifyChangedAsync(workTask, workTask.AssigneeId, previousStatusId, cancellationToken);
         await placement.SaveAsync(workTask, cancellationToken);
 
         await cache.RemoveWorkTaskAsync(workTask.Id, cancellationToken);

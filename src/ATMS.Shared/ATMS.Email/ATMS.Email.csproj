@@ -25,6 +25,26 @@
       <Content Include="Templates\ForgotPasswordTemplate.cshtml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <None Remove="Templates\TaskAssignedTemplate.cshtml" />
+      <Content Include="Templates\TaskAssignedTemplate.cshtml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Templates\MentionedTemplate.cshtml" />
+      <Content Include="Templates\MentionedTemplate.cshtml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Templates\DueTodayTemplate.cshtml" />
+      <Content Include="Templates\DueTodayTemplate.cshtml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Templates\TaskOverdueTemplate.cshtml" />
+      <Content Include="Templates\TaskOverdueTemplate.cshtml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Templates\AddedToProjectTemplate.cshtml" />
+      <Content Include="Templates\AddedToProjectTemplate.cshtml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

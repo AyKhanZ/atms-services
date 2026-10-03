@@ -14,9 +14,6 @@ public enum ProjectPermissionEnum
     CommentEdit = 11,
     CommentDelete = 12,
     
-    NotificationEdit = 14,
-    NotificationDelete = 15,
-
     ParticipantEdit = 26,
     ParticipantDelete = 27,
     ParticipantInviteClient = 28,

@@ -43,11 +43,6 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
             new { Id = (int)PermissionEnum.ProjectView, Code = "ProjectView", Module = "Project" },
             new { Id = (int)PermissionEnum.ProjectEdit, Code = "ProjectEdit", Module = "Project" },
           
-            // Notification
-            new { Id = (int)PermissionEnum.NotificationView, Code = "NotificationView", Module = "Notification" },
-            new { Id = (int)PermissionEnum.NotificationEdit, Code = "NotificationEdit", Module = "Notification" },
-            new { Id = (int)PermissionEnum.NotificationDelete, Code = "NotificationDelete", Module = "Notification" },
-            
             // Organization
             new { Id = (int)PermissionEnum.OrganizationView, Code = "OrganizationView", Module = "Organization" },
             new { Id = (int)PermissionEnum.OrganizationEdit, Code = "OrganizationEdit", Module = "Organization" },
@@ -117,18 +112,7 @@ public class PermissionTranslationConfiguration : IEntityTypeConfiguration<Permi
             new { Id = 33, PermissionId = (int)PermissionEnum.CommentEdit, Language = "az", Name = "Şərhi redaktə" },
             new { Id = 34, PermissionId = (int)PermissionEnum.CommentDelete, Language = "en", Name = "Comment delete" },
             new { Id = 35, PermissionId = (int)PermissionEnum.CommentDelete, Language = "ru", Name = "Удаление комментариев" },
-            new { Id = 36, PermissionId = (int)PermissionEnum.CommentDelete, Language = "az", Name = "Şərhi sil" },
-            
-            // Notification
-            new { Id = 37, PermissionId = (int)PermissionEnum.NotificationView, Language = "en", Name = "Notification view" },
-            new { Id = 38, PermissionId = (int)PermissionEnum.NotificationView, Language = "ru", Name = "Просмотр уведомлений" },
-            new { Id = 39, PermissionId = (int)PermissionEnum.NotificationView, Language = "az", Name = "Bildirişə baxış" },
-            new { Id = 40, PermissionId = (int)PermissionEnum.NotificationEdit, Language = "en", Name = "Notification edit" },
-            new { Id = 41, PermissionId = (int)PermissionEnum.NotificationEdit, Language = "ru", Name = "Редактирование уведомлений" },
-            new { Id = 42, PermissionId = (int)PermissionEnum.NotificationEdit, Language = "az", Name = "Bildirişi redaktə" },
-            new { Id = 43, PermissionId = (int)PermissionEnum.NotificationDelete, Language = "en", Name = "Notification delete" },
-            new { Id = 44, PermissionId = (int)PermissionEnum.NotificationDelete, Language = "ru", Name = "Удаление уведомлений" },
-            new { Id = 45, PermissionId = (int)PermissionEnum.NotificationDelete, Language = "az", Name = "Bildirişi sil" }
+            new { Id = 36, PermissionId = (int)PermissionEnum.CommentDelete, Language = "az", Name = "Şərhi sil" }
         );
     }
 }

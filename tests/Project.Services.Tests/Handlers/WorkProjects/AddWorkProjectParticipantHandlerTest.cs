@@ -6,6 +6,7 @@ using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Handlers.WorkProjects;
+using ATMS.Project.Services.Notifications.Interfaces;
 using ATMS.Project.Services.Security.Interfaces;
 using Moq;
 
@@ -16,6 +17,8 @@ public class AddWorkProjectParticipantHandlerTest
     private readonly Mock<IWorkProjectRepository> workProjectRepository = new();
     private readonly Mock<ICacheService> cache = new();
     private readonly Mock<IProjectPermissionService> projectPermissionService = new();
+    private readonly Mock<IWorkProjectNotificationService> notifications = new();
+
     [Fact]
     public async Task Handle_WhenClientInvitePermissionMatchesTarget_AddsParticipant()
     {
@@ -44,10 +47,37 @@ public class AddWorkProjectParticipantHandlerTest
         }
     }
 
+    [Fact]
+    public async Task Handle_TellsTheNewParticipantInTheSameSave()
+    {
+        var command = CreateCommand(RoleIds.Developer);
+        var project = new WorkProject { Id = command.ProjectId };
+        var steps = new List<string>();
+        workProjectRepository
+            .Setup(repository => repository.FindAsync(command.ProjectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(project);
+        notifications
+            .Setup(service => service.NotifyParticipantsAddedAsync(
+                project,
+                It.Is<IEnumerable<Guid>>(userIds => userIds.SequenceEqual(new[] { command.UserId })),
+                It.IsAny<CancellationToken>()))
+            .Callback(() => steps.Add("notify"))
+            .Returns(Task.CompletedTask);
+        workProjectRepository
+            .Setup(repository => repository.SaveAsync(It.IsAny<CancellationToken>()))
+            .Callback(() => steps.Add("save"))
+            .Returns(Task.CompletedTask);
+
+        await CreateHandler().Handle(command, CancellationToken.None);
+
+        Assert.Equal(["notify", "save"], steps);
+    }
+
     private AddWorkProjectParticipantHandler CreateHandler() => new(
         workProjectRepository.Object,
         cache.Object,
-        projectPermissionService.Object);
+        projectPermissionService.Object,
+        notifications.Object);
 
     private static AddWorkProjectParticipantCommand CreateCommand(Guid roleId) => new()
     {

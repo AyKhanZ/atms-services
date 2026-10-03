@@ -4,6 +4,7 @@ using ATMS.Caching.Services.Interfaces;
 using ATMS.Infrastructure.Images;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Data.Services.Interfaces;
+using ATMS.Project.Services.Notifications.Interfaces;
 using AutoMapper;
 using Bogus;
 using Moq;
@@ -26,6 +27,9 @@ public abstract class BaseHandlerTest
     protected readonly Mock<IWorkTicketRepository> WorkTicketRepositoryMock = new();
     protected readonly Mock<IWorkTaskRepository> WorkTaskRepositoryMock = new();
     protected readonly Mock<IEntityCodeGenerator> EntityCodeGeneratorMock = new();
+
+    protected readonly Mock<IWorkTaskNotificationService> WorkTaskNotificationServiceMock = new();
+    protected readonly Mock<IWorkProjectNotificationService> WorkProjectNotificationServiceMock = new();
 
     protected BaseHandlerTest()
     {

@@ -18,9 +18,9 @@ public class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRep
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            Type = EmailDeliveryTypeEnum.Confirmation,
+            Type = (int)EmailDeliveryTypeEnum.Confirmation,
             TemporaryPassword = temporaryPassword,
-            Status = DeliveryStatusEnum.Pending,
+            Status = (int)DeliveryStatusEnum.Pending,
             CreatedAt = now,
             NextAttemptAt = now
         };
@@ -38,8 +38,8 @@ public class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRep
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            Type = EmailDeliveryTypeEnum.PasswordReset,
-            Status = DeliveryStatusEnum.Pending,
+            Type = (int)EmailDeliveryTypeEnum.PasswordReset,
+            Status = (int)DeliveryStatusEnum.Pending,
             CreatedAt = now,
             NextAttemptAt = now
         };
@@ -55,8 +55,8 @@ public class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRep
     {
         var deliveries = await context.EmailDeliveries
             .Where(x => x.UserId == userId &&
-                        x.Type == type &&
-                        x.Status != DeliveryStatusEnum.Processed)
+                        x.Type == (int)type &&
+                        x.Status != (int)DeliveryStatusEnum.Processed)
             .ToListAsync(cancellationToken);
 
         context.EmailDeliveries.RemoveRange(deliveries);
@@ -69,7 +69,7 @@ public class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRep
         var now = DateTime.UtcNow;
         return await context.EmailDeliveries
             .AsNoTracking()
-            .Where(x => x.Status == DeliveryStatusEnum.Pending && x.NextAttemptAt <= now)
+            .Where(x => x.Status == (int)DeliveryStatusEnum.Pending && x.NextAttemptAt <= now)
             .OrderBy(x => x.CreatedAt)
             .Take(batchSize)
             .ToListAsync(cancellationToken);
@@ -103,7 +103,7 @@ public class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRep
         var delivery = await context.EmailDeliveries
             .FirstAsync(x => x.Id == id, cancellationToken);
 
-        delivery.Status = DeliveryStatusEnum.Processed;
+        delivery.Status = (int)DeliveryStatusEnum.Processed;
         delivery.ProcessedAt = DateTime.UtcNow;
         delivery.LastError = null;
         delivery.TemporaryPassword = null;
@@ -139,7 +139,7 @@ public class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRep
         var delivery = await context.EmailDeliveries
             .FirstAsync(x => x.Id == id, cancellationToken);
 
-        delivery.Status = DeliveryStatusEnum.Failed;
+        delivery.Status = (int)DeliveryStatusEnum.Failed;
         delivery.AttemptCount = attemptCount;
         delivery.FailedAt = DateTime.UtcNow;
         delivery.LastError = error.Length > 2000 ? error[..2000] : error;
@@ -155,7 +155,7 @@ public class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRep
         CancellationToken cancellationToken)
     {
         return context.EmailDeliveries
-            .Where(x => x.Status == DeliveryStatusEnum.Processed &&
+            .Where(x => x.Status == (int)DeliveryStatusEnum.Processed &&
                         x.ProcessedAt < processedBefore)
             .ExecuteDeleteAsync(cancellationToken);
     }

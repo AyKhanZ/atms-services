@@ -4,7 +4,9 @@ using ATMS.Project.Services.Resources;
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace ATMS.Project.Services.Dashboard;
+using ATMS.Project.Services.Dashboard;
+
+namespace ATMS.Project.Services.Time;
 
 public sealed class BusinessTimeZone(TimeZoneInfo zone)
 {
@@ -14,7 +16,7 @@ public sealed class BusinessTimeZone(TimeZoneInfo zone)
 
     public DashboardPeriodWindow GetWindow(DateTime utcNow, string? period, DateOnly? from, DateOnly? to)
     {
-        var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(utcNow, zone));
+        var today = Today(utcNow);
         var (name, firstDay, lastDay) = (period ?? DashboardPeriods.Last30Days) switch
         {
             DashboardPeriods.Today => (DashboardPeriods.Today, today, today),
@@ -74,6 +76,28 @@ public sealed class BusinessTimeZone(TimeZoneInfo zone)
 
     private static ValidationException Invalid(string field, string message) =>
         new([new ValidationFailure(char.ToUpperInvariant(field[0]) + field[1..], message)]);
+
+    public DateOnly Today(DateTime utcNow) => DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(utcNow, zone));
+
+    // A deadline is a date the browser sends as its own midnight: the day it falls on here is the date.
+    public DateOnly DateOf(DateTime utc) => Today(utc);
+
+    public DateTime StartOfDayUtc(DateOnly date) => ToUtc(date);
+
+    public bool HasReached(DateTime utcNow, TimeOnly time) =>
+        TimeOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(utcNow, zone)) >= time;
+
+    public DateTime NextUtc(DateTime utcNow, TimeOnly time)
+    {
+        var local = TimeZoneInfo.ConvertTimeFromUtc(utcNow, zone);
+        var next = DateOnly.FromDateTime(local).ToDateTime(time, DateTimeKind.Unspecified);
+        if (next <= local)
+        {
+            next = next.AddDays(1);
+        }
+
+        return TimeZoneInfo.ConvertTimeToUtc(next, zone);
+    }
 
     private DateTime ToUtc(DateOnly date) => TimeZoneInfo.ConvertTimeToUtc(
         date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Unspecified), zone);

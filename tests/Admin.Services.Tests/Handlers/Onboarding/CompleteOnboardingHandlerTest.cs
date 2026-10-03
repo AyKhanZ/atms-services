@@ -147,9 +147,9 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
             UserId = userId,
             User = user,
             Version = 7,
-            PersonalInfoStatus = OnboardingStepStatusEnum.Completed,
-            SecurityStatus = OnboardingStepStatusEnum.Completed,
-            InvitationsStatus = OnboardingStepStatusEnum.Completed,
+            PersonalInfoStatus = (int)OnboardingStepStatusEnum.Completed,
+            SecurityStatus = (int)OnboardingStepStatusEnum.Completed,
+            InvitationsStatus = (int)OnboardingStepStatusEnum.Completed,
             PendingPasswordHash = "new-password-hash",
             UpdatedAt = DateTime.UtcNow,
             PersonalInfo = new OnboardingPersonalInfo

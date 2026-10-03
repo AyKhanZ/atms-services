@@ -42,7 +42,7 @@ public sealed class SaveSecurityHandlerTest : BaseHandlerTest
         }, CancellationToken.None);
 
         Assert.Equal("password-hash", progress.PendingPasswordHash);
-        Assert.Equal(OnboardingStepStatusEnum.Completed, progress.SecurityStatus);
+        Assert.Equal((int)OnboardingStepStatusEnum.Completed, progress.SecurityStatus);
         Assert.True(result.SecurityCompleted);
         OnboardingRepositoryMock.Verify(x =>
             x.TrySaveAsync(progress, 3, It.IsAny<CancellationToken>()), Times.Once);

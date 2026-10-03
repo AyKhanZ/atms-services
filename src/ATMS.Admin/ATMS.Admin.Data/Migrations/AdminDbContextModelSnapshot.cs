@@ -442,24 +442,6 @@ namespace ATMS.Admin.Data.Migrations
                         },
                         new
                         {
-                            Id = 10,
-                            Code = "NotificationView",
-                            Module = "Notification"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Code = "NotificationEdit",
-                            Module = "Notification"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Code = "NotificationDelete",
-                            Module = "Notification"
-                        },
-                        new
-                        {
                             Id = 16,
                             Code = "OrganizationView",
                             Module = "Organization"
@@ -755,69 +737,6 @@ namespace ATMS.Admin.Data.Migrations
                             Language = "az",
                             Name = "Şərhi sil",
                             PermissionId = 15
-                        },
-                        new
-                        {
-                            Id = 37,
-                            Language = "en",
-                            Name = "Notification view",
-                            PermissionId = 10
-                        },
-                        new
-                        {
-                            Id = 38,
-                            Language = "ru",
-                            Name = "Просмотр уведомлений",
-                            PermissionId = 10
-                        },
-                        new
-                        {
-                            Id = 39,
-                            Language = "az",
-                            Name = "Bildirişə baxış",
-                            PermissionId = 10
-                        },
-                        new
-                        {
-                            Id = 40,
-                            Language = "en",
-                            Name = "Notification edit",
-                            PermissionId = 11
-                        },
-                        new
-                        {
-                            Id = 41,
-                            Language = "ru",
-                            Name = "Редактирование уведомлений",
-                            PermissionId = 11
-                        },
-                        new
-                        {
-                            Id = 42,
-                            Language = "az",
-                            Name = "Bildirişi redaktə",
-                            PermissionId = 11
-                        },
-                        new
-                        {
-                            Id = 43,
-                            Language = "en",
-                            Name = "Notification delete",
-                            PermissionId = 12
-                        },
-                        new
-                        {
-                            Id = 44,
-                            Language = "ru",
-                            Name = "Удаление уведомлений",
-                            PermissionId = 12
-                        },
-                        new
-                        {
-                            Id = 45,
-                            Language = "az",
-                            Name = "Bildirişi sil",
-                            PermissionId = 12
                         });
                 });
 
@@ -1266,21 +1185,6 @@ namespace ATMS.Admin.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 10,
-                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
-                        },
-                        new
-                        {
-                            PermissionId = 11,
-                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
-                        },
-                        new
-                        {
-                            PermissionId = 12,
-                            RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
-                        },
-                        new
-                        {
                             PermissionId = 13,
                             RoleId = new Guid("cc4b9105-86b8-49ca-9b2f-260551aa675f")
                         },
@@ -1326,11 +1230,6 @@ namespace ATMS.Admin.Data.Migrations
                         },
                         new
                         {
-                            PermissionId = 10,
-                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
-                        },
-                        new
-                        {
                             PermissionId = 13,
                             RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
                         },
@@ -1347,11 +1246,6 @@ namespace ATMS.Admin.Data.Migrations
                         new
                         {
                             PermissionId = 7,
-                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
-                        },
-                        new
-                        {
-                            PermissionId = 10,
                             RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
                         },
                         new
@@ -1382,11 +1276,6 @@ namespace ATMS.Admin.Data.Migrations
                         new
                         {
                             PermissionId = 8,
-                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
-                        },
-                        new
-                        {
-                            PermissionId = 10,
                             RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
                         },
                         new

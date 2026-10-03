@@ -52,7 +52,7 @@ public sealed class CommentModelServiceTest
                 It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync([new User { Id = knownId, Name = "Current", Surname = "Name", AvatarPath = "avatar-b" }]);
 
-        var service = new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object);
+        var service = new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object, new CommentMentionService());
         var models = await service.BuildAsync(projectId, [comment], CancellationToken.None);
 
         var model = models[comment.Id];
@@ -102,7 +102,7 @@ public sealed class CommentModelServiceTest
                     projectId, null, null)
             ]);
 
-        var model = (await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object)
+        var model = (await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object, new CommentMentionService())
             .BuildAsync(projectId, [comment], CancellationToken.None))[comment.Id];
 
         Assert.Equal(["41", "45", "180"], model.References.Select(reference => reference.Code));
@@ -152,7 +152,7 @@ public sealed class CommentModelServiceTest
         permissions.Setup(value => value.GetPermissionCodesAsync(projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new HashSet<string> { "CommentEdit", "CommentDelete" });
 
-        var model = (await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object)
+        var model = (await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object, new CommentMentionService())
             .BuildAsync(projectId, [comment], CancellationToken.None))[comment.Id];
 
         Assert.True(model.IsDeleted);
@@ -198,7 +198,7 @@ public sealed class CommentModelServiceTest
         permissions.Setup(value => value.GetPermissionCodesAsync(projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new HashSet<string>());
 
-        var model = (await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object)
+        var model = (await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object, new CommentMentionService())
             .BuildAsync(projectId, [comment], CancellationToken.None))[comment.Id];
 
         Assert.Equal(authorId, model.CreatedBy.Id);
@@ -233,7 +233,7 @@ public sealed class CommentModelServiceTest
         permissions.Setup(value => value.GetPermissionCodesAsync(projectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new HashSet<string>());
 
-        await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object)
+        await new CommentModelService(repository.Object, permissions.Object, _dictionaries.Object, user.Object, new CommentMentionService())
             .BuildAsync(projectId, items, CancellationToken.None);
 
         repository.Verify(value => value.GetReferencesAsync(

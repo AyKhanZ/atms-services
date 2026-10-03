@@ -34,7 +34,7 @@ public class AttachmentRepository(ProjectDbContext context) : IAttachmentReposit
         CancellationToken cancellationToken)
     {
         var counts = context.Attachments
-            .Where(attachment => attachment.OwnerType == AttachmentOwnerTypeEnum.Task)
+            .Where(attachment => attachment.OwnerType == (int)AttachmentOwnerTypeEnum.Task)
             .Join(
                 ownerTasks.Apply(context.WorkTasks),
                 attachment => attachment.OwnerId,
@@ -88,7 +88,7 @@ public class AttachmentRepository(ProjectDbContext context) : IAttachmentReposit
     public Task<int> CountByWorkTaskAsync(Guid workTaskId, CancellationToken cancellationToken)
     {
         return context.Attachments.CountAsync(
-            attachment => attachment.OwnerType == AttachmentOwnerTypeEnum.Task && attachment.OwnerId == workTaskId,
+            attachment => attachment.OwnerType == (int)AttachmentOwnerTypeEnum.Task && attachment.OwnerId == workTaskId,
             cancellationToken);
     }
 
@@ -138,7 +138,7 @@ public class AttachmentRepository(ProjectDbContext context) : IAttachmentReposit
 
         return attachments.Where(attachment =>
             attachment.Id == attachmentId &&
-            attachment.OwnerType == AttachmentOwnerTypeEnum.Task &&
+            attachment.OwnerType == (int)AttachmentOwnerTypeEnum.Task &&
             ownerTasks.Any(task => task.Id == attachment.OwnerId));
     }
 
@@ -150,7 +150,7 @@ public class AttachmentRepository(ProjectDbContext context) : IAttachmentReposit
     {
         return
             from attachment in attachments
-            where attachment.OwnerType == AttachmentOwnerTypeEnum.Task && !attachment.IsDeleted
+            where attachment.OwnerType == (int)AttachmentOwnerTypeEnum.Task && !attachment.IsDeleted
             join task in ownerTasks on attachment.OwnerId equals task.Id
             where !task.IsDeleted
             join author in context.Users.IgnoreQueryFilters() on attachment.CreatedById equals author.Id

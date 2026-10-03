@@ -89,7 +89,7 @@ public sealed class ProjectHistoryInterceptor(
                 case WorkTask task:
                     CollectItem(drafts, entry, HistoryEntityTypeEnum.WorkTask, task.Id, task.WorkProjectId);
                     break;
-                case Attachment { OwnerType: AttachmentOwnerTypeEnum.Task } attachment:
+                case Attachment attachment when attachment.OwnerType == (int)AttachmentOwnerTypeEnum.Task:
                     CollectAttachment(context, drafts, entry, attachment);
                     break;
             }

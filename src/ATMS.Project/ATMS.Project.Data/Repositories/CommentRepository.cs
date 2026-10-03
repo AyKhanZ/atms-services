@@ -47,7 +47,7 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
 
     public Task<int> CountAsync(Guid workTaskId, CancellationToken cancellationToken) =>
         context.Comments.CountAsync(comment =>
-            comment.OwnerType == CommentOwnerTypeEnum.Task &&
+            comment.OwnerType == (int)CommentOwnerTypeEnum.Task &&
             comment.OwnerId == workTaskId, cancellationToken);
 
     public Task<User[]> GetAuthorsAsync(IReadOnlyCollection<Guid> userIds, CancellationToken cancellationToken) =>
@@ -160,7 +160,7 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
         var tasks = LiveTasks(projectId);
         return comments.Where(comment =>
             comment.Id == commentId &&
-            comment.OwnerType == CommentOwnerTypeEnum.Task &&
+            comment.OwnerType == (int)CommentOwnerTypeEnum.Task &&
             tasks.Any(task => task.Id == comment.OwnerId));
     }
 }

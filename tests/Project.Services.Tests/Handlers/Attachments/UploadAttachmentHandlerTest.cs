@@ -82,7 +82,7 @@ public class UploadAttachmentHandlerTest : BaseHandlerTest
             "pdf",
             It.IsAny<CancellationToken>()), Times.Once);
         Assert.NotNull(_added);
-        Assert.Equal(AttachmentOwnerTypeEnum.Task, _added.OwnerType);
+        Assert.Equal((int)AttachmentOwnerTypeEnum.Task, _added.OwnerType);
         Assert.Equal(_workTaskId, _added.OwnerId);
         Assert.Equal("Specification.pdf", _added.FileName);
         Assert.Equal("stored/path.pdf", _added.RelativePath);

@@ -85,6 +85,10 @@ public class ProjectDbContext : DbContext
 
     public DbSet<HistoryChange> HistoryChanges { get; set; }
 
+    public DbSet<Notification> Notifications { get; set; }
+
+    public DbSet<EmailDelivery> EmailDeliveries { get; set; }
+
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
