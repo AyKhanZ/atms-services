@@ -24,6 +24,9 @@
     <data name="AccountInactive" xml:space="preserve">
         <value>Ваш аккаунт больше не активен. Пожалуйста, свяжитесь с поддержкой.</value>
     </data>
+    <data name="AccountLockedByAdministrator" xml:space="preserve">
+        <value>Ваш аккаунт заблокирован. Обратитесь к администратору.</value>
+    </data>
     <data name="AccountLocked" xml:space="preserve">
         <value>Аккаунт заблокирован. Попробуйте снова через {0} минут.</value>
     </data>

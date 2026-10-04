@@ -105,6 +105,7 @@
     <data name="EmailShouldBeLessThan" xml:space="preserve">
         <value>Email должен содержать не более {0} символов.</value>
     </data>
+    <data name="PasswordChangedConcurrently" xml:space="preserve"><value>Пароль только что сменили в другом окне. Войдите с новым паролем.</value></data>
     <data name="OldPasswordIncorrect" xml:space="preserve"><value>Текущий пароль неверен.</value></data>
     <data name="NewPasswordMustDiffer" xml:space="preserve"><value>Выберите пароль, который отличается от текущего.</value></data>
 </root>

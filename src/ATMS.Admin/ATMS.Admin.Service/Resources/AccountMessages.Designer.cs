@@ -247,6 +247,8 @@ namespace ATMS.Admin.Service.Resources {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
             }
         }
+        public static string PasswordChangedConcurrently => ResourceManager.GetString("PasswordChangedConcurrently", resourceCulture);
+
         public static string OldPasswordIncorrect => ResourceManager.GetString("OldPasswordIncorrect", resourceCulture);
 
         public static string NewPasswordMustDiffer => ResourceManager.GetString("NewPasswordMustDiffer", resourceCulture);

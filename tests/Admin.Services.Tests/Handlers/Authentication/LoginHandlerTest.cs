@@ -141,39 +141,44 @@ public class LoginHandlerTest : BaseHandlerTest
         Assert.Equal(AuthErrorType.InvalidCredentials, exception.AuthErrorType);
     }
  
+    // The count is updated in the database in one statement, so parallel wrong passwords cannot all
+    // read the same number; the handler only asks for it.
     [Fact]
-    public async Task Handle_WithWrongPassword_IncrementsFailedLoginCount()
-    {
-        var user = CreateUser(failedLoginCount: 2);
-        var command = CreateCommand();
- 
-        SetupUser(user);
-        SetupPasswordMatch(false);
- 
-        await Assert.ThrowsAsync<AuthException>(() =>
-            _handler.Handle(command, CancellationToken.None));
- 
-        Assert.Equal((uint)3, user.FailedLoginCount);
-    }
- 
-    [Fact]
-    public async Task Handle_WhenFailedLoginCountReachesFive_LocksUser()
+    public async Task Handle_WithWrongPassword_CountsTheAttemptAtomically()
     {
         var user = CreateUser(failedLoginCount: 4);
-        var command = CreateCommand();
- 
         SetupUser(user);
         SetupPasswordMatch(false);
- 
+
         await Assert.ThrowsAsync<AuthException>(() =>
-            _handler.Handle(command, CancellationToken.None));
- 
-        Assert.Equal((int)UserStatusEnum.Locked, user.UserStatusId);
-        Assert.Equal((uint)0, user.FailedLoginCount);
-        Assert.True(user.LockoutEnd.HasValue);
-        Assert.True(user.LockoutEnd.Value > DateTime.UtcNow);
+            _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        UserRepositoryMock.Verify(x => x.RegisterFailedPasswordAsync(
+            user.Id,
+            5,
+            It.IsAny<DateTime>(),
+            It.Is<DateTime>(end => end > DateTime.UtcNow.AddMinutes(14) && end <= DateTime.UtcNow.AddMinutes(15)),
+            It.IsAny<CancellationToken>()), Times.Once);
+        Assert.Equal((uint)4, user.FailedLoginCount);
     }
-    
+
+    // A session remembers the version it was issued under, so a later password change ends it.
+    [Fact]
+    public async Task Handle_WithValidCredentials_IssuesSessionUnderCurrentVersion()
+    {
+        var user = CreateUser();
+        user.SessionVersion = 3;
+        SetupUser(user);
+        SetupPasswordMatch(true);
+        SetupTokenServices(user);
+
+        await _handler.Handle(CreateCommand(), CancellationToken.None);
+
+        UserSessionRepositoryMock.Verify(x => x.AddAsync(
+            It.Is<ATMS.Admin.Data.Entities.Tokens.UserSession>(session => session.SessionVersion == 3),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
     [Fact]
     public async Task Handle_WhenUserNotFound_ThrowsAuthException()
     {
@@ -231,6 +236,22 @@ public class LoginHandlerTest : BaseHandlerTest
         Assert.Equal(AuthErrorType.AccountLocked, exception.AuthErrorType);
     }
 
+    // Locked with no end date was set by an administrator; the right password does not lift it.
+    [Fact]
+    public async Task Handle_WhenAccountIsLockedByAdministrator_RefusesEvenWithRightPassword()
+    {
+        var user = CreateUser(statusId: (int)UserStatusEnum.Locked);
+        user.LockoutEnd = null;
+        SetupUser(user);
+        SetupPasswordMatch(true);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(() =>
+            _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.AccountLocked, exception.AuthErrorType);
+        Assert.Equal((int)UserStatusEnum.Locked, user.UserStatusId);
+    }
+
     [Fact]
     public async Task Handle_WhenAccountIsLockedButLockoutExpired_AllowsLogin()
     {
@@ -259,9 +280,12 @@ public class LoginHandlerTest : BaseHandlerTest
 
         await Assert.ThrowsAsync<AuthException>(() => _handler.Handle(CreateCommand(), CancellationToken.None));
 
-        Assert.Equal((int)UserStatusEnum.Locked, user.UserStatusId);
-        Assert.True(user.LockoutEnd > DateTime.UtcNow);
+        // The finished lockout is lifted and saved first, then the attempt is counted in the
+        // database, where reaching five locks the account again.
+        Assert.Equal((int)UserStatusEnum.Active, user.UserStatusId);
         UserRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+        UserRepositoryMock.Verify(x => x.RegisterFailedPasswordAsync(
+            user.Id, 5, It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

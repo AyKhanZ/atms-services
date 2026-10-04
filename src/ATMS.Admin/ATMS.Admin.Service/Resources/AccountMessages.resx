@@ -104,6 +104,7 @@
     <data name="EmailShouldBeLessThan" xml:space="preserve">
         <value>Email must be less than {0} symbols.</value>
     </data>
+    <data name="PasswordChangedConcurrently" xml:space="preserve"><value>The password was just changed in another window. Sign in with the new password.</value></data>
     <data name="OldPasswordIncorrect" xml:space="preserve"><value>Current password is incorrect.</value></data>
     <data name="NewPasswordMustDiffer" xml:space="preserve"><value>Choose a password different from your current password.</value></data>
 </root>

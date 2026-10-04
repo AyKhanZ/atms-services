@@ -5,6 +5,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Enums;
@@ -41,18 +42,22 @@ public sealed class ChangePasswordHandler(
             throw new AuthException(AuthErrorType.AccountInactive, AuthMessages.AccountInactive);
         }
 
+        // Set by an administrator: no new password and no new tokens until they lift it.
+        if (user.UserStatusId == (int)UserStatusEnum.Locked && !user.LockoutEnd.HasValue)
+        {
+            throw new AuthException(AuthErrorType.AccountLocked, AuthMessages.AccountLockedByAdministrator);
+        }
+
         if (!passwordHasherService.Verify(command.OldPassword, user.PasswordHash))
         {
-            user.FailedLoginCount++;
-            var lockedNow = user.FailedLoginCount >= 5;
-            if (lockedNow)
-            {
-                user.LockoutEnd = now.AddMinutes(15);
-                user.UserStatusId = (int)UserStatusEnum.Locked;
-                user.FailedLoginCount = 0;
-            }
-
-            await userRepository.SaveAsync(cancellationToken);
+            // Counted in the database in one statement, so parallel wrong passwords cannot all read
+            // the same number and slip past the limit.
+            var lockedNow = await userRepository.RegisterFailedPasswordAsync(
+                user.Id,
+                5,
+                now,
+                now.AddMinutes(15),
+                cancellationToken);
 
             // The attempt that locks the account says so at once, not on the next try.
             if (lockedNow)
@@ -67,18 +72,22 @@ public sealed class ChangePasswordHandler(
         }
 
         user.FailedLoginCount = 0;
-        user.LockoutEnd = null;
-        if (user.UserStatusId == (int)UserStatusEnum.Locked)
+        // Only the timed lockout from wrong passwords is lifted; a lock with no end date was set by
+        // hand and stays.
+        if (user.UserStatusId == (int)UserStatusEnum.Locked && user.LockoutEnd.HasValue)
         {
             user.UserStatusId = (int)UserStatusEnum.Active;
         }
 
+        user.LockoutEnd = null;
         user.PasswordHash = passwordHasherService.Hash(command.NewPassword);
+        var expectedVersion = user.SessionVersion;
+        user.SessionVersion = expectedVersion + 1;
 
         var accessToken = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
         var refreshToken = await refreshTokenService.GenerateTokenAsync(null, cancellationToken);
 
-        await userSessionRepository.ReplaceAllAsync(new UserSession
+        await userSessionRepository.AddAsync(new UserSession
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
@@ -86,10 +95,15 @@ public sealed class ChangePasswordHandler(
             TokenHash = refreshToken.TokenHash,
             CreatedAt = now,
             ExpiresAt = refreshToken.ExpiresAt,
-            FamilyExpiresAt = refreshToken.FamilyExpiresAt
-        }, now, cancellationToken);
+            FamilyExpiresAt = refreshToken.FamilyExpiresAt,
+            SessionVersion = user.SessionVersion
+        }, cancellationToken);
 
-        await userRepository.SaveAsync(cancellationToken);
+        // Another password change won the race: its session is the one that stays.
+        if (!await userRepository.TrySavePasswordChangeAsync(user, expectedVersion, now, cancellationToken))
+        {
+            throw new ConflictException(AccountMessages.PasswordChangedConcurrently);
+        }
 
         return new AccessInfoModel
         {

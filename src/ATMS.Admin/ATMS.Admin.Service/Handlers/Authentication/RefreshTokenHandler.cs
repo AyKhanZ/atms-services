@@ -46,6 +46,14 @@ public class RefreshTokenHandler(
             throw new AuthException(AuthErrorType.AccountInactive, AuthMessages.AccountInactive);
         }
 
+        // The password changed after this session began: it ends even if it was created in the same
+        // instant as the change and so missed the revocation.
+        if (session.SessionVersion != session.User.SessionVersion)
+        {
+            await userSessionRepository.RevokeFamilyAsync(session.FamilyId, now, cancellationToken);
+            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+        }
+
         var accessToken = await accessTokenService.GenerateTokenAsync(session.User, cancellationToken);
         var refreshToken = await refreshTokenService.GenerateTokenAsync(
             session.FamilyExpiresAt,
@@ -59,7 +67,8 @@ public class RefreshTokenHandler(
             TokenHash = refreshToken.TokenHash,
             CreatedAt = now,
             ExpiresAt = refreshToken.ExpiresAt,
-            FamilyExpiresAt = session.FamilyExpiresAt
+            FamilyExpiresAt = session.FamilyExpiresAt,
+            SessionVersion = session.SessionVersion
         };
 
         if (!await userSessionRepository.RotateAsync(session, replacement, now, cancellationToken))

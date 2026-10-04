@@ -3,6 +3,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Dispatcher.Validation;
 using ATMS.Application.Interfaces;
+using ATMS.Data.Constants;
 using ATMS.Infrastructure.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
@@ -62,8 +63,13 @@ public sealed class UpdateSettingsValidator : BaseImageValidator<UpdateSettingsC
         RuleForOptionalImage(x => x.Avatar);
 
         RuleFor(x => x.Avatar).MustAsync(async (avatar, token) =>
-            avatar is not null ||
-            !string.IsNullOrWhiteSpace((await _userRepository.GetAsync(_currentUser.Id, token))?.AvatarPath))
+                avatar is not null || HasOwnPhoto((await _userRepository.GetAsync(_currentUser.Id, token))?.AvatarPath))
             .WithMessage(OnboardingMessages.ProfilePhotoRequired);
+    }
+
+    // The shared placeholder is what an account has before anyone chose a photo; it does not count.
+    private static bool HasOwnPhoto(string? avatarPath)
+    {
+        return !string.IsNullOrWhiteSpace(avatarPath) && avatarPath != DefaultValues.UserAvatar;
     }
 }

@@ -5,6 +5,8 @@ namespace ATMS.Admin.Data.Repositories.Interfaces;
 
 public interface IPasswordResetTokenRepository
 {
+    void StageConsume(PasswordResetToken passwordResetToken);
+
     Task ClearListAsync(Expression<Func<PasswordResetToken, bool>> predicate, CancellationToken cancellationToken);
     
     Task AddToListAsync(PasswordResetToken passwordResetToken, CancellationToken cancellationToken);

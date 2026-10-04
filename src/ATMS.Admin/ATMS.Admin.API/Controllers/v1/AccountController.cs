@@ -164,8 +164,8 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <response code="401">Unauthorized, user is not authenticated.</response>
     /// <response code="403">Super admins cannot change their password here.</response>
     /// <response code="404">The current user was not found.</response>
-    /// <response code="409">The user must complete onboarding before changing the password.</response>
-    /// <response code="423">The account is temporarily locked.</response>
+    /// <response code="409">Onboarding is incomplete, or another request changed the password first.</response>
+    /// <response code="423">The account is temporarily locked or locked by an administrator.</response>
     /// <response code="500">Unhandled server error.</response>
     [Authorize]
     [HttpPut("change-password")]
@@ -205,7 +205,7 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     ///     }
     ///
     /// </remarks>
-    /// <param name="command">Command containing the reset token, new password, and password confirmation.</param>
+    /// <param name="command">The email address to send the reset link to.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="202">Request accepted. If the account exists, a password reset email will be sent. The answer is the same for an unknown address.</response>
     /// <response code="400">Invalid email format or validation error.</response>
@@ -257,13 +257,15 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// <param name="command">Reset token, new password, and matching confirmation.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">Password successfully reset.</response>
-    /// <response code="400">The token or new password is invalid.</response>
+    /// <response code="400">The new password is invalid.</response>
+    /// <response code="401">The reset token is unknown, already used or expired.</response>
     /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]
     [HttpPost("reset-password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ResetPassword(

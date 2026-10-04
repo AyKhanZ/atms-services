@@ -12,8 +12,7 @@ namespace ATMS.Admin.Service.Handlers.Account;
 public class ResetPasswordHandler(
     IPasswordResetTokenRepository passwordResetTokenRepository,
     IUserRepository userRepository,
-    IPasswordHasherService passwordHasherService,
-    IUserSessionRepository userSessionRepository
+    IPasswordHasherService passwordHasherService
     ) : IRequestHandler<ResetPasswordCommand>
 {
     public async Task Handle(ResetPasswordCommand command, CancellationToken cancellationToken)
@@ -38,24 +37,30 @@ public class ResetPasswordHandler(
         }
 
         user.PasswordHash = passwordHasherService.Hash(command.Password);
+        var expectedVersion = user.SessionVersion;
+        user.SessionVersion = expectedVersion + 1;
 
-        // Whoever reset the password proved they own the mailbox: a lockout from earlier wrong
-        // guesses would only keep them out with the new password for another 15 minutes.
+        // Whoever reset the password proved they own the mailbox, so the timed lockout from earlier
+        // wrong guesses is lifted. A lock with no end date was set by hand and stays.
         user.FailedLoginCount = 0;
-        user.LockoutEnd = null;
-        if (user.UserStatusId == (int)UserStatusEnum.Locked)
+        if (user.UserStatusId == (int)UserStatusEnum.Locked && user.LockoutEnd.HasValue)
         {
             user.UserStatusId = (int)UserStatusEnum.Active;
         }
 
+        user.LockoutEnd = null;
+
+        passwordResetTokenRepository.StageConsume(entity);
         await passwordResetTokenRepository.ClearListAsync(
             prt => prt.UserId == entity.UserId,
             cancellationToken);
 
-        // Staged, not written: the new password, the used token and the revoked sessions commit
-        // together, so a failure cannot leave old sessions alive with the reset link spent.
-        await userSessionRepository.StageRevokeAllAsync(user.Id, DateTime.UtcNow, cancellationToken);
-
-        await userRepository.SaveAsync(cancellationToken);
+        // The new password, the used link and the revoked sessions commit together. Both the version
+        // and the DELETE of this exact link must succeed, so a link used by a parallel reset is
+        // rejected even when this request read the user only after that reset had committed.
+        if (!await userRepository.TrySavePasswordChangeAsync(user, expectedVersion, DateTime.UtcNow, cancellationToken))
+        {
+            throw new AuthException(AuthErrorType.InvalidToken, AccountMessages.InvalidPasswordResetToken);
+        }
     }
 }

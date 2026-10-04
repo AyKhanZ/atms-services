@@ -65,12 +65,15 @@ public class UpdateSettingsValidatorTest : BaseValidatorTest
         Assert.Contains(result.Errors, error => error.PropertyName == field);
     }
 
-    [Fact]
-    public async Task Validate_NoExistingOrReplacementAvatar_ReturnsAvatarError()
+    // The shared placeholder is not the user's own photo, so it does not satisfy "photo required".
+    [Theory]
+    [InlineData("")]
+    [InlineData("default-avatar.png")]
+    public async Task Validate_NoOwnOrReplacementAvatar_ReturnsAvatarError(string savedAvatarPath)
     {
         SetupValidData();
         UserRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new User { AvatarPath = "" });
+            .ReturnsAsync(new User { AvatarPath = savedAvatarPath });
 
         var result = await CreateValidator().ValidateAsync(Command());
 

@@ -19,4 +19,6 @@ public class UserSession : BaseEntity
     public DateTime FamilyExpiresAt { get; set; }
 
     public DateTime? RevokedAt { get; set; }
+
+    public int SessionVersion { get; set; }
 }

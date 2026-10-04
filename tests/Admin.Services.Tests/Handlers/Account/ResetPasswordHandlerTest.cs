@@ -21,12 +21,14 @@ public class ResetPasswordHandlerTest : BaseHandlerTest
         _handler = new ResetPasswordHandler(
             PasswordResetTokenRepositoryMock.Object,
             UserRepositoryMock.Object,
-            PasswordHasherServiceMock.Object,
-            UserSessionRepositoryMock.Object);
+            PasswordHasherServiceMock.Object);
 
         PasswordHasherServiceMock
             .Setup(p => p.Hash(It.IsAny<string>()))
             .Returns(FakePasswordHash);
+        UserRepositoryMock
+            .Setup(r => r.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
     }
 
     private ResetPasswordCommand CreateCommand(string? token = null)
@@ -64,35 +66,15 @@ public class ResetPasswordHandlerTest : BaseHandlerTest
         await _handler.Handle(CreateCommand(), CancellationToken.None);
 
         Assert.Equal(FakePasswordHash, user.PasswordHash);
+        // Raised so that a session created in the same instant by a sign-in with the old password
+        // still stops refreshing.
+        Assert.Equal(1, user.SessionVersion);
+        PasswordResetTokenRepositoryMock.Verify(r => r.StageConsume(tokenEntity), Times.Once);
         PasswordResetTokenRepositoryMock.Verify(
             r => r.ClearListAsync(It.IsAny<Expression<Func<PasswordResetToken, bool>>>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
-        UserRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
-        UserSessionRepositoryMock.Verify(r => r.StageRevokeAllAsync(userId, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
-        UserSessionRepositoryMock.Verify(r => r.RevokeAllAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    // Sessions are revoked in the same SaveChanges as the new password: if saving fails, nothing
-    // is half done and the reset link still works.
-    [Fact]
-    public async Task Handle_StagesSessionRevocationBeforeTheSingleSave()
-    {
-        var userId = Guid.NewGuid();
-        SetupValidToken(userId, new User { Id = userId, PasswordHash = "old-hash" });
-        var order = new List<string>();
-        UserSessionRepositoryMock
-            .Setup(r => r.StageRevokeAllAsync(userId, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
-            .Callback(() => order.Add("revoke"))
-            .Returns(Task.CompletedTask);
-        UserRepositoryMock
-            .Setup(r => r.SaveAsync(It.IsAny<CancellationToken>()))
-            .Callback(() => order.Add("save"))
-            .Returns(Task.CompletedTask);
-
-        await _handler.Handle(CreateCommand(), CancellationToken.None);
-
-        Assert.Equal(["revoke", "save"], order);
+        UserRepositoryMock.Verify(r => r.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -193,5 +175,40 @@ public class ResetPasswordHandlerTest : BaseHandlerTest
             _handler.Handle(CreateCommand(), CancellationToken.None));
 
         Assert.Equal(EntityErrorType.NotFound, exception.ErrorType);
+    }
+
+    // A lock with no end date was set by hand; resetting the password must not lift it.
+    [Fact]
+    public async Task Handle_ManualLock_StaysLocked()
+    {
+        var userId = Guid.NewGuid();
+        var user = new User
+        {
+            Id = userId,
+            PasswordHash = "old-hash",
+            UserStatusId = (int)ATMS.Data.Enums.UserStatusEnum.Locked,
+            LockoutEnd = null
+        };
+        SetupValidToken(userId, user);
+
+        await _handler.Handle(CreateCommand(), CancellationToken.None);
+
+        Assert.Equal((int)ATMS.Data.Enums.UserStatusEnum.Locked, user.UserStatusId);
+    }
+
+    // The same link sent twice: the reset that commits second finds the version moved and the link
+    // counts as used.
+    [Fact]
+    public async Task Handle_ConcurrentResetWonTheRace_RefusesAsUsedLink()
+    {
+        var userId = Guid.NewGuid();
+        SetupValidToken(userId, new User { Id = userId, PasswordHash = "old-hash" });
+        UserRepositoryMock
+            .Setup(r => r.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        var error = await Assert.ThrowsAsync<AuthException>(() => _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.InvalidToken, error.AuthErrorType);
     }
 }

@@ -24,6 +24,9 @@
         <value>Invalid token.</value>
     </data>
     
+    <data name="AccountLockedByAdministrator" xml:space="preserve">
+        <value>Your account is locked. Contact your administrator.</value>
+    </data>
     <data name="AccountLocked" xml:space="preserve">
         <value>Account is locked. Try again in {0} minutes.</value>
     </data>

@@ -22,9 +22,5 @@ public interface IUserSessionRepository
 
     Task RevokeAllAsync(Guid userId, DateTime revokedAt, CancellationToken cancellationToken);
 
-    Task ReplaceAllAsync(UserSession replacementSession, DateTime revokedAt, CancellationToken cancellationToken);
-
-    Task StageRevokeAllAsync(Guid userId, DateTime revokedAt, CancellationToken cancellationToken);
-
     Task DeleteExpiredAsync(DateTime utcNow, CancellationToken cancellationToken);
 }

@@ -14,6 +14,11 @@ namespace Admin.Services.Tests.Handlers.Account;
 
 public class ChangePasswordHandlerTest : BaseHandlerTest
 {
+    public ChangePasswordHandlerTest()
+    {
+        UserRepositoryMock.Setup(x => x.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+    }
+
     private ChangePasswordHandler CreateHandler() => new(
         CurrentUserMock.Object,
         UserRepositoryMock.Object,
@@ -35,7 +40,7 @@ public class ChangePasswordHandlerTest : BaseHandlerTest
         var user = new User
         {
             Id = Guid.NewGuid(), PasswordHash = "old-hash",
-            UserStatusId = (int)UserStatusEnum.Active, FailedLoginCount = 3
+            UserStatusId = (int)UserStatusEnum.Active, FailedLoginCount = 3, SessionVersion = 2
         };
         CurrentUserMock.SetupGet(x => x.Id).Returns(user.Id);
         UserRepositoryMock.Setup(x => x.FindAsync(
@@ -56,14 +61,14 @@ public class ChangePasswordHandlerTest : BaseHandlerTest
         Assert.Equal("access", result.AccessToken);
         Assert.Equal("refresh", result.RefreshToken);
         Assert.Equal((uint)0, user.FailedLoginCount);
-        UserSessionRepositoryMock.Verify(x => x.ReplaceAllAsync(
-            It.Is<ATMS.Admin.Data.Entities.Tokens.UserSession>(session => session.UserId == user.Id),
-            It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
-        UserRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+        UserSessionRepositoryMock.Verify(x => x.AddAsync(
+            // Sessions from before the change carry version 2 and stop refreshing; the new one has 3.
+            It.Is<ATMS.Admin.Data.Entities.Tokens.UserSession>(session => session.UserId == user.Id && session.SessionVersion == 3), It.IsAny<CancellationToken>()), Times.Once);
+        UserRepositoryMock.Verify(x => x.TrySavePasswordChangeAsync(user, 2, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_IncorrectCurrentPassword_ReturnsFieldErrorAndSavesFailedAttempt()
+    public async Task Handle_IncorrectCurrentPassword_ReturnsFieldErrorAndCountsAttempt()
     {
         UserRepositoryMock.Setup(x => x.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new User { PasswordHash = "old-hash" });
@@ -71,9 +76,10 @@ public class ChangePasswordHandlerTest : BaseHandlerTest
         var error = await Assert.ThrowsAsync<ValidationException>(() => CreateHandler().Handle(Command(), CancellationToken.None));
 
         Assert.Contains(error.Errors, failure => failure.PropertyName == "OldPassword");
-        UserRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
-        UserSessionRepositoryMock.Verify(x => x.ReplaceAllAsync(
-            It.IsAny<ATMS.Admin.Data.Entities.Tokens.UserSession>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
+        UserRepositoryMock.Verify(x => x.RegisterFailedPasswordAsync(
+            It.IsAny<Guid>(), 5, It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
+        UserSessionRepositoryMock.Verify(x => x.AddAsync(
+            It.IsAny<ATMS.Admin.Data.Entities.Tokens.UserSession>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -96,13 +102,13 @@ public class ChangePasswordHandlerTest : BaseHandlerTest
             .ReturnsAsync(new AccessTokenResult("access", DateTime.UtcNow.AddMinutes(10)));
         RefreshTokenServiceMock.Setup(x => x.GenerateTokenAsync(null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new RefreshTokenResult("refresh", "hash", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(7)));
-        UserRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<CancellationToken>())).ThrowsAsync(new InvalidOperationException());
+        UserRepositoryMock.Setup(x => x.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).ThrowsAsync(new InvalidOperationException());
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => CreateHandler().Handle(Command(), CancellationToken.None));
 
-        UserSessionRepositoryMock.Verify(x => x.ReplaceAllAsync(
-            It.IsAny<ATMS.Admin.Data.Entities.Tokens.UserSession>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
-        UserRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+        UserSessionRepositoryMock.Verify(x => x.AddAsync(
+            It.IsAny<ATMS.Admin.Data.Entities.Tokens.UserSession>(), It.IsAny<CancellationToken>()), Times.Once);
+        UserRepositoryMock.Verify(x => x.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -116,45 +122,95 @@ public class ChangePasswordHandlerTest : BaseHandlerTest
             .ReturnsAsync(new AccessTokenResult("access", DateTime.UtcNow.AddMinutes(10)));
         RefreshTokenServiceMock.Setup(x => x.GenerateTokenAsync(null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new RefreshTokenResult("refresh", "hash", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(7)));
-        UserSessionRepositoryMock.Setup(x => x.ReplaceAllAsync(
+        UserSessionRepositoryMock.Setup(x => x.AddAsync(
                 It.IsAny<ATMS.Admin.Data.Entities.Tokens.UserSession>(),
-                It.IsAny<DateTime>(),
                 It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException());
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => CreateHandler().Handle(Command(), CancellationToken.None));
 
-        UserRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
+        UserRepositoryMock.Verify(x => x.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    // The attempt that locks the account reports the lock at once (423), not on the next try.
     [Fact]
-    public async Task Handle_FiveIncorrectOldPasswords_LocksAccountForFifteenMinutes()
+    public async Task Handle_AttemptThatLocksTheAccount_ReportsTheLock()
     {
-        var user = new User
-        {
-            Id = Guid.NewGuid(), PasswordHash = "old-hash",
-            UserStatusId = (int)UserStatusEnum.Active
-        };
+        var user = new User { Id = Guid.NewGuid(), PasswordHash = "old-hash", UserStatusId = (int)UserStatusEnum.Active };
         UserRepositoryMock.Setup(x => x.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
-
-        for (var attempt = 0; attempt < 4; attempt++)
-        {
-            await Assert.ThrowsAsync<ValidationException>(() => CreateHandler().Handle(Command(), CancellationToken.None));
-        }
-
-        // The fifth wrong password locks the account and says so in the same response.
-        var lockingError = await Assert.ThrowsAsync<AuthException>(() => CreateHandler().Handle(Command(), CancellationToken.None));
-        Assert.Equal(AuthErrorType.AccountLocked, lockingError.AuthErrorType);
-
-        Assert.Equal((int)UserStatusEnum.Locked, user.UserStatusId);
-        Assert.Equal((uint)0, user.FailedLoginCount);
-        Assert.InRange(user.LockoutEnd!.Value, DateTime.UtcNow.AddMinutes(14), DateTime.UtcNow.AddMinutes(15));
-        UserRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Exactly(5));
+        UserRepositoryMock.Setup(x => x.RegisterFailedPasswordAsync(
+                user.Id, 5, It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         var error = await Assert.ThrowsAsync<AuthException>(() => CreateHandler().Handle(Command(), CancellationToken.None));
 
         Assert.Equal(AuthErrorType.AccountLocked, error.AuthErrorType);
         Assert.StartsWith(AuthMessages.AccountLocked.Split('{')[0], error.Message);
+    }
+
+    [Fact]
+    public async Task Handle_WhileTimedLockoutRuns_RefusesWithoutCheckingThePassword()
+    {
+        var user = new User
+        {
+            Id = Guid.NewGuid(), PasswordHash = "old-hash",
+            UserStatusId = (int)UserStatusEnum.Locked, LockoutEnd = DateTime.UtcNow.AddMinutes(10)
+        };
+        UserRepositoryMock.Setup(x => x.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        var error = await Assert.ThrowsAsync<AuthException>(() => CreateHandler().Handle(Command(), CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.AccountLocked, error.AuthErrorType);
+        PasswordHasherServiceMock.Verify(x => x.Verify(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    // A lock with no end date was set by an administrator: no new password and no new tokens.
+    [Fact]
+    public async Task Handle_ManualLock_RefusesWithoutChangingPasswordOrIssuingTokens()
+    {
+        var user = new User
+        {
+            Id = Guid.NewGuid(), PasswordHash = "old-hash",
+            UserStatusId = (int)UserStatusEnum.Locked, LockoutEnd = null
+        };
+        UserRepositoryMock.Setup(x => x.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+        PasswordHasherServiceMock.Setup(x => x.Verify(It.IsAny<string>(), "old-hash")).Returns(true);
+        PasswordHasherServiceMock.Setup(x => x.Hash(It.IsAny<string>())).Returns("new-hash");
+        AccessTokenServiceMock.Setup(x => x.GenerateTokenAsync(user, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new AccessTokenResult("access", DateTime.UtcNow.AddMinutes(10)));
+        RefreshTokenServiceMock.Setup(x => x.GenerateTokenAsync(null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RefreshTokenResult("refresh", "hash", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(7)));
+
+        var error = await Assert.ThrowsAsync<AuthException>(() => CreateHandler().Handle(Command(), CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.AccountLocked, error.AuthErrorType);
+        Assert.Equal("old-hash", user.PasswordHash);
+        Assert.Equal((int)UserStatusEnum.Locked, user.UserStatusId);
+        AccessTokenServiceMock.Verify(x => x.GenerateTokenAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Never);
+        UserRepositoryMock.Verify(x => x.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    // Two password changes that read the same version: the one that commits second finds it moved and
+    // gives up, so only one new session exists under the new version.
+    [Fact]
+    public async Task Handle_ConcurrentChangeWonTheRace_RefusesWithConflict()
+    {
+        var user = new User { Id = Guid.NewGuid(), PasswordHash = "old-hash", UserStatusId = (int)UserStatusEnum.Active };
+        UserRepositoryMock.Setup(x => x.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+        PasswordHasherServiceMock.Setup(x => x.Verify(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+        AccessTokenServiceMock.Setup(x => x.GenerateTokenAsync(user, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new AccessTokenResult("access", DateTime.UtcNow.AddMinutes(10)));
+        RefreshTokenServiceMock.Setup(x => x.GenerateTokenAsync(null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new RefreshTokenResult("refresh", "hash", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(7)));
+        UserRepositoryMock.Setup(x => x.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+
+        var error = await Assert.ThrowsAsync<ATMS.Application.Exceptions.Conflict.ConflictException>(
+            () => CreateHandler().Handle(Command(), CancellationToken.None));
+
+        Assert.Equal(AccountMessages.PasswordChangedConcurrently, error.Message);
     }
 }

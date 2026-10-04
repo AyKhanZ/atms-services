@@ -24,6 +24,10 @@ public class UpdateUserStatusHandler(
         }
 
         entity.UserStatusId = command.UserStatusId;
+        // The administrator's decision replaces any timed lockout from wrong passwords: a status set
+        // here, Locked included, has no end date.
+        entity.LockoutEnd = null;
+        entity.FailedLoginCount = 0;
 
         await userRepository.SaveAsync(cancellationToken);
 

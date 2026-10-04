@@ -8,6 +8,13 @@ namespace ATMS.Admin.Data.Repositories;
 
 public class PasswordResetTokenRepository(AdminDbContext context) : IPasswordResetTokenRepository
 {
+    public void StageConsume(PasswordResetToken passwordResetToken)
+    {
+        // The token may have disappeared after it was read. Its DELETE must still affect one row,
+        // otherwise SaveChanges rejects the reset and the password transaction rolls back.
+        context.PasswordResetTokens.Remove(passwordResetToken);
+    }
+
     public async Task ClearListAsync(
         Expression<Func<PasswordResetToken, bool>> predicate,
         CancellationToken cancellationToken)
