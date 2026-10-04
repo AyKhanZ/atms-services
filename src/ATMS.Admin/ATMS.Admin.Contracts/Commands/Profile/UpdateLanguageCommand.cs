@@ -1,12 +1,12 @@
 using MediatR;
-using Newtonsoft.Json;
+using ATMS.Application.Security;
+using ATMS.Admin.Contracts.Security;
 
 namespace ATMS.Admin.Contracts.Commands.Profile;
 
+[ExceptSuperAdminAccess]
+[CompletedOnboardingAccess]
 public class UpdateLanguageCommand : IRequest
 {
-    [JsonIgnore]
-    public Guid Id { get; set; }
-    
     public required string Language { get; set; }
 }

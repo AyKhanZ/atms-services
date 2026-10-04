@@ -1,242 +1,176 @@
 using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Profile;
+using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Validation.Profile;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Moq;
 
 namespace Admin.Services.Tests.Validators.Profile;
 
 public class UpdateSettingsValidatorTest : BaseValidatorTest
 {
-    private readonly UpdateSettingsValidator _validator;
+    private UpdateSettingsValidator CreateValidator() => new(
+        new ConfigurationBuilder().Build(),
+        DictionariesRepositoryMock.Object,
+        UserRepositoryMock.Object,
+        CurrentUserMock.Object);
 
-    public UpdateSettingsValidatorTest()
+    private void SetupValidData()
     {
-        _validator = new UpdateSettingsValidator(DictionariesRepositoryMock.Object);
+        DictionariesRepositoryMock.Setup(x => x.IsGenderExistAsync(It.IsAny<Expression<Func<Gender, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        DictionariesRepositoryMock.Setup(x => x.IsMaritalStatusExistAsync(It.IsAny<Expression<Func<MaritalStatus, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        DictionariesRepositoryMock.Setup(x => x.IsLanguageExistAsync(It.IsAny<Expression<Func<Language, bool>>>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        UserRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new User { AvatarPath = "users/avatar.webp" });
     }
 
-    private void SetupDictionariesExist()
+    private static UpdateSettingsCommand Command() => new()
     {
-        DictionariesRepositoryMock
-            .Setup(r => r.IsGenderExistAsync(
-                It.IsAny<Expression<Func<Gender, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        DictionariesRepositoryMock
-            .Setup(r => r.IsMaritalStatusExistAsync(
-                It.IsAny<Expression<Func<MaritalStatus, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-    }
-
-    private static UpdateSettingsCommand ValidCommand() => new()
-    {
-        Id = Guid.NewGuid(),
         Name = "John",
         Surname = "Doe",
         PhoneNumber = "+994501234567",
         Position = "Developer",
-        BirthDate = DateTime.UtcNow.AddYears(-25),
+        BirthDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-25)),
         GenderId = 1,
-        MaritalStatusId = 1
+        MaritalStatusId = 1,
+        LanguageId = 1
     };
 
     [Fact]
-    public async Task Validate_WhenValid_PassesValidation()
+    public async Task Validate_OnboardingLimitsAndExistingAvatar_Succeeds()
     {
-        SetupDictionariesExist();
+        SetupValidData();
+        var command = Command();
+        command.Position = new string('A', 100);
 
-        var result = await _validator.ValidateAsync(ValidCommand());
+        var result = await CreateValidator().ValidateAsync(command);
 
         Assert.True(result.IsValid);
     }
 
-    [Fact]
-    public async Task Validate_WhenIdEmpty_FailsValidation()
+    [Theory]
+    [InlineData(101, "Position")]
+    [InlineData(51, "Name")]
+    public async Task Validate_TooLongValue_ReturnsFieldError(int length, string field)
     {
-        var command = ValidCommand();
-        command.Id = Guid.Empty;
+        SetupValidData();
+        var command = Command();
+        if (field == "Name") command.Name = new string('A', length);
+        else command.Position = new string('A', length);
 
-        var result = await _validator.ValidateAsync(command);
+        var result = await CreateValidator().ValidateAsync(command);
 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Id));
+        Assert.Contains(result.Errors, error => error.PropertyName == field);
     }
 
     [Fact]
-    public async Task Validate_WhenNameEmpty_FailsValidation()
+    public async Task Validate_NoExistingOrReplacementAvatar_ReturnsAvatarError()
     {
-        var command = ValidCommand();
-        command.Name = "";
+        SetupValidData();
+        UserRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new User { AvatarPath = "" });
 
-        var result = await _validator.ValidateAsync(command);
+        var result = await CreateValidator().ValidateAsync(Command());
 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Name));
+        Assert.Contains(result.Errors, error => error.PropertyName == "Avatar");
     }
 
-    [Fact]
-    public async Task Validate_WhenNameTooLong_FailsValidation()
+    [Theory]
+    [InlineData("Name")]
+    [InlineData("Surname")]
+    [InlineData("PhoneNumber")]
+    [InlineData("Position")]
+    public async Task Validate_EmptyRequiredText_ReturnsFieldError(string field)
     {
-        var command = ValidCommand();
-        command.Name = new string('a', 51);
+        SetupValidData();
+        var command = Command();
+        switch (field)
+        {
+            case "Name": command.Name = ""; break;
+            case "Surname": command.Surname = ""; break;
+            case "PhoneNumber": command.PhoneNumber = ""; break;
+            case "Position": command.Position = ""; break;
+        }
 
-        var result = await _validator.ValidateAsync(command);
+        var result = await CreateValidator().ValidateAsync(command);
 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Name));
+        Assert.Contains(result.Errors, error => error.PropertyName == field);
     }
 
-    [Fact]
-    public async Task Validate_WhenSurnameEmpty_FailsValidation()
+    [Theory]
+    [InlineData("PhoneNumber", "invalid")]
+    [InlineData("Surname", "long")]
+    public async Task Validate_InvalidText_ReturnsFieldError(string field, string value)
     {
-        var command = ValidCommand();
-        command.Surname = "";
+        SetupValidData();
+        var command = Command();
+        if (field == "PhoneNumber") command.PhoneNumber = value;
+        else command.Surname = new string('A', 101);
 
-        var result = await _validator.ValidateAsync(command);
+        var result = await CreateValidator().ValidateAsync(command);
 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Surname));
+        Assert.Contains(result.Errors, error => error.PropertyName == field);
     }
 
-    [Fact]
-    public async Task Validate_WhenSurnameTooLong_FailsValidation()
+    [Theory]
+    [InlineData(-101)]
+    [InlineData(-17)]
+    [InlineData(1)]
+    public async Task Validate_BirthDateOutsideOnboardingRange_ReturnsError(int yearsFromToday)
     {
-        var command = ValidCommand();
-        command.Surname = new string('a', 101);
+        SetupValidData();
+        var command = Command();
+        command.BirthDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(yearsFromToday));
 
-        var result = await _validator.ValidateAsync(command);
+        var result = await CreateValidator().ValidateAsync(command);
 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Surname));
+        Assert.Contains(result.Errors, error => error.PropertyName == "BirthDate");
     }
 
-    [Fact]
-    public async Task Validate_WhenPhoneNumberEmpty_FailsValidation()
+    [Theory]
+    [InlineData("GenderId")]
+    [InlineData("MaritalStatusId")]
+    [InlineData("LanguageId")]
+    public async Task Validate_UnknownDictionaryValue_ReturnsFieldError(string field)
     {
-        var command = ValidCommand();
-        command.PhoneNumber = "";
+        SetupValidData();
+        var command = Command();
+        switch (field)
+        {
+            case "GenderId": command.GenderId = 999; break;
+            case "MaritalStatusId": command.MaritalStatusId = 999; break;
+            case "LanguageId": command.LanguageId = 999; break;
+        }
 
-        var result = await _validator.ValidateAsync(command);
+        DictionariesRepositoryMock.Setup(x => x.IsGenderExistAsync(It.IsAny<Expression<Func<Gender, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(field != "GenderId");
+        DictionariesRepositoryMock.Setup(x => x.IsMaritalStatusExistAsync(It.IsAny<Expression<Func<MaritalStatus, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(field != "MaritalStatusId");
+        DictionariesRepositoryMock.Setup(x => x.IsLanguageExistAsync(It.IsAny<Expression<Func<Language, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(field != "LanguageId");
 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.PhoneNumber));
+        var result = await CreateValidator().ValidateAsync(command);
+
+        Assert.Contains(result.Errors, error => error.PropertyName == field);
     }
 
-    [Fact]
-    public async Task Validate_WhenPhoneNumberInvalid_FailsValidation()
+    [Theory]
+    [InlineData("image/gif", 1024L)]
+    [InlineData("image/png", 5_242_881L)]
+    [InlineData("image/png", 0L)]
+    public async Task Validate_InvalidAvatar_ReturnsAvatarError(string contentType, long length)
     {
-        var command = ValidCommand();
-        command.PhoneNumber = "not-a-phone";
+        SetupValidData();
+        var file = new Mock<IFormFile>();
+        file.SetupGet(x => x.ContentType).Returns(contentType);
+        file.SetupGet(x => x.Length).Returns(length);
+        var command = Command();
+        command.Avatar = file.Object;
 
-        var result = await _validator.ValidateAsync(command);
+        var result = await CreateValidator().ValidateAsync(command);
 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.PhoneNumber));
-    }
-
-    [Fact]
-    public async Task Validate_WhenPositionEmpty_FailsValidation()
-    {
-        var command = ValidCommand();
-        command.Position = "";
-
-        var result = await _validator.ValidateAsync(command);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Position));
-    }
-
-    [Fact]
-    public async Task Validate_WhenPositionTooLong_FailsValidation()
-    {
-        var command = ValidCommand();
-        command.Position = new string('a', 51);
-
-        var result = await _validator.ValidateAsync(command);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Position));
-    }
-
-    [Fact]
-    public async Task Validate_WhenBirthDateTooOld_FailsValidation()
-    {
-        var command = ValidCommand();
-        command.BirthDate = new DateTime(1899, 12, 31);
-
-        var result = await _validator.ValidateAsync(command);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.BirthDate));
-    }
-
-    [Fact]
-    public async Task Validate_WhenBirthDateInFuture_FailsValidation()
-    {
-        var command = ValidCommand();
-        command.BirthDate = DateTime.UtcNow.AddDays(1);
-
-        var result = await _validator.ValidateAsync(command);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.BirthDate));
-    }
-
-    [Fact]
-    public async Task Validate_WhenUserUnder18_FailsValidation()
-    {
-        var command = ValidCommand();
-        command.BirthDate = DateTime.UtcNow.AddYears(-17);
-
-        var result = await _validator.ValidateAsync(command);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.BirthDate));
-    }
-
-    [Fact]
-    public async Task Validate_WhenGenderNotFound_FailsValidation()
-    {
-        DictionariesRepositoryMock
-            .Setup(r => r.IsGenderExistAsync(
-                It.IsAny<Expression<Func<Gender, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-        DictionariesRepositoryMock
-            .Setup(r => r.IsMaritalStatusExistAsync(
-                It.IsAny<Expression<Func<MaritalStatus, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        var command = ValidCommand();
-
-        var result = await _validator.ValidateAsync(command);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.GenderId));
-    }
-
-    [Fact]
-    public async Task Validate_WhenMaritalStatusNotFound_FailsValidation()
-    {
-        DictionariesRepositoryMock
-            .Setup(r => r.IsGenderExistAsync(
-                It.IsAny<Expression<Func<Gender, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-        DictionariesRepositoryMock
-            .Setup(r => r.IsMaritalStatusExistAsync(
-                It.IsAny<Expression<Func<MaritalStatus, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        var command = ValidCommand();
-
-        var result = await _validator.ValidateAsync(command);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.MaritalStatusId));
+        Assert.Contains(result.Errors, error => error.PropertyName == "Avatar");
     }
 }

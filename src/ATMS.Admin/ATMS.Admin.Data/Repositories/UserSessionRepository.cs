@@ -92,6 +92,32 @@ public class UserSessionRepository(AdminDbContext context) : IUserSessionReposit
                 cancellationToken);
     }
 
+    public async Task ReplaceAllAsync(
+        UserSession replacementSession,
+        DateTime revokedAt,
+        CancellationToken cancellationToken)
+    {
+        await StageRevokeAllAsync(replacementSession.UserId, revokedAt, cancellationToken);
+        await context.UserSessions.AddAsync(replacementSession, cancellationToken);
+    }
+
+    public async Task StageRevokeAllAsync(
+        Guid userId,
+        DateTime revokedAt,
+        CancellationToken cancellationToken)
+    {
+        // Leave these changes tracked so they commit in the caller's SaveChanges together with the
+        // password change; RevokeAllAsync writes at once and cannot be rolled back with it.
+        var activeSessions = await context.UserSessions
+            .Where(session => session.UserId == userId && session.RevokedAt == null)
+            .ToListAsync(cancellationToken);
+
+        foreach (var session in activeSessions)
+        {
+            session.RevokedAt = revokedAt;
+        }
+    }
+
     public async Task DeleteExpiredAsync(DateTime utcNow, CancellationToken cancellationToken)
     {
         await context.UserSessions

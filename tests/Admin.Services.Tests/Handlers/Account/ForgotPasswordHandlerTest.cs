@@ -51,17 +51,17 @@ public class ForgotPasswordHandlerTest : BaseHandlerTest
             Times.Once);
     }
  
+    // Same answer for an unknown address: the endpoint must not reveal who is registered.
     [Fact]
-    public async Task Handle_WhenUserNotFound_ThrowsEntityException()
+    public async Task Handle_WhenUserNotFound_SucceedsWithoutQueuingAnEmail()
     {
         UserRepositoryMock
             .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
- 
-        var exception = await Assert.ThrowsAsync<EntityException>(() =>
-            _handler.Handle(CreateCommand(), CancellationToken.None));
- 
-        Assert.Equal(EntityErrorType.NotFound, exception.ErrorType);
+
+        await _handler.Handle(CreateCommand(), CancellationToken.None);
+
+        UserRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

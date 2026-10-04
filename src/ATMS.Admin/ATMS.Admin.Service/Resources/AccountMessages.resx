@@ -29,7 +29,7 @@
     </data>
     
     <data name="PasswordInvalidFormat" xml:space="preserve">
-        <value>Password must include uppercase, number, special char (!@#$%^&amp;*()-_=+), no spaces.</value>
+        <value>Password must include uppercase and lowercase letters, a number, and a special character (!@#$%^&amp;*()-_=+), with no spaces.</value>
     </data>
     
     <data name="EmailAlreadyConfirmed" xml:space="preserve">
@@ -103,4 +103,7 @@
     </data>
     <data name="EmailShouldBeLessThan" xml:space="preserve">
         <value>Email must be less than {0} symbols.</value>
-    </data></root>
+    </data>
+    <data name="OldPasswordIncorrect" xml:space="preserve"><value>Current password is incorrect.</value></data>
+    <data name="NewPasswordMustDiffer" xml:space="preserve"><value>Choose a password different from your current password.</value></data>
+</root>

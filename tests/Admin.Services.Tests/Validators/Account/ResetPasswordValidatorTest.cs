@@ -49,7 +49,7 @@ public class ResetPasswordValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(password: "A1!bc", confirmPassword: "A1!bc"));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == string.Format(AccountMessages.PasswordTooShort, 6));
+        Assert.Contains(result.Errors, e => e.ErrorMessage == string.Format(AccountMessages.PasswordTooShort, 10));
     }
  
     [Fact]
@@ -67,6 +67,7 @@ public class ResetPasswordValidatorTest
     [InlineData("NewPassword1")]   // no special char
     [InlineData("NewPassword!")]   // no number
     [InlineData("New Pass1!")]     // space
+    [InlineData("NEWPASSWORD1!")]  // no lowercase
     public async Task Validate_WhenPasswordInvalid_ReturnsFailure(string password)
     {
         var result = await _validator.ValidateAsync(GetCommand(password: password, confirmPassword: password));

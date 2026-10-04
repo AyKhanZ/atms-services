@@ -11,9 +11,9 @@ public class ResetPasswordValidator : AbstractValidator<ResetPasswordCommand>
     {
         RuleFor(x => x.Password).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(AccountMessages.PasswordRequired)
-            .MinimumLength(6).WithMessage(string.Format(AccountMessages.PasswordTooShort, 6))
+            .MinimumLength(10).WithMessage(string.Format(AccountMessages.PasswordTooShort, 10))
             .MaximumLength(40).WithMessage(string.Format(AccountMessages.PasswordTooLong, 40))
-            .Must(password => PasswordHelper.IsValid(password, 6, false))
+            .Must(password => PasswordHelper.IsValid(password, 10, true))
             .WithMessage(AccountMessages.PasswordInvalidFormat);
 
         RuleFor(x => x.ConfirmPassword).Cascade(CascadeMode.Stop)

@@ -4,6 +4,9 @@ using ATMS.Application.Interfaces;
 using ATMS.Application.Security;
 using ATMS.Data.Constants;
 using ATMS.Data.Enums;
+using ATMS.Admin.Contracts.Commands.Account;
+using ATMS.Admin.Contracts.Commands.Profile;
+using ATMS.Admin.Contracts.Requests.Profile;
 using MediatR;
 using Moq;
 
@@ -90,6 +93,36 @@ public class AccessBehaviorTest
         Assert.Equal("handled", result);
     }
 
+    [Fact]
+    public async Task Handle_ExceptSuperAdmin_DeniesSuperAdmin()
+    {
+        _currentUser.SetupGet(user => user.RoleId).Returns(RoleIds.SuperAdmin);
+        var behavior = CreateBehavior<PersonalRequest>();
+
+        var error = await Assert.ThrowsAsync<AuthException>(
+            () => behavior.Handle(new PersonalRequest(), Next, CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.Forbidden, error.AuthErrorType);
+    }
+
+    [Fact]
+    public async Task Handle_ExceptSuperAdmin_AllowsOtherRolesWithoutPermission()
+    {
+        var behavior = CreateBehavior<PersonalRequest>();
+
+        Assert.Equal("handled", await behavior.Handle(new PersonalRequest(), Next, CancellationToken.None));
+    }
+
+    [Theory]
+    [InlineData(typeof(GetProfileRequest))]
+    [InlineData(typeof(UpdateSettingsCommand))]
+    [InlineData(typeof(UpdateLanguageCommand))]
+    [InlineData(typeof(ChangePasswordCommand))]
+    public void PersonalSettingsRequests_ExcludeSuperAdmin(Type requestType)
+    {
+        Assert.True(requestType.IsDefined(typeof(ExceptSuperAdminAccessAttribute), false));
+    }
+
     private AccessBehavior<TRequest, string> CreateBehavior<TRequest>() where TRequest : notnull
         => new(_currentUser.Object);
 
@@ -103,5 +136,8 @@ public class AccessBehaviorTest
 
     [Access(PermissionEnum.UserView, PermissionEnum.UserEdit)]
     private sealed record AlternativeSystemRequest : IRequest<string>;
+
+    [ExceptSuperAdminAccess]
+    private sealed record PersonalRequest : IRequest<string>;
 
 }

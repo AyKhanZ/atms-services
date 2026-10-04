@@ -250,6 +250,21 @@ public class LoginHandlerTest : BaseHandlerTest
     }
 
     [Fact]
+    public async Task Handle_WrongPasswordAfterExpiredLockout_CanLockAgain()
+    {
+        var user = CreateUser(failedLoginCount: 4, statusId: (int)UserStatusEnum.Locked);
+        user.LockoutEnd = DateTime.UtcNow.AddMinutes(-1);
+        SetupUser(user);
+        SetupPasswordMatch(false);
+
+        await Assert.ThrowsAsync<AuthException>(() => _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        Assert.Equal((int)UserStatusEnum.Locked, user.UserStatusId);
+        Assert.True(user.LockoutEnd > DateTime.UtcNow);
+        UserRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task Handle_WithValidCredentials_CallsSaveAsync()
     {
         var user = CreateUser();
@@ -267,7 +282,7 @@ public class LoginHandlerTest : BaseHandlerTest
     }
 
     [Fact]
-    public async Task Handle_WithWrongPassword_DoesNotCallSaveAsync()
+    public async Task Handle_WithWrongPassword_PersistsFailedAttempt()
     {
         var user = CreateUser();
         var command = CreateCommand();
@@ -280,7 +295,7 @@ public class LoginHandlerTest : BaseHandlerTest
 
         UserRepositoryMock.Verify(
             r => r.SaveAsync(It.IsAny<CancellationToken>()),
-            Times.Never);
+            Times.Once);
     }
 
     [Theory]

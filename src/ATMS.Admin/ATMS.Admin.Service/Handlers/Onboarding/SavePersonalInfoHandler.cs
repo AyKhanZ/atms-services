@@ -7,6 +7,7 @@ using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
+using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using ATMS.Infrastructure.Images;
 using AutoMapper;
@@ -73,7 +74,8 @@ public sealed class SavePersonalInfoHandler(
         }
 
         if (newAvatarPath is not null &&
-            oldAvatarPath is not null &&
+            !string.IsNullOrWhiteSpace(oldAvatarPath) &&
+            oldAvatarPath != DefaultValues.UserAvatar &&
             oldAvatarPath != newAvatarPath)
         {
             await imageStorage.DeleteAsync(oldAvatarPath, cancellationToken);

@@ -34,7 +34,7 @@
     </data>
 
     <data name="PasswordInvalidFormat" xml:space="preserve">
-        <value>Пароль должен содержать заглавную букву, цифру, специальный символ (!@#$%^&amp;*()-_=+) и не содержать пробелов.</value>
+        <value>Пароль должен содержать заглавную и строчную буквы, цифру и специальный символ (!@#$%^&amp;*()-_=+), без пробелов.</value>
     </data>
 
     <data name="EmailAlreadyConfirmed" xml:space="preserve">
@@ -104,4 +104,7 @@
     </data>
     <data name="EmailShouldBeLessThan" xml:space="preserve">
         <value>Email должен содержать не более {0} символов.</value>
-    </data></root>
+    </data>
+    <data name="OldPasswordIncorrect" xml:space="preserve"><value>Текущий пароль неверен.</value></data>
+    <data name="NewPasswordMustDiffer" xml:space="preserve"><value>Выберите пароль, который отличается от текущего.</value></data>
+</root>

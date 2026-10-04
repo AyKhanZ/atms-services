@@ -32,7 +32,14 @@ public class LoginHandler(
 
         EnsureAccountIsActive(user);
 
-        VerifyPasswords(user, command);
+        if (user.UserStatusId == (int)UserStatusEnum.Locked &&
+            user.LockoutEnd <= DateTime.UtcNow)
+        {
+            user.UserStatusId = (int)UserStatusEnum.Active;
+            user.LockoutEnd = null;
+        }
+
+        await VerifyPasswordsAsync(user, command, cancellationToken);
 
         var accessTokenResult = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
         var refreshToken = await refreshTokenService.GenerateTokenAsync(null, cancellationToken);
@@ -89,7 +96,7 @@ public class LoginHandler(
         }
     }
 
-    private void VerifyPasswords(User user, LoginCommand command)
+    private async Task VerifyPasswordsAsync(User user, LoginCommand command, CancellationToken cancellationToken)
     {
         var match = passwordHasherService.Verify(command.Password, user.PasswordHash);
         if (match)
@@ -112,6 +119,8 @@ public class LoginHandler(
             user.UserStatusId = (int)UserStatusEnum.Locked;
             user.FailedLoginCount = 0;
         }
+
+        await userRepository.SaveAsync(cancellationToken);
 
         throw new AuthException(AuthErrorType.InvalidCredentials,
             AuthMessages.InvalidLoginCredentials);

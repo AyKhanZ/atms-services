@@ -10,7 +10,7 @@ public class UpdateLanguageValidatorTest
     [Fact]
     public async Task Validate_WhenValid_PassesValidation()
     {
-        var command = new UpdateLanguageCommand { Id = Guid.NewGuid(), Language = "en" };
+        var command = new UpdateLanguageCommand { Language = "en" };
 
         var result = await _validator.ValidateAsync(command);
 
@@ -18,20 +18,9 @@ public class UpdateLanguageValidatorTest
     }
 
     [Fact]
-    public async Task Validate_WhenIdEmpty_FailsValidation()
-    {
-        var command = new UpdateLanguageCommand { Id = Guid.Empty, Language = "en" };
-
-        var result = await _validator.ValidateAsync(command);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.Id));
-    }
-
-    [Fact]
     public async Task Validate_WhenLanguageEmpty_FailsValidation()
     {
-        var command = new UpdateLanguageCommand { Id = Guid.NewGuid(), Language = "" };
+        var command = new UpdateLanguageCommand { Language = "" };
 
         var result = await _validator.ValidateAsync(command);
 
@@ -42,7 +31,7 @@ public class UpdateLanguageValidatorTest
     [Fact]
     public async Task Validate_WhenLanguageTooShort_FailsValidation()
     {
-        var command = new UpdateLanguageCommand { Id = Guid.NewGuid(), Language = "e" };
+        var command = new UpdateLanguageCommand { Language = "e" };
 
         var result = await _validator.ValidateAsync(command);
 
@@ -53,7 +42,7 @@ public class UpdateLanguageValidatorTest
     [Fact]
     public async Task Validate_WhenLanguageTooLong_FailsValidation()
     {
-        var command = new UpdateLanguageCommand { Id = Guid.NewGuid(), Language = "eng" };
+        var command = new UpdateLanguageCommand { Language = "eng" };
 
         var result = await _validator.ValidateAsync(command);
 

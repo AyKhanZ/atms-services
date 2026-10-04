@@ -12,7 +12,12 @@ public static class HandlersModule
         {
             configuration.RegisterServicesFromAssembly(typeof(HandlersModule).Assembly);
         });
-        services.AddDispatcherServices();
+        // Order is the pipeline order: a super admin gets 403 before the onboarding 409, and both before validation.
+        services.AddLocalizationBehavior();
+        services.AddAccessBehavior();
+        services.AddCompletedOnboardingBehavior();
+        services.AddSharedValidationServices();
+        services.AddValidationBehavior();
 
         return services;
     }

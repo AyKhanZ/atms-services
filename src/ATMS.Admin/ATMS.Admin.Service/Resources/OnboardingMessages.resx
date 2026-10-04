@@ -26,6 +26,7 @@
   <data name="InvalidPhoneNumber" xml:space="preserve"><value>Enter a valid international phone number.</value></data>
   <data name="MinimumAge" xml:space="preserve"><value>You must be at least 18 years old.</value></data>
   <data name="OnboardingAlreadyCompleted" xml:space="preserve"><value>Your onboarding is already complete.</value></data>
+  <data name="OnboardingNotCompleted" xml:space="preserve"><value>Finish setting up your account first.</value></data>
   <data name="OnboardingConcurrencyConflict" xml:space="preserve"><value>Your onboarding was updated in another tab. Reload the page and try again.</value></data>
   <data name="PasswordRequirements" xml:space="preserve"><value>Use 10-40 characters with uppercase and lowercase letters, a number and a special character.</value></data>
   <data name="PhoneNumberMaxLength" xml:space="preserve"><value>Phone number cannot exceed 20 characters.</value></data>

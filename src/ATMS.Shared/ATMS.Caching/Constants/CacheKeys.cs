@@ -7,6 +7,8 @@ public static class CacheKeys
         public static string UserById(Guid id, string language) => $"user:{id}:{language}";
         
         public static string MeById(Guid id) => $"user:me:{id}";
+
+        public static string ProfileById(Guid id) => $"user:profile:{id}";
         
         public static string UserRoles(Guid userId) => $"user:{userId}:roles";
         

@@ -15,7 +15,7 @@ public class AuthenticationController(IMediator mediator) : ControllerBase
     /// Authenticates a user and issues access and refresh tokens.
     /// </summary>
     /// <remarks>
-    /// User account must be active and not locked.
+    /// User account must be active and not locked. Five incorrect passwords lock the account for 15 minutes.
     /// On successful authentication, both access and refresh tokens are returned.
     /// </remarks>
     /// <param name="command">Login request containing user credentials.</param>

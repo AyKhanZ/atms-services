@@ -18,6 +18,7 @@
   <data name="InvalidPhoneNumber" xml:space="preserve"><value>Укажите корректный номер телефона в международном формате.</value></data>
   <data name="MinimumAge" xml:space="preserve"><value>Вам должно быть не менее 18 лет.</value></data>
   <data name="OnboardingAlreadyCompleted" xml:space="preserve"><value>Онбординг уже завершён.</value></data>
+  <data name="OnboardingNotCompleted" xml:space="preserve"><value>Сначала завершите настройку аккаунта.</value></data>
   <data name="OnboardingConcurrencyConflict" xml:space="preserve"><value>Онбординг был изменён в другой вкладке. Обновите страницу и попробуйте снова.</value></data>
   <data name="PasswordRequirements" xml:space="preserve"><value>Используйте от 10 до 40 символов, включая заглавную и строчную буквы, цифру и специальный символ.</value></data>
   <data name="PhoneNumberMaxLength" xml:space="preserve"><value>Номер телефона не может быть длиннее 20 символов.</value></data>

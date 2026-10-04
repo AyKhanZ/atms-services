@@ -1,63 +1,102 @@
 using ATMS.Admin.Contracts.Commands.Profile;
+using ATMS.Admin.Contracts.Models.Profile;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Interfaces;
 using ATMS.Application.Localization;
+using ATMS.Data.Constants;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Contracts.Events.Users;
+using ATMS.Infrastructure.Images;
 using ATMS.Messaging.Configuration;
+using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace ATMS.Admin.Service.Handlers.Profile;
 
-public class UpdateSettingsHandler(
+public sealed class UpdateSettingsHandler(
+    ICurrentUser currentUser,
     IUserRepository userRepository,
     IOutboxRepository outboxRepository,
-    ICacheService cache) : IRequestHandler<UpdateSettingsCommand>
+    IImageStorage imageStorage,
+    ICacheService cache,
+    IMapper mapper,
+    ILogger<UpdateSettingsHandler> logger) : IRequestHandler<UpdateSettingsCommand, ProfileModel>
 {
-    public async Task Handle(UpdateSettingsCommand command, CancellationToken cancellationToken)
+    public async Task<ProfileModel> Handle(UpdateSettingsCommand command, CancellationToken cancellationToken)
     {
-        var entity = await userRepository.FindAsync(u => u.Id == command.Id, cancellationToken);
-        if (entity == null)
+        var user = await userRepository.FindAsync(u => u.Id == currentUser.Id, cancellationToken)
+            ?? throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+
+        var oldAvatarPath = user.AvatarPath;
+        string? newAvatarPath = null;
+
+        if (command.Avatar is not null)
         {
-            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+            var image = await imageStorage.SaveAsync(
+                command.Avatar,
+                ImageStorageFolder.Users,
+                currentUser.Id,
+                cancellationToken);
+            newAvatarPath = image.RelativePath;
         }
 
-        entity.Name = command.Name;
-        entity.Surname = command.Surname;
-        entity.PhoneNumber = command.PhoneNumber;
-        entity.BirthDate = command.BirthDate;
-        entity.Position = command.Position;
-        entity.MaritalStatusId = command.MaritalStatusId;
-        entity.GenderId = command.GenderId;
+        user.Name = command.Name;
+        user.Surname = command.Surname;
+        user.PhoneNumber = command.PhoneNumber;
+        user.BirthDate = command.BirthDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+        user.Position = command.Position;
+        user.MaritalStatusId = command.MaritalStatusId;
+        user.GenderId = command.GenderId;
+        user.LanguageId = command.LanguageId;
+        user.AvatarPath = newAvatarPath ?? oldAvatarPath;
 
-        var @event = new UserUpdatedEvent(
-            entity.Id,
-            entity.Name,
-            entity.Surname,
-            entity.AvatarPath);
+        try
+        {
+            await outboxRepository.AddAsync(
+                MessagingConstants.Exchanges.UserEvents,
+                MessagingConstants.RoutingKeys.UserUpdated,
+                new UserUpdatedEvent(user.Id, user.Name, user.Surname, user.AvatarPath),
+                cancellationToken);
 
-        await outboxRepository.AddAsync(
-            MessagingConstants.Exchanges.UserEvents,
-            MessagingConstants.RoutingKeys.UserUpdated,
-            @event,
-            cancellationToken);
+            await userRepository.SaveAsync(cancellationToken);
+        }
+        catch
+        {
+            if (newAvatarPath is not null)
+            {
+                await imageStorage.DeleteAsync(newAvatarPath, CancellationToken.None);
+            }
 
-        await userRepository.SaveAsync(cancellationToken);
-        
-        await InvalidateUserCacheAsync(command, cancellationToken);
-    }
-    
-    private async Task InvalidateUserCacheAsync(
-        UpdateSettingsCommand command,
-        CancellationToken cancellationToken)
-    {
+            throw;
+        }
+
         foreach (var language in SupportedLanguages.All)
         {
-            await cache.RemoveAsync(CacheKeys.Admin.UserById(command.Id, language), cancellationToken);
+            await cache.RemoveAsync(CacheKeys.Admin.UserById(user.Id, language), cancellationToken);
         }
 
-        await cache.RemoveAsync(CacheKeys.Admin.MeById(command.Id), cancellationToken);
+        await cache.RemoveAsync(CacheKeys.Admin.MeById(user.Id), cancellationToken);
+        await cache.RemoveAsync(CacheKeys.Admin.ProfileById(user.Id), cancellationToken);
+
+        if (newAvatarPath is not null &&
+            !string.IsNullOrWhiteSpace(oldAvatarPath) &&
+            oldAvatarPath != DefaultValues.UserAvatar &&
+            oldAvatarPath != newAvatarPath)
+        {
+            try
+            {
+                await imageStorage.DeleteAsync(oldAvatarPath, cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                logger.LogWarning(exception, "Could not delete the previous profile avatar for user {UserId}.", user.Id);
+            }
+        }
+
+        return mapper.Map<ProfileModel>(user);
     }
 }

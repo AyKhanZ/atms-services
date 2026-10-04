@@ -1,6 +1,7 @@
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Contracts.Models.Users;
+using ATMS.Admin.Contracts.Models;
 using ATMS.Application.Models;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
@@ -150,31 +151,37 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// Changes the password of the currently authenticated user.
     /// </summary>
     /// <remarks>
-    /// User must provide their current password (OldPassword) and a new password (NewPassword).
+    /// The authenticated user must provide the current password, a distinct new password,
+    /// and matching confirmation. Other sessions are revoked. The response contains a new token pair.
+    /// Five incorrect current passwords lock the account for 15 minutes.
     /// New password must meet security requirements
-    /// (at least 1 uppercase letter, 1 number, 1 special char from !@#$%^&amp;*()-_=+, no spaces, length 6-40).
+    /// (uppercase and lowercase letters, a number, a special char from !@#$%^&amp;*()-_=+, no spaces, length 10-40).
     /// </remarks>
-    /// <param name="command">Command containing Email, OldPassword, and NewPassword.</param>
+    /// <param name="command">Current password, new password, and confirmation.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="204">Password successfully changed.</response>
+    /// <response code="200">Password changed and replacement tokens issued.</response>
     /// <response code="400">Validation error, e.g., password format invalid or missing fields.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
-    /// <response code="404">User with specified ID not found.</response>
+    /// <response code="403">Super admins cannot change their password here.</response>
+    /// <response code="404">The current user was not found.</response>
+    /// <response code="409">The user must complete onboarding before changing the password.</response>
+    /// <response code="423">The account is temporarily locked.</response>
     /// <response code="500">Unhandled server error.</response>
     [Authorize]
     [HttpPut("change-password")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(AccessInfoModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status423Locked)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> ChangePassword(
+    public async Task<ActionResult<AccessInfoModel>> ChangePassword(
         [FromBody] ChangePasswordCommand command,
         CancellationToken cancellationToken)
     {
-        await mediator.Send(command, cancellationToken);
-
-        return NoContent();
+        return Ok(await mediator.Send(command, cancellationToken));
     }
 
 
@@ -200,15 +207,13 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// </remarks>
     /// <param name="command">Command containing the reset token, new password, and password confirmation.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <response code="202">Request accepted. If the account exists, a password reset email will be sent.</response>
+    /// <response code="202">Request accepted. If the account exists, a password reset email will be sent. The answer is the same for an unknown address.</response>
     /// <response code="400">Invalid email format or validation error.</response>
-    /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]
     [HttpPost("forgot-password")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ForgotPassword(
         [FromBody] ForgotPasswordCommand command,
@@ -236,8 +241,8 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     /// - exist in the system
     /// - not be expired
     ///
-    /// If the token is valid, the user's password will be updated and all
-    /// password reset tokens associated with the user will be invalidated.
+    /// If the token is valid, the password is updated, all reset tokens are invalidated,
+    /// and all open sessions are revoked. The new password must have 10 to 40 characters.
     ///
     /// Example request:
     ///
@@ -249,10 +254,10 @@ public class AccountController(IMediator mediator, IConfiguration configuration)
     ///     }
     ///
     /// </remarks>
-    /// <param name="command">Command containing email address associated with the user account.</param>
+    /// <param name="command">Reset token, new password, and matching confirmation.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">Password successfully reset.</response>
-    /// <response code="400">Invalid email format or validation error.</response>
+    /// <response code="400">The token or new password is invalid.</response>
     /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]

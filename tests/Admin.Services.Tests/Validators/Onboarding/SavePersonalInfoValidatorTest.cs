@@ -14,6 +14,18 @@ namespace Admin.Services.Tests.Validators.Onboarding;
 public sealed class SavePersonalInfoValidatorTest : BaseValidatorTest
 {
     [Fact]
+    public async Task Validate_BirthDateOlderThanOneHundredYears_ReturnsFieldError()
+    {
+        SetupDependencies();
+        var command = CreateValidCommand();
+        command.BirthDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-101));
+
+        var result = await CreateValidator().ValidateAsync(command);
+
+        Assert.Contains(result.Errors, error => error.PropertyName == nameof(command.BirthDate));
+    }
+
+    [Fact]
     public async Task Validate_WhenVersionDoesNotMatch_ThrowsConflictException()
     {
         SetupDependencies();

@@ -1,10 +1,15 @@
-﻿using MediatR;
+using ATMS.Admin.Contracts.Models;
+using ATMS.Application.Security;
+using ATMS.Admin.Contracts.Security;
+using MediatR;
 
 namespace ATMS.Admin.Contracts.Commands.Account;
 
-public class ChangePasswordCommand : IRequest
+[ExceptSuperAdminAccess]
+[CompletedOnboardingAccess]
+public class ChangePasswordCommand : IRequest<AccessInfoModel>
 {
-    public required string Email { get; set; }
     public required string OldPassword { get; set; }
     public required string NewPassword { get; set; }
+    public required string ConfirmPassword { get; set; }
 }
