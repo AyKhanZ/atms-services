@@ -36,9 +36,9 @@ public sealed class NotificationRepositoryTest
             INSERT INTO "Projects" ("Id", "Title", "IsDeleted") VALUES
                 (@projectId, 'Project Alpha', false),
                 (@deletedProjectId, 'Old project', true);
-            INSERT INTO "Tasks" ("Id", "WorkProjectId", "Code", "Title", "WorkTicketId", "CreatedById", "IsDeleted") VALUES
-                (@liveTaskId, @projectId, '41', 'Live', @ticketId, @actorId, false),
-                (@deletedTaskId, @projectId, '42', 'Deleted', @ticketId, @actorId, true);
+            INSERT INTO "Tasks" ("Id", "WorkProjectId", "Code", "Title", "WorkTicketId", "StatusId", "Deadline", "CreatedById", "IsDeleted") VALUES
+                (@liveTaskId, @projectId, '41', 'Live', @ticketId, 2, '2026-09-30T20:00:00Z', @actorId, false),
+                (@deletedTaskId, @projectId, '42', 'Deleted', @ticketId, 3, NULL, @actorId, true);
             INSERT INTO "Comments" ("Id", "OwnerType", "OwnerId", "CreatedById", "IsDeleted") VALUES
                 (@liveCommentId, 2, @liveTaskId, @actorId, false),
                 (@deletedCommentId, 2, @liveTaskId, @actorId, true);
@@ -105,6 +105,11 @@ public sealed class NotificationRepositoryTest
         Assert.Equal(ticketId, rows[liveComment.Id].WorkTicketId);
         Assert.Null(rows[deletedTask.Id].WorkTicketId);
         Assert.Null(rows[liveProject.Id].WorkTicketId);
+        // Where the task stands now, for the overdue mark; nothing for a deleted task or a project.
+        Assert.Equal((int)WorkTaskStatusEnum.InProgress, rows[liveComment.Id].TaskStatusId);
+        Assert.Equal(new DateTime(2026, 9, 30, 20, 0, 0, DateTimeKind.Utc), rows[liveComment.Id].TaskDeadline);
+        Assert.Null(rows[deletedTask.Id].TaskStatusId);
+        Assert.Null(rows[liveProject.Id].TaskDeadline);
         Assert.Equal("Payment form", rows[liveComment.Id].Parameters.TaskTitle);
     }
 
@@ -410,6 +415,8 @@ public sealed class NotificationRepositoryTest
                 "ParentWorkTaskId" uuid NULL,
                 "WorkTicketId" uuid NULL,
                 "AssigneeId" uuid NULL,
+                "StatusId" integer NOT NULL DEFAULT 1,
+                "Deadline" timestamp with time zone NULL,
                 "CreatedById" uuid NOT NULL,
                 "IsDeleted" boolean NOT NULL);
             CREATE TEMP TABLE "Comments" (

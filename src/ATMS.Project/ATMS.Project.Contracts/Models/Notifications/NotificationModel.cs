@@ -22,6 +22,10 @@ public class NotificationModel
 
     public Guid? WorkTicketId { get; set; }
 
+    public int? TaskStatusId { get; set; }
+
+    public DateTime? TaskDeadline { get; set; }
+
     public Guid? CommentId { get; set; }
 
     public NotificationParametersModel Parameters { get; set; }

@@ -23,6 +23,10 @@ public sealed class NotificationRow
 
     public Guid? WorkTicketId { get; init; }
 
+    public int? TaskStatusId { get; init; }
+
+    public DateTime? TaskDeadline { get; init; }
+
     public Guid? CommentId { get; init; }
 
     public NotificationParameters Parameters { get; init; }

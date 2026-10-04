@@ -183,8 +183,8 @@ public sealed class NotificationRepository(
     // name, and the deleted task, project or comment is checked here by hand to say so.
     private IQueryable<NotificationRow> ToRows(IQueryable<Notification> notifications) =>
         from notification in notifications
-        // One read of the task: whether it is still there, and the ticket it is in now — read, not
-        // stored, because a task can move to another ticket and its page lives under it.
+        // One read of the task: whether it is still there, the ticket it is in now and where it stands —
+        // read, not stored, because a task moves to another ticket, gets done or gets a new deadline.
         join task in context.WorkTasks on notification.EntityId equals task.Id into tasks
         from task in tasks.DefaultIfEmpty()
         select new NotificationRow
@@ -204,6 +204,8 @@ public sealed class NotificationRepository(
             EntityType = notification.EntityType,
             EntityId = notification.EntityId,
             WorkTicketId = task != null && !task.IsDeleted ? task.WorkTicketId : null,
+            TaskStatusId = task != null && !task.IsDeleted ? task.StatusId : null,
+            TaskDeadline = task != null && !task.IsDeleted ? task.Deadline : null,
             CommentId = notification.CommentId,
             Parameters = notification.Parameters,
             EntityDeleted = notification.EntityType == (int)NotificationEntityTypeEnum.WorkTask
