@@ -1348,6 +1348,9 @@ namespace ATMS.Admin.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("SessionVersion")
+                        .HasColumnType("integer");
+
                     b.Property<string>("TokenHash")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -1456,6 +1459,9 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<string>("Position")
                         .HasColumnType("text");
+
+                    b.Property<int>("SessionVersion")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Surname")
                         .IsRequired()

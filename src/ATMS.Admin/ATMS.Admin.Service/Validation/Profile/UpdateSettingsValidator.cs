@@ -1,63 +1,75 @@
 using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
-using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Dispatcher.Validation;
+using ATMS.Application.Interfaces;
+using ATMS.Data.Constants;
+using ATMS.Infrastructure.Validation;
 using FluentValidation;
+using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Admin.Service.Validation.Profile;
 
-public class UpdateSettingsValidator : AbstractValidator<UpdateSettingsCommand>
+public sealed class UpdateSettingsValidator : BaseImageValidator<UpdateSettingsCommand>
 {
     private readonly IDictionariesRepository _dictionariesRepository;
-    
-    public UpdateSettingsValidator(IDictionariesRepository dictionariesRepository)
+    private readonly IUserRepository _userRepository;
+    private readonly ICurrentUser _currentUser;
+
+    public UpdateSettingsValidator(
+        IConfiguration configuration,
+        IDictionariesRepository dictionariesRepository,
+        IUserRepository userRepository,
+        ICurrentUser currentUser) : base(configuration)
     {
         _dictionariesRepository = dictionariesRepository;
-        
-        RuleFor(s => s.Id)
-            .NotEmpty().WithMessage(ValidationMessages.IdRequired);
+        _userRepository = userRepository;
+        _currentUser = currentUser;
 
-        RuleFor(s => s.Name)
-            .NotEmpty().WithMessage(ValidationMessages.NameRequired)
-            .MaximumLength(50).WithMessage(string.Format(ValidationMessages.NameShouldBeLessThan, 50));
+        RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
+            .NotEmpty().WithMessage(AccountMessages.NameRequired)
+            .MaximumLength(50).WithMessage(string.Format(AccountMessages.NameShouldBeLessThan, 50));
 
-        RuleFor(s => s.Surname)
+        RuleFor(x => x.Surname).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(AccountMessages.SurnameRequired)
-            .MaximumLength(100)
-            .WithMessage(_ => string.Format(AccountMessages.SurnameShouldBeLessThan, 100));
+            .MaximumLength(100).WithMessage(string.Format(AccountMessages.SurnameShouldBeLessThan, 100));
 
-        RuleFor(s => s.PhoneNumber).Cascade(CascadeMode.Stop)
+        RuleFor(x => x.PhoneNumber).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(ProfileMessages.PhoneNumberRequired)
-            .Must(PhoneNumberHelper.IsValid)
-            .WithMessage(ProfileMessages.PhoneNumberValidValue);
-        
-        RuleFor(s => s.Position)
+            .MaximumLength(20).WithMessage(OnboardingMessages.PhoneNumberMaxLength)
+            .Must(PhoneNumberHelper.IsValid).WithMessage(OnboardingMessages.InvalidPhoneNumber);
+
+        RuleFor(x => x.Position).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(ProfileMessages.PositionRequired)
-            .MaximumLength(50).WithMessage(string.Format(ProfileMessages.PositionMaxLength, 50));
-        
-        RuleFor(s => s.BirthDate)
-            .NotEmpty().WithMessage(ProfileMessages.BirthDateRequired)
-            .IsInDateRange(new DateTime(1900, 1, 2), DateTime.UtcNow)
-            .Must(date => date <= DateTime.UtcNow).WithMessage(ProfileMessages.BirthDateMaxValue)
-            .Must(date => date <= DateTime.UtcNow.AddYears(-18)).WithMessage(ProfileMessages.BirthDateValidValue);
-        
-        RuleFor(s => s.MaritalStatusId).Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage(ProfileMessages.MaritalStatusRequired)
-            .MustAsync(IsMaritalStatusExistAsync).WithMessage(ProfileMessages.MaritalStatusNotSupported);
-        
-        RuleFor(s => s.GenderId).Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage(ProfileMessages.GenderRequired)
-            .MustAsync(IsGenderExistAsync).WithMessage(ProfileMessages.GenderNotSupported);
+            .MaximumLength(100).WithMessage(string.Format(ProfileMessages.PositionMaxLength, 100));
+
+        RuleFor(x => x.BirthDate)
+            .IsInDateRange(DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-100)), DateOnly.FromDateTime(DateTime.UtcNow))
+            .Must(date => date <= DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-18)))
+            .WithMessage(OnboardingMessages.MinimumAge);
+
+        RuleFor(x => x.GenderId)
+            .MustAsync((id, token) => _dictionariesRepository.IsGenderExistAsync(g => g.Id == id, token))
+            .WithMessage(OnboardingMessages.UnsupportedGender);
+
+        RuleFor(x => x.MaritalStatusId)
+            .MustAsync((id, token) => _dictionariesRepository.IsMaritalStatusExistAsync(m => m.Id == id, token))
+            .WithMessage(OnboardingMessages.UnsupportedMaritalStatus);
+
+        RuleFor(x => x.LanguageId)
+            .MustAsync((id, token) => _dictionariesRepository.IsLanguageExistAsync(l => l.Id == id, token))
+            .WithMessage(OnboardingMessages.UnsupportedLanguage);
+
+        RuleForOptionalImage(x => x.Avatar);
+
+        RuleFor(x => x.Avatar).MustAsync(async (avatar, token) =>
+                avatar is not null || HasOwnPhoto((await _userRepository.GetAsync(_currentUser.Id, token))?.AvatarPath))
+            .WithMessage(OnboardingMessages.ProfilePhotoRequired);
     }
 
-    private Task<bool> IsGenderExistAsync(int genderId, CancellationToken cancellationToken)
+    // The shared placeholder is what an account has before anyone chose a photo; it does not count.
+    private static bool HasOwnPhoto(string? avatarPath)
     {
-        return _dictionariesRepository.IsGenderExistAsync(m => m.Id == genderId, cancellationToken);
-    }
-
-    private Task<bool> IsMaritalStatusExistAsync(int maritalStatusId, CancellationToken cancellationToken)
-    {
-        return _dictionariesRepository.IsMaritalStatusExistAsync(m => m.Id == maritalStatusId, cancellationToken);
+        return !string.IsNullOrWhiteSpace(avatarPath) && avatarPath != DefaultValues.UserAvatar;
     }
 }

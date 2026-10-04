@@ -3,6 +3,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Localization;
+using ATMS.Application.Interfaces;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using MediatR;
@@ -10,13 +11,14 @@ using MediatR;
 namespace ATMS.Admin.Service.Handlers.Profile;
 
 public class UpdateLanguageHandler(
+    ICurrentUser currentUser,
     IUserRepository userRepository,
     IDictionariesRepository dictionariesRepository,
     ICacheService cache) : IRequestHandler<UpdateLanguageCommand>
 {
     public async Task Handle(UpdateLanguageCommand command, CancellationToken cancellationToken)
     {
-        var entity = await userRepository.FindAsync(u => u.Id == command.Id, cancellationToken);
+        var entity = await userRepository.FindAsync(u => u.Id == currentUser.Id, cancellationToken);
         if (entity == null)
         {
             throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
@@ -30,18 +32,19 @@ public class UpdateLanguageHandler(
 
         await userRepository.SaveAsync(cancellationToken);
 
-        await InvalidateUserCacheAsync(command, cancellationToken);
+        await InvalidateUserCacheAsync(currentUser.Id, cancellationToken);
     }
 
     private async Task InvalidateUserCacheAsync(
-        UpdateLanguageCommand command,
+        Guid userId,
         CancellationToken cancellationToken)
     {
         foreach (var language in SupportedLanguages.All)
         {
-            await cache.RemoveAsync(CacheKeys.Admin.UserById(command.Id, language), cancellationToken);
+            await cache.RemoveAsync(CacheKeys.Admin.UserById(userId, language), cancellationToken);
         }
 
-        await cache.RemoveAsync(CacheKeys.Admin.MeById(command.Id), cancellationToken);
+        await cache.RemoveAsync(CacheKeys.Admin.MeById(userId), cancellationToken);
+        await cache.RemoveAsync(CacheKeys.Admin.ProfileById(userId), cancellationToken);
     }
 }

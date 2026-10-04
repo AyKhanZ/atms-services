@@ -1,5 +1,7 @@
 using ATMS.Admin.API.Controllers.v1;
 using ATMS.Admin.Contracts.Commands.Profile;
+using ATMS.Admin.Contracts.Models.Profile;
+using ATMS.Admin.Contracts.Requests.Profile;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -7,86 +9,59 @@ namespace Admin.API.Tests;
 
 public class ProfileControllerTest : BaseControllerTest
 {
-    private readonly ProfileController _controller;
-
-    public ProfileControllerTest()
+    [Fact]
+    public void Route_DoesNotAcceptUserId()
     {
-        _controller = new ProfileController(MediatorMock.Object);
+        var route = (RouteAttribute?)Attribute.GetCustomAttribute(typeof(ProfileController), typeof(RouteAttribute));
+
+        Assert.Equal("api/v1/profile", route?.Template);
+    }
+
+    private ProfileController CreateController() => new(MediatorMock.Object);
+
+    private static ProfileModel Model() => new()
+    {
+        Name = "Jane", Surname = "Doe", Email = "jane@example.com", PhoneNumber = "+994501234567",
+        Position = "Developer", AvatarPath = "avatar.webp", LanguageId = 1,
+        BirthDate = new DateOnly(1990, 1, 1), GenderId = 1, MaritalStatusId = 1
+    };
+
+    [Fact]
+    public async Task Get_ReturnsCurrentProfile()
+    {
+        var model = Model();
+        MediatorMock.Setup(x => x.Send(It.IsAny<GetProfileRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(model);
+
+        var result = await CreateController().Get(CancellationToken.None);
+
+        Assert.Same(model, Assert.IsType<OkObjectResult>(result.Result).Value);
     }
 
     [Fact]
-    public async Task UpdateSettings_ReturnsNoContent()
+    public async Task UpdateSettings_ReturnsUpdatedProfile()
     {
-        // Arrange
-        var userId = Guid.NewGuid();
         var command = new UpdateSettingsCommand
         {
-            Id = userId,
-            Name = Faker.Name.FullName(),
-            Surname = Faker.Name.FullName(),
-            GenderId = Faker.Random.Int(1, 4),
-            MaritalStatusId = Faker.Random.Int(1, 4),
-            Position = Faker.Company.CompanyName(),
-            PhoneNumber = Faker.Phone.PhoneNumber(),
-            BirthDate = Faker.Date.Recent(),
+            Name = "Jane", Surname = "Doe", PhoneNumber = "+994501234567", Position = "Developer",
+            BirthDate = new DateOnly(1990, 1, 1), GenderId = 1, MaritalStatusId = 1, LanguageId = 1
         };
+        var model = Model();
+        MediatorMock.Setup(x => x.Send(command, It.IsAny<CancellationToken>())).ReturnsAsync(model);
 
-        MediatorMock
-            .Setup(m => m.Send(It.IsAny<UpdateSettingsCommand>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+        var result = await CreateController().UpdateSettings(command, CancellationToken.None);
 
-        // Act
-        var result = await _controller.UpdateSettings(userId, command, CancellationToken.None);
-
-        // Assert
-        Assert.IsType<NoContentResult>(result);
-        MediatorMock.Verify(m => m.Send(
-            It.Is<UpdateSettingsCommand>(c => c.Id == userId),
-            It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdatePhoto_ReturnsNoContent()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var command = new UpdatePhotoCommand { Id = userId, FileName = Faker.Random.AlphaNumeric(10) };
-
-        MediatorMock
-            .Setup(m => m.Send(It.IsAny<UpdatePhotoCommand>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-
-        // Act
-        var result = await _controller.UpdatePhoto(userId, command, CancellationToken.None);
-
-        // Assert
-        Assert.IsType<NoContentResult>(result);
-        MediatorMock.Verify(m => m.Send(
-            It.Is<UpdatePhotoCommand>(c => c.Id == userId),
-            It.IsAny<CancellationToken>()), Times.Once);
+        Assert.Same(model, Assert.IsType<OkObjectResult>(result.Result).Value);
     }
 
     [Fact]
     public async Task UpdateLanguage_ReturnsNoContent()
     {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var command = new UpdateLanguageCommand { Id = userId, Language = Faker.Random.AlphaNumeric(10) };
+        var command = new UpdateLanguageCommand { Language = "AZ" };
+        MediatorMock.Setup(x => x.Send(command, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
-        MediatorMock
-            .Setup(m => m.Send(It.IsAny<UpdateLanguageCommand>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+        var result = await CreateController().UpdateLanguage(command, CancellationToken.None);
 
-        // Act
-        var result = await _controller.UpdateLanguage(userId, command, CancellationToken.None);
-
-        // Assert
         Assert.IsType<NoContentResult>(result);
-        MediatorMock.Verify(m => m.Send(
-            It.Is<UpdateLanguageCommand>(c => c.Id == userId),
-            It.IsAny<CancellationToken>()), Times.Once);
     }
 }

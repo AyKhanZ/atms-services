@@ -73,6 +73,12 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
         }
     }
 
+    // The token is reissued when onboarding completes, so the claim never lags behind the database.
+    public bool HasCompletedOnboarding => string.Equals(
+        httpContextAccessor.HttpContext?.User.FindFirst(CustomClaimTypes.OnboardingCompleted)?.Value,
+        bool.TrueString,
+        StringComparison.OrdinalIgnoreCase);
+
     private Guid? TryGetUserId()
     {
         var claim = httpContextAccessor.HttpContext?.User

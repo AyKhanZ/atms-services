@@ -1,6 +1,7 @@
 using ATMS.Admin.Contracts.Models.Dictionaries;
 using ATMS.Admin.Contracts.Models.Me;
 using ATMS.Admin.Contracts.Models.Onboarding;
+using ATMS.Admin.Contracts.Models.Profile;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
@@ -97,6 +98,20 @@ public class EntityToModelProfile : Profile
         CreateMap<User, MeModel>()
             .ForMember(destination => destination.Language,
                 options => options.MapFrom(source => source.Language.Code));
+
+        CreateMap<User, ProfileModel>()
+            .ForMember(destination => destination.BirthDate,
+                options => options.MapFrom(source => source.BirthDate.HasValue
+                    ? DateOnly.FromDateTime(source.BirthDate.Value)
+                    : (DateOnly?)null))
+            .ForMember(destination => destination.GenderId,
+                options => options.MapFrom(source => source.GenderId == 0
+                    ? (int?)null
+                    : source.GenderId))
+            .ForMember(destination => destination.MaritalStatusId,
+                options => options.MapFrom(source => source.MaritalStatusId == 0
+                    ? (int?)null
+                    : source.MaritalStatusId));
         
         CreateMap<User, UserModel>()
             .ForMember(destination => destination.Gender, options => options.Ignore())

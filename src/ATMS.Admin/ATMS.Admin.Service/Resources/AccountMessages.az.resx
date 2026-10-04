@@ -29,7 +29,7 @@
     </data>
 
     <data name="PasswordInvalidFormat" xml:space="preserve">
-        <value>Şifrə böyük hərf, rəqəm, xüsusi simvol (!@#$%^&amp;*()-_=+) ehtiva etməli və boşluq olmamalıdır.</value>
+        <value>Şifrədə böyük və kiçik hərf, rəqəm və xüsusi simvol (!@#$%^&amp;*()-_=+) olmalıdır. Boşluq istifadə etməyin.</value>
     </data>
 
     <data name="EmailAlreadyConfirmed" xml:space="preserve">
@@ -99,4 +99,8 @@
     </data>
     <data name="EmailShouldBeLessThan" xml:space="preserve">
         <value>Email {0} simvoldan az olmalıdır.</value>
-    </data></root>
+    </data>
+    <data name="PasswordChangedConcurrently" xml:space="preserve"><value>Şifrə indicə başqa pəncərədə dəyişdirildi. Yeni şifrə ilə daxil olun.</value></data>
+    <data name="OldPasswordIncorrect" xml:space="preserve"><value>Cari parol yanlışdır.</value></data>
+    <data name="NewPasswordMustDiffer" xml:space="preserve"><value>Cari paroldan fərqli parol seçin.</value></data>
+</root>

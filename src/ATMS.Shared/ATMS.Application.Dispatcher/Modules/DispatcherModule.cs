@@ -9,17 +9,6 @@ namespace ATMS.Application.Dispatcher.Modules;
 
 public static class DispatcherModule
 {
-    public static IServiceCollection AddDispatcherServices(
-        this IServiceCollection services)
-    {
-        services.AddLocalizationBehavior();
-        services.AddAccessBehavior();
-        services.AddSharedValidationServices();
-        services.AddValidationBehavior();
-
-        return services;
-    }
-
     public static IServiceCollection AddAccessBehavior(this IServiceCollection services)
     {
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AccessBehavior<,>));

@@ -7,4 +7,5 @@ public interface ICurrentUser
     IReadOnlySet<string> Permissions { get; }
     Guid? OrganizationId { get; }
     string UserType { get; }
+    bool HasCompletedOnboarding { get; }
 }

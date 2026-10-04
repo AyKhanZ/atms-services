@@ -159,7 +159,7 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Password must include uppercase, number, special char (!@#$%^&amp;*()-_=+), no spaces ..
+        ///   Looks up a localized string describing the password character requirements.
         /// </summary>
         public static string PasswordInvalidFormat {
             get {
@@ -247,5 +247,10 @@ namespace ATMS.Admin.Service.Resources {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
             }
         }
+        public static string PasswordChangedConcurrently => ResourceManager.GetString("PasswordChangedConcurrently", resourceCulture);
+
+        public static string OldPasswordIncorrect => ResourceManager.GetString("OldPasswordIncorrect", resourceCulture);
+
+        public static string NewPasswordMustDiffer => ResourceManager.GetString("NewPasswordMustDiffer", resourceCulture);
     }
 }

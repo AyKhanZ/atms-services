@@ -168,6 +168,15 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Finish setting up your account first..
+        /// </summary>
+        public static string OnboardingNotCompleted {
+            get {
+                return ResourceManager.GetString("OnboardingNotCompleted", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Use 10-40 characters with uppercase and lowercase letters, a number and a special character..
         /// </summary>
         public static string PasswordRequirements {

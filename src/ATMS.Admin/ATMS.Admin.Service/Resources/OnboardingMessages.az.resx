@@ -18,6 +18,7 @@
   <data name="InvalidPhoneNumber" xml:space="preserve"><value>Beynəlxalq formatda düzgün telefon nömrəsi daxil edin.</value></data>
   <data name="MinimumAge" xml:space="preserve"><value>Ən azı 18 yaşınız olmalıdır.</value></data>
   <data name="OnboardingAlreadyCompleted" xml:space="preserve"><value>Onboarding artıq tamamlanıb.</value></data>
+  <data name="OnboardingNotCompleted" xml:space="preserve"><value>Əvvəlcə hesabınızın qurulmasını tamamlayın.</value></data>
   <data name="OnboardingConcurrencyConflict" xml:space="preserve"><value>Onboarding başqa tabda yenilənib. Səhifəni yeniləyin və bir daha cəhd edin.</value></data>
   <data name="PasswordRequirements" xml:space="preserve"><value>Böyük və kiçik hərf, rəqəm və xüsusi simvol daxil olmaqla 10-40 simvoldan istifadə edin.</value></data>
   <data name="PhoneNumberMaxLength" xml:space="preserve"><value>Telefon nömrəsi 20 simvoldan uzun ola bilməz.</value></data>

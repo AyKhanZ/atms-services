@@ -141,26 +141,26 @@ public class AccountControllerTest : BaseControllerTest
             attribute => attribute is AllowAnonymousAttribute);
     }
     [Fact]
-    public async Task ChangePassword_ShouldReturnNoContent()
+    public async Task ChangePassword_ShouldReturnReplacementTokens()
     {
         // Arrange
         var command = new ChangePasswordCommand
         {
-            Email = Faker.Internet.Email(),
             NewPassword = Faker.Internet.Password(),
-            OldPassword = Faker.Internet.Password()
+            OldPassword = Faker.Internet.Password(),
+            ConfirmPassword = Faker.Internet.Password()
         };
 
         MediatorMock
             .Setup(m => m.Send(command,
                 It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync(new ATMS.Admin.Contracts.Models.AccessInfoModel { AccessToken = "new-token" });
 
         // Act
         var result = await _controller.ChangePassword(command, CancellationToken.None);
 
         // Assert
-        Assert.IsType<NoContentResult>(result);
+        Assert.IsType<OkObjectResult>(result.Result);
 
         MediatorMock.Verify(
             m => m.Send(command, It.IsAny<CancellationToken>()),

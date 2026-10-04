@@ -36,6 +36,7 @@ public sealed class CompleteOnboardingHandler(
                 cancellationToken);
             
             await cache.RemoveAsync(CacheKeys.Admin.MeById(progress.User.Id), cancellationToken);
+            await cache.RemoveAsync(CacheKeys.Admin.ProfileById(progress.User.Id), cancellationToken);
             
             return new OnboardingCompletionModel
             {
@@ -84,6 +85,7 @@ public sealed class CompleteOnboardingHandler(
         }
 
         await cache.RemoveAsync(CacheKeys.Admin.MeById(user.Id), cancellationToken);
+        await cache.RemoveAsync(CacheKeys.Admin.ProfileById(user.Id), cancellationToken);
 
         return new OnboardingCompletionModel
         {

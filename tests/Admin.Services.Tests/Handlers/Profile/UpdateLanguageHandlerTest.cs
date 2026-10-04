@@ -4,6 +4,7 @@ using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Handlers.Profile;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Caching.Constants;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Profile;
@@ -15,6 +16,7 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
     public UpdateLanguageHandlerTest()
     {
         _handler = new UpdateLanguageHandler(
+            CurrentUserMock.Object,
             UserRepositoryMock.Object,
             DictionariesRepositoryMock.Object,
             CacheServiceMock.Object);
@@ -34,7 +36,8 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
     {
         // Arrange
         var user = CreateUser();
-        var command = new UpdateLanguageCommand { Id = user.Id, Language = "az" };
+        CurrentUserMock.SetupGet(x => x.Id).Returns(user.Id);
+        var command = new UpdateLanguageCommand { Language = "az" };
 
         UserRepositoryMock
             .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
@@ -46,6 +49,7 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
 
         // Assert
         Assert.Equal(1, user.LanguageId);
+        CacheServiceMock.Verify(x => x.RemoveAsync(CacheKeys.Admin.ProfileById(user.Id), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -53,7 +57,8 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
     {
         // Arrange
         var user = CreateUser();
-        var command = new UpdateLanguageCommand { Id = user.Id, Language = "az" };
+        CurrentUserMock.SetupGet(x => x.Id).Returns(user.Id);
+        var command = new UpdateLanguageCommand { Language = "az" };
 
         UserRepositoryMock
             .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
@@ -71,7 +76,7 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
     public async Task Handle_WhenUserNotFound_ThrowsEntityException()
     {
         // Arrange
-        var command = new UpdateLanguageCommand { Id = Guid.NewGuid(), Language = "az" };
+        var command = new UpdateLanguageCommand { Language = "az" };
 
         UserRepositoryMock
             .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),

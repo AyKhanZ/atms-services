@@ -32,7 +32,14 @@ public class LoginHandler(
 
         EnsureAccountIsActive(user);
 
-        VerifyPasswords(user, command);
+        if (user.UserStatusId == (int)UserStatusEnum.Locked &&
+            user.LockoutEnd <= DateTime.UtcNow)
+        {
+            user.UserStatusId = (int)UserStatusEnum.Active;
+            user.LockoutEnd = null;
+        }
+
+        await VerifyPasswordsAsync(user, command, cancellationToken);
 
         var accessTokenResult = await accessTokenService.GenerateTokenAsync(user, cancellationToken);
         var refreshToken = await refreshTokenService.GenerateTokenAsync(null, cancellationToken);
@@ -43,6 +50,7 @@ public class LoginHandler(
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
                 FamilyId = Guid.NewGuid(),
+                SessionVersion = user.SessionVersion,
                 TokenHash = refreshToken.TokenHash,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = refreshToken.ExpiresAt,
@@ -76,6 +84,11 @@ public class LoginHandler(
             case (int)UserStatusEnum.Inactive:
                 throw new AuthException(AuthErrorType.AccountInactive,
                     AuthMessages.AccountInactive);
+            // Locked with no end date was set by an administrator, not by wrong passwords: it lasts
+            // until they lift it, and a correct password does not.
+            case (int)UserStatusEnum.Locked when !user.LockoutEnd.HasValue:
+                throw new AuthException(AuthErrorType.AccountLocked,
+                    AuthMessages.AccountLockedByAdministrator);
             case (int)UserStatusEnum.Locked when
                 user.LockoutEnd.HasValue &&
                 user.LockoutEnd > DateTime.UtcNow:
@@ -89,7 +102,7 @@ public class LoginHandler(
         }
     }
 
-    private void VerifyPasswords(User user, LoginCommand command)
+    private async Task VerifyPasswordsAsync(User user, LoginCommand command, CancellationToken cancellationToken)
     {
         var match = passwordHasherService.Verify(command.Password, user.PasswordHash);
         if (match)
@@ -105,13 +118,17 @@ public class LoginHandler(
             return;
         }
 
-        user.FailedLoginCount++;
-        if (user.FailedLoginCount >= 5 && user.UserStatusId == (int)UserStatusEnum.Active)
-        {
-            user.LockoutEnd = DateTime.UtcNow.AddMinutes(15);
-            user.UserStatusId = (int)UserStatusEnum.Locked;
-            user.FailedLoginCount = 0;
-        }
+        // Saves the lifted expired lockout, if any; the count itself is updated in the database in
+        // one statement, so parallel wrong passwords cannot all read the same number.
+        await userRepository.SaveAsync(cancellationToken);
+
+        var now = DateTime.UtcNow;
+        await userRepository.RegisterFailedPasswordAsync(
+            user.Id,
+            5,
+            now,
+            now.AddMinutes(15),
+            cancellationToken);
 
         throw new AuthException(AuthErrorType.InvalidCredentials,
             AuthMessages.InvalidLoginCredentials);

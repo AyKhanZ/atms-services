@@ -43,7 +43,8 @@ public class RefreshTokenHandlerTest : BaseHandlerTest
             It.Is<UserSession>(replacement =>
                 replacement.UserId == session.UserId
                 && replacement.FamilyId == session.FamilyId
-                && replacement.TokenHash == "new-token-hash"),
+                && replacement.TokenHash == "new-token-hash"
+                && replacement.SessionVersion == session.SessionVersion),
             It.IsAny<DateTime>(),
             It.IsAny<CancellationToken>()), Times.Once);
         UserSessionRepositoryMock.Verify(repository => repository.RevokeAllAsync(
@@ -115,6 +116,28 @@ public class RefreshTokenHandlerTest : BaseHandlerTest
 
         Assert.Equal(AuthErrorType.AccountInactive, exception.AuthErrorType);
         VerifyFamilyRevoked(session.FamilyId);
+    }
+
+    // A sign-in with the old password that raced a password change got a session under the old
+    // version; it must not refresh into a new one.
+    [Fact]
+    public async Task Handle_WhenPasswordChangedAfterSessionBegan_RevokesFamily()
+    {
+        var session = CreateSession();
+        session.SessionVersion = 1;
+        session.User.SessionVersion = 2;
+        SetupSession(session);
+
+        var exception = await Assert.ThrowsAsync<AuthException>(
+            () => _handler.Handle(CreateCommand(), CancellationToken.None));
+
+        Assert.Equal(AuthErrorType.InvalidToken, exception.AuthErrorType);
+        VerifyFamilyRevoked(session.FamilyId);
+        UserSessionRepositoryMock.Verify(repository => repository.RotateAsync(
+            It.IsAny<UserSession>(),
+            It.IsAny<UserSession>(),
+            It.IsAny<DateTime>(),
+            It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

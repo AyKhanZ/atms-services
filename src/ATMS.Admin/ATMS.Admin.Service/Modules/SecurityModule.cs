@@ -1,6 +1,7 @@
 ﻿using ATMS.Admin.Service.Security;
 using ATMS.Admin.Service.Infrastructure;
 using ATMS.Admin.Service.Security.Interfaces;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Admin.Service.Modules;
@@ -19,6 +20,13 @@ public static class SecurityModule
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
         services.AddHostedService<UserSessionCleanupBackgroundService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddCompletedOnboardingBehavior(this IServiceCollection services)
+    {
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CompletedOnboardingBehavior<,>));
 
         return services;
     }

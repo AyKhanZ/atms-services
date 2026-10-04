@@ -40,6 +40,24 @@ public class UpdateUserStatusHandlerTest : BaseHandlerTest
         Assert.Equal(command.UserStatusId, user.UserStatusId);
     }
 
+    // The administrator's status replaces a timed lockout; Locked set here has no end date.
+    [Fact]
+    public async Task Handle_ClearsTimedLockout()
+    {
+        var user = CreateUser();
+        user.LockoutEnd = DateTime.UtcNow.AddMinutes(10);
+        user.FailedLoginCount = 3;
+        UserRepositoryMock
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        await _handler.Handle(new UpdateUserStatusCommand { Id = user.Id, UserStatusId = 3 }, CancellationToken.None);
+
+        Assert.Null(user.LockoutEnd);
+        Assert.Equal((uint)0, user.FailedLoginCount);
+    }
+
     [Fact]
     public async Task Handle_SavesChanges()
     {

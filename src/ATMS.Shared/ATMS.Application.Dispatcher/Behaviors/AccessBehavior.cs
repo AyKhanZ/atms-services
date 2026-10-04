@@ -21,13 +21,16 @@ public sealed class AccessBehavior<TRequest, TResponse>(
     private static readonly bool RequiresSuperAdmin = typeof(TRequest)
         .IsDefined(typeof(SuperAdminAccessAttribute), inherit: false);
 
+    private static readonly bool ExcludesSuperAdmin = typeof(TRequest)
+        .IsDefined(typeof(ExceptSuperAdminAccessAttribute), inherit: false);
+
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
         // Requests without SuperAdminAccess or Access attributes do not require system permission checks.
-        if (!RequiresSuperAdmin && AccessRequirements.Length == 0)
+        if (!RequiresSuperAdmin && !ExcludesSuperAdmin && AccessRequirements.Length == 0)
         {
             return await next(cancellationToken);
         }
@@ -35,6 +38,12 @@ public sealed class AccessBehavior<TRequest, TResponse>(
         // SuperAdmin has access to every system-level operation.
         if (currentUser.RoleId == RoleIds.SuperAdmin)
         {
+            // ExceptSuperAdmin overrides the usual SuperAdmin permission bypass.
+            if (ExcludesSuperAdmin)
+            {
+                Deny();
+            }
+
             return await next(cancellationToken);
         }
 

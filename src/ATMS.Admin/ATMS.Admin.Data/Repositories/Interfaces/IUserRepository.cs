@@ -30,5 +30,18 @@ public interface IUserRepository
     Task<bool> IsExistAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken);
 
     
+    Task<bool> RegisterFailedPasswordAsync(
+        Guid userId,
+        int maxAttempts,
+        DateTime now,
+        DateTime lockoutEnd,
+        CancellationToken cancellationToken);
+
+    Task<bool> TrySavePasswordChangeAsync(
+        User user,
+        int expectedVersion,
+        DateTime revokedAt,
+        CancellationToken cancellationToken);
+
     Task SaveAsync(CancellationToken cancellationToken);
 }
