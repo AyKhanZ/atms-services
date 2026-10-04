@@ -68,6 +68,60 @@ public class WorkTaskBoardPlacementServiceTest
     }
 
     [Fact]
+    public async Task PlaceBetweenAsync_WhenACardTheBoardDoesNotShowSitsBetween_GoesAboveIt()
+    {
+        // The board shows one project; m2 belongs to another one and sits between m1 and m5.
+        var card = Card();
+        var above = Guid.NewGuid();
+        var below = Guid.NewGuid();
+        _repository.Setup(repository => repository.GetRanksAsync(
+                It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<ICriteria<WorkTask>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<Guid, string> { [above] = "m1", [below] = "m5" });
+        _repository.Setup(repository => repository.GetRankBelowAsync(card.StatusId, "m1", card.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync("m2");
+
+        await Service().PlaceBetweenAsync(card, above, below, Mock.Of<ICriteria<WorkTask>>(), CancellationToken.None);
+
+        Assert.True(string.CompareOrdinal("m1", card.Rank) < 0);
+        Assert.True(string.CompareOrdinal(card.Rank, "m2") < 0);
+    }
+
+    [Fact]
+    public async Task PlaceBetweenAsync_OnTopOfTheBoard_GoesAboveTheFirstCardOfTheWholeColumn()
+    {
+        // The case seen live: the first card on this project's board was ...zt, and a card of another
+        // project held ...zsv — exactly the key a step above ...zt.
+        var card = Card();
+        var first = Guid.NewGuid();
+        _repository.Setup(repository => repository.GetRanksAsync(
+                It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<ICriteria<WorkTask>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<Guid, string> { [first] = "m000000000zt" });
+        _repository.Setup(repository => repository.GetRankBelowAsync(card.StatusId, null, card.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync("m000000000zsv");
+
+        await Service().PlaceBetweenAsync(card, null, first, Mock.Of<ICriteria<WorkTask>>(), CancellationToken.None);
+
+        Assert.True(string.CompareOrdinal(card.Rank, "m000000000zsv") < 0);
+    }
+
+    [Fact]
+    public async Task PlaceBetweenAsync_WhenNothingIsHiddenBetween_KeepsTheNeighboursOnScreen()
+    {
+        var card = Card();
+        var above = Guid.NewGuid();
+        var below = Guid.NewGuid();
+        _repository.Setup(repository => repository.GetRanksAsync(
+                It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<ICriteria<WorkTask>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<Guid, string> { [above] = "m1", [below] = "m5" });
+        _repository.Setup(repository => repository.GetRankBelowAsync(card.StatusId, "m1", card.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync("m5");
+
+        await Service().PlaceBetweenAsync(card, above, below, Mock.Of<ICriteria<WorkTask>>(), CancellationToken.None);
+
+        Assert.Equal(_positions.Between("m1", "m5"), card.Rank);
+    }
+
+    [Fact]
     public async Task PlaceOnTopAsync_InAnEmptyColumn_GivesTheCardAPlace()
     {
         var card = new WorkTask { Id = Guid.NewGuid(), StatusId = (int)WorkTaskStatusEnum.New };

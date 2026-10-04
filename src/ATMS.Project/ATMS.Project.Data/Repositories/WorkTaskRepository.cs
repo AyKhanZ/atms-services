@@ -206,6 +206,26 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
+    public Task<string?> GetRankBelowAsync(
+        int statusId,
+        string? above,
+        Guid exceptWorkTaskId,
+        CancellationToken cancellationToken)
+    {
+        var column = context.WorkTasks
+            .Where(task => task.StatusId == statusId && task.Id != exceptWorkTaskId);
+
+        if (above is not null)
+        {
+            column = column.Where(task => string.Compare(task.Rank, above) > 0);
+        }
+
+        return column
+            .OrderBy(task => task.Rank)
+            .Select(task => task.Rank)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task RenumberColumnAsync(int statusId, CancellationToken cancellationToken)
     {
         // Every key in the column spread evenly again, in the same order. Two steps inside one
