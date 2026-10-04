@@ -31,7 +31,7 @@ public sealed class SaveInvitationsHandler(
             invitedUser.NormalizedEmail = invitedUser.Email.ToUpperInvariant();
             return invitedUser;
         }));
-        progress.InvitationsStatus = OnboardingStepStatusEnum.Completed;
+        progress.InvitationsStatus = (int)OnboardingStepStatusEnum.Completed;
 
         var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);
         if (!saved)

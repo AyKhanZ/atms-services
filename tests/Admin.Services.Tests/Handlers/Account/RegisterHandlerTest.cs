@@ -158,9 +158,9 @@ public class RegisterHandlerTest : BaseHandlerTest
         OnboardingRepositoryMock.Verify(r => r.AddAsync(
             It.Is<OnboardingProgress>(x =>
                 x.UserId == entity.Id &&
-                x.PersonalInfoStatus == OnboardingStepStatusEnum.NotStarted &&
-                x.SecurityStatus == OnboardingStepStatusEnum.NotStarted &&
-                x.InvitationsStatus == OnboardingStepStatusEnum.NotStarted),
+                x.PersonalInfoStatus == (int)OnboardingStepStatusEnum.NotStarted &&
+                x.SecurityStatus == (int)OnboardingStepStatusEnum.NotStarted &&
+                x.InvitationsStatus == (int)OnboardingStepStatusEnum.NotStarted),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 

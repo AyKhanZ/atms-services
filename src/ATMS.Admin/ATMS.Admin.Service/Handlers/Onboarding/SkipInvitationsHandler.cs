@@ -23,7 +23,7 @@ public sealed class SkipInvitationsHandler(
             ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
 
         progress.InvitedUsers.Clear();
-        progress.InvitationsStatus = OnboardingStepStatusEnum.Skipped;
+        progress.InvitationsStatus = (int)OnboardingStepStatusEnum.Skipped;
 
         var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);
         if (!saved)

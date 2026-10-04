@@ -49,7 +49,7 @@ public class UploadAttachmentHandler(
 
         var attachment = new Attachment
         {
-            OwnerType = AttachmentOwnerTypeEnum.Task,
+            OwnerType = (int)AttachmentOwnerTypeEnum.Task,
             OwnerId = command.WorkTaskId,
             FileName = fileNameService.FromUpload(file.FileName, extension),
             RelativePath = relativePath,

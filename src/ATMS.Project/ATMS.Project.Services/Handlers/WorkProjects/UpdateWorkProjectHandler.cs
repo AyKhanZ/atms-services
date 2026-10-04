@@ -6,6 +6,7 @@ using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
 using ATMS.Project.Services.Caching;
+using ATMS.Project.Services.Notifications.Interfaces;
 using ATMS.Project.Services.Security.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -17,7 +18,8 @@ public class UpdateWorkProjectHandler(
     IMapper mapper,
     IWorkProjectRepository workProjectRepository,
     ICacheService cache,
-    IProjectPermissionService projectPermissionService)
+    IProjectPermissionService projectPermissionService,
+    IWorkProjectNotificationService notifications)
     : IRequestHandler<UpdateWorkProjectCommand>
 {
     public async Task Handle(UpdateWorkProjectCommand command, CancellationToken cancellationToken)
@@ -28,10 +30,16 @@ public class UpdateWorkProjectHandler(
             throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
         }
 
+        var addedUserIds = command.Participants
+            .Select(participant => participant.UserId)
+            .Except(project.WorkProjectParticipants.Select(participant => participant.UserId))
+            .ToArray();
+
         mapper.Map(command, project);
         project.Title = command.Title.Trim();
         SynchronizeParticipants(project, command.Participants);
 
+        await notifications.NotifyParticipantsAddedAsync(project, addedUserIds, cancellationToken);
         await workProjectRepository.SaveAsync(cancellationToken);
         await cache.RemoveWorkProjectAsync(project.Id, cancellationToken);
         await projectPermissionService.RemoveProjectPermissionsAsync(

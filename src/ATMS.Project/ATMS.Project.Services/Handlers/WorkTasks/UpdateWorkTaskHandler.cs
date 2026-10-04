@@ -6,6 +6,7 @@ using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
 using ATMS.Project.Services.Caching;
 using ATMS.Project.Services.Board.Interfaces;
+using ATMS.Project.Services.Notifications.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -15,7 +16,8 @@ public class UpdateWorkTaskHandler(
     IMapper mapper,
     IWorkTaskRepository workTaskRepository,
     ICacheService cache,
-    IWorkTaskBoardPlacementService placement) : IRequestHandler<UpdateWorkTaskCommand>
+    IWorkTaskBoardPlacementService placement,
+    IWorkTaskNotificationService notifications) : IRequestHandler<UpdateWorkTaskCommand>
 {
     public async Task Handle(UpdateWorkTaskCommand command, CancellationToken cancellationToken)
     {
@@ -23,6 +25,8 @@ public class UpdateWorkTaskHandler(
             ?? throw new EntityException(EntityErrorType.NotFound, WorkTaskMessages.NotFound);
 
         var previousParentId = workTask.ParentWorkTaskId;
+        var previousAssigneeId = workTask.AssigneeId;
+        var previousStatusId = workTask.StatusId;
         var parent = command.ParentWorkTaskId.HasValue
             ? await workTaskRepository.FindParentAsync(
                 command.ProjectId,
@@ -68,6 +72,7 @@ public class UpdateWorkTaskHandler(
             }
         }
 
+        await notifications.NotifyChangedAsync(workTask, previousAssigneeId, previousStatusId, cancellationToken);
         await placement.SaveAsync(workTask, cancellationToken);
 
         await cache.RemoveWorkTaskAsync(workTask.Id, cancellationToken);

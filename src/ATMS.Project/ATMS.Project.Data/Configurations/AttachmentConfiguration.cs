@@ -12,7 +12,6 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
         builder.HasIndex(e => new { e.OwnerType, e.OwnerId, e.CreatedAt });
 
         builder.Property(e => e.OwnerType)
-            .HasConversion<int>()
             .IsRequired();
 
         builder.Property(e => e.FileName)

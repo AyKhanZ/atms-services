@@ -1,4 +1,3 @@
-using ATMS.Data.Enums;
 
 namespace ATMS.Admin.Data.Entities.Onboarding;
 
@@ -8,11 +7,11 @@ public class OnboardingProgress
 
     public User User { get; set; }
 
-    public OnboardingStepStatusEnum PersonalInfoStatus { get; set; }
+    public int PersonalInfoStatus { get; set; }
 
-    public OnboardingStepStatusEnum SecurityStatus { get; set; }
+    public int SecurityStatus { get; set; }
 
-    public OnboardingStepStatusEnum InvitationsStatus { get; set; }
+    public int InvitationsStatus { get; set; }
 
     public string? PendingPasswordHash { get; set; }
 

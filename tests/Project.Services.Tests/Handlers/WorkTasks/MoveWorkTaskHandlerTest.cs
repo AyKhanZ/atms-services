@@ -29,7 +29,8 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
         WorkTaskRepositoryMock.Object,
         CacheServiceMock.Object,
         CurrentUserMock.Object,
-        new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()));
+        new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()),
+        WorkTaskNotificationServiceMock.Object);
 
     private void Found(WorkTask task) => WorkTaskRepositoryMock
         .Setup(repository => repository.FindAsync(_projectId, task.Id, It.IsAny<CancellationToken>()))
@@ -200,5 +201,32 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
             Times.Once);
         WorkTaskRepositoryMock.Verify(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         CacheServiceMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Handle_NotifiesWithTheStatusTheTaskHadBeforeTheDrop()
+    {
+        var task = NewTask();
+        task.AssigneeId = Guid.NewGuid();
+        Found(task);
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.FindChildrenAsync(_projectId, task.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new WorkTask { Id = Guid.NewGuid(), StatusId = (int)WorkTaskStatusEnum.New }]);
+
+        await Handler().Handle(new MoveWorkTaskCommand
+        {
+            ProjectId = _projectId,
+            WorkTaskId = task.Id,
+            StatusId = (int)WorkTaskStatusEnum.Done,
+            CompleteSubtasks = true
+        }, CancellationToken.None);
+
+        // The subtasks closed along with it are not news of their own.
+        WorkTaskNotificationServiceMock.Verify(service => service.NotifyChangedAsync(
+            task,
+            task.AssigneeId,
+            (int)WorkTaskStatusEnum.New,
+            It.IsAny<CancellationToken>()), Times.Once);
+        WorkTaskNotificationServiceMock.VerifyNoOtherCalls();
     }
 }

@@ -10,6 +10,6 @@ public sealed class CommentFilter : ACriteria<Comment>
 
     public override IQueryable<Comment> Apply(IQueryable<Comment> query) =>
         query.Where(comment =>
-            comment.OwnerType == CommentOwnerTypeEnum.Task &&
+            comment.OwnerType == (int)CommentOwnerTypeEnum.Task &&
             comment.OwnerId == WorkTaskId);
 }

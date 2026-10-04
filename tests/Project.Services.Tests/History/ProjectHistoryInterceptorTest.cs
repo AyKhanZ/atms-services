@@ -280,7 +280,7 @@ public sealed class ProjectHistoryInterceptorTest
         var renamed = new Attachment
         {
             Id = Guid.NewGuid(),
-            OwnerType = AttachmentOwnerTypeEnum.Task,
+            OwnerType = (int)AttachmentOwnerTypeEnum.Task,
             OwnerId = task.Id,
             FileName = "spec.pdf",
             RelativePath = "p/2026/09/a.pdf",
@@ -293,7 +293,7 @@ public sealed class ProjectHistoryInterceptorTest
         context.Attachments.Add(new Attachment
         {
             Id = Guid.NewGuid(),
-            OwnerType = AttachmentOwnerTypeEnum.Task,
+            OwnerType = (int)AttachmentOwnerTypeEnum.Task,
             OwnerId = task.Id,
             FileName = "rates.xlsx",
             RelativePath = "p/2026/09/b.xlsx",

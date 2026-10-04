@@ -1,3 +1,4 @@
+using ATMS.Messaging.Infrastructure;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Admin.Service.Security.Models;
@@ -80,12 +81,12 @@ public class EmailDeliveryBackgroundService(
             await using var scope = scopeFactory.CreateAsyncScope();
             var repository = scope.ServiceProvider.GetRequiredService<IEmailDeliveryRepository>();
             var currentDelivery = await repository.GetAsync(deliveryId, cancellationToken);
-            if (currentDelivery is null || currentDelivery.Status != DeliveryStatusEnum.Pending)
+            if (currentDelivery is null || currentDelivery.Status != (int)DeliveryStatusEnum.Pending)
             {
                 return;
             }
 
-            if (currentDelivery.Type == EmailDeliveryTypeEnum.Confirmation)
+            if (currentDelivery.Type == (int)EmailDeliveryTypeEnum.Confirmation)
             {
                 await SendConfirmationAsync(currentDelivery, scope.ServiceProvider, cancellationToken);
             }
@@ -119,7 +120,7 @@ public class EmailDeliveryBackgroundService(
         await using var scope = scopeFactory.CreateAsyncScope();
         var repository = scope.ServiceProvider.GetRequiredService<IEmailDeliveryRepository>();
         var delivery = await repository.GetAsync(deliveryId, cancellationToken);
-        if (delivery is null || delivery.Status != DeliveryStatusEnum.Pending)
+        if (delivery is null || delivery.Status != (int)DeliveryStatusEnum.Pending)
         {
             return;
         }

@@ -87,13 +87,15 @@ public sealed class CommentControllerTest : BaseControllerTest
     {
         var projectId = Guid.NewGuid();
         var id = Guid.NewGuid();
+        var workTaskId = Guid.NewGuid();
         var model = new CommentModel { Id = id, CreatedBy = new() };
         MediatorMock.Setup(mediator => mediator.Send(
-                It.Is<GetCommentRequest>(request => request.ProjectId == projectId && request.CommentId == id),
+                It.Is<GetCommentRequest>(request => request.ProjectId == projectId &&
+                    request.CommentId == id && request.WorkTaskId == workTaskId),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(model);
 
-        var result = await _controller.Get(projectId, id, CancellationToken.None);
+        var result = await _controller.Get(projectId, id, workTaskId, CancellationToken.None);
 
         Assert.Same(model, Assert.IsType<OkObjectResult>(result.Result).Value);
     }

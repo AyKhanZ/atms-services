@@ -25,7 +25,7 @@ public sealed class SaveSecurityHandler(
             ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
 
         progress.PendingPasswordHash = passwordHasherService.Hash(command.Password);
-        progress.SecurityStatus = OnboardingStepStatusEnum.Completed;
+        progress.SecurityStatus = (int)OnboardingStepStatusEnum.Completed;
 
         var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);
         if (!saved)

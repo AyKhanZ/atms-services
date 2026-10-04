@@ -47,7 +47,8 @@ public class CreateWorkTaskHandlerTest : BaseHandlerTest
             MapperMock.Object,
             WorkTaskRepositoryMock.Object,
             EntityCodeGeneratorMock.Object,
-            new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()));
+            new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()),
+            WorkTaskNotificationServiceMock.Object);
 
         var id = await handler.Handle(command, CancellationToken.None);
 
@@ -58,5 +59,41 @@ public class CreateWorkTaskHandlerTest : BaseHandlerTest
         Assert.False(string.IsNullOrEmpty(entity.Rank));
         WorkTaskRepositoryMock.Verify(repository => repository.AddAsync(entity, It.IsAny<CancellationToken>()), Times.Once);
         WorkTaskRepositoryMock.Verify(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_NotifiesAsANewTaskBeforeItIsSaved()
+    {
+        var command = new CreateWorkTaskCommand
+        {
+            ProjectId = Guid.NewGuid(),
+            WorkTicketId = Guid.NewGuid(),
+            AssigneeId = Guid.NewGuid(),
+            Title = "Task",
+            PriorityId = 1
+        };
+        var entity = new WorkTask { AssigneeId = command.AssigneeId };
+        var steps = new List<string>();
+        MapperMock.Setup(mapper => mapper.Map<WorkTask>(command)).Returns(entity);
+        EntityCodeGeneratorMock.Setup(generator => generator.GetNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync("42");
+        WorkTaskNotificationServiceMock
+            .Setup(service => service.NotifyChangedAsync(entity, null, null, It.IsAny<CancellationToken>()))
+            .Callback(() => steps.Add("notify"))
+            .Returns(Task.CompletedTask);
+        WorkTaskRepositoryMock
+            .Setup(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Callback(() => steps.Add("save"))
+            .ReturnsAsync(true);
+        var handler = new CreateWorkTaskHandler(
+            MapperMock.Object,
+            WorkTaskRepositoryMock.Object,
+            EntityCodeGeneratorMock.Object,
+            new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()),
+            WorkTaskNotificationServiceMock.Object);
+
+        await handler.Handle(command, CancellationToken.None);
+
+        // No previous assignee and no previous status: only the assignment can be news.
+        Assert.Equal(["notify", "save"], steps);
     }
 }

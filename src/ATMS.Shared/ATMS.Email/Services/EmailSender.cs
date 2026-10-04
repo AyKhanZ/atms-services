@@ -12,6 +12,11 @@ public class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSe
 
     private const string InviteTemplate = "InviteTemplate.cshtml";
     private const string ForgotPasswordTemplate = "ForgotPasswordTemplate.cshtml";
+    private const string TaskAssignedTemplate = "TaskAssignedTemplate.cshtml";
+    private const string MentionedTemplate = "MentionedTemplate.cshtml";
+    private const string DueTodayTemplate = "DueTodayTemplate.cshtml";
+    private const string TaskOverdueTemplate = "TaskOverdueTemplate.cshtml";
+    private const string AddedToProjectTemplate = "AddedToProjectTemplate.cshtml";
 
     public Task SendAsync(string to, InviteModel model, CancellationToken cancellationToken)
     {
@@ -29,6 +34,57 @@ public class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSe
             to,
             ForgotPasswordSubject,
             ForgotPasswordTemplate,
+            model,
+            cancellationToken);
+    }
+
+    // The subject says what happened, so the inbox list alone is enough to know it.
+    public Task SendAsync(string to, TaskAssignedModel model, CancellationToken cancellationToken)
+    {
+        return SendTemplateAsync(
+            to,
+            $"{model.ActorName} assigned you {model.TaskLabel}",
+            TaskAssignedTemplate,
+            model,
+            cancellationToken);
+    }
+
+    public Task SendAsync(string to, MentionedModel model, CancellationToken cancellationToken)
+    {
+        return SendTemplateAsync(
+            to,
+            $"{model.ActorName} mentioned you in {model.TaskLabel}",
+            MentionedTemplate,
+            model,
+            cancellationToken);
+    }
+
+    public Task SendAsync(string to, DueTodayModel model, CancellationToken cancellationToken)
+    {
+        return SendTemplateAsync(
+            to,
+            $"{model.TaskLabel} is due today",
+            DueTodayTemplate,
+            model,
+            cancellationToken);
+    }
+
+    public Task SendAsync(string to, TaskOverdueModel model, CancellationToken cancellationToken)
+    {
+        return SendTemplateAsync(
+            to,
+            $"{model.TaskLabel} is overdue",
+            TaskOverdueTemplate,
+            model,
+            cancellationToken);
+    }
+
+    public Task SendAsync(string to, AddedToProjectModel model, CancellationToken cancellationToken)
+    {
+        return SendTemplateAsync(
+            to,
+            $"{model.ActorName} added you to {model.ProjectTitle}",
+            AddedToProjectTemplate,
             model,
             cancellationToken);
     }

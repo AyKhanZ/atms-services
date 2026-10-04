@@ -1,4 +1,4 @@
-namespace ATMS.Admin.Service.Infrastructure.Delivery;
+namespace ATMS.Messaging.Infrastructure;
 
 public class DeliveryRetrySchedule
 {

@@ -23,9 +23,9 @@ public sealed class CompleteOnboardingValidatorTest : BaseValidatorTest
             .ReturnsAsync(new OnboardingProgress
             {
                 Version = 7,
-                PersonalInfoStatus = OnboardingStepStatusEnum.Completed,
+                PersonalInfoStatus = (int)OnboardingStepStatusEnum.Completed,
                 PersonalInfo = new OnboardingPersonalInfo(),
-                SecurityStatus = OnboardingStepStatusEnum.NotStarted,
+                SecurityStatus = (int)OnboardingStepStatusEnum.NotStarted,
                 User = new User()
             });
         var validator = new CompleteOnboardingValidator(

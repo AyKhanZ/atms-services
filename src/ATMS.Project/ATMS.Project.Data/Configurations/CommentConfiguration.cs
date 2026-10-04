@@ -15,7 +15,6 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .IsDescending(false, false, true, true);
 
         builder.Property(e => e.OwnerType)
-            .HasConversion<int>()
             .IsRequired();
 
         builder.Property(e => e.Text)

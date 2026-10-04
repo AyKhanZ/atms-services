@@ -90,7 +90,7 @@ public sealed class CommentRepositoryTest
     private static Comment NewComment(Guid taskId, Guid authorId, string text) => new()
     {
         Id = Guid.NewGuid(),
-        OwnerType = CommentOwnerTypeEnum.Task,
+        OwnerType = (int)CommentOwnerTypeEnum.Task,
         OwnerId = taskId,
         Text = text,
         CreatedById = authorId

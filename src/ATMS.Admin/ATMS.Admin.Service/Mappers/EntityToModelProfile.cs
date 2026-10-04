@@ -81,7 +81,7 @@ public class EntityToModelProfile : Profile
                 options => options.Ignore())
             .ForMember(destination => destination.SecurityCompleted,
                 options => options.MapFrom(source =>
-                    source.SecurityStatus == OnboardingStepStatusEnum.Completed))
+                    source.SecurityStatus == (int)OnboardingStepStatusEnum.Completed))
             .ForMember(destination => destination.Steps,
                 options => options.Ignore())
             .ForMember(destination => destination.PersonalInfo,

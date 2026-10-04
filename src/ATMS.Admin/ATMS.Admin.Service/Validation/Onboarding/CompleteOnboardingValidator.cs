@@ -42,18 +42,18 @@ public class CompleteOnboardingValidator : AbstractValidator<CompleteOnboardingC
             throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);
         }
 
-        if (progress.PersonalInfoStatus != OnboardingStepStatusEnum.Completed || progress.PersonalInfo is null)
+        if (progress.PersonalInfoStatus != (int)OnboardingStepStatusEnum.Completed || progress.PersonalInfo is null)
         {
             throw new ConflictException(OnboardingMessages.PersonalInfoIncomplete);
         }
 
-        if (progress.SecurityStatus != OnboardingStepStatusEnum.Completed || progress.PendingPasswordHash is null)
+        if (progress.SecurityStatus != (int)OnboardingStepStatusEnum.Completed || progress.PendingPasswordHash is null)
         {
             throw new ConflictException(OnboardingMessages.SecurityIncomplete);
         }
 
         if (_currentUser.RoleId == RoleIds.ClientManager &&
-            progress.InvitationsStatus == OnboardingStepStatusEnum.NotStarted)
+            progress.InvitationsStatus == (int)OnboardingStepStatusEnum.NotStarted)
         {
             throw new ConflictException(OnboardingMessages.InvitationsIncomplete);
         }

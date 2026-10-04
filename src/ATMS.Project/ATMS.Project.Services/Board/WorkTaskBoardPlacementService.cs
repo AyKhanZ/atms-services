@@ -59,6 +59,19 @@ public sealed class WorkTaskBoardPlacementService(
                 throw new ConflictException(WorkTaskMessages.BoardPositionChanged);
             }
 
+            // The board shows one project, while a column holds the cards of every project: a card
+            // the board does not show can sit right below the upper neighbour, and the key half-way
+            // to the lower one may be exactly its key. The nearest key below wins.
+            var nearest = await workTaskRepository.GetRankBelowAsync(
+                workTask.StatusId,
+                above,
+                workTask.Id,
+                cancellationToken);
+            if (nearest is not null && (below is null || string.CompareOrdinal(nearest, below) < 0))
+            {
+                below = nearest;
+            }
+
             try
             {
                 workTask.Rank = positions.Between(above, below);

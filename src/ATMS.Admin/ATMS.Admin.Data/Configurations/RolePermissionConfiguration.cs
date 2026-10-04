@@ -41,10 +41,6 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.ProjectEdit, RoleId = RoleIds.SuperAdmin },
             
-            new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.SuperAdmin },
-            new { PermissionId = (int)PermissionEnum.NotificationEdit, RoleId = RoleIds.SuperAdmin },
-            new { PermissionId = (int)PermissionEnum.NotificationDelete, RoleId = RoleIds.SuperAdmin },
-            
             new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.CommentEdit, RoleId = RoleIds.SuperAdmin },
             new { PermissionId = (int)PermissionEnum.CommentDelete, RoleId = RoleIds.SuperAdmin },
@@ -61,8 +57,6 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
             
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.Client },
             
-            new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.Client },
-            
             new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.Client },
             
             
@@ -73,8 +67,6 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
             
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.ClientManager },
             
-            new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.ClientManager },
-           
             new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.ClientManager },
             new { PermissionId = (int)PermissionEnum.CommentEdit, RoleId = RoleIds.ClientManager },
             
@@ -86,8 +78,6 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
             
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.Employee },
             new { PermissionId = (int)PermissionEnum.ProjectEdit, RoleId = RoleIds.Employee },
-            
-            new { PermissionId = (int)PermissionEnum.NotificationView, RoleId = RoleIds.Employee },
             
             new { PermissionId = (int)PermissionEnum.CommentView, RoleId = RoleIds.Employee },
             new { PermissionId = (int)PermissionEnum.CommentEdit, RoleId = RoleIds.Employee },

@@ -40,7 +40,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
             RoutingKey = routingKey,
             MessageType = typeof(T).FullName ?? typeof(T).Name,
             Payload = JsonSerializer.Serialize(message),
-            Status = DeliveryStatusEnum.Pending,
+            Status = (int)DeliveryStatusEnum.Pending,
             CreatedAt = now,
             NextAttemptAt = now
         };
@@ -56,7 +56,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
         var now = DateTime.UtcNow;
         return await context.OutboxMessages
             .AsNoTracking()
-            .Where(x => x.Status == DeliveryStatusEnum.Pending && x.NextAttemptAt <= now)
+            .Where(x => x.Status == (int)DeliveryStatusEnum.Pending && x.NextAttemptAt <= now)
             .OrderBy(x => x.CreatedAt)
             .Take(batchSize)
             .ToListAsync(cancellationToken);
@@ -67,7 +67,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
         var message = await context.OutboxMessages
             .FirstAsync(x => x.Id == id, cancellationToken);
 
-        message.Status = DeliveryStatusEnum.Processed;
+        message.Status = (int)DeliveryStatusEnum.Processed;
         message.ProcessedAt = DateTime.UtcNow;
         message.LastError = null;
 
@@ -100,7 +100,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
         var message = await context.OutboxMessages
             .FirstAsync(x => x.Id == id, cancellationToken);
 
-        message.Status = DeliveryStatusEnum.Failed;
+        message.Status = (int)DeliveryStatusEnum.Failed;
         message.AttemptCount = attemptCount;
         message.FailedAt = DateTime.UtcNow;
         message.LastError = error.Length > 2000 ? error[..2000] : error;
@@ -113,7 +113,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
         CancellationToken cancellationToken)
     {
         return context.OutboxMessages
-            .Where(x => x.Status == DeliveryStatusEnum.Processed &&
+            .Where(x => x.Status == (int)DeliveryStatusEnum.Processed &&
                         x.ProcessedAt < processedBefore)
             .ExecuteDeleteAsync(cancellationToken);
     }

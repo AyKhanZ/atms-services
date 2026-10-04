@@ -53,6 +53,12 @@ public interface IWorkTaskRepository
 
     Task<string?> GetNextRankAsync(int statusId, string rank, CancellationToken cancellationToken);
 
+    Task<string?> GetRankBelowAsync(
+        int statusId,
+        string? above,
+        Guid exceptWorkTaskId,
+        CancellationToken cancellationToken);
+
     Task RenumberColumnAsync(int statusId, CancellationToken cancellationToken);
 
     Task<Dictionary<Guid, string>> GetRanksAsync(IReadOnlyCollection<Guid> workTaskIds, ICriteria<WorkTask> criteria, CancellationToken cancellationToken);

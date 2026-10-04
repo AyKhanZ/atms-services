@@ -31,12 +31,39 @@ public class CreateWorkProjectHandlerTest : BaseHandlerTest
             Times.Once);
     }
 
+    [Fact]
+    public async Task Handle_TellsEveryParticipantBeforeTheProjectIsSaved()
+    {
+        var participantId = Guid.NewGuid();
+        var command = CreateCommand(participantId);
+        var project = new WorkProject();
+        var steps = new List<string>();
+        MapperMock.Setup(x => x.Map<WorkProject>(command)).Returns(project);
+        EntityCodeGeneratorMock.Setup(x => x.GetNextAsync(It.IsAny<CancellationToken>())).ReturnsAsync("42");
+        WorkProjectNotificationServiceMock
+            .Setup(x => x.NotifyParticipantsAddedAsync(
+                project,
+                It.Is<IEnumerable<Guid>>(userIds => userIds.SequenceEqual(new[] { participantId })),
+                It.IsAny<CancellationToken>()))
+            .Callback(() => steps.Add("notify"))
+            .Returns(Task.CompletedTask);
+        WorkProjectRepositoryMock
+            .Setup(x => x.CreateAsync(project, It.IsAny<CancellationToken>()))
+            .Callback(() => steps.Add("save"))
+            .Returns(Task.CompletedTask);
+
+        await CreateHandler().Handle(command, CancellationToken.None);
+
+        Assert.Equal(["notify", "save"], steps);
+    }
+
     private CreateWorkProjectHandler CreateHandler()
     {
         return new CreateWorkProjectHandler(
             MapperMock.Object,
             WorkProjectRepositoryMock.Object,
-            EntityCodeGeneratorMock.Object);
+            EntityCodeGeneratorMock.Object,
+            WorkProjectNotificationServiceMock.Object);
     }
 
     private CreateWorkProjectCommand CreateCommand(Guid participantId)

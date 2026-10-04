@@ -13,5 +13,6 @@ public enum ConfigurationErrorType
     AttachmentsSectionNotFound,
     MissingSeedData,
     BusinessTimeZoneNotFound,
-    BusinessTimeZoneUnavailable
+    BusinessTimeZoneUnavailable,
+    NotificationsSectionNotFound
 }

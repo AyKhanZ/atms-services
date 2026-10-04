@@ -19,13 +19,9 @@ public sealed class CommentModelService(
     ICommentRepository comments,
     IProjectPermissionService permissions,
     IDictionaryCacheService dictionaries,
-    ICurrentUser currentUser) : ICommentModelService
+    ICurrentUser currentUser,
+    ICommentMentionService mentions) : ICommentModelService
 {
-    private static readonly Regex MentionPattern = new(
-        @"@\[user:([0-9a-fA-F-]{36})\]",
-        RegexOptions.Compiled | RegexOptions.CultureInvariant,
-        TimeSpan.FromSeconds(1));
-
     private static readonly Regex ReferencePattern = new(
         @"`[^`]*`|\[[^\]]*\]\([^)]*\)|(?<![\p{L}\p{N}_#])#(?<code>[0-9]+)\b",
         RegexOptions.Compiled | RegexOptions.CultureInvariant,
@@ -55,7 +51,7 @@ public sealed class CommentModelService(
         // A deleted comment is a placeholder: its text, mentions and links are never read out.
         var mentionsByComment = items.ToDictionary(
             item => item.Id,
-            item => item.IsDeleted ? [] : ParseMentions(item.Text));
+            item => item.IsDeleted ? [] : mentions.GetMentionedUserIds(item.Text));
         var mentionIds = mentionsByComment.Values.SelectMany(ids => ids).Distinct().ToArray();
         var mentioned = mentionIds.Length == 0
             ? new Dictionary<Guid, User>()
@@ -96,15 +92,6 @@ public sealed class CommentModelService(
                     .ToArray()
             };
         });
-    }
-
-    private static Guid[] ParseMentions(string text)
-    {
-        return MentionPattern.Matches(text)
-            .Select(match => Guid.TryParse(match.Groups[1].Value, out var id) ? id : Guid.Empty)
-            .Where(id => id != Guid.Empty)
-            .Distinct()
-            .ToArray();
     }
 
     private static string[] ParseReferenceCodes(string text) =>

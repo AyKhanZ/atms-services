@@ -1,4 +1,5 @@
 using ATMS.Caching.Constants;
+using ATMS.Data.Enums;
 using ATMS.Project.Services.Board;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Entities;
@@ -24,7 +25,8 @@ public class UpdateWorkTaskHandlerTest : BaseHandlerTest
             MapperMock.Object,
             WorkTaskRepositoryMock.Object,
             CacheServiceMock.Object,
-            new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()));
+            new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()),
+            WorkTaskNotificationServiceMock.Object);
 
     private WorkTask Existing(Guid? parentId = null) =>
         new()
@@ -152,5 +154,67 @@ public class UpdateWorkTaskHandlerTest : BaseHandlerTest
 
         VerifyAllLocalizedCacheEntriesRemoved(language => CacheKeys.Project.TaskById(previousParentId, language));
         VerifyAllLocalizedCacheEntriesRemoved(language => CacheKeys.Project.TaskById(parent.Id, language));
+    }
+
+    [Fact]
+    public async Task Handle_NotifiesWithTheAssigneeAndStatusTheTaskHadBefore()
+    {
+        var previousAssigneeId = Guid.NewGuid();
+        var task = Existing();
+        task.AssigneeId = previousAssigneeId;
+        task.StatusId = (int)WorkTaskStatusEnum.New;
+        SetupTask(task);
+        var command = new UpdateWorkTaskCommand
+        {
+            ProjectId = _projectId,
+            WorkTaskId = task.Id,
+            WorkTicketId = _ticketId,
+            AssigneeId = Guid.NewGuid(),
+            Title = "Updated",
+            PriorityId = 1,
+            StatusId = (int)WorkTaskStatusEnum.Done,
+        };
+        MapperMock
+            .Setup(mapper => mapper.Map(command, task))
+            .Callback(() => task.AssigneeId = command.AssigneeId)
+            .Returns(task);
+
+        await Handler().Handle(command, CancellationToken.None);
+
+        WorkTaskNotificationServiceMock.Verify(service => service.NotifyChangedAsync(
+            It.Is<WorkTask>(changed =>
+                changed == task &&
+                changed.AssigneeId == command.AssigneeId &&
+                changed.StatusId == (int)WorkTaskStatusEnum.Done),
+            previousAssigneeId,
+            (int)WorkTaskStatusEnum.New,
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WhenSubtasksAreClosedWithTheTask_NotifiesOnlyAboutTheTask()
+    {
+        var task = Existing();
+        task.StatusId = (int)WorkTaskStatusEnum.InProgress;
+        var children = new[] { Existing(task.Id), Existing(task.Id) };
+        SetupTask(task, children);
+
+        await Handler().Handle(
+            new UpdateWorkTaskCommand
+            {
+                ProjectId = _projectId,
+                WorkTaskId = task.Id,
+                WorkTicketId = _ticketId,
+                Title = "Updated",
+                PriorityId = 1,
+                StatusId = (int)WorkTaskStatusEnum.Done,
+                CompleteSubtasks = true,
+            },
+            CancellationToken.None);
+
+        Assert.All(children, child => Assert.Equal((int)WorkTaskStatusEnum.Done, child.StatusId));
+        WorkTaskNotificationServiceMock.Verify(service => service.NotifyChangedAsync(
+            task, It.IsAny<Guid?>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()), Times.Once);
+        WorkTaskNotificationServiceMock.VerifyNoOtherCalls();
     }
 }

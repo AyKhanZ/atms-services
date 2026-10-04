@@ -17,8 +17,8 @@ public sealed class OnboardingModelMappingActionTest
         using var provider = BuildProvider();
         var mapper = provider.GetRequiredService<IMapper>();
         var progress = CreateProgress(RoleIds.ClientManager);
-        progress.PersonalInfoStatus = OnboardingStepStatusEnum.Completed;
-        progress.SecurityStatus = OnboardingStepStatusEnum.Completed;
+        progress.PersonalInfoStatus = (int)OnboardingStepStatusEnum.Completed;
+        progress.SecurityStatus = (int)OnboardingStepStatusEnum.Completed;
 
         var model = mapper.Map<OnboardingModel>(progress);
 

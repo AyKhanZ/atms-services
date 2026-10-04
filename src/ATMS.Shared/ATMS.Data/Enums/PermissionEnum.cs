@@ -13,10 +13,6 @@ public enum PermissionEnum
     ProjectView,
     ProjectEdit,
 
-    NotificationView = 10,
-    NotificationEdit,
-    NotificationDelete,
-    
     CommentView = 13,
     CommentEdit,
     CommentDelete,

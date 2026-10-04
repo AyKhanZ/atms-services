@@ -1,3 +1,4 @@
+using ATMS.Messaging.Infrastructure;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Messaging;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -291,9 +292,9 @@ public class EmailDeliveryBackgroundServiceTest
                 Name = "Aykhan",
                 Surname = "Zeynalov"
             },
-            Type = EmailDeliveryTypeEnum.Confirmation,
+            Type = (int)EmailDeliveryTypeEnum.Confirmation,
             TemporaryPassword = "Temporary1!",
-            Status = DeliveryStatusEnum.Pending,
+            Status = (int)DeliveryStatusEnum.Pending,
             CreatedAt = DateTime.UtcNow,
             NextAttemptAt = DateTime.UtcNow
         };
@@ -302,7 +303,7 @@ public class EmailDeliveryBackgroundServiceTest
     private EmailDelivery CreatePasswordResetDelivery()
     {
         var delivery = CreateDelivery();
-        delivery.Type = EmailDeliveryTypeEnum.PasswordReset;
+        delivery.Type = (int)EmailDeliveryTypeEnum.PasswordReset;
         delivery.TemporaryPassword = null;
         return delivery;
     }

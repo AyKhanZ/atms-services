@@ -1,11 +1,10 @@
 using ATMS.Data;
-using ATMS.Data.Enums;
 
 namespace ATMS.Project.Data.Entities;
 
 public class Attachment : SoftDeletableAuditableEntity<User>
 {
-    public AttachmentOwnerTypeEnum OwnerType { get; set; }
+    public int OwnerType { get; set; }
 
     public Guid OwnerId { get; set; }
 

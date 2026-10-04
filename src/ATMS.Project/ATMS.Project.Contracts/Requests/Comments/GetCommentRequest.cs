@@ -13,4 +13,6 @@ public sealed class GetCommentRequest : IRequest<CommentModel>, IProjectScopedRe
     public Guid ProjectId { get; set; }
 
     public Guid CommentId { get; set; }
+
+    public Guid? WorkTaskId { get; set; }
 }

@@ -1,4 +1,3 @@
-using ATMS.Data.Enums;
 
 namespace ATMS.Data.Messaging;
 
@@ -14,7 +13,7 @@ public class OutboxMessage
 
     public string Payload { get; set; }
 
-    public DeliveryStatusEnum Status { get; set; }
+    public int Status { get; set; }
 
     public int AttemptCount { get; set; }
 

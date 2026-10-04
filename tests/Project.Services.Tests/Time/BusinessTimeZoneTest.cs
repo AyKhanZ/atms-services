@@ -1,12 +1,13 @@
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Project.Data.Models.Dashboard;
 using ATMS.Project.Services.Dashboard;
+using ATMS.Project.Services.Time;
 using ATMS.Project.Services.Modules;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Project.Services.Tests.Dashboard;
+namespace Project.Services.Tests.Time;
 
 public sealed class BusinessTimeZoneTest
 {
@@ -87,17 +88,61 @@ public sealed class BusinessTimeZoneTest
     [InlineData(null)]
     [InlineData("")]
     [InlineData("Unknown/Zone")]
-    public void AddDashboardServices_RejectsMissingOrUnknownTimeZone(string? id)
+    public void AddTimeServices_RejectsMissingOrUnknownTimeZone(string? id)
     {
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?> { ["BusinessTimeZone"] = id })
             .Build();
 
         var exception = Assert.Throws<ConfigurationException>(() =>
-            new ServiceCollection().AddDashboardServices(configuration));
+            new ServiceCollection().AddTimeServices(configuration));
         Assert.Equal(
             id is null or "" ? ConfigurationErrorType.BusinessTimeZoneNotFound
                 : ConfigurationErrorType.BusinessTimeZoneUnavailable,
             exception.ErrorType);
+    }
+
+    [Fact]
+    public void Today_IsTheDayInBaku()
+    {
+        Assert.Equal(new DateOnly(2026, 9, 25), _zone.Today(UtcNow));
+    }
+
+    [Theory]
+    // A deadline of 6 October picked in Baku: the browser sends its own midnight.
+    [InlineData("2026-10-05T20:00:00Z", "2026-10-06")]
+    // The same date picked in London: midnight there is 04:00 in Baku, the same day.
+    [InlineData("2026-10-05T23:00:00Z", "2026-10-06")]
+    public void DateOf_ReadsADeadlineAsTheDateInBaku(string stored, string date)
+    {
+        var utc = DateTime.Parse(stored, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
+
+        Assert.Equal(DateOnly.Parse(date), _zone.DateOf(utc));
+    }
+
+    [Fact]
+    public void StartOfDayUtc_IsMidnightInBaku()
+    {
+        Assert.Equal(
+            new DateTime(2026, 10, 5, 20, 0, 0, DateTimeKind.Utc),
+            _zone.StartOfDayUtc(new DateOnly(2026, 10, 6)));
+    }
+
+    [Theory]
+    // 08:59 in Baku: 09:00 is still ahead today.
+    [InlineData("2026-10-06T04:59:00Z", "2026-10-06T05:00:00Z", false)]
+    // 09:00 sharp: the pass is due now, the next one is tomorrow.
+    [InlineData("2026-10-06T05:00:00Z", "2026-10-07T05:00:00Z", true)]
+    // 18:00 in Baku: tomorrow morning.
+    [InlineData("2026-10-06T14:00:00Z", "2026-10-07T05:00:00Z", true)]
+    public void NextUtc_IsTheNextNineOClockInBaku(string now, string next, bool reached)
+    {
+        var utcNow = DateTime.Parse(now, null, System.Globalization.DateTimeStyles.AdjustToUniversal);
+        var nine = new TimeOnly(9, 0);
+
+        Assert.Equal(
+            DateTime.Parse(next, null, System.Globalization.DateTimeStyles.AdjustToUniversal),
+            _zone.NextUtc(utcNow, nine));
+        Assert.Equal(reached, _zone.HasReached(utcNow, nine));
     }
 }
