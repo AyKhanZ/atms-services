@@ -28,8 +28,9 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
                 ProjectPermissionEnum.ParticipantInviteClient,
                 ProjectPermissionEnum.ParticipantInviteEmployee
             ],
-            [RoleIds.BusinessConsultant] = [ProjectPermissionEnum.ProjectView, ProjectPermissionEnum.CommentEdit],
-            [RoleIds.Developer] = [ProjectPermissionEnum.ProjectView, ProjectPermissionEnum.CommentEdit],
+            // The team works the tickets and tasks; only the project manager deletes someone else's comment.
+            [RoleIds.BusinessConsultant] = TeamMember(),
+            [RoleIds.Developer] = TeamMember(),
             [RoleIds.OrgClientManager] =
             [
                 ProjectPermissionEnum.ProjectView,
@@ -39,6 +40,18 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
             ],
             [RoleIds.OrgClientViewer] = [ProjectPermissionEnum.ProjectView, ProjectPermissionEnum.CommentEdit]
         };
+
+    private static ProjectPermissionEnum[] TeamMember() =>
+    [
+        ProjectPermissionEnum.ProjectView,
+        ProjectPermissionEnum.TicketCreate,
+        ProjectPermissionEnum.TicketEdit,
+        ProjectPermissionEnum.TicketDelete,
+        ProjectPermissionEnum.TaskCreate,
+        ProjectPermissionEnum.TaskEdit,
+        ProjectPermissionEnum.TaskDelete,
+        ProjectPermissionEnum.CommentEdit
+    ];
 
     public void Configure(EntityTypeBuilder<RolePermission> builder)
     {

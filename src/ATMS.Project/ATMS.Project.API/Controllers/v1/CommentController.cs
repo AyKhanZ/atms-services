@@ -43,6 +43,7 @@ public sealed class CommentController(IMediator mediator) : ControllerBase
     /// </summary>
     /// <remarks>
     /// Read after a pushed change to put that one comment on screen instead of the whole page.
+    /// When workTaskId is supplied, the comment must belong to that task.
     /// </remarks>
     /// <response code="200">Returns the comment.</response>
     /// <response code="401">The user is not authenticated.</response>
@@ -55,12 +56,14 @@ public sealed class CommentController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<CommentModel>> Get(Guid projectId, Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<CommentModel>> Get(
+        Guid projectId, Guid id, [FromQuery] Guid? workTaskId, CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(new GetCommentRequest
         {
             ProjectId = projectId,
-            CommentId = id
+            CommentId = id,
+            WorkTaskId = workTaskId
         }, cancellationToken));
     }
 

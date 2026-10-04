@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.Comments;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Requests.Comments;
@@ -36,11 +37,73 @@ public sealed class GetCommentHandlerTest
         Assert.Same(model, result);
     }
 
+    [Fact]
+    public async Task CommentOfRequestedTask_ReturnsItsModel()
+    {
+        var workTaskId = Guid.NewGuid();
+        var request = Request();
+        request.WorkTaskId = workTaskId;
+        var model = new CommentModel { Id = _commentId, CreatedBy = new PersonModel() };
+        _comments.Setup(value => value.GetAsync(_projectId, _commentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Comment
+            {
+                Id = _commentId,
+                OwnerType = (int)CommentOwnerTypeEnum.Task,
+                OwnerId = workTaskId,
+                Text = "Hi"
+            });
+        _models.Setup(value => value.BuildAsync(
+                _projectId, It.IsAny<IReadOnlyCollection<Comment>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<Guid, CommentModel> { [_commentId] = model });
+
+        var result = await Handler().Handle(request, CancellationToken.None);
+
+        Assert.Same(model, result);
+    }
+
     // A deleted comment is not found by the repository itself, which the repository test covers.
     [Fact]
     public async Task MissingComment_ReturnsNotFound()
     {
         await Assert.ThrowsAsync<EntityException>(() => Handler().Handle(Request(), CancellationToken.None));
+
+        _models.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task CommentOfAnotherTask_ReturnsNotFound()
+    {
+        var request = Request();
+        request.WorkTaskId = Guid.NewGuid();
+        _comments.Setup(value => value.GetAsync(_projectId, _commentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Comment
+            {
+                Id = _commentId,
+                OwnerType = (int)CommentOwnerTypeEnum.Task,
+                OwnerId = Guid.NewGuid(),
+                Text = "Hi"
+            });
+
+        await Assert.ThrowsAsync<EntityException>(() => Handler().Handle(request, CancellationToken.None));
+
+        _models.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task CommentOfAnotherOwnerType_ReturnsNotFound()
+    {
+        var request = Request();
+        request.WorkTaskId = Guid.NewGuid();
+        _comments.Setup(value => value.GetAsync(_projectId, _commentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Comment
+            {
+                Id = _commentId,
+                OwnerType = (int)CommentOwnerTypeEnum.Ticket,
+                OwnerId = request.WorkTaskId.Value,
+                Text = "Hi"
+            });
+
+        await Assert.ThrowsAsync<EntityException>(() => Handler().Handle(request, CancellationToken.None));
 
         _models.VerifyNoOtherCalls();
     }

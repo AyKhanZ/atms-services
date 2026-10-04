@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.Comments;
 using ATMS.Project.Contracts.Requests.Comments;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -14,8 +15,12 @@ public sealed class GetCommentHandler(
 {
     public async Task<CommentModel> Handle(GetCommentRequest request, CancellationToken cancellationToken)
     {
-        var comment = await comments.GetAsync(request.ProjectId, request.CommentId, cancellationToken)
-            ?? throw new EntityException(EntityErrorType.NotFound, CommentMessages.NotFound);
+        var comment = await comments.GetAsync(request.ProjectId, request.CommentId, cancellationToken);
+        if (comment is null || (request.WorkTaskId is { } workTaskId &&
+            (comment.OwnerType != (int)CommentOwnerTypeEnum.Task || comment.OwnerId != workTaskId)))
+        {
+            throw new EntityException(EntityErrorType.NotFound, CommentMessages.NotFound);
+        }
 
         var mapped = await models.BuildAsync(request.ProjectId, [comment], cancellationToken);
         return mapped[comment.Id];
