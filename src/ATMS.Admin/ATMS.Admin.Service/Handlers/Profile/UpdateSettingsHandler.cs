@@ -9,6 +9,7 @@ using ATMS.Data.Constants;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Contracts.Events.Users;
+using ATMS.Data.Messaging;
 using ATMS.Infrastructure.Images;
 using ATMS.Messaging.Configuration;
 using AutoMapper;
@@ -59,7 +60,7 @@ public sealed class UpdateSettingsHandler(
             await outboxRepository.AddAsync(
                 MessagingConstants.Exchanges.UserEvents,
                 MessagingConstants.RoutingKeys.UserUpdated,
-                new UserUpdatedEvent(user.Id, user.Name, user.Surname, user.AvatarPath),
+                new UserUpdatedEvent(user.Id, user.Name, user.Surname, user.AvatarPath, user.HasCompletedOnboarding),
                 cancellationToken);
 
             await userRepository.SaveAsync(cancellationToken);

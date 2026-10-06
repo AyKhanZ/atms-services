@@ -1,5 +1,6 @@
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Infrastructure.Delivery;
+using ATMS.Data.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;

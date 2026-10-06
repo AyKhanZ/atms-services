@@ -78,47 +78,11 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Email is required ..
-        /// </summary>
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Email must be less than {0} symbols..
-        /// </summary>
-        public static string EmailShouldBeLessThan {
-            get {
-                return ResourceManager.GetString("EmailShouldBeLessThan", resourceCulture);
-            }
-        }
-        public static string EmailRequired {
-            get {
-                return ResourceManager.GetString("EmailRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Invalid or expired password reset token ..
         /// </summary>
         public static string InvalidPasswordResetToken {
             get {
                 return ResourceManager.GetString("InvalidPasswordResetToken", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Name is required ..
-        /// </summary>
-        public static string NameRequired {
-            get {
-                return ResourceManager.GetString("NameRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Name must me less than {0} symbols ..
-        /// </summary>
-        public static string NameShouldBeLessThan {
-            get {
-                return ResourceManager.GetString("NameShouldBeLessThan", resourceCulture);
             }
         }
         
@@ -200,24 +164,6 @@ namespace ATMS.Admin.Service.Resources {
         public static string PasswordTooShort {
             get {
                 return ResourceManager.GetString("PasswordTooShort", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Surname is required ..
-        /// </summary>
-        public static string SurnameRequired {
-            get {
-                return ResourceManager.GetString("SurnameRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Surname must me less than {0} symbols ..
-        /// </summary>
-        public static string SurnameShouldBeLessThan {
-            get {
-                return ResourceManager.GetString("SurnameShouldBeLessThan", resourceCulture);
             }
         }
         

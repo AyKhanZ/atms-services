@@ -21,6 +21,7 @@ public static class ProjectServicesModule
         services.AddProjectSecurityServices();
         services.AddTimeServices(configuration);
         services.AddBoardServices();
+        services.AddInvitationServices();
         services.AddAttachmentServices();
         services.AddCommentServices();
         services.AddNotificationServices();

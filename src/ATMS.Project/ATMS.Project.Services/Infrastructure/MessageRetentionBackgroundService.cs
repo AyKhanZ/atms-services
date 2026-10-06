@@ -1,3 +1,4 @@
+using ATMS.Data.Messaging;
 using ATMS.Project.Data.Repositories.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -5,9 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace ATMS.Project.Services.Infrastructure;
 
-public class InboxRetentionBackgroundService(
+public class MessageRetentionBackgroundService(
     IServiceScopeFactory scopeFactory,
-    ILogger<InboxRetentionBackgroundService> logger) : BackgroundService
+    ILogger<MessageRetentionBackgroundService> logger) : BackgroundService
 {
     private static readonly TimeSpan CleanupInterval = TimeSpan.FromDays(1);
 
@@ -27,7 +28,7 @@ public class InboxRetentionBackgroundService(
             }
             catch (Exception exception)
             {
-                logger.LogError(exception, "Failed to delete expired inbox records");
+                logger.LogError(exception, "Failed to delete expired inbox and outbox records");
             }
         }
         while (await timer.WaitForNextTickAsync(stoppingToken));
@@ -36,6 +37,9 @@ public class InboxRetentionBackgroundService(
     private async Task DeleteExpiredRecordsAsync(CancellationToken cancellationToken)
     {
         await using var scope = scopeFactory.CreateAsyncScope();
+        await scope.ServiceProvider
+            .GetRequiredService<IOutboxRepository>()
+            .DeleteProcessedBeforeAsync(DateTime.UtcNow.AddDays(-30), cancellationToken);
         await scope.ServiceProvider
             .GetRequiredService<IInboxRepository>()
             .DeleteProcessedBeforeAsync(DateTime.UtcNow.AddDays(-60), cancellationToken);

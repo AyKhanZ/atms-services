@@ -29,6 +29,31 @@ public class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRep
         return entity.Id;
     }
 
+    public async Task<Guid> AddInvitationAsync(
+        Guid userId,
+        string temporaryPassword,
+        string? inviterName,
+        string? projectTitle,
+        CancellationToken cancellationToken)
+    {
+        var now = DateTime.UtcNow;
+        var entity = new EmailDelivery
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Type = (int)EmailDeliveryTypeEnum.Confirmation,
+            TemporaryPassword = temporaryPassword,
+            InviterName = inviterName,
+            ProjectTitle = projectTitle,
+            Status = (int)DeliveryStatusEnum.Pending,
+            CreatedAt = now,
+            NextAttemptAt = now
+        };
+
+        await context.EmailDeliveries.AddAsync(entity, cancellationToken);
+        return entity.Id;
+    }
+
     public async Task<Guid> AddPasswordResetAsync(
         Guid userId,
         CancellationToken cancellationToken)

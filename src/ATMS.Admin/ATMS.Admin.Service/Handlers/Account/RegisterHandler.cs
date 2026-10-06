@@ -8,6 +8,7 @@ using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Contracts.Events.Users;
+using ATMS.Data.Messaging;
 using ATMS.Messaging.Configuration;
 using AutoMapper;
 using MediatR;

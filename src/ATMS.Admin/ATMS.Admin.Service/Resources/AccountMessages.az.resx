@@ -52,17 +52,8 @@
         <value>Bu email ilə istifadəçi artıq mövcuddur.</value>
     </data>
 
-    <data name="NameShouldBeLessThan" xml:space="preserve">
-        <value>Ad {0} simvoldan az olmalıdır.</value>
-    </data>
 
-    <data name="SurnameShouldBeLessThan" xml:space="preserve">
-        <value>Soyad {0} simvoldan az olmalıdır.</value>
-    </data>
 
-    <data name="EmailRequired" xml:space="preserve">
-        <value>Email tələb olunur.</value>
-    </data>
 
     <data name="PasswordRequired" xml:space="preserve">
         <value>Şifrə tələb olunur.</value>
@@ -80,13 +71,7 @@
         <value>Yeni şifrə tələb olunur.</value>
     </data>
 
-    <data name="NameRequired" xml:space="preserve">
-        <value>Ad tələb olunur.</value>
-    </data>
 
-    <data name="SurnameRequired" xml:space="preserve">
-        <value>Soyad tələb olunur.</value>
-    </data>
 
     <data name="TokenRequired" xml:space="preserve">
         <value>Token tələb olunur.</value>
@@ -96,9 +81,6 @@
     </data>
     <data name="OrganizationIdRequired" xml:space="preserve">
         <value>Təşkilat tələb olunur.</value>
-    </data>
-    <data name="EmailShouldBeLessThan" xml:space="preserve">
-        <value>Email {0} simvoldan az olmalıdır.</value>
     </data>
     <data name="PasswordChangedConcurrently" xml:space="preserve"><value>Şifrə indicə başqa pəncərədə dəyişdirildi. Yeni şifrə ilə daxil olun.</value></data>
     <data name="OldPasswordIncorrect" xml:space="preserve"><value>Cari parol yanlışdır.</value></data>

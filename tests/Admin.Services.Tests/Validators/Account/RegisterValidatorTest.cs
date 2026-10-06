@@ -100,7 +100,7 @@ public class RegisterValidatorTest
         var result = await _validator.ValidateAsync(CreateCommand(name: string.Empty));
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.NameRequired);
+        Assert.Contains(result.Errors, e => e.ErrorMessage == ValidationMessages.NameRequired);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class RegisterValidatorTest
         var result = await _validator.ValidateAsync(CreateCommand(name: _faker.Random.String(101)));
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == string.Format(AccountMessages.NameShouldBeLessThan, 100));
+        Assert.Contains(result.Errors, e => e.ErrorMessage == string.Format(ValidationMessages.NameShouldBeLessThan, 100));
     }
 
     [Fact]
@@ -118,7 +118,7 @@ public class RegisterValidatorTest
         var result = await _validator.ValidateAsync(CreateCommand(surname: string.Empty));
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.SurnameRequired);
+        Assert.Contains(result.Errors, e => e.ErrorMessage == ValidationMessages.SurnameRequired);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class RegisterValidatorTest
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors,
-            e => e.ErrorMessage == string.Format(AccountMessages.SurnameShouldBeLessThan, 100));
+            e => e.ErrorMessage == string.Format(ValidationMessages.SurnameShouldBeLessThan, 100));
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class RegisterValidatorTest
         var result = await _validator.ValidateAsync(CreateCommand(email: string.Empty));
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.EmailRequired);
+        Assert.Contains(result.Errors, e => e.ErrorMessage == ValidationMessages.EmailRequired);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class RegisterValidatorTest
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors,
-            e => e.ErrorMessage == string.Format(AccountMessages.EmailShouldBeLessThan, 100));
+            e => e.ErrorMessage == string.Format(ValidationMessages.EmailShouldBeLessThan, 100));
     }
 
     [Fact]

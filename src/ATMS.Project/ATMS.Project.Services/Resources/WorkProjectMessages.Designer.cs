@@ -33,4 +33,8 @@ internal static class WorkProjectMessages
     internal static string ParticipantRoleNotFound => Get(nameof(ParticipantRoleNotFound));
     internal static string ParticipantOrganizationMismatch => Get(nameof(ParticipantOrganizationMismatch));
     internal static string ParticipantRoleMismatch => Get(nameof(ParticipantRoleMismatch));
+    internal static string InvitationInternalProject => Get(nameof(InvitationInternalProject));
+    internal static string InvitationAlreadyParticipant => Get(nameof(InvitationAlreadyParticipant));
+    internal static string InvitationAlreadySent => Get(nameof(InvitationAlreadySent));
+    internal static string InvitationEmailInUse => Get(nameof(InvitationEmailInUse));
 }

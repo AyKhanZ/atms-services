@@ -12,6 +12,8 @@ public class EventToEntityProfile : Profile
         CreateMap<UserCreatedEvent, User>()
             .ForMember(destination => destination.AvatarPath, options =>
                 options.MapFrom(source => string.IsNullOrWhiteSpace(source.AvatarPath) ? DefaultValues.UserAvatar : source.AvatarPath))
+            .ForMember(destination => destination.NormalizedEmail, options =>
+                options.MapFrom(source => source.Email.Trim().ToUpperInvariant()))
             .ForMember(destination => destination.Organization, options => options.Ignore());
 
         CreateMap<UserUpdatedEvent, User>();

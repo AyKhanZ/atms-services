@@ -4,6 +4,7 @@ using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Entities.Messaging;
 using ATMS.Data;
+using ATMS.Data.Configurations.Messaging;
 using ATMS.Data.Interfaces;
 using ATMS.Data.Messaging;
 using Microsoft.EntityFrameworkCore;
@@ -84,5 +85,6 @@ public class AdminDbContext: DbContext
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AdminDbContext).Assembly);
+        modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
     }
 }

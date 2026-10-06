@@ -27,6 +27,8 @@ public interface IUserRepository
     
     
     Task<bool> IsExistAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken);
+
+    Task<bool> IsEmailTakenAsync(string normalizedEmail, CancellationToken cancellationToken);
     
     
     Task SaveAsync(CancellationToken cancellationToken);

@@ -57,17 +57,8 @@
         <value>Пользователь с таким email уже существует.</value>
     </data>
 
-    <data name="NameShouldBeLessThan" xml:space="preserve">
-        <value>Имя должно содержать не более {0} символов.</value>
-    </data>
 
-    <data name="SurnameShouldBeLessThan" xml:space="preserve">
-        <value>Фамилия должна содержать не более {0} символов.</value>
-    </data>
 
-    <data name="EmailRequired" xml:space="preserve">
-        <value>Email обязателен.</value>
-    </data>
 
     <data name="PasswordRequired" xml:space="preserve">
         <value>Пароль обязателен.</value>
@@ -85,13 +76,7 @@
         <value>Новый пароль обязателен.</value>
     </data>
 
-    <data name="NameRequired" xml:space="preserve">
-        <value>Имя обязательно.</value>
-    </data>
 
-    <data name="SurnameRequired" xml:space="preserve">
-        <value>Фамилия обязательна.</value>
-    </data>
 
     <data name="TokenRequired" xml:space="preserve">
         <value>Токен обязателен.</value>
@@ -101,9 +86,6 @@
     </data>
     <data name="OrganizationIdRequired" xml:space="preserve">
         <value>Организация обязательна.</value>
-    </data>
-    <data name="EmailShouldBeLessThan" xml:space="preserve">
-        <value>Email должен содержать не более {0} символов.</value>
     </data>
     <data name="PasswordChangedConcurrently" xml:space="preserve"><value>Пароль только что сменили в другом окне. Войдите с новым паролем.</value></data>
     <data name="OldPasswordIncorrect" xml:space="preserve"><value>Текущий пароль неверен.</value></data>

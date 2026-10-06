@@ -8,4 +8,5 @@ public sealed record UserCreatedEvent(
     int UserType,
     string AvatarPath,
     Guid? OrganizationId,
-    bool IsAdmin = false);
+    bool IsAdmin = false,
+    bool HasCompletedOnboarding = false);

@@ -5,4 +5,5 @@ public sealed record UserInvitedEvent(
     string Name,
     string Surname,
     Guid? OrganizationId,
-    Guid InvitedByUserId);
+    Guid InvitedByUserId,
+    string? ProjectTitle = null);

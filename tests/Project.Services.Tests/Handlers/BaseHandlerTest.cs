@@ -23,6 +23,7 @@ public abstract class BaseHandlerTest
     protected readonly Mock<IDictionariesRepository> DictionariesRepositoryMock = new();
     protected readonly Mock<IOrganizationRepository> OrganizationRepositoryMock = new();
     protected readonly Mock<IWorkProjectRepository> WorkProjectRepositoryMock = new();
+    protected readonly Mock<IWorkProjectInvitationRepository> WorkProjectInvitationRepositoryMock = new();
     protected readonly Mock<IWorkGroupRepository> WorkGroupRepositoryMock = new();
     protected readonly Mock<IWorkTicketRepository> WorkTicketRepositoryMock = new();
     protected readonly Mock<IWorkTaskRepository> WorkTaskRepositoryMock = new();

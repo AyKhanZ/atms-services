@@ -46,6 +46,17 @@
           <tr>
             <td style="padding:0 34px 0;font-size:15px;line-height:22px;color:#1f2937;">
               <p style="margin:0 0 18px;">Hello @greetingName,</p>
+              @if (!string.IsNullOrWhiteSpace(Model.InviterName))
+              {
+                  if (string.IsNullOrWhiteSpace(Model.ProjectTitle))
+                  {
+                      <p style="margin:0 0 18px;"><strong>@Model.InviterName</strong> invited you to BAIM.</p>
+                  }
+                  else
+                  {
+                      <p style="margin:0 0 18px;"><strong>@Model.InviterName</strong> invited you to the project <strong>&ldquo;@Model.ProjectTitle&rdquo;</strong>.</p>
+                  }
+              }
               <p style="margin:0 0 18px;">Use the credentials below after confirming your email.</p>
               <p style="margin:0 0 10px;"><strong>Login:</strong> <a href="mailto:@Model.Email" style="color:#ff8800 !important;text-decoration:none !important;word-break:break-all;">@Model.Email</a></p>
               <p style="margin:0 0 20px;"><strong>Password:</strong> <span style="color:#ff8800;word-break:break-all;">@Model.Password</span></p>

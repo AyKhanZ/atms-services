@@ -132,12 +132,21 @@ These were decided in review. Breaking one is a defect, not a style preference.
   examples to copy.
 - Before writing a model, look for one to derive from — `AuditUserModel` already carries `Id`, `Name`,
   `Surname`. Add only the fields it lacks.
+- A new shared base class (model, command, entity) is created only when at least two types derive from it
+  right away. A base for one type is over-engineering: write the fields in that type, or derive from an
+  existing base (`UserBase`, `AuditUserModel`) and add the rest by hand. `WorkProjectInvitationModel`
+  derives from `AuditUserModel` and declares `Email` itself: no other model needs that combination.
 - Requests and commands carry `int` / `int?` for dictionary and enum values, never the enum type itself. The
   validator checks the value with `Enum.IsDefined`.
 
 ## Validation
 
 - Messages come from `.resx` in all three languages. An inline English string in a validator is never correct.
+- Before adding a message, search the shared `ValidationMessages` (`ATMS.Application.Exceptions`) and the
+  resources of the other service. A message both Admin and Project need lives in `ValidationMessages`: if
+  the right text exists only in the other service, move it to the shared resource and point both services at
+  it — never copy it under a new name. Field messages for a person (`NameRequired`, `SurnameRequired`,
+  `EmailRequired` and their `…ShouldBeLessThan`) are already there.
 - Reuse the shared rule extensions (`IsPageSize()`, `IsInDateRange()`, the cursor rules) instead of writing
   page-size, date-range or paging checks again.
 - **No validator for a GET request and no validator for a filter.** Reading is guarded by the shared

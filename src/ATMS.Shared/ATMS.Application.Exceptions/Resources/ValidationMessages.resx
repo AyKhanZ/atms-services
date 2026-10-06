@@ -24,12 +24,6 @@
   <data name="DescriptionRequired" xml:space="preserve">
         <value>Description is required.</value>
     </data>
-  <data name="NameRequired" xml:space="preserve">
-        <value>Name is required.</value>
-    </data>
-  <data name="NameShouldBeLessThan" xml:space="preserve">
-        <value>Name must be less than {0} symbols.</value>
-    </data>
   <data name="TitleRequired" xml:space="preserve">
         <value>Title is required.</value>
     </data>
@@ -60,4 +54,10 @@
   <data name="InvalidCursor" xml:space="preserve"><value>Continuation cursor is invalid.</value></data>
   <data name="DateOutOfRange" xml:space="preserve"><value>Date must be between {0} and {1}.</value></data>
   <data name="InvalidDateRange" xml:space="preserve"><value>The start date must not be later than the end date.</value></data>
+  <data name="NameShouldBeLessThan" xml:space="preserve"><value>Name must be less than {0} symbols.</value></data>
+  <data name="SurnameShouldBeLessThan" xml:space="preserve"><value>Surname must be less than {0} symbols.</value></data>
+  <data name="EmailRequired" xml:space="preserve"><value>Email is required.</value></data>
+  <data name="NameRequired" xml:space="preserve"><value>Name is required.</value></data>
+  <data name="SurnameRequired" xml:space="preserve"><value>Surname is required.</value></data>
+  <data name="EmailShouldBeLessThan" xml:space="preserve"><value>Email must be less than {0} symbols.</value></data>
 </root>

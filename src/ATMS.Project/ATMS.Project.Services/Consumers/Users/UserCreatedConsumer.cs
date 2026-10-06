@@ -3,6 +3,7 @@ using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Project.Services.Invitations.Interfaces;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,6 +22,7 @@ public sealed class UserCreatedConsumer(
     {
         var userRepository = serviceProvider.GetRequiredService<IUserRepository>();
         var inboxRepository = serviceProvider.GetRequiredService<IInboxRepository>();
+        var invitationService = serviceProvider.GetRequiredService<IWorkProjectInvitationService>();
         var mapper = serviceProvider.GetRequiredService<IMapper>();
 
         if (await inboxRepository.IsProcessedAsync(
@@ -35,18 +37,18 @@ public sealed class UserCreatedConsumer(
         if (user is not null)
         {
             mapper.Map(message, user);
-
-            await inboxRepository.AddAsync(
-                messageId,
-                nameof(UserCreatedConsumer),
-                cancellationToken);
-            await userRepository.SaveAsync(cancellationToken);
-            return;
+        }
+        else
+        {
+            user = mapper.Map<User>(message);
+            await userRepository.AddAsync(user, cancellationToken);
         }
 
-        user = mapper.Map<User>(message);
+        // Before the inbox record: if settling fails, the retry must find the message unprocessed
+        // and settle what is still pending. An existing user counts too — Admin announces one again
+        // when an invitation arrived for an email that was registered a moment before.
+        await invitationService.SettlePendingAsync(user, cancellationToken);
 
-        await userRepository.AddAsync(user, cancellationToken);
         await inboxRepository.AddAsync(
             messageId,
             nameof(UserCreatedConsumer),

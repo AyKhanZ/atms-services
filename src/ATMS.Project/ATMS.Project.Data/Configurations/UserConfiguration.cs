@@ -11,11 +11,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(e => e.Email)
             .IsUnique();
         
+        // Email lookups ignore case: an invitation must not be sent to an address that differs only in case.
+        builder.HasIndex(e => e.NormalizedEmail);
+
         builder.HasIndex(e => e.UserType);
 
         builder.HasIndex(e => e.IsAdmin);
 
         builder.Property(e => e.Email)
+            .HasMaxLength(256)
+            .IsRequired();
+            
+        builder.Property(e => e.NormalizedEmail)
             .HasMaxLength(256)
             .IsRequired();
             

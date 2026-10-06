@@ -5,6 +5,7 @@ using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Contracts.Events.Users;
 using ATMS.Data.Constants;
 using ATMS.Data.Enums;
+using ATMS.Data.Messaging;
 using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Configuration;
 using Microsoft.Extensions.Configuration;

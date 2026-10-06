@@ -1,9 +1,8 @@
-using ATMS.Data.Enums;
 using ATMS.Data.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ATMS.Admin.Data.Configurations.Messaging;
+namespace ATMS.Data.Configurations.Messaging;
 
 public class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage>
 {

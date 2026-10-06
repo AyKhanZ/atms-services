@@ -887,6 +887,10 @@ namespace ATMS.Admin.Data.Migrations
                     b.Property<DateTime?>("FailedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("InviterName")
+                        .HasMaxLength(201)
+                        .HasColumnType("character varying(201)");
+
                     b.Property<string>("LastError")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
@@ -903,6 +907,10 @@ namespace ATMS.Admin.Data.Migrations
 
                     b.Property<DateTime?>("ProcessedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProjectTitle")
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

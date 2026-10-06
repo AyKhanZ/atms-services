@@ -1,12 +1,10 @@
-using ATMS.Messaging.Infrastructure;
-using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Data.Messaging;
 using ATMS.Messaging.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace ATMS.Admin.Service.Infrastructure.Delivery;
+namespace ATMS.Messaging.Infrastructure;
 
 public class OutboxBackgroundService(
     IServiceScopeFactory scopeFactory,

@@ -6,6 +6,7 @@ using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Contracts.Events.Users;
 using ATMS.Data.Constants;
+using ATMS.Data.Messaging;
 using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -76,7 +77,8 @@ public sealed class DataInitializer(
             role.UserType,
             user.AvatarPath,
             user.OrganizationId,
-            user.IsAdmin);
+            user.IsAdmin,
+            user.HasCompletedOnboarding);
 
         var eventExists = await outboxRepository.ContainsAsync(
             MessagingConstants.Exchanges.UserEvents,

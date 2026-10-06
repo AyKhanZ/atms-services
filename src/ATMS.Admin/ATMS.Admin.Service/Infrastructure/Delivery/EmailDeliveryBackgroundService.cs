@@ -171,7 +171,9 @@ public class EmailDeliveryBackgroundService(
                 Surname = delivery.User.Surname,
                 Password = delivery.TemporaryPassword,
                 Link = link,
-                DeadlineOfToken = tokenResult.ExpiresInHours
+                DeadlineOfToken = tokenResult.ExpiresInHours,
+                InviterName = delivery.InviterName,
+                ProjectTitle = delivery.ProjectTitle
             },
             cancellationToken);
     }

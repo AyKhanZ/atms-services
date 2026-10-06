@@ -1,5 +1,6 @@
 ﻿using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Admin.Service.Validation.Authentication;
 using Bogus;
 
@@ -38,7 +39,7 @@ public class LoginValidatorTest
         var result = await _validator.ValidateAsync(command);
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.EmailRequired);
+        Assert.Contains(result.Errors, e => e.ErrorMessage == ValidationMessages.EmailRequired);
     }
  
     

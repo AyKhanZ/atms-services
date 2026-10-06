@@ -14,6 +14,8 @@ public class WorkProjectParticipantModel
 
     public string? AvatarPath { get; set; }
 
+    public bool HasCompletedOnboarding { get; set; }
+
     public string Category { get; set; }
 
     public WorkProjectRoleModel Role { get; set; }

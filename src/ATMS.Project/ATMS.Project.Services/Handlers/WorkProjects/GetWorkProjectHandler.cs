@@ -16,6 +16,7 @@ namespace ATMS.Project.Services.Handlers.WorkProjects;
 public class GetWorkProjectHandler(
     ICurrentUser currentUser,
     IWorkProjectRepository workProjectRepository,
+    IWorkProjectInvitationRepository invitationRepository,
     ICacheService cache,
     IMapper mapper) : IRequestHandler<GetWorkProjectRequest, WorkProjectModel>
 {
@@ -28,8 +29,12 @@ public class GetWorkProjectHandler(
                 var criteria = new AccessibleWorkProjectsCriteria(currentUser.Id, currentUser.RoleId);
                 var project = await workProjectRepository.GetAsync(request.Id, criteria, cancellationToken)
                     ?? throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+                var invitations = await invitationRepository.GetLivePendingAsync(project.Id, cancellationToken);
 
-                return mapper.Map<WorkProjectModel>(project);
+                var model = mapper.Map<WorkProjectModel>(project);
+                model.Invitations = mapper.Map<WorkProjectInvitationModel[]>(invitations);
+
+                return model;
             },
             CacheTtl.Entity,
             cancellationToken) ?? throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
