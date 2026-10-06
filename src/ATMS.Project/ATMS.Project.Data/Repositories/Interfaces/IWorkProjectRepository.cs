@@ -20,6 +20,8 @@ public interface IWorkProjectRepository
 
     Task<WorkProject?> FindRootAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<Guid[]> GetIdsByParticipantAsync(Guid userId, CancellationToken cancellationToken);
+
     Task CreateAsync(WorkProject entity, CancellationToken cancellationToken);
 
     void Touch(WorkProject entity);

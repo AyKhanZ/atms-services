@@ -7,7 +7,10 @@ using ATMS.Data.Messaging;
 using ATMS.Messaging.Configuration;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Enums;
 using ATMS.Project.Services.Handlers.WorkProjects;
+using ATMS.Project.Services.Validation.WorkProjects;
+using FluentValidation;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.WorkProjects;
@@ -32,12 +35,16 @@ public class InviteWorkProjectParticipantHandlerTest : BaseHandlerTest
     }
 
     [Fact]
-    public async Task Handle_SavesPendingClientViewerInvitation()
+    public async Task Handle_AddsPendingClientViewerInvitationUnderTheLimit()
     {
         WorkProjectInvitation? saved = null;
         WorkProjectInvitationRepositoryMock
-            .Setup(x => x.AddAsync(It.IsAny<WorkProjectInvitation>(), It.IsAny<CancellationToken>()))
-            .Callback<WorkProjectInvitation, CancellationToken>((invitation, _) => saved = invitation);
+            .Setup(x => x.AddWithinLimitAsync(
+                It.IsAny<WorkProjectInvitation>(),
+                WorkProjectParticipantLimit.Max,
+                It.IsAny<CancellationToken>()))
+            .Callback<WorkProjectInvitation, int, CancellationToken>((invitation, _, _) => saved = invitation)
+            .ReturnsAsync((WorkProjectInvitationRefusal?)null);
 
         await CreateHandler().Handle(CreateCommand(), CancellationToken.None);
 
@@ -51,55 +58,64 @@ public class InviteWorkProjectParticipantHandlerTest : BaseHandlerTest
         Assert.Equal((int)WorkProjectInvitationStatusEnum.Pending, saved.Status);
         Assert.Equal(_inviterId, saved.InvitedById);
         Assert.Null(saved.ProcessedAt);
-    }
-
-    [Fact]
-    public async Task Handle_AsksAdminForTheAccountWithProjectTitle()
-    {
-        await CreateHandler().Handle(CreateCommand(), CancellationToken.None);
-
-        _outboxRepositoryMock.Verify(x => x.AddAsync(
-            MessagingConstants.Exchanges.UserEvents,
-            MessagingConstants.RoutingKeys.UserInvited,
-            new UserInvitedEvent(
-                "Nigar@Client.az",
-                "Nigar",
-                "Huseynova",
-                _project.OrganizationId,
-                _inviterId,
-                _project.Title),
-            It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_SavesInvitationAndEventTogether_ThenFlushesProjectCache()
-    {
-        var steps = new List<string>();
-        WorkProjectInvitationRepositoryMock
-            .Setup(x => x.AddAsync(It.IsAny<WorkProjectInvitation>(), It.IsAny<CancellationToken>()))
-            .Callback(() => steps.Add("invitation"));
-        _outboxRepositoryMock
-            .Setup(x => x.AddAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<UserInvitedEvent>(),
-                It.IsAny<CancellationToken>()))
-            .Callback(() => steps.Add("event"))
-            .ReturnsAsync(Guid.NewGuid());
-        WorkProjectRepositoryMock
-            .Setup(x => x.SaveAsync(It.IsAny<CancellationToken>()))
-            .Callback(() => steps.Add("save"))
-            .Returns(Task.CompletedTask);
-
-        await CreateHandler().Handle(CreateCommand(), CancellationToken.None);
-
-        Assert.Equal(["invitation", "event", "save"], steps);
-        WorkProjectRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
         VerifyAllLocalizedCacheEntriesRemoved(language => CacheKeys.Project.ProjectById(_project.Id, language));
     }
 
+    // The outbox message must already be in the context when the locked insert saves: one commit for both.
     [Fact]
-    public async Task Handle_WhenProjectIsMissing_ThrowsNotFoundAndSendsNothing()
+    public async Task Handle_AddsTheAdminEventBeforeTheLockedInsertSaves()
+    {
+        var steps = new List<string>();
+        _outboxRepositoryMock
+            .Setup(x => x.AddAsync(
+                MessagingConstants.Exchanges.UserEvents,
+                MessagingConstants.RoutingKeys.UserInvited,
+                new UserInvitedEvent(
+                    "Nigar@Client.az",
+                    "Nigar",
+                    "Huseynova",
+                    _project.OrganizationId,
+                    _inviterId,
+                    _project.Title),
+                It.IsAny<CancellationToken>()))
+            .Callback(() => steps.Add("event"))
+            .ReturnsAsync(Guid.NewGuid());
+        WorkProjectInvitationRepositoryMock
+            .Setup(x => x.AddWithinLimitAsync(
+                It.IsAny<WorkProjectInvitation>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
+            .Callback(() => steps.Add("invitation"))
+            .ReturnsAsync((WorkProjectInvitationRefusal?)null);
+
+        await CreateHandler().Handle(CreateCommand(), CancellationToken.None);
+
+        Assert.Equal(["event", "invitation"], steps);
+    }
+
+    // Two invitations at once: the second one is refused under the lock, even though it passed the validator.
+    [Theory]
+    [InlineData(WorkProjectInvitationRefusal.AlreadyInvited)]
+    [InlineData(WorkProjectInvitationRefusal.LimitReached)]
+    public async Task Handle_WhenRefusedUnderTheLock_FailsOnEmailAndKeepsTheCache(WorkProjectInvitationRefusal refusal)
+    {
+        WorkProjectInvitationRepositoryMock
+            .Setup(x => x.AddWithinLimitAsync(
+                It.IsAny<WorkProjectInvitation>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(refusal);
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(
+            () => CreateHandler().Handle(CreateCommand(), CancellationToken.None));
+
+        var failure = Assert.Single(exception.Errors);
+        Assert.Equal(nameof(InviteWorkProjectParticipantCommand.Email), failure.PropertyName);
+        CacheServiceMock.Verify(x => x.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WhenProjectIsMissing_ThrowsNotFoundAndAddsNothing()
     {
         var command = CreateCommand();
         command.ProjectId = Guid.NewGuid();
@@ -108,7 +124,10 @@ public class InviteWorkProjectParticipantHandlerTest : BaseHandlerTest
             () => CreateHandler().Handle(command, CancellationToken.None));
 
         Assert.Equal(EntityErrorType.NotFound, exception.ErrorType);
-        WorkProjectRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
+        WorkProjectInvitationRepositoryMock.Verify(x => x.AddWithinLimitAsync(
+            It.IsAny<WorkProjectInvitation>(),
+            It.IsAny<int>(),
+            It.IsAny<CancellationToken>()), Times.Never);
         _outboxRepositoryMock.Verify(x => x.AddAsync(
             It.IsAny<string>(),
             It.IsAny<string>(),
