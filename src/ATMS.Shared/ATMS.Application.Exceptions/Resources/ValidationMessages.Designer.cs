@@ -183,5 +183,9 @@ namespace ATMS.Application.Exceptions.Resources {
         public static string InvalidCursor => ResourceManager.GetString("InvalidCursor", resourceCulture);
         public static string DateOutOfRange => ResourceManager.GetString("DateOutOfRange", resourceCulture);
         public static string InvalidDateRange => ResourceManager.GetString("InvalidDateRange", resourceCulture);
+        public static string SurnameRequired => ResourceManager.GetString("SurnameRequired", resourceCulture);
+        public static string SurnameShouldBeLessThan => ResourceManager.GetString("SurnameShouldBeLessThan", resourceCulture);
+        public static string EmailRequired => ResourceManager.GetString("EmailRequired", resourceCulture);
+        public static string EmailShouldBeLessThan => ResourceManager.GetString("EmailShouldBeLessThan", resourceCulture);
     }
 }

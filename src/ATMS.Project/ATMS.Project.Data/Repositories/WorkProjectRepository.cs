@@ -57,6 +57,16 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
         return context.WorkProjects.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
+    public Task<Guid[]> GetIdsByParticipantAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return context.WorkProjectParticipants
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .Select(x => x.WorkProjectId)
+            .Distinct()
+            .ToArrayAsync(cancellationToken);
+    }
+
     public async Task CreateAsync(WorkProject entity, CancellationToken cancellationToken)
     {
         await context.WorkProjects.AddAsync(entity, cancellationToken);

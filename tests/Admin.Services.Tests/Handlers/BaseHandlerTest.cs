@@ -3,6 +3,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Services.Interfaces;
+using ATMS.Data.Messaging;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Interfaces;

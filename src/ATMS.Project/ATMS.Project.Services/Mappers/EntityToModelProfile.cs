@@ -201,6 +201,9 @@ public class EntityToModelProfile : Profile
             .ForMember(x => x.Email, expression => expression.MapFrom(x => x.User.Email))
             .ForMember(x => x.AvatarPath, expression => expression.MapFrom(x => x.User.AvatarPath))
             .ForMember(
+                x => x.HasCompletedOnboarding,
+                expression => expression.MapFrom(x => x.User.HasCompletedOnboarding))
+            .ForMember(
                 x => x.Category,
                 expression => expression.MapFrom(x =>
                     x.User.UserType == (int)UserTypeEnum.Employee
@@ -216,6 +219,8 @@ public class EntityToModelProfile : Profile
             .ForMember(
                 x => x.Participants,
                 expression => expression.MapFrom(x => x.WorkProjectParticipants));
+
+        CreateMap<WorkProjectInvitation, WorkProjectInvitationModel>();
 
         CreateMap<WorkProject, WorkProjectItemModel>();
     }

@@ -10,6 +10,7 @@ using ATMS.Application.Interfaces;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Contracts.Events.Users;
+using ATMS.Data.Messaging;
 using ATMS.Messaging.Configuration;
 using AutoMapper;
 using MediatR;
@@ -61,7 +62,7 @@ public sealed class CompleteOnboardingHandler(
         await outboxRepository.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserUpdated,
-            new UserUpdatedEvent(user.Id, user.Name, user.Surname, user.AvatarPath),
+            new UserUpdatedEvent(user.Id, user.Name, user.Surname, user.AvatarPath, user.HasCompletedOnboarding),
             cancellationToken);
 
         foreach (var invitedUser in progress.InvitedUsers)

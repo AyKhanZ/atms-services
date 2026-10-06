@@ -77,6 +77,12 @@ public class UserRepository(ProjectDbContext context) : IUserRepository
 
     public Task<bool> IsExistAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken)
         => context.Users.AnyAsync(predicate, cancellationToken);
+
+    // Deleted users too: Admin still holds the address and would refuse to create it again.
+    public Task<bool> IsEmailTakenAsync(string normalizedEmail, CancellationToken cancellationToken)
+        => context.Users
+            .IgnoreQueryFilters()
+            .AnyAsync(x => x.NormalizedEmail == normalizedEmail, cancellationToken);
     
     public Task SaveAsync(CancellationToken cancellationToken)
     {

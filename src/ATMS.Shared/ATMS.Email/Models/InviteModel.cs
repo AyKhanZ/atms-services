@@ -8,4 +8,6 @@ public class InviteModel
     public required string Surname { get; set; }
     public required string Link { get; set; }
     public DateTime DeadlineOfToken { get; set; }
+    public string? InviterName { get; set; }
+    public string? ProjectTitle { get; set; }
 }

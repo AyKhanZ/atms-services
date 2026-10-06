@@ -1,4 +1,5 @@
 using ATMS.Data;
+using ATMS.Data.Configurations.Messaging;
 using ATMS.Data.Interfaces;
 using ATMS.Data.Messaging;
 using ATMS.Project.Data.Entities;
@@ -66,6 +67,8 @@ public class ProjectDbContext : DbContext
     public DbSet<WorkProjectParticipant> WorkProjectParticipants { get; set; }
    
     public DbSet<WorkProjectParticipantRole> WorkProjectParticipantRoles { get; set; }
+
+    public DbSet<WorkProjectInvitation> WorkProjectInvitations { get; set; }
     
     
     public DbSet<User> Users { get; set; }
@@ -78,6 +81,8 @@ public class ProjectDbContext : DbContext
     public DbSet<RolePermission> RolePermissions { get; set; }
 
     public DbSet<InboxMessage> InboxMessages { get; set; }
+
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
     public DbSet<GlobalSearchRecentItem> GlobalSearchRecentItems { get; set; }
 
@@ -168,5 +173,6 @@ public class ProjectDbContext : DbContext
         #endregion
         
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProjectDbContext).Assembly);
+        modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
     }
 }

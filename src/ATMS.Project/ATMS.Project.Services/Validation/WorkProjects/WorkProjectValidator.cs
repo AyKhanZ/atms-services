@@ -13,8 +13,6 @@ namespace ATMS.Project.Services.Validation.WorkProjects;
 
 public class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
 {
-    private const int MaxParticipants = 20;
-
     private readonly IWorkProjectRepository _workProjectRepository;
     private readonly IOrganizationRepository _organizationRepository;
     private readonly IDictionariesRepository _dictionariesRepository;
@@ -80,8 +78,8 @@ public class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
             .IsInDateRange();
 
         RuleFor(x => x.Participants)
-            .Must(x => x.Length <= MaxParticipants)
-            .WithMessage(string.Format(WorkProjectMessages.ParticipantsLimitExceeded, MaxParticipants))
+            .Must(x => x.Length <= WorkProjectParticipantLimit.Max)
+            .WithMessage(string.Format(WorkProjectMessages.ParticipantsLimitExceeded, WorkProjectParticipantLimit.Max))
             .Must(HaveUniqueParticipants).WithMessage(WorkProjectMessages.DuplicateParticipant);
 
         RuleFor(x => x.Participants)
@@ -126,7 +124,7 @@ public class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
 
     private bool ShouldValidateParticipants(WorkProjectCommand command)
     {
-        return command.Participants.Length is > 0 and <= MaxParticipants &&
+        return command.Participants.Length is > 0 and <= WorkProjectParticipantLimit.Max &&
                HaveUniqueParticipants(command.Participants) &&
                command.Participants.All(x => x.UserId != Guid.Empty && x.RoleId != Guid.Empty);
     }

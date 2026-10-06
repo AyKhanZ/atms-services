@@ -4,6 +4,7 @@ using ATMS.Admin.Data.Repositories;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Messaging;
 using ATMS.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +32,7 @@ public static class DataAccessModule
         services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
         services.AddScoped<IDictionariesRepository, DictionariesRepository>();
         services.AddScoped<IHealthRepository, HealthRepository>();
-        services.AddScoped<IOutboxRepository, OutboxRepository>();
+        services.AddScoped<IOutboxRepository, OutboxRepository<AdminDbContext>>();
         services.AddScoped<IInboxRepository, InboxRepository>();
         services.AddScoped<IEmailDeliveryRepository, EmailDeliveryRepository>();
         

@@ -24,15 +24,15 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
         
         RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(AccountMessages.NameRequired)
+            .WithMessage(ValidationMessages.NameRequired)
             .MaximumLength(100)
-            .WithMessage(_ => string.Format(AccountMessages.NameShouldBeLessThan, 100));
+            .WithMessage(_ => string.Format(ValidationMessages.NameShouldBeLessThan, 100));
 
         RuleFor(x => x.Surname).Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(AccountMessages.SurnameRequired)
+            .WithMessage(ValidationMessages.SurnameRequired)
             .MaximumLength(100)
-            .WithMessage(_ => string.Format(AccountMessages.SurnameShouldBeLessThan, 100));
+            .WithMessage(_ => string.Format(ValidationMessages.SurnameShouldBeLessThan, 100));
 
         RuleFor(x => x.RoleId)
             .NotEmpty().WithMessage(ValidationMessages.RoleIdRequired)
@@ -46,11 +46,11 @@ public class RegisterUserValidator : AbstractValidator<RegisterCommand>
 
         RuleFor(x => x.Email).Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(AccountMessages.EmailRequired)
+            .WithMessage(ValidationMessages.EmailRequired)
             .EmailAddress()
             .WithMessage(ValidationMessages.InvalidEmailFormat)
             .MaximumLength(100)
-            .WithMessage(_ => string.Format(AccountMessages.EmailShouldBeLessThan, 100))
+            .WithMessage(_ => string.Format(ValidationMessages.EmailShouldBeLessThan, 100))
             .MustAsync(IsEmailUnique)
             .WithMessage(AccountMessages.UserAlreadyExists);
     }

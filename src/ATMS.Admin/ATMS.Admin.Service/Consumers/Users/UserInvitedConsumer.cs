@@ -6,6 +6,7 @@ using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Contracts.Events.Users;
 using ATMS.Data.Constants;
+using ATMS.Data.Messaging;
 using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
 using AutoMapper;
@@ -42,9 +43,30 @@ public class UserInvitedConsumer(
             return;
         }
 
-        var exists = await userRepository.FindAsync(u => u.Email == message.Email, cancellationToken);
+        var normalizedEmail = message.Email.Trim().ToUpperInvariant();
+        var exists = await userRepository.FindAsync(u => u.NormalizedEmail == normalizedEmail, cancellationToken);
         if (exists is not null)
         {
+            // Project waits for a user created event to settle a project invitation. A user who was
+            // registered a moment before the invitation would never send one, and the invitation
+            // would wait forever — so the existing user is announced again. Project treats it as an
+            // update and decides whether the invitation can be accepted.
+            var roles = await userRepository.GetRolesAsync(exists.Id, cancellationToken);
+            await outboxRepository.AddAsync(
+                MessagingConstants.Exchanges.UserEvents,
+                MessagingConstants.RoutingKeys.UserCreated,
+                new UserCreatedEvent(
+                    exists.Id,
+                    exists.Email,
+                    exists.Name,
+                    exists.Surname,
+                    roles.First().UserType,
+                    exists.AvatarPath,
+                    exists.OrganizationId,
+                    exists.IsAdmin,
+                    exists.HasCompletedOnboarding),
+                cancellationToken);
+
             await inboxRepository.AddAsync(
                 messageId,
                 nameof(UserInvitedConsumer),
@@ -97,9 +119,12 @@ public class UserInvitedConsumer(
             @event,
             cancellationToken);
 
-        await emailDeliveryRepository.AddConfirmationAsync(
+        var inviter = await userRepository.FindAsync(u => u.Id == message.InvitedByUserId, cancellationToken);
+        await emailDeliveryRepository.AddInvitationAsync(
             entity.Id,
             rndPassword,
+            inviter is null ? null : $"{inviter.Name} {inviter.Surname}".Trim(),
+            message.ProjectTitle,
             cancellationToken);
 
         await inboxRepository.AddAsync(

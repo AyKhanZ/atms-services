@@ -227,6 +227,43 @@ public class ProjectController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>
+    /// Invites a client who has no account yet into the project.
+    /// </summary>
+    /// <remarks>
+    /// Available to project members with the right to invite clients — the project manager and the client manager.
+    /// The person joins as a Client viewer of the project's organization: an account is created and an email with
+    /// a temporary password is sent, then the person becomes a participant within a few seconds. Until then the
+    /// invitation is returned with the project details. An invitation without an answer for 24 hours no longer
+    /// counts, and the same email can be invited again. Internal projects have no organization and accept no
+    /// invitations. Pending invitations count toward the 20-participant limit.
+    /// </remarks>
+    /// <param name="id">Project ID.</param>
+    /// <param name="command">Email, name and surname of the person to invite.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="204">Invitation accepted for sending.</response>
+    /// <response code="400">Validation error, e.g. invalid email, internal project, participant limit, the person is already a participant or invited, or the email belongs to an existing user.</response>
+    /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden, user has no right to invite clients into this project.</response>
+    /// <response code="404">Project with the specified ID was not found.</response>
+    /// <response code="500">Unexpected server error.</response>
+    [HttpPost("{id:guid}/invitations")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> InviteParticipant(
+        Guid id,
+        [FromBody] InviteWorkProjectParticipantCommand command,
+        CancellationToken cancellationToken)
+    {
+        command.ProjectId = id;
+        await mediator.Send(command, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>
     /// Updates an existing project participant.
     /// </summary>
     /// <remarks>

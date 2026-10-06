@@ -4,4 +4,5 @@ public sealed record UserUpdatedEvent(
     Guid Id,
     string Name,
     string Surname,
-    string AvatarPath);
+    string AvatarPath,
+    bool HasCompletedOnboarding);

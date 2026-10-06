@@ -1,14 +1,15 @@
 using System.Text.Json;
-using ATMS.Admin.Data.DbContexts;
-using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Data.Enums;
-using ATMS.Data.Messaging;
 using Microsoft.EntityFrameworkCore;
 
-namespace ATMS.Admin.Data.Repositories;
+namespace ATMS.Data.Messaging;
 
-public class OutboxRepository(AdminDbContext context) : IOutboxRepository
+// Admin and Project each keep the outbox in their own database; the context says which one.
+public class OutboxRepository<TContext>(TContext context) : IOutboxRepository
+    where TContext : DbContext
 {
+    private DbSet<OutboxMessage> OutboxMessages => context.Set<OutboxMessage>();
+
     public Task<bool> ContainsAsync<T>(
         string exchange,
         string routingKey,
@@ -18,7 +19,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
         var messageType = typeof(T).FullName ?? typeof(T).Name;
         var payload = JsonSerializer.Serialize(message);
 
-        return context.OutboxMessages.AnyAsync(
+        return OutboxMessages.AnyAsync(
             x => x.Exchange == exchange &&
                  x.RoutingKey == routingKey &&
                  x.MessageType == messageType &&
@@ -45,7 +46,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
             NextAttemptAt = now
         };
 
-        await context.OutboxMessages.AddAsync(entity, cancellationToken);
+        await OutboxMessages.AddAsync(entity, cancellationToken);
         return entity.Id;
     }
 
@@ -54,7 +55,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
         CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
-        return await context.OutboxMessages
+        return await OutboxMessages
             .AsNoTracking()
             .Where(x => x.Status == (int)DeliveryStatusEnum.Pending && x.NextAttemptAt <= now)
             .OrderBy(x => x.CreatedAt)
@@ -64,7 +65,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
 
     public async Task MarkProcessedAsync(Guid id, CancellationToken cancellationToken)
     {
-        var message = await context.OutboxMessages
+        var message = await OutboxMessages
             .FirstAsync(x => x.Id == id, cancellationToken);
 
         message.Status = (int)DeliveryStatusEnum.Processed;
@@ -81,7 +82,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
         string error,
         CancellationToken cancellationToken)
     {
-        var message = await context.OutboxMessages
+        var message = await OutboxMessages
             .FirstAsync(x => x.Id == id, cancellationToken);
 
         message.AttemptCount = attemptCount;
@@ -97,7 +98,7 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
         string error,
         CancellationToken cancellationToken)
     {
-        var message = await context.OutboxMessages
+        var message = await OutboxMessages
             .FirstAsync(x => x.Id == id, cancellationToken);
 
         message.Status = (int)DeliveryStatusEnum.Failed;
@@ -112,10 +113,9 @@ public class OutboxRepository(AdminDbContext context) : IOutboxRepository
         DateTime processedBefore,
         CancellationToken cancellationToken)
     {
-        return context.OutboxMessages
+        return OutboxMessages
             .Where(x => x.Status == (int)DeliveryStatusEnum.Processed &&
                         x.ProcessedAt < processedBefore)
             .ExecuteDeleteAsync(cancellationToken);
     }
-
 }

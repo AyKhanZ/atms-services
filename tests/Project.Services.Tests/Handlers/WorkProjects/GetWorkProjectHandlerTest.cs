@@ -17,15 +17,7 @@ public class GetWorkProjectHandlerTest : BaseHandlerTest
     public async Task Handle_UsesLanguageSpecificEntityCache(bool cacheHit)
     {
         var request = new GetWorkProjectRequest { Id = Guid.NewGuid() };
-        var model = new WorkProjectModel
-        {
-            Id = request.Id,
-            Code = "P-1",
-            Title = "Project",
-            ProjectType = new(),
-            ProjectKind = new(),
-            ProjectStatus = new()
-        };
+        var model = CreateModel(request.Id);
 
         if (cacheHit)
         {
@@ -34,23 +26,10 @@ public class GetWorkProjectHandlerTest : BaseHandlerTest
         else
         {
             SetupCacheMiss<WorkProjectModel>();
-            var entity = new WorkProject { Id = request.Id };
-            WorkProjectRepositoryMock
-                .Setup(repository => repository.GetAsync(
-                    request.Id,
-                    It.IsAny<AccessibleWorkProjectsCriteria>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(entity);
-            MapperMock.Setup(mapper => mapper.Map<WorkProjectModel>(entity)).Returns(model);
+            SetupProject(request.Id, model, []);
         }
 
-        var handler = new GetWorkProjectHandler(
-            CurrentUserMock.Object,
-            WorkProjectRepositoryMock.Object,
-            CacheServiceMock.Object,
-            MapperMock.Object);
-
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await CreateHandler().Handle(request, CancellationToken.None);
 
         Assert.Same(model, result);
         CacheServiceMock.Verify(cache => cache.GetOrSetAsync(
@@ -62,5 +41,65 @@ public class GetWorkProjectHandlerTest : BaseHandlerTest
             request.Id,
             It.IsAny<AccessibleWorkProjectsCriteria>(),
             It.IsAny<CancellationToken>()), cacheHit ? Times.Never : Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_CacheMiss_ReturnsLivePendingInvitations()
+    {
+        var request = new GetWorkProjectRequest { Id = Guid.NewGuid() };
+        var model = CreateModel(request.Id);
+        WorkProjectInvitation[] invitations = [new() { Id = Guid.NewGuid(), WorkProjectId = request.Id }];
+        WorkProjectInvitationModel[] invitationModels = [new() { Id = invitations[0].Id }];
+        SetupCacheMiss<WorkProjectModel>();
+        SetupProject(request.Id, model, invitations);
+        MapperMock
+            .Setup(mapper => mapper.Map<WorkProjectInvitationModel[]>(
+                It.Is<List<WorkProjectInvitation>>(list => list.SequenceEqual(invitations))))
+            .Returns(invitationModels);
+
+        var result = await CreateHandler().Handle(request, CancellationToken.None);
+
+        Assert.Same(invitationModels, result.Invitations);
+        WorkProjectInvitationRepositoryMock.Verify(repository => repository.GetLivePendingAsync(
+            request.Id,
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    private GetWorkProjectHandler CreateHandler()
+    {
+        return new GetWorkProjectHandler(
+            CurrentUserMock.Object,
+            WorkProjectRepositoryMock.Object,
+            WorkProjectInvitationRepositoryMock.Object,
+            CacheServiceMock.Object,
+            MapperMock.Object);
+    }
+
+    private void SetupProject(Guid id, WorkProjectModel model, WorkProjectInvitation[] invitations)
+    {
+        var entity = new WorkProject { Id = id };
+        WorkProjectRepositoryMock
+            .Setup(repository => repository.GetAsync(
+                id,
+                It.IsAny<AccessibleWorkProjectsCriteria>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(entity);
+        WorkProjectInvitationRepositoryMock
+            .Setup(repository => repository.GetLivePendingAsync(id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(invitations.ToList());
+        MapperMock.Setup(mapper => mapper.Map<WorkProjectModel>(entity)).Returns(model);
+    }
+
+    private static WorkProjectModel CreateModel(Guid id)
+    {
+        return new WorkProjectModel
+        {
+            Id = id,
+            Code = "P-1",
+            Title = "Project",
+            ProjectType = new(),
+            ProjectKind = new(),
+            ProjectStatus = new()
+        };
     }
 }

@@ -1,6 +1,7 @@
 using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
+using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Dispatcher.Validation;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Constants;
@@ -27,12 +28,12 @@ public sealed class UpdateSettingsValidator : BaseImageValidator<UpdateSettingsC
         _currentUser = currentUser;
 
         RuleFor(x => x.Name).Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage(AccountMessages.NameRequired)
-            .MaximumLength(50).WithMessage(string.Format(AccountMessages.NameShouldBeLessThan, 50));
+            .NotEmpty().WithMessage(ValidationMessages.NameRequired)
+            .MaximumLength(50).WithMessage(string.Format(ValidationMessages.NameShouldBeLessThan, 50));
 
         RuleFor(x => x.Surname).Cascade(CascadeMode.Stop)
-            .NotEmpty().WithMessage(AccountMessages.SurnameRequired)
-            .MaximumLength(100).WithMessage(string.Format(AccountMessages.SurnameShouldBeLessThan, 100));
+            .NotEmpty().WithMessage(ValidationMessages.SurnameRequired)
+            .MaximumLength(100).WithMessage(string.Format(ValidationMessages.SurnameShouldBeLessThan, 100));
 
         RuleFor(x => x.PhoneNumber).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(ProfileMessages.PhoneNumberRequired)

@@ -26,6 +26,8 @@ public class WorkProjectModel
 
     public WorkProjectParticipantModel[] Participants { get; set; } = [];
 
+    public WorkProjectInvitationModel[] Invitations { get; set; } = [];
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }

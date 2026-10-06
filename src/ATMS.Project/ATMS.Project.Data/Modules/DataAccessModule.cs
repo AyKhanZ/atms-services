@@ -1,5 +1,6 @@
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Data.Messaging;
 using ATMS.Infrastructure.Options;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Interceptors;
@@ -58,6 +59,8 @@ public static class DataAccessModule
         services.AddScoped<IEntityCodeGenerator, EntityCodeGenerator>();
         services.AddScoped<IHealthRepository, HealthRepository>();
         services.AddScoped<IInboxRepository, InboxRepository>();
+        services.AddScoped<IOutboxRepository, OutboxRepository<ProjectDbContext>>();
+        services.AddScoped<IWorkProjectInvitationRepository, WorkProjectInvitationRepository>();
         
         return services;
     }

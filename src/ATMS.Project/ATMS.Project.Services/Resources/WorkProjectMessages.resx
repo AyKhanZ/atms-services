@@ -30,4 +30,8 @@
   <data name="ParticipantRoleNotFound" xml:space="preserve"><value>One or more selected project roles were not found.</value></data>
   <data name="ParticipantOrganizationMismatch" xml:space="preserve"><value>Client participants must belong to the selected organization.</value></data>
   <data name="ParticipantRoleMismatch" xml:space="preserve"><value>Choose an internal project role for team members and a client organization role for client participants.</value></data>
+  <data name="InvitationInternalProject" xml:space="preserve"><value>Clients can't be invited to an internal project.</value></data>
+  <data name="InvitationAlreadyParticipant" xml:space="preserve"><value>This person is already a participant of this project.</value></data>
+  <data name="InvitationAlreadySent" xml:space="preserve"><value>This email has already been invited to this project.</value></data>
+  <data name="InvitationEmailInUse" xml:space="preserve"><value>This email can't be invited to this project.</value></data>
 </root>

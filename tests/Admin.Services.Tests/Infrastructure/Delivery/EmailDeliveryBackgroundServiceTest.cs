@@ -52,6 +52,41 @@ public class EmailDeliveryBackgroundServiceTest
             Times.Once);
     }
 
+    [Theory]
+    [InlineData(null, null)]
+    [InlineData("Leyla Mammadova", null)]
+    [InlineData("Leyla Mammadova", "Customer portal")]
+    public async Task ProcessBatchAsync_WhenConfirmationIsAnInvitation_PassesInviterAndProjectToEmail(
+        string? inviterName,
+        string? projectTitle)
+    {
+        var delivery = CreateDelivery();
+        delivery.InviterName = inviterName;
+        delivery.ProjectTitle = projectTitle;
+        var repository = new Mock<IEmailDeliveryRepository>();
+        var tokenService = new Mock<IEmailConfirmationTokenService>();
+        var emailSender = new Mock<IEmailSender>();
+        repository
+            .Setup(x => x.ClaimPendingAsync(20, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([delivery]);
+        repository
+            .Setup(x => x.GetAsync(delivery.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(delivery);
+        tokenService
+            .Setup(x => x.GenerateToken(delivery.User))
+            .Returns(new EmailConfirmationTokenResult("token", DateTime.UtcNow.AddHours(24)));
+        var worker = CreateWorker(repository.Object, tokenService.Object, emailSender.Object);
+
+        await worker.ProcessOnceAsync(CancellationToken.None);
+
+        emailSender.Verify(x => x.SendAsync(
+            delivery.User.Email,
+            It.Is<InviteModel>(model =>
+                model.InviterName == inviterName &&
+                model.ProjectTitle == projectTitle),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
     [Fact]
     public async Task ProcessBatchAsync_WhenSmtpFails_SchedulesRetry()
     {

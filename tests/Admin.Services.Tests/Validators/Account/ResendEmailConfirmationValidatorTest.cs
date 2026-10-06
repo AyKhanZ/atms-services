@@ -1,5 +1,4 @@
 using ATMS.Admin.Contracts.Commands.Account;
-using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Validation.Account;
 using ATMS.Application.Exceptions.Resources;
 using Bogus;
@@ -28,7 +27,7 @@ public class ResendEmailConfirmationValidatorTest
         var result = await _validator.ValidateAsync(GetCommand(email: string.Empty));
  
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.ErrorMessage == AccountMessages.EmailRequired);
+        Assert.Contains(result.Errors, e => e.ErrorMessage == ValidationMessages.EmailRequired);
     }
  
     [Fact]

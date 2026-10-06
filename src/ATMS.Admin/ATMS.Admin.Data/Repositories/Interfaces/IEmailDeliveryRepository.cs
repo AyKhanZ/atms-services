@@ -10,6 +10,13 @@ public interface IEmailDeliveryRepository
         string temporaryPassword,
         CancellationToken cancellationToken);
 
+    Task<Guid> AddInvitationAsync(
+        Guid userId,
+        string temporaryPassword,
+        string? inviterName,
+        string? projectTitle,
+        CancellationToken cancellationToken);
+
     Task<Guid> AddPasswordResetAsync(
         Guid userId,
         CancellationToken cancellationToken);

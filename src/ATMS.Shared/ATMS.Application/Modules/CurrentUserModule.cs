@@ -11,7 +11,9 @@ public static class CurrentUserModule
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
-        services.AddScoped<IAuditActorAccessor>(provider => (IAuditActorAccessor)provider.GetRequiredService<ICurrentUser>());
+        services.AddScoped<AuditActorScope>();
+        services.AddScoped<IAuditActorScope>(provider => provider.GetRequiredService<AuditActorScope>());
+        services.AddScoped<IAuditActorAccessor>(provider => provider.GetRequiredService<AuditActorScope>());
         services.AddSingleton<IDateTimeDisplayService, DateTimeDisplayService>();
         services.AddTransient<AuthorizationDelegatingHandler>();
         

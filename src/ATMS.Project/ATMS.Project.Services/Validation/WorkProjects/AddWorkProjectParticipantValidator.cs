@@ -12,18 +12,19 @@ namespace ATMS.Project.Services.Validation.WorkProjects;
 
 public class AddWorkProjectParticipantValidator : AbstractValidator<AddWorkProjectParticipantCommand>
 {
-    private const int MaxParticipants = 20;
-
     private readonly IWorkProjectRepository workProjectRepository;
+    private readonly IWorkProjectInvitationRepository invitationRepository;
     private readonly IUserRepository userRepository;
     private readonly IRoleRepository roleRepository;
 
     public AddWorkProjectParticipantValidator(
         IWorkProjectRepository workProjectRepository,
+        IWorkProjectInvitationRepository invitationRepository,
         IUserRepository userRepository,
         IRoleRepository roleRepository)
     {
         this.workProjectRepository = workProjectRepository;
+        this.invitationRepository = invitationRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
 
@@ -49,9 +50,11 @@ public class AddWorkProjectParticipantValidator : AbstractValidator<AddWorkProje
             return;
         }
 
-        if (project.WorkProjectParticipants.Count >= MaxParticipants)
+        // Invitations still waiting for an account become participants within seconds.
+        var invitations = await invitationRepository.GetLivePendingAsync(project.Id, cancellationToken);
+        if (project.WorkProjectParticipants.Count + invitations.Count >= WorkProjectParticipantLimit.Max)
         {
-            context.AddFailure(nameof(command.UserId), string.Format(WorkProjectMessages.ParticipantsLimitExceeded, MaxParticipants));
+            context.AddFailure(nameof(command.UserId), string.Format(WorkProjectMessages.ParticipantsLimitExceeded, WorkProjectParticipantLimit.Max));
             return;
         }
 

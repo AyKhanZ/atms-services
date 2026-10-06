@@ -1,7 +1,9 @@
+using ATMS.Caching.Services.Interfaces;
 using ATMS.Contracts.Events.Users;
 using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Project.Services.Caching;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,6 +22,8 @@ public class UserUpdatedConsumer(
     {
         var userRepository = serviceProvider.GetRequiredService<IUserRepository>();
         var inboxRepository = serviceProvider.GetRequiredService<IInboxRepository>();
+        var workProjectRepository = serviceProvider.GetRequiredService<IWorkProjectRepository>();
+        var cache = serviceProvider.GetRequiredService<ICacheService>();
         var mapper = serviceProvider.GetRequiredService<IMapper>();
 
         if (await inboxRepository.IsProcessedAsync(
@@ -44,5 +48,12 @@ public class UserUpdatedConsumer(
             nameof(UserUpdatedConsumer),
             cancellationToken);
         await userRepository.SaveAsync(cancellationToken);
+
+        // Project details carry the participant's name, avatar and onboarding flag and stay cached for
+        // five minutes; without this the Invited status outlived onboarding by that much.
+        foreach (var projectId in await workProjectRepository.GetIdsByParticipantAsync(user.Id, cancellationToken))
+        {
+            await cache.RemoveWorkProjectAsync(projectId, cancellationToken);
+        }
     }
 }

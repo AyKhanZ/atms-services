@@ -45,6 +45,60 @@ namespace ATMS.Project.Data.Migrations
                     b.ToTable("InboxMessages");
                 });
 
+            modelBuilder.Entity("ATMS.Data.Messaging.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Exchange")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("FailedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("NextAttemptAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RoutingKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status", "NextAttemptAt");
+
+                    b.ToTable("OutboxMessages");
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.Attachment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2499,6 +2553,9 @@ namespace ATMS.Project.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<bool>("HasCompletedOnboarding")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("boolean");
 
@@ -2509,6 +2566,11 @@ namespace ATMS.Project.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<Guid?>("OrganizationId")
                         .HasColumnType("uuid");
@@ -2527,6 +2589,8 @@ namespace ATMS.Project.Data.Migrations
                         .IsUnique();
 
                     b.HasIndex("IsAdmin");
+
+                    b.HasIndex("NormalizedEmail");
 
                     b.HasIndex("OrganizationId");
 
@@ -2693,6 +2757,65 @@ namespace ATMS.Project.Data.Migrations
                     NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("OrganizationId", "Title"), false);
 
                     b.ToTable("Projects", (string)null);
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.WorkProjectInvitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("InvitedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("WorkProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvitedById");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasFilter("\"Status\" = 1");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("WorkProjectId", "NormalizedEmail")
+                        .HasFilter("\"Status\" = 1");
+
+                    b.ToTable("ProjectInvitations", (string)null);
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkProjectParticipant", b =>
@@ -3455,6 +3578,33 @@ namespace ATMS.Project.Data.Migrations
                     b.Navigation("ProjectType");
 
                     b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.WorkProjectInvitation", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.User", "InvitedBy")
+                        .WithMany()
+                        .HasForeignKey("InvitedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Project.Data.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ATMS.Project.Data.Entities.WorkProject", "WorkProject")
+                        .WithMany()
+                        .HasForeignKey("WorkProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InvitedBy");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("WorkProject");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.WorkProjectParticipant", b =>

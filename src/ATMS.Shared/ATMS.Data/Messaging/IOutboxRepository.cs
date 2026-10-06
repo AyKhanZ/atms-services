@@ -1,6 +1,4 @@
-using ATMS.Data.Messaging;
-
-namespace ATMS.Admin.Data.Repositories.Interfaces;
+namespace ATMS.Data.Messaging;
 
 public interface IOutboxRepository
 {

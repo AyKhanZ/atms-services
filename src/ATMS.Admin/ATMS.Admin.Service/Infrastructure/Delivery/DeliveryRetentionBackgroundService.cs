@@ -1,4 +1,5 @@
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Data.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

@@ -13,6 +13,10 @@ public class EmailDelivery
 
     public string? TemporaryPassword { get; set; }
 
+    public string? InviterName { get; set; }
+
+    public string? ProjectTitle { get; set; }
+
     public string? PasswordResetToken { get; set; }
 
     public DateTime? PasswordResetTokenExpiresAt { get; set; }

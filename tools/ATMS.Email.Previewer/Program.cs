@@ -23,6 +23,36 @@ await RenderTemplateAsync(
         DeadlineOfToken = DateTime.Now.AddHours(24)
     });
 
+// Invitations (Specs/17-project-invites.md, "Письмо"): the line about who invited, from onboarding and from a project.
+await RenderTemplateAsync(
+    "InviteTemplate.cshtml",
+    "confirm-email-onboarding-invite.html",
+    new InviteModel
+    {
+        Name = "Nigar",
+        Surname = "Huseynova",
+        Email = "nigar.huseynova@client.az",
+        Password = "Baim@2026!",
+        Link = "http://localhost:5000/admin/api/v1/account/confirm?token=preview-confirmation-token",
+        DeadlineOfToken = DateTime.Now.AddHours(24),
+        InviterName = "Leyla Mammadova"
+    });
+
+await RenderTemplateAsync(
+    "InviteTemplate.cshtml",
+    "confirm-email-project-invite.html",
+    new InviteModel
+    {
+        Name = "Nigar",
+        Surname = "Huseynova",
+        Email = "nigar.huseynova@client.az",
+        Password = "Baim@2026!",
+        Link = "http://localhost:5000/admin/api/v1/account/confirm?token=preview-confirmation-token",
+        DeadlineOfToken = DateTime.Now.AddHours(24),
+        InviterName = "Leyla Mammadova",
+        ProjectTitle = "Customer portal redesign and payment gateway migration"
+    });
+
 await RenderTemplateAsync(
     "ForgotPasswordTemplate.cshtml",
     "forgot-password.html",
