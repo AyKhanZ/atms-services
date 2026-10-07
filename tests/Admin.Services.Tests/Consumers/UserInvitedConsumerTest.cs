@@ -148,6 +148,30 @@ public class UserInvitedConsumerTest
         _userRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    // Broken data must not send the message to the dead-letter queue: it is logged and marked processed.
+    [Fact]
+    public async Task HandleAsync_WhenExistingUserHasNoRole_SkipsAnnouncementWithoutFailing()
+    {
+        var existing = new User { Id = Guid.NewGuid(), Email = "Nigar@Client.az" };
+        SetupExistingUser(existing);
+        _userRepositoryMock
+            .Setup(x => x.GetRolesAsync(existing.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+
+        await RunAsync(CreateMessage("Customer portal"));
+
+        _outboxRepositoryMock.Verify(x => x.AddAsync(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<UserCreatedEvent>(),
+            It.IsAny<CancellationToken>()), Times.Never);
+        _inboxRepositoryMock.Verify(x => x.AddAsync(
+            It.IsAny<Guid>(),
+            nameof(UserInvitedConsumer),
+            It.IsAny<CancellationToken>()), Times.Once);
+        _userRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
     [Fact]
     public async Task HandleAsync_WhenMessageWasProcessed_DoesNothing()
     {

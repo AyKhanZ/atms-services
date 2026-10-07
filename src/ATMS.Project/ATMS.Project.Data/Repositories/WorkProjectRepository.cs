@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
 using ATMS.Data.Criteria;
+using ATMS.Project.Data.Criteria.WorkProjectInvitations;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Enums;
 using ATMS.Project.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -65,6 +67,55 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
             .Select(x => x.WorkProjectId)
             .Distinct()
             .ToArrayAsync(cancellationToken);
+    }
+
+    public async Task<WorkProjectParticipantRefusal?> SaveParticipantWithinLimitAsync(
+        Guid projectId,
+        Guid userId,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        await using var transaction = context.Database.CurrentTransaction is null
+            ? await context.Database.BeginTransactionAsync(cancellationToken)
+            : null;
+        await context.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT 1 FROM \"Projects\" WHERE \"Id\" = {projectId} FOR UPDATE",
+            cancellationToken);
+
+        var participants = context.WorkProjectParticipants.Where(x => x.WorkProjectId == projectId);
+        if (await participants.AnyAsync(x => x.UserId == userId, cancellationToken))
+        {
+            return WorkProjectParticipantRefusal.AlreadyParticipant;
+        }
+
+        var invitations = await new LivePendingInvitationsCriteria(projectId)
+            .Apply(context.WorkProjectInvitations)
+            .CountAsync(cancellationToken);
+        if (await participants.CountAsync(cancellationToken) + invitations >= limit)
+        {
+            return WorkProjectParticipantRefusal.LimitReached;
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+        if (transaction is not null)
+        {
+            await transaction.CommitAsync(cancellationToken);
+        }
+
+        return null;
+    }
+
+    public Task<Guid?> GetParticipantRoleIdAsync(
+        Guid projectId,
+        Guid participantId,
+        CancellationToken cancellationToken)
+    {
+        return context.WorkProjectParticipantRoles
+            .AsNoTracking()
+            .Where(x => x.WorkProjectParticipantId == participantId &&
+                        x.WorkProjectParticipant.WorkProjectId == projectId)
+            .Select(x => (Guid?)x.RoleId)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task CreateAsync(WorkProject entity, CancellationToken cancellationToken)

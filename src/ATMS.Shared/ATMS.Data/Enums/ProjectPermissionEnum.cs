@@ -18,6 +18,7 @@ public enum ProjectPermissionEnum
     ParticipantDelete = 27,
     ParticipantInviteClient = 28,
     ParticipantInviteEmployee = 33,
+    ParticipantDeleteClient = 34,
 
     TicketCreate = 29,
     TaskCreate = 30

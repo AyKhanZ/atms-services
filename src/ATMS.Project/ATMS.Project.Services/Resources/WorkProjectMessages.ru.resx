@@ -8,4 +8,5 @@
   <data name="InvitationAlreadyParticipant" xml:space="preserve"><value>Этот человек уже участник проекта.</value></data>
   <data name="InvitationAlreadySent" xml:space="preserve"><value>На эту почту уже отправлено приглашение в этот проект.</value></data>
   <data name="InvitationEmailInUse" xml:space="preserve"><value>Эту почту нельзя пригласить в этот проект.</value></data>
+  <data name="InvitationNotPending" xml:space="preserve"><value>Это приглашение уже не ждёт ответа. Обновите список, чтобы увидеть, кто присоединился.</value></data>
 </root>

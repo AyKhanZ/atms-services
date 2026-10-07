@@ -5,7 +5,7 @@ namespace ATMS.Project.Data.Repositories.Interfaces;
 
 public interface IWorkProjectInvitationRepository
 {
-    Task<WorkProjectInvitationRefusal?> AddWithinLimitAsync(
+    Task<WorkProjectParticipantRefusal?> AddWithinLimitAsync(
         WorkProjectInvitation invitation,
         int limit,
         CancellationToken cancellationToken);
@@ -13,4 +13,10 @@ public interface IWorkProjectInvitationRepository
     Task<List<WorkProjectInvitation>> GetLivePendingAsync(Guid workProjectId, CancellationToken cancellationToken);
 
     Task<List<WorkProjectInvitation>> GetPendingByEmailAsync(string normalizedEmail, CancellationToken cancellationToken);
+
+    Task<WorkProjectInvitation?> FindPendingAsync(Guid workProjectId, Guid invitationId, CancellationToken cancellationToken);
+
+    Task<bool> IsPendingAsync(Guid workProjectId, Guid invitationId, CancellationToken cancellationToken);
+
+    Task SaveAsync(CancellationToken cancellationToken);
 }

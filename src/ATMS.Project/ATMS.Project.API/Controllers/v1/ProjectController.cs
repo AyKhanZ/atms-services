@@ -264,6 +264,41 @@ public class ProjectController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>
+    /// Cancels an invitation that is still waiting for an account.
+    /// </summary>
+    /// <remarks>
+    /// Available to project members with the right to invite clients. The invitation is kept with the Cancelled
+    /// status and disappears from the project details. If Admin creates the account later, the person does not
+    /// join the project. An invitation already accepted cannot be cancelled: remove the participant instead.
+    /// </remarks>
+    /// <param name="id">Project ID.</param>
+    /// <param name="invitationId">Invitation ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="204">Invitation cancelled.</response>
+    /// <response code="400">Validation error, e.g. the invitation was already accepted or cancelled.</response>
+    /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden, user has no right to invite clients into this project.</response>
+    /// <response code="404">Project with the specified ID was not found.</response>
+    /// <response code="500">Unexpected server error.</response>
+    [HttpDelete("{id:guid}/invitations/{invitationId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CancelInvitation(
+        Guid id,
+        Guid invitationId,
+        CancellationToken cancellationToken)
+    {
+        await mediator.Send(
+            new CancelWorkProjectInvitationCommand { ProjectId = id, InvitationId = invitationId },
+            cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>
     /// Updates an existing project participant.
     /// </summary>
     /// <remarks>
@@ -303,7 +338,8 @@ public class ProjectController(IMediator mediator) : ControllerBase
     /// Removes a participant from an existing project.
     /// </summary>
     /// <remarks>
-    /// Deletes a participant assignment from the project. Only a super administrator can perform this operation.
+    /// Deletes a participant assignment from the project. The project manager removes anyone; the client manager
+    /// removes clients of the project only (Participant delete client).
     /// The change is applied immediately to the existing project.
     /// </remarks>
     /// <param name="id">Project ID.</param>
@@ -311,7 +347,7 @@ public class ProjectController(IMediator mediator) : ControllerBase
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">Participant successfully removed.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
-    /// <response code="403">Resource forbidden, user is not a super administrator.</response>
+    /// <response code="403">Resource forbidden, user may not remove this participant.</response>
     /// <response code="404">Project or participant with the specified ID was not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpDelete("{id:guid}/participants/{participantId:guid}")]

@@ -1,12 +1,8 @@
+using ATMS.Application.Models;
+
 namespace ATMS.Admin.Contracts.Models.Onboarding;
 
-public class OnboardingInvitedUserModel
+public class OnboardingInvitedUserModel : AuditUserModel
 {
-    public Guid Id { get; set; }
-
-    public string Name { get; set; }
-
-    public string Surname { get; set; }
-
     public string Email { get; set; }
 }

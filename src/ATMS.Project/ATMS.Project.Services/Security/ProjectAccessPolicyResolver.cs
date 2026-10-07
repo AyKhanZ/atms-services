@@ -10,6 +10,7 @@ namespace ATMS.Project.Services.Security;
 
 public sealed class ProjectAccessPolicyResolver(
     ICommentRepository comments,
+    IWorkProjectRepository workProjects,
     ICurrentUser currentUser) : IProjectAccessPolicyResolver
 {
     public async Task<IReadOnlyCollection<ProjectPermissionEnum>> ResolveAsync(
@@ -21,6 +22,7 @@ public sealed class ProjectAccessPolicyResolver(
         {
             ProjectAccessPolicy.ParticipantInvite => ResolveParticipantInvite(request),
             ProjectAccessPolicy.CommentDelete => await ResolveCommentDeleteAsync(request, cancellationToken),
+            ProjectAccessPolicy.ParticipantDelete => await ResolveParticipantDeleteAsync(request, cancellationToken),
             _ => []
         };
     }
@@ -56,6 +58,25 @@ public sealed class ProjectAccessPolicyResolver(
         return authorId is null || authorId == currentUser.Id
             ? [ProjectPermissionEnum.CommentEdit]
             : [ProjectPermissionEnum.CommentDelete];
+    }
+
+    private async Task<IReadOnlyCollection<ProjectPermissionEnum>> ResolveParticipantDeleteAsync(
+        IProjectScopedRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (request is not IProjectParticipantScopedRequest participantRequest)
+        {
+            return [];
+        }
+
+        var roleId = await workProjects.GetParticipantRoleIdAsync(
+            participantRequest.ProjectId,
+            participantRequest.ParticipantId,
+            cancellationToken);
+
+        return roleId is { } clientRoleId && IsClientRole(clientRoleId)
+            ? [ProjectPermissionEnum.ParticipantDelete, ProjectPermissionEnum.ParticipantDeleteClient]
+            : [ProjectPermissionEnum.ParticipantDelete];
     }
 
     private static bool IsClientRole(Guid roleId)

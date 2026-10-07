@@ -44,7 +44,7 @@ public class InviteWorkProjectParticipantHandlerTest : BaseHandlerTest
                 WorkProjectParticipantLimit.Max,
                 It.IsAny<CancellationToken>()))
             .Callback<WorkProjectInvitation, int, CancellationToken>((invitation, _, _) => saved = invitation)
-            .ReturnsAsync((WorkProjectInvitationRefusal?)null);
+            .ReturnsAsync((WorkProjectParticipantRefusal?)null);
 
         await CreateHandler().Handle(CreateCommand(), CancellationToken.None);
 
@@ -86,7 +86,7 @@ public class InviteWorkProjectParticipantHandlerTest : BaseHandlerTest
                 It.IsAny<int>(),
                 It.IsAny<CancellationToken>()))
             .Callback(() => steps.Add("invitation"))
-            .ReturnsAsync((WorkProjectInvitationRefusal?)null);
+            .ReturnsAsync((WorkProjectParticipantRefusal?)null);
 
         await CreateHandler().Handle(CreateCommand(), CancellationToken.None);
 
@@ -95,9 +95,9 @@ public class InviteWorkProjectParticipantHandlerTest : BaseHandlerTest
 
     // Two invitations at once: the second one is refused under the lock, even though it passed the validator.
     [Theory]
-    [InlineData(WorkProjectInvitationRefusal.AlreadyInvited)]
-    [InlineData(WorkProjectInvitationRefusal.LimitReached)]
-    public async Task Handle_WhenRefusedUnderTheLock_FailsOnEmailAndKeepsTheCache(WorkProjectInvitationRefusal refusal)
+    [InlineData(WorkProjectParticipantRefusal.AlreadyInvited)]
+    [InlineData(WorkProjectParticipantRefusal.LimitReached)]
+    public async Task Handle_WhenRefusedUnderTheLock_FailsOnEmailAndKeepsTheCache(WorkProjectParticipantRefusal refusal)
     {
         WorkProjectInvitationRepositoryMock
             .Setup(x => x.AddWithinLimitAsync(

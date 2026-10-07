@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using ATMS.Data.Criteria;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Enums;
 
 namespace ATMS.Project.Data.Repositories.Interfaces;
 
@@ -21,6 +22,14 @@ public interface IWorkProjectRepository
     Task<WorkProject?> FindRootAsync(Guid id, CancellationToken cancellationToken);
 
     Task<Guid[]> GetIdsByParticipantAsync(Guid userId, CancellationToken cancellationToken);
+
+    Task<Guid?> GetParticipantRoleIdAsync(Guid projectId, Guid participantId, CancellationToken cancellationToken);
+
+    Task<WorkProjectParticipantRefusal?> SaveParticipantWithinLimitAsync(
+        Guid projectId,
+        Guid userId,
+        int limit,
+        CancellationToken cancellationToken);
 
     Task CreateAsync(WorkProject entity, CancellationToken cancellationToken);
 

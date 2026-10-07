@@ -51,21 +51,30 @@ public class UserInvitedConsumer(
             // registered a moment before the invitation would never send one, and the invitation
             // would wait forever — so the existing user is announced again. Project treats it as an
             // update and decides whether the invitation can be accepted.
-            var roles = await userRepository.GetRolesAsync(exists.Id, cancellationToken);
-            await outboxRepository.AddAsync(
-                MessagingConstants.Exchanges.UserEvents,
-                MessagingConstants.RoutingKeys.UserCreated,
-                new UserCreatedEvent(
-                    exists.Id,
-                    exists.Email,
-                    exists.Name,
-                    exists.Surname,
-                    roles.First().UserType,
-                    exists.AvatarPath,
-                    exists.OrganizationId,
-                    exists.IsAdmin,
-                    exists.HasCompletedOnboarding),
-                cancellationToken);
+            var existingRole = (await userRepository.GetRolesAsync(exists.Id, cancellationToken)).FirstOrDefault();
+            if (existingRole is null)
+            {
+                logger.LogWarning(
+                    "Invited email belongs to user {UserId} without a role; the user is not announced again",
+                    exists.Id);
+            }
+            else
+            {
+                await outboxRepository.AddAsync(
+                    MessagingConstants.Exchanges.UserEvents,
+                    MessagingConstants.RoutingKeys.UserCreated,
+                    new UserCreatedEvent(
+                        exists.Id,
+                        exists.Email,
+                        exists.Name,
+                        exists.Surname,
+                        existingRole.UserType,
+                        exists.AvatarPath,
+                        exists.OrganizationId,
+                        exists.IsAdmin,
+                        exists.HasCompletedOnboarding),
+                    cancellationToken);
+            }
 
             await inboxRepository.AddAsync(
                 messageId,

@@ -36,7 +36,8 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
                 ProjectPermissionEnum.ProjectView,
                 ProjectPermissionEnum.TicketCreate,
                 ProjectPermissionEnum.CommentEdit,
-                ProjectPermissionEnum.ParticipantInviteClient
+                ProjectPermissionEnum.ParticipantInviteClient,
+                ProjectPermissionEnum.ParticipantDeleteClient
             ],
             [RoleIds.OrgClientViewer] = [ProjectPermissionEnum.ProjectView, ProjectPermissionEnum.CommentEdit]
         };

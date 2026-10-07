@@ -4,10 +4,13 @@ using ATMS.Caching.Services.Interfaces;
 using ATMS.Data.Constants;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Enums;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Handlers.WorkProjects;
 using ATMS.Project.Services.Notifications.Interfaces;
 using ATMS.Project.Services.Security.Interfaces;
+using ATMS.Project.Services.Validation.WorkProjects;
+using FluentValidation;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.WorkProjects;
@@ -27,15 +30,19 @@ public class AddWorkProjectParticipantHandlerTest
         workProjectRepository
             .Setup(repository => repository.FindAsync(command.ProjectId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(project);
-        var handler = CreateHandler();
+        SetupSave(null);
 
-        await handler.Handle(command, CancellationToken.None);
+        await CreateHandler().Handle(command, CancellationToken.None);
 
         var participant = Assert.Single(project.WorkProjectParticipants);
         Assert.Equal(command.UserId, participant.UserId);
         Assert.Equal(command.RoleId, Assert.Single(participant.WorkProjectParticipantRoles).RoleId);
         workProjectRepository.Verify(
-            repository => repository.SaveAsync(It.IsAny<CancellationToken>()),
+            repository => repository.SaveParticipantWithinLimitAsync(
+                project.Id,
+                command.UserId,
+                WorkProjectParticipantLimit.Max,
+                It.IsAny<CancellationToken>()),
             Times.Once);
         foreach (var language in SupportedLanguages.All)
         {
@@ -64,13 +71,53 @@ public class AddWorkProjectParticipantHandlerTest
             .Callback(() => steps.Add("notify"))
             .Returns(Task.CompletedTask);
         workProjectRepository
-            .Setup(repository => repository.SaveAsync(It.IsAny<CancellationToken>()))
+            .Setup(repository => repository.SaveParticipantWithinLimitAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
             .Callback(() => steps.Add("save"))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync((WorkProjectParticipantRefusal?)null);
 
         await CreateHandler().Handle(command, CancellationToken.None);
 
         Assert.Equal(["notify", "save"], steps);
+    }
+
+    // An invitation or another add took the place, or the same person was added, after validation.
+    [Theory]
+    [InlineData(WorkProjectParticipantRefusal.AlreadyParticipant)]
+    [InlineData(WorkProjectParticipantRefusal.LimitReached)]
+    public async Task Handle_WhenRefusedUnderTheLock_FailsOnUserAndKeepsCaches(WorkProjectParticipantRefusal refusal)
+    {
+        var command = CreateCommand(RoleIds.OrgClientViewer);
+        workProjectRepository
+            .Setup(repository => repository.FindAsync(command.ProjectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new WorkProject { Id = command.ProjectId });
+        SetupSave(refusal);
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(
+            () => CreateHandler().Handle(command, CancellationToken.None));
+
+        Assert.Equal(nameof(command.UserId), Assert.Single(exception.Errors).PropertyName);
+        cache.Verify(service => service.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        projectPermissionService.Verify(
+            service => service.RemoveUserPermissionsAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    private void SetupSave(WorkProjectParticipantRefusal? refusal)
+    {
+        workProjectRepository
+            .Setup(repository => repository.SaveParticipantWithinLimitAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(refusal);
     }
 
     private AddWorkProjectParticipantHandler CreateHandler() => new(

@@ -18,30 +18,37 @@ public class MessageRetentionBackgroundService(
 
         do
         {
-            try
-            {
-                await DeleteExpiredRecordsAsync(stoppingToken);
-            }
-            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-            {
-                break;
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(exception, "Failed to delete expired inbox and outbox records");
-            }
+            // Each table on its own: a failure in one must not leave the other uncleaned for a day.
+            await DeleteAsync(
+                "outbox",
+                provider => provider.GetRequiredService<IOutboxRepository>()
+                    .DeleteProcessedBeforeAsync(DateTime.UtcNow.AddDays(-30), stoppingToken),
+                stoppingToken);
+            await DeleteAsync(
+                "inbox",
+                provider => provider.GetRequiredService<IInboxRepository>()
+                    .DeleteProcessedBeforeAsync(DateTime.UtcNow.AddDays(-60), stoppingToken),
+                stoppingToken);
         }
-        while (await timer.WaitForNextTickAsync(stoppingToken));
+        while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken));
     }
 
-    private async Task DeleteExpiredRecordsAsync(CancellationToken cancellationToken)
+    private async Task DeleteAsync(
+        string table,
+        Func<IServiceProvider, Task> delete,
+        CancellationToken cancellationToken)
     {
-        await using var scope = scopeFactory.CreateAsyncScope();
-        await scope.ServiceProvider
-            .GetRequiredService<IOutboxRepository>()
-            .DeleteProcessedBeforeAsync(DateTime.UtcNow.AddDays(-30), cancellationToken);
-        await scope.ServiceProvider
-            .GetRequiredService<IInboxRepository>()
-            .DeleteProcessedBeforeAsync(DateTime.UtcNow.AddDays(-60), cancellationToken);
+        try
+        {
+            await using var scope = scopeFactory.CreateAsyncScope();
+            await delete(scope.ServiceProvider);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Failed to delete expired {Table} records", table);
+        }
     }
 }
