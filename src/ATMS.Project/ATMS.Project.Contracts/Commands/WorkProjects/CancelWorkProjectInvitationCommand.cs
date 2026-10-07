@@ -6,10 +6,10 @@ using ATMS.Project.Contracts.Requests.Security;
 namespace ATMS.Project.Contracts.Commands.WorkProjects;
 
 [Access(PermissionEnum.ProjectView)]
-[ProjectAccess(ProjectAccessPolicy.ParticipantDelete)]
-public class DeleteWorkProjectParticipantCommand : IRequest, IProjectParticipantScopedRequest
+[ProjectAccess(ProjectPermissionEnum.ParticipantInviteClient)]
+public class CancelWorkProjectInvitationCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 
-    public Guid ParticipantId { get; set; }
+    public Guid InvitationId { get; set; }
 }

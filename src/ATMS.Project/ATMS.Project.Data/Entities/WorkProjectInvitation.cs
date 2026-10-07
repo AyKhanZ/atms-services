@@ -18,8 +18,6 @@ public class WorkProjectInvitation : UserBase
 
     public Guid InvitedById { get; set; }
 
-    public User InvitedBy { get; set; }
-
     public DateTime CreatedAt { get; set; }
 
     public DateTime? ProcessedAt { get; set; }

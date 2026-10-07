@@ -70,7 +70,7 @@ public class InviteWorkProjectParticipantHandler(
             [
                 new ValidationFailure(
                     nameof(InviteWorkProjectParticipantCommand.Email),
-                    refusal == WorkProjectInvitationRefusal.AlreadyInvited
+                    refusal == WorkProjectParticipantRefusal.AlreadyInvited
                         ? WorkProjectMessages.InvitationAlreadySent
                         : string.Format(WorkProjectMessages.ParticipantsLimitExceeded, WorkProjectParticipantLimit.Max))
             ]);

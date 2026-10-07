@@ -50,9 +50,5 @@ public class WorkProjectInvitationConfiguration : IEntityTypeConfiguration<WorkP
             .HasForeignKey(e => e.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(e => e.InvitedBy)
-            .WithMany()
-            .HasForeignKey(e => e.InvitedById)
-            .OnDelete(DeleteBehavior.Restrict);
     }
 }

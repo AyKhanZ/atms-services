@@ -1,4 +1,5 @@
 using ATMS.Data.Enums;
+using ATMS.Project.Data.Criteria.WorkProjectInvitations;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Enums;
@@ -14,7 +15,7 @@ public class WorkProjectInvitationRepository(ProjectDbContext context) : IWorkPr
     // second invitation to the same project waits for the first to commit, then sees it. Other projects
     // are not held up. Whatever else the caller has added to the context — the outbox message — is saved
     // in the same commit.
-    public async Task<WorkProjectInvitationRefusal?> AddWithinLimitAsync(
+    public async Task<WorkProjectParticipantRefusal?> AddWithinLimitAsync(
         WorkProjectInvitation invitation,
         int limit,
         CancellationToken cancellationToken)
@@ -24,17 +25,18 @@ public class WorkProjectInvitationRepository(ProjectDbContext context) : IWorkPr
             $"SELECT 1 FROM \"Projects\" WHERE \"Id\" = {invitation.WorkProjectId} FOR UPDATE",
             cancellationToken);
 
-        var invitations = LivePending(invitation.WorkProjectId);
+        var invitations = new LivePendingInvitationsCriteria(invitation.WorkProjectId)
+            .Apply(context.WorkProjectInvitations);
         if (await invitations.AnyAsync(x => x.NormalizedEmail == invitation.NormalizedEmail, cancellationToken))
         {
-            return WorkProjectInvitationRefusal.AlreadyInvited;
+            return WorkProjectParticipantRefusal.AlreadyInvited;
         }
 
         var participants = await context.WorkProjectParticipants
             .CountAsync(x => x.WorkProjectId == invitation.WorkProjectId, cancellationToken);
         if (participants + await invitations.CountAsync(cancellationToken) >= limit)
         {
-            return WorkProjectInvitationRefusal.LimitReached;
+            return WorkProjectParticipantRefusal.LimitReached;
         }
 
         await context.WorkProjectInvitations.AddAsync(invitation, cancellationToken);
@@ -47,7 +49,8 @@ public class WorkProjectInvitationRepository(ProjectDbContext context) : IWorkPr
         Guid workProjectId,
         CancellationToken cancellationToken)
     {
-        return LivePending(workProjectId)
+        return new LivePendingInvitationsCriteria(workProjectId)
+            .Apply(context.WorkProjectInvitations)
             .AsNoTracking()
             .Include(x => x.Role)
             .OrderBy(x => x.CreatedAt)
@@ -66,16 +69,29 @@ public class WorkProjectInvitationRepository(ProjectDbContext context) : IWorkPr
             .ToListAsync(cancellationToken);
     }
 
-    // Admin retries an invitation for about 16 hours. One still unanswered after 24 is dead: it is not
-    // shown, takes no place in the project and does not stop the same email from being invited again.
-    // Nothing deletes it — the row simply stops counting.
-    private IQueryable<WorkProjectInvitation> LivePending(Guid workProjectId)
+    public Task<WorkProjectInvitation?> FindPendingAsync(
+        Guid workProjectId,
+        Guid invitationId,
+        CancellationToken cancellationToken)
     {
-        var aliveSince = DateTime.UtcNow.AddHours(-24);
+        return Pending(workProjectId, invitationId).FirstOrDefaultAsync(cancellationToken);
+    }
 
-        return context.WorkProjectInvitations
-            .Where(x => x.WorkProjectId == workProjectId &&
-                        x.Status == (int)WorkProjectInvitationStatusEnum.Pending &&
-                        x.CreatedAt > aliveSince);
+    public Task<bool> IsPendingAsync(Guid workProjectId, Guid invitationId, CancellationToken cancellationToken)
+    {
+        return Pending(workProjectId, invitationId).AnyAsync(cancellationToken);
+    }
+
+    public Task SaveAsync(CancellationToken cancellationToken)
+    {
+        return context.SaveChangesAsync(cancellationToken);
+    }
+
+    private IQueryable<WorkProjectInvitation> Pending(Guid workProjectId, Guid invitationId)
+    {
+        return context.WorkProjectInvitations.Where(x =>
+            x.Id == invitationId &&
+            x.WorkProjectId == workProjectId &&
+            x.Status == (int)WorkProjectInvitationStatusEnum.Pending);
     }
 }

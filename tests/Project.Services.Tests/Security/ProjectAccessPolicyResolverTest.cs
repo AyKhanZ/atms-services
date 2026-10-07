@@ -12,6 +12,7 @@ namespace Project.Services.Tests.Security;
 public sealed class ProjectAccessPolicyResolverTest
 {
     private readonly Mock<ICommentRepository> _comments = new();
+    private readonly Mock<IWorkProjectRepository> _workProjects = new();
     private readonly Mock<ICurrentUser> _currentUser = new();
     private readonly Guid _userId = Guid.NewGuid();
     private readonly ProjectAccessPolicyResolver resolver;
@@ -19,7 +20,7 @@ public sealed class ProjectAccessPolicyResolverTest
     public ProjectAccessPolicyResolverTest()
     {
         _currentUser.SetupGet(user => user.Id).Returns(_userId);
-        resolver = new ProjectAccessPolicyResolver(_comments.Object, _currentUser.Object);
+        resolver = new ProjectAccessPolicyResolver(_comments.Object, _workProjects.Object, _currentUser.Object);
     }
 
     [Theory]
@@ -103,6 +104,44 @@ public sealed class ProjectAccessPolicyResolverTest
         _comments.VerifyNoOtherCalls();
     }
 
+    [Theory]
+    [InlineData(nameof(RoleIds.OrgClientManager), true)]
+    [InlineData(nameof(RoleIds.OrgClientViewer), true)]
+    [InlineData(nameof(RoleIds.ProjectManager), false)]
+    [InlineData(nameof(RoleIds.BusinessConsultant), false)]
+    [InlineData(nameof(RoleIds.Developer), false)]
+    public async Task ResolveAsync_ParticipantDelete_ClientManagerMayRemoveOnlyClients(string roleName, bool client)
+    {
+        var request = new ParticipantScopedRequest(Guid.NewGuid(), Guid.NewGuid());
+        _workProjects.Setup(repository => repository.GetParticipantRoleIdAsync(
+                request.ProjectId, request.ParticipantId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(GetRoleId(roleName));
+
+        var result = await resolver.ResolveAsync(
+            ProjectAccessPolicy.ParticipantDelete,
+            request,
+            CancellationToken.None);
+
+        Assert.Equal(
+            client
+                ? [ProjectPermissionEnum.ParticipantDelete, ProjectPermissionEnum.ParticipantDeleteClient]
+                : [ProjectPermissionEnum.ParticipantDelete],
+            result);
+    }
+
+    [Fact]
+    public async Task ResolveAsync_ParticipantDeleteOfMissingParticipant_AsksForFullRight()
+    {
+        var request = new ParticipantScopedRequest(Guid.NewGuid(), Guid.NewGuid());
+
+        var result = await resolver.ResolveAsync(
+            ProjectAccessPolicy.ParticipantDelete,
+            request,
+            CancellationToken.None);
+
+        Assert.Equal([ProjectPermissionEnum.ParticipantDelete], result);
+    }
+
     private static Guid GetRoleId(string roleName)
     {
         return roleName switch
@@ -121,4 +160,6 @@ public sealed class ProjectAccessPolicyResolverTest
     private sealed record RoleScopedRequest(Guid ProjectId, Guid RoleId) : IProjectRoleScopedRequest;
 
     private sealed record CommentScopedRequest(Guid ProjectId, Guid CommentId) : IProjectCommentScopedRequest;
+
+    private sealed record ParticipantScopedRequest(Guid ProjectId, Guid ParticipantId) : IProjectParticipantScopedRequest;
 }

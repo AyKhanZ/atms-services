@@ -91,6 +91,7 @@ internal static class ProjectPermissionSeed
         new(ProjectPermissionEnum.CommentDelete, 34, "Comment delete", "Удаление комментариев", "Şərhi sil"),
         new(ProjectPermissionEnum.ParticipantEdit, 76, "Participant edit", "Изменение роли участника", "İştirakçını redaktə et"),
         new(ProjectPermissionEnum.ParticipantDelete, 79, "Participant delete", "Удаление участника", "İştirakçını sil"),
+        new(ProjectPermissionEnum.ParticipantDeleteClient, 100, "Remove client participant", "Удаление участника клиента", "Müştəri iştirakçısını sil"),
         new(ProjectPermissionEnum.ParticipantInviteClient, 82, "Invite client participant", "Приглашение участника клиента", "Müştəri iştirakçısını dəvət et"),
         new(ProjectPermissionEnum.ParticipantInviteEmployee, 97, "Invite employee participant", "Приглашение сотрудника", "Əməkdaş iştirakçını dəvət et"),
         new(ProjectPermissionEnum.TicketCreate, 85, "Ticket create", "Создание тикетов", "Tiket yarat"),

@@ -27,14 +27,12 @@ namespace ATMS.Project.Data.Migrations
                 keyColumns: new[] { "PermissionId", "RoleId" },
                 keyValues: new object[] { 12, new Guid("fa1dac7e-d57c-4e4c-9f71-283566862346") });
 
-            migrationBuilder.InsertData(
-                table: "RolePermissions",
-                columns: new[] { "PermissionId", "RoleId" },
-                values: new object[,]
-                {
-                    { 11, new Guid("51805e71-420c-40c4-a074-76b4f29eee7a") },
-                    { 11, new Guid("7b59a306-3455-4d35-bb7d-d7a07e8219ca") }
-                });
+            migrationBuilder.Sql("""
+                INSERT INTO "RolePermissions" ("PermissionId", "RoleId")
+                VALUES (11, '51805e71-420c-40c4-a074-76b4f29eee7a'),
+                       (11, '7b59a306-3455-4d35-bb7d-d7a07e8219ca')
+                ON CONFLICT ("PermissionId", "RoleId") DO NOTHING;
+                """);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_OwnerType_OwnerId_CreatedAt_Id",
