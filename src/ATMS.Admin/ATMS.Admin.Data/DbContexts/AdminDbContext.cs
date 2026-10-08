@@ -65,14 +65,6 @@ public sealed class AdminDbContext: DbContext
 
     #endregion
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5434;Database=atms_admin;Username=admin;Password=p@ssw0rd!");
-        }
-    }
-    
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         ChangeTracker.ApplyAuditMetadata(_auditActor?.UserId);

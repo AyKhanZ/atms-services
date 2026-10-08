@@ -5,9 +5,9 @@ services:
     image: postgres:16
     container_name: atms.admin.db
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: p@ssw0rd!
-      POSTGRES_DB: atms_admin
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${ADMIN_DB_NAME}
     ports:
       - "5434:5432"
     volumes:
@@ -19,9 +19,9 @@ services:
     image: postgres:16
     container_name: atms.project.db
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: p@ssw0rd!
-      POSTGRES_DB: atms_project
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PROJECT_DB_NAME}
     ports:
       - "5435:5432"
     volumes:
@@ -32,9 +32,9 @@ services:
     image: rabbitmq:3.13-management
     container_name: atms.rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: p@ssw0rd!
-      RABBITMQ_DEFAULT_VHOST: atms
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
     ports:
       - "5672:5672"    # AMQP protocol (для микросервисов)
       - "15672:15672"  # Management UI (http://localhost:15672)
