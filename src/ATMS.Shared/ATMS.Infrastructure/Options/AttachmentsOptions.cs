@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ATMS.Infrastructure.Options;
 
 public sealed class AttachmentsOptions
 {
+    [Required]
     public required string RootPath { get; init; }
+
     public long MaxFileSizeBytes { get; init; } = 25 * 1024 * 1024;
     public int MaxFilesPerOwner { get; init; } = 100;
 

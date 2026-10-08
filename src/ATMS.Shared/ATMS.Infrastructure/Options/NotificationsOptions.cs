@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ATMS.Infrastructure.Options;
 
 public sealed class NotificationsOptions
@@ -14,5 +16,6 @@ public sealed class NotificationsOptions
     public bool SendEmails { get; init; }
 
     // frontend url for the links in emails
+    [Required]
     public required string AppUrl { get; init; }
 }

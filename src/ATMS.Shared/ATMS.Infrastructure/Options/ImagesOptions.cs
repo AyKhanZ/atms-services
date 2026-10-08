@@ -1,9 +1,13 @@
-﻿namespace ATMS.Infrastructure.Options;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ATMS.Infrastructure.Options;
 
 public sealed class ImagesOptions
 {
+    [Required]
     public required string ImagesRootPath { get; init; }
 
+    [Required]
     public required string BaseImageUrl { get; init; }
 
     public long MaxFileSizeBytes { get; init; } = 5 * 1024 * 1024;

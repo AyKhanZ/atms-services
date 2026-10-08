@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using ATMS.Infrastructure.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,17 @@ public class OptionsExtensionsTest
         Assert.Contains(nameof(SampleOptions), error.Message);
     }
 
+    [Fact]
+    public void AddRequiredOptions_WhenRequiredValueIsEmpty_FailsWithItsName()
+    {
+        using var provider = Build(new Dictionary<string, string?> { ["SampleOptions:Url"] = "" });
+
+        var error = Assert.Throws<OptionsValidationException>(
+            () => provider.GetRequiredService<IOptions<SampleOptions>>().Value);
+
+        Assert.Contains(nameof(SampleOptions.Url), error.Message);
+    }
+
     private static ServiceProvider Build(Dictionary<string, string?> settings)
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
@@ -38,6 +50,7 @@ public class OptionsExtensionsTest
 
     public sealed class SampleOptions
     {
+        [Required]
         public string? Url { get; init; }
     }
 }
