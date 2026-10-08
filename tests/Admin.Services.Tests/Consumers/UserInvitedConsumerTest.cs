@@ -111,7 +111,8 @@ public class UserInvitedConsumerTest
             Surname = "Huseynova",
             AvatarPath = "nigar.png",
             OrganizationId = Guid.NewGuid(),
-            HasCompletedOnboarding = true
+            HasCompletedOnboarding = true,
+            Position = "Procurement lead"
         };
         SetupExistingUser(existing);
         _userRepositoryMock
@@ -132,7 +133,8 @@ public class UserInvitedConsumerTest
                 existing.AvatarPath,
                 existing.OrganizationId,
                 false,
-                true),
+                true,
+                "Procurement lead"),
             It.IsAny<CancellationToken>()), Times.Once);
         _userRepositoryMock.Verify(x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Never);
         _emailDeliveryRepositoryMock.Verify(x => x.AddInvitationAsync(

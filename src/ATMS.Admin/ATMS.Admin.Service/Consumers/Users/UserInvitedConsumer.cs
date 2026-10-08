@@ -72,7 +72,8 @@ public class UserInvitedConsumer(
                         exists.AvatarPath,
                         exists.OrganizationId,
                         exists.IsAdmin,
-                        exists.HasCompletedOnboarding),
+                        exists.HasCompletedOnboarding,
+                        exists.Position),
                     cancellationToken);
             }
 

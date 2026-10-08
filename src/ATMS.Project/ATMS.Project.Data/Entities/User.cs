@@ -11,7 +11,9 @@ public class User : UserAccountBase, ISoftDeletable
     
     
     public string AvatarPath { get; set; }
-    
+
+    public string? Position { get; set; }
+
     public string NormalizedEmail { get; set; }
 
     public int UserType { get; set; }

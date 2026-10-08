@@ -117,8 +117,9 @@ public class EntityToModelProfile : Profile
             .ForMember(destination => destination.Gender, options => options.Ignore())
             .ForMember(destination => destination.MaritalStatus, options => options.Ignore())
             .ForMember(destination => destination.UserStatus, options => options.Ignore())
-            .ForMember(destination => destination.Roles, options => options.Ignore());
-        
+            .ForMember(destination => destination.Roles, options => options.Ignore())
+            .ForMember(destination => destination.Organization, options => options.Ignore());
+
         CreateMap<User, UserListItemModel>()
             .ForMember(destination => destination.UserStatus, options => options.Ignore());
     }

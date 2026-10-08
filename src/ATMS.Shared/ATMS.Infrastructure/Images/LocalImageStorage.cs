@@ -5,6 +5,11 @@ using ATMS.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Webp;
+using SixLabors.ImageSharp.Processing;
 
 namespace ATMS.Infrastructure.Images;
 
@@ -13,6 +18,17 @@ public sealed class LocalImageStorage(
     IImageUrlBuilder imageUrlBuilder) : IImageStorage
 {
     private const string ValidationPropertyName = "Image";
+
+    // Only the formats we accept can be decoded, so a flaw in another decoder (TIFF, GIF, BMP...) is
+    // out of reach. One frame: an animated image is stored as its first frame and cannot multiply memory.
+    private static readonly DecoderOptions DecoderOptions = new()
+    {
+        Configuration = new Configuration(
+            new JpegConfigurationModule(),
+            new PngConfigurationModule(),
+            new WebpConfigurationModule()),
+        MaxFrames = 1
+    };
 
     private readonly ImagesOptions _options =
         configuration.GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()
@@ -40,16 +56,25 @@ public sealed class LocalImageStorage(
 
         try
         {
-            await using var input = file.OpenReadStream();
-            using var image = await Image.LoadAsync(input, cancellationToken);
-
-            var pixelCount = (long)image.Width * image.Height;
-            if (pixelCount > _options.MaxPixelCount)
+            // Only the header is read here: a few-megabyte PNG can declare a canvas that takes gigabytes
+            // once decoded, so the size is refused before decoding.
+            await using (var header = file.OpenReadStream())
             {
-                ThrowImageValidation(
-                    "Image dimensions are too large.",
-                    $"Image dimensions are too large. Maximum pixel count is {_options.MaxPixelCount}.");
+                var info = await Image.IdentifyAsync(DecoderOptions, header, cancellationToken);
+                var pixelCount = (long)info.Width * info.Height;
+                if (pixelCount > _options.MaxPixelCount)
+                {
+                    ThrowImageValidation(
+                        "Image dimensions are too large.",
+                        $"Image dimensions are too large. Maximum pixel count is {_options.MaxPixelCount}.");
+                }
             }
+
+            await using var input = file.OpenReadStream();
+            using var image = await Image.LoadAsync(DecoderOptions, input, cancellationToken);
+
+            // The orientation lives in EXIF, which is removed below: a phone photo would end up on its side.
+            image.Mutate(context => context.AutoOrient());
 
             image.Metadata.ExifProfile = null;
             image.Metadata.IccProfile = null;

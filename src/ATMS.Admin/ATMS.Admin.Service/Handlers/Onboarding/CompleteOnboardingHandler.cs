@@ -62,7 +62,13 @@ public sealed class CompleteOnboardingHandler(
         await outboxRepository.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserUpdated,
-            new UserUpdatedEvent(user.Id, user.Name, user.Surname, user.AvatarPath, user.HasCompletedOnboarding),
+            new UserUpdatedEvent(
+                user.Id,
+                user.Name,
+                user.Surname,
+                user.AvatarPath,
+                user.HasCompletedOnboarding,
+                user.Position),
             cancellationToken);
 
         foreach (var invitedUser in progress.InvitedUsers)

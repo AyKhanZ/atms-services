@@ -60,7 +60,13 @@ public sealed class UpdateSettingsHandler(
             await outboxRepository.AddAsync(
                 MessagingConstants.Exchanges.UserEvents,
                 MessagingConstants.RoutingKeys.UserUpdated,
-                new UserUpdatedEvent(user.Id, user.Name, user.Surname, user.AvatarPath, user.HasCompletedOnboarding),
+                new UserUpdatedEvent(
+                    user.Id,
+                    user.Name,
+                    user.Surname,
+                    user.AvatarPath,
+                    user.HasCompletedOnboarding,
+                    user.Position),
                 cancellationToken);
 
             await userRepository.SaveAsync(cancellationToken);

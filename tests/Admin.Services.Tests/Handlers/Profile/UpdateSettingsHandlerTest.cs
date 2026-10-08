@@ -76,7 +76,7 @@ public class UpdateSettingsHandlerTest : BaseHandlerTest
         OutboxRepositoryMock.Verify(x => x.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserUpdated,
-            It.Is<UserUpdatedEvent>(e => e.Id == user.Id),
+            It.Is<UserUpdatedEvent>(e => e.Id == user.Id && e.Position == "Developer"),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 

@@ -52,6 +52,26 @@ public sealed class UserEventMapperTest
         Assert.Equal(hasCompletedOnboarding, user.HasCompletedOnboarding);
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("Operations manager")]
+    public void MapCreatedEvent_CopiesPosition(string? position)
+    {
+        var message = new UserCreatedEvent(
+            Guid.NewGuid(),
+            "user@baim.az",
+            "Aykhan",
+            "Zeynalov",
+            1,
+            "avatar.png",
+            Guid.NewGuid(),
+            Position: position);
+
+        var user = CreateMapper().Map<User>(message);
+
+        Assert.Equal(position, user.Position);
+    }
+
     // The participant chip "Invited" goes away when Admin says onboarding is done.
     [Fact]
     public void MapUpdatedEvent_MarksOnboardingCompleted()
@@ -63,6 +83,20 @@ public sealed class UserEventMapperTest
 
         Assert.True(user.HasCompletedOnboarding);
         Assert.Equal("Aykhan", user.Name);
+    }
+
+    // Organization details show the position; it changes in Admin and arrives only through this event.
+    [Theory]
+    [InlineData("Old", "Operations manager")]
+    [InlineData("Old", null)]
+    public void MapUpdatedEvent_ReplacesPosition(string current, string? updated)
+    {
+        var user = new User { Id = Guid.NewGuid(), Position = current };
+        var message = new UserUpdatedEvent(user.Id, "Aykhan", "Zeynalov", "avatar.png", true, updated);
+
+        CreateMapper().Map(message, user);
+
+        Assert.Equal(updated, user.Position);
     }
 
     private static IMapper CreateMapper()

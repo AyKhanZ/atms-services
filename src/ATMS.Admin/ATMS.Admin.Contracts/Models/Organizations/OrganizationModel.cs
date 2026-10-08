@@ -7,4 +7,6 @@ public class OrganizationModel
     public string Title { get; set; }
     
     public string Voen { get; set; }
+
+    public string? LogoPath { get; set; }
 }
