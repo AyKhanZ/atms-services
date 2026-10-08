@@ -3,7 +3,7 @@ using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace ATMS.Infrastructure.Validation;
 
@@ -11,16 +11,9 @@ public abstract class BaseImageValidator<T> : AbstractValidator<T>
 {
     private readonly ImagesOptions _imagesOptions;
 
-    protected BaseImageValidator(IConfiguration configuration)
+    protected BaseImageValidator(IOptions<ImagesOptions> options)
     {
-        _imagesOptions = configuration
-            .GetSection(nameof(ImagesOptions))
-            .Get<ImagesOptions>()
-            ?? new ImagesOptions
-            {
-                ImagesRootPath = string.Empty,
-                BaseImageUrl = string.Empty
-            };
+        _imagesOptions = options.Value;
     }
 
     protected void RuleForRequiredImage(

@@ -1,19 +1,13 @@
-using ATMS.Application.Exceptions.Configuration;
-using ATMS.Application.Exceptions.Enums;
-using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace ATMS.Infrastructure.Files;
 
 // stored byte for byte (unlike avatars); the root is never served directly, only via an authorized endpoint
-public sealed class LocalFileStorage(IConfiguration configuration) : IFileStorage
+public sealed class LocalFileStorage(IOptions<AttachmentsOptions> options) : IFileStorage
 {
-    private readonly AttachmentsOptions _options =
-        configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()
-        ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.AttachmentsSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(AttachmentsOptions)));
+    private readonly AttachmentsOptions _options = options.Value;
 
     public async Task<string> SaveAsync(
         IFormFile file,

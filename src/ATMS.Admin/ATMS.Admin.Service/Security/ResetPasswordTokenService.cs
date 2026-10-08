@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -7,19 +8,15 @@ using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
-using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Admin.Service.Security;
 
 public sealed class ResetPasswordTokenService(
     IPasswordResetTokenRepository passwordResetTokenRepository,
     IUniqueTokenService uniqueTokenService,
-    IConfiguration configuration) : IResetPasswordTokenService
+    IOptions<JwtOptions> jwtOptions) : IResetPasswordTokenService
 {
-    private readonly JwtOptions _jwtOptions =
-        configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.JwtSectionNotFound,
-                string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
     public async Task<ResetPasswordTokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)
     {

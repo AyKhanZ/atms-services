@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using System.Globalization;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
@@ -10,7 +11,6 @@ using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Models.Notifications;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Domain.Comments.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -22,17 +22,13 @@ public class NotificationEmailBackgroundService(
     IServiceScopeFactory scopeFactory,
     DeliveryRetrySchedule retrySchedule,
     ICommentMentionService mentions,
-    IConfiguration configuration,
+    IOptions<NotificationsOptions> notificationsOptions,
     ILogger<NotificationEmailBackgroundService> logger) : BackgroundService
 {
     private const int BatchSize = 20;
     private static readonly TimeSpan EmptyQueueDelay = TimeSpan.FromSeconds(5);
 
-    private readonly NotificationsOptions _options =
-        configuration.GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()
-        ?? throw new ConfigurationException(
-            ConfigurationErrorTypeEnum.NotificationsSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(NotificationsOptions)));
+    private readonly NotificationsOptions _options = notificationsOptions.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

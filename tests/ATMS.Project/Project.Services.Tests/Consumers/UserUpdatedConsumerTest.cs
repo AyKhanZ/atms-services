@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using System.Linq.Expressions;
 using ATMS.Application.Localization;
 using ATMS.Caching.Constants;
@@ -80,7 +81,7 @@ public class UserUpdatedConsumerTest
             .AddSingleton(_mapperMock.Object)
             .BuildServiceProvider();
         var consumer = new TestUserUpdatedConsumer(
-            new RabbitMqConnectionFactory(CreateQueueConfiguration()),
+            new RabbitMqConnectionFactory(Options.Create(CreateQueueConfiguration().GetSection(nameof(QueueOptions)).Get<QueueOptions>()!)),
             services.GetRequiredService<IServiceScopeFactory>());
 
         return consumer.RunAsync(message, Guid.NewGuid(), services);

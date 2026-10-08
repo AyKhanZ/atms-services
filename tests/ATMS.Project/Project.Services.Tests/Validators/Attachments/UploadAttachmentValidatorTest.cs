@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using ATMS.Infrastructure.Options;
 using System.Linq.Expressions;
 using ATMS.Infrastructure.Files;
 using ATMS.Project.Contracts.Commands.Attachments;
@@ -43,10 +45,10 @@ public class UploadAttachmentValidatorTest : BaseValidatorTest
             .Build();
 
         return new UploadAttachmentValidator(
-            configuration,
+            Options.Create(configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()!),
             WorkProjectsRepositoryMock.Object,
             _attachmentRepositoryMock.Object,
-            new FileSignatureService(configuration));
+            new FileSignatureService(Options.Create(configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()!)));
     }
 
     private UploadAttachmentCommand Command(IFormFile? file) => new()

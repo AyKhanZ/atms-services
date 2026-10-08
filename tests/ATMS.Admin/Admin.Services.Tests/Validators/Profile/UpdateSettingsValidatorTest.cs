@@ -1,9 +1,10 @@
+using Microsoft.Extensions.Options;
+using ATMS.Infrastructure.Options;
 using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Validation.Profile;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
@@ -12,7 +13,7 @@ namespace Admin.Services.Tests.Validators.Profile;
 public class UpdateSettingsValidatorTest : BaseValidatorTest
 {
     private UpdateSettingsValidator CreateValidator() => new(
-        new ConfigurationBuilder().Build(),
+        Options.Create(new ImagesOptions { ImagesRootPath = string.Empty, BaseImageUrl = string.Empty }),
         DictionariesRepositoryMock.Object,
         UserRepositoryMock.Object,
         CurrentUserMock.Object);

@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using ATMS.Infrastructure.Options;
 using ATMS.Data.Enums;
 using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
@@ -255,7 +257,7 @@ public class NotificationEmailBackgroundServiceTest
             scopeFactory,
             new DeliveryRetrySchedule(),
             new CommentMentionService(),
-            configuration,
+            Options.Create(configuration.GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()!),
             NullLogger<NotificationEmailBackgroundService>.Instance)
     {
         public Task<int> ProcessOnceAsync(CancellationToken cancellationToken) => ProcessBatchAsync(cancellationToken);

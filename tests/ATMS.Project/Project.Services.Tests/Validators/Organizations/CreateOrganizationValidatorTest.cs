@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using ATMS.Infrastructure.Options;
 using System.Linq.Expressions;
 using ATMS.Project.Contracts.Commands.Organizations;
 using ATMS.Project.Data.Entities;
@@ -12,7 +15,7 @@ public class CreateOrganizationValidatorTest : BaseValidatorTest
 
     public CreateOrganizationValidatorTest()
     {
-        _validator = new CreateOrganizationValidator(OrganizationRepositoryMock.Object, CreateImagesConfiguration());
+        _validator = new CreateOrganizationValidator(OrganizationRepositoryMock.Object, Options.Create(CreateImagesConfiguration().GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()!));
     }
     [Fact]
     public async Task Validate_WhenValid_PassesValidation()

@@ -5,7 +5,7 @@ using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace ATMS.Project.Services.Validation.Attachments;
 
@@ -17,7 +17,7 @@ public sealed class UploadAttachmentValidator : AbstractValidator<UploadAttachme
     private readonly AttachmentsOptions _options;
 
     public UploadAttachmentValidator(
-        IConfiguration configuration,
+        IOptions<AttachmentsOptions> attachmentsOptions,
         IWorkProjectRepository workProjectRepository,
         IAttachmentRepository attachmentRepository,
         IFileSignatureService fileSignatureService)
@@ -25,8 +25,7 @@ public sealed class UploadAttachmentValidator : AbstractValidator<UploadAttachme
         _workProjectRepository = workProjectRepository;
         _attachmentRepository = attachmentRepository;
         _fileSignatureService = fileSignatureService;
-        _options = configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()
-                   ?? new AttachmentsOptions { RootPath = string.Empty };
+        _options = attachmentsOptions.Value;
 
         RuleFor(command => command.ProjectId).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(WorkTaskMessages.ProjectRequired)

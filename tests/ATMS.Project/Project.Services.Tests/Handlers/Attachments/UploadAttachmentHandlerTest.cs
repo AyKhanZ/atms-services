@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using ATMS.Infrastructure.Options;
 using ATMS.Data.Enums;
 using ATMS.Infrastructure.Files;
 using ATMS.Project.Contracts.Commands.Attachments;
@@ -8,7 +10,6 @@ using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Domain.Attachments;
 using ATMS.Project.Services.Handlers.Attachments;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using FluentValidation;
 using Moq;
 
@@ -55,11 +56,9 @@ public class UploadAttachmentHandlerTest : BaseHandlerTest
         new(
             _attachmentRepositoryMock.Object,
             _fileStorageMock.Object,
-            new FileSignatureService(new ConfigurationBuilder().Build()),
+            new FileSignatureService(Options.Create(new AttachmentsOptions { RootPath = "attachments" })),
             new AttachmentFileNameService(),
-            new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?> { ["AttachmentsOptions:RootPath"] = "attachments" })
-                .Build(),
+            Options.Create(new AttachmentsOptions { RootPath = "attachments" }),
             MapperMock.Object);
 
     private UploadAttachmentCommand Command(string fileName) => new()

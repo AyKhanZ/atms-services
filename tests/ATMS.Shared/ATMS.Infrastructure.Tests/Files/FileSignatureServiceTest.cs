@@ -1,3 +1,4 @@
+using ATMS.Infrastructure.Options;
 using System.Text;
 using ATMS.Infrastructure.Files;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +26,7 @@ public class FileSignatureServiceTest
             settings[$"AttachmentsOptions:AllowedExtensions:{index}"] = allowedExtensions[index];
         }
 
-        return new FileSignatureService(new ConfigurationBuilder().AddInMemoryCollection(settings).Build());
+        return new FileSignatureService(Microsoft.Extensions.Options.Options.Create(new ConfigurationBuilder().AddInMemoryCollection(settings).Build().GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()!));
     }
 
     private static IFormFile File(byte[] content, string name)

@@ -1,3 +1,5 @@
+using ATMS.Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using ATMS.Admin.Contracts.Commands.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
@@ -8,7 +10,6 @@ using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Infrastructure.Validation;
 using FluentValidation;
-using Microsoft.Extensions.Configuration;
 using ATMS.Application.Dispatcher.Validation;
 
 namespace ATMS.Admin.Service.Validation.Onboarding;
@@ -20,10 +21,10 @@ public sealed class SavePersonalInfoValidator : BaseImageValidator<SavePersonalI
     private readonly IDictionariesRepository _dictionariesRepository;
 
     public SavePersonalInfoValidator(
-        IConfiguration configuration,
+        IOptions<ImagesOptions> imagesOptions,
         ICurrentUser currentUser,
         IOnboardingRepository onboardingRepository,
-        IDictionariesRepository dictionariesRepository) : base(configuration)
+        IDictionariesRepository dictionariesRepository) : base(imagesOptions)
     {
         _currentUser = currentUser;
         _onboardingRepository = onboardingRepository;

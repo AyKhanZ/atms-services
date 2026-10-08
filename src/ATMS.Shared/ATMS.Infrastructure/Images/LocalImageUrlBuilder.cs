@@ -1,13 +1,11 @@
 using ATMS.Infrastructure.Options;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace ATMS.Infrastructure.Images;
 
-public sealed class LocalImageUrlBuilder(IConfiguration configuration) : IImageUrlBuilder
+public sealed class LocalImageUrlBuilder(IOptions<ImagesOptions> options) : IImageUrlBuilder
 {
-    private readonly ImagesOptions _options =
-        configuration.GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()
-        ?? throw new InvalidOperationException($"{nameof(ImagesOptions)} section is not configured.");
+    private readonly ImagesOptions _options = options.Value;
 
     public string? BuildUrl(string? relativePath)
     {

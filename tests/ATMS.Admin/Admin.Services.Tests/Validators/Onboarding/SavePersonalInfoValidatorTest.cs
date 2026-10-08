@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using ATMS.Infrastructure.Options;
 using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Onboarding;
 using ATMS.Admin.Data.Entities.Dictionaries;
@@ -58,7 +60,7 @@ public sealed class SavePersonalInfoValidatorTest : BaseValidatorTest
     private SavePersonalInfoValidator CreateValidator()
     {
         return new SavePersonalInfoValidator(
-            CreateImagesConfiguration(),
+            Options.Create(CreateImagesConfiguration().GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()!),
             CurrentUserMock.Object,
             OnboardingRepositoryMock.Object,
             DictionariesRepositoryMock.Object);

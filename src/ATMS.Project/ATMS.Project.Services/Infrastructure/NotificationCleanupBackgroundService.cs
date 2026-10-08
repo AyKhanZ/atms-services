@@ -1,9 +1,9 @@
+using Microsoft.Extensions.Options;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using ATMS.Project.Data.Repositories.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,16 +14,12 @@ namespace ATMS.Project.Services.Infrastructure;
 public sealed class NotificationCleanupBackgroundService(
     IServiceScopeFactory scopeFactory,
     BusinessTimeZone businessTimeZone,
-    IConfiguration configuration,
+    IOptions<NotificationsOptions> notificationsOptions,
     ILogger<NotificationCleanupBackgroundService> logger) : BackgroundService
 {
     private const int BatchSize = 1000;
 
-    private readonly NotificationsOptions _options =
-        configuration.GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()
-        ?? throw new ConfigurationException(
-            ConfigurationErrorTypeEnum.NotificationsSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(NotificationsOptions)));
+    private readonly NotificationsOptions _options = notificationsOptions.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

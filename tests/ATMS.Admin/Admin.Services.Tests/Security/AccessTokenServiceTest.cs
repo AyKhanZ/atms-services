@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using ATMS.Infrastructure.Options;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Security;
@@ -14,7 +17,7 @@ public class AccessTokenServiceTest : BaseServiceTest
 
     public AccessTokenServiceTest()
     {
-        _accessTokenService = new AccessTokenService(UserRepositoryMock.Object, BuildConfiguration());
+        _accessTokenService = new AccessTokenService(UserRepositoryMock.Object, Options.Create(BuildConfiguration().GetSection(nameof(JwtOptions)).Get<JwtOptions>()!));
     }
  
     [Fact]

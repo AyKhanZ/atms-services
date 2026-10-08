@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using System.Linq.Expressions;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Onboarding;
@@ -234,7 +235,7 @@ public class UserInvitedConsumerTest
             .AddSingleton(_mapperMock.Object)
             .BuildServiceProvider();
         var consumer = new TestUserInvitedConsumer(
-            new RabbitMqConnectionFactory(CreateQueueConfiguration()),
+            new RabbitMqConnectionFactory(Options.Create(CreateQueueConfiguration().GetSection(nameof(QueueOptions)).Get<QueueOptions>()!)),
             services.GetRequiredService<IServiceScopeFactory>());
 
         return consumer.RunAsync(message, Guid.NewGuid(), services);

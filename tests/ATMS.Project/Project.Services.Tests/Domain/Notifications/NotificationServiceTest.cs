@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using ATMS.Infrastructure.Options;
 using ATMS.Data.Enums;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.Notifications;
@@ -40,7 +42,7 @@ public class NotificationServiceTest
     }
 
     private NotificationService Service(bool sendEmails = false) =>
-        new(_notifications.Object, _emails.Object, _permissions.Object, Configuration(sendEmails));
+        new(_notifications.Object, _emails.Object, _permissions.Object, Options.Create(Configuration(sendEmails).GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()!));
 
     private static IConfiguration Configuration(bool sendEmails) =>
         new ConfigurationBuilder()

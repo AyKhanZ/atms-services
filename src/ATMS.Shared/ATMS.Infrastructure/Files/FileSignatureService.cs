@@ -1,12 +1,12 @@
 using ATMS.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace ATMS.Infrastructure.Files;
 
 // the content type comes from the client, so trust the first bytes, not the header
 // docx/odt/zip share one signature, a renamed zip is still harmless to download
-public sealed class FileSignatureService(IConfiguration configuration) : IFileSignatureService
+public sealed class FileSignatureService(IOptions<AttachmentsOptions> options) : IFileSignatureService
 {
     private const int TextProbeLength = 8 * 1024;
 
@@ -53,7 +53,7 @@ public sealed class FileSignatureService(IConfiguration configuration) : IFileSi
     ];
 
     private readonly HashSet<string> _allowedExtensions =
-        (configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()?.AllowedExtensions
+        (options.Value.AllowedExtensions
          ?? AttachmentsOptions.DefaultAllowedExtensions)
         .Select(extension => extension.ToLowerInvariant())
         .Where(Kinds.ContainsKey)

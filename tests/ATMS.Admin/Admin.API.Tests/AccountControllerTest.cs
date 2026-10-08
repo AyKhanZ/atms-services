@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using ATMS.Infrastructure.Options;
 using ATMS.Admin.API.Controllers.v1;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Enums;
@@ -15,7 +18,7 @@ public class AccountControllerTest : BaseControllerTest
     public AccountControllerTest()
     {
         var configuration = BuildConfiguration();
-        _controller = new AccountController(MediatorMock.Object, configuration);
+        _controller = new AccountController(MediatorMock.Object, Options.Create(configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()!));
     }
 
     [Fact]

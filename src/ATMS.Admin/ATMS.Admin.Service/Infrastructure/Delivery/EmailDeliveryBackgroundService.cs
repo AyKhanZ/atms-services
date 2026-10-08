@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -9,7 +10,6 @@ using ATMS.Data.Enums;
 using ATMS.Email.Models;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Infrastructure.Options;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -19,17 +19,13 @@ namespace ATMS.Admin.Service.Infrastructure.Delivery;
 public class EmailDeliveryBackgroundService(
     IServiceScopeFactory scopeFactory,
     DeliveryRetrySchedule retrySchedule,
-    IConfiguration configuration,
+    IOptions<RedirectUrlOptions> redirectUrlOptions,
     ILogger<EmailDeliveryBackgroundService> logger) : BackgroundService
 {
     private const int BatchSize = 20;
     private static readonly TimeSpan EmptyQueueDelay = TimeSpan.FromSeconds(5);
 
-    private readonly RedirectUrlOptions _redirectUrlOptions =
-        configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
-        ?? throw new ConfigurationException(
-            ConfigurationErrorTypeEnum.RedirectUrlSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
+    private readonly RedirectUrlOptions _redirectUrlOptions = redirectUrlOptions.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using ATMS.Infrastructure.Options;
 using ATMS.Admin.Service.Security;
 using Moq;
 
@@ -12,7 +15,7 @@ public class RefreshTokenServiceTest : BaseServiceTest
         _service = new RefreshTokenService(
             UserSessionRepositoryMock.Object,
             UniqueTokenServiceMock.Object,
-            BuildConfiguration());
+            Options.Create(BuildConfiguration().GetSection(nameof(JwtOptions)).Get<JwtOptions>()!));
     }
 
     [Fact]

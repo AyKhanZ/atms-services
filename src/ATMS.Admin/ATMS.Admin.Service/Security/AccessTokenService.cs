@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text;
 using ATMS.Admin.Data.Entities;
@@ -10,7 +11,6 @@ using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Constants;
 using ATMS.Infrastructure.Options;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,12 +18,9 @@ namespace ATMS.Admin.Service.Security;
 
 public sealed class AccessTokenService(
     IUserRepository userRepository,
-    IConfiguration configuration) : IAccessTokenService
+    IOptions<JwtOptions> jwtOptions) : IAccessTokenService
 {
-    private readonly JwtOptions _jwtOptions =
-        configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
-        ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.JwtSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
     public async Task<AccessTokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)
     {

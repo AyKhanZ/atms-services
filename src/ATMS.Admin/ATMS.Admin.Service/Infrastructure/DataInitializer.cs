@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Infrastructure.Interfaces;
@@ -10,22 +11,18 @@ using ATMS.Data.Constants;
 using ATMS.Data.Messaging;
 using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Configuration;
-using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Admin.Service.Infrastructure;
 
 public sealed class DataInitializer(
-    IConfiguration configuration,
+    IOptions<AdminOptions> adminOptions,
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IPasswordHasherService passwordHasherService,
     IOutboxRepository outboxRepository) : IDataInitializer
 {
     
-    private readonly AdminOptions _adminOptions =
-        configuration.GetSection(nameof(AdminOptions)).Get<AdminOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.AdminSectionNotFound,
-                string.Format(LogMessages.ConfigSectionNotFound, nameof(AdminOptions)));
+    private readonly AdminOptions _adminOptions = adminOptions.Value;
     
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {

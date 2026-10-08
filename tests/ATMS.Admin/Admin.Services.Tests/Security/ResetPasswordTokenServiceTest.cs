@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using ATMS.Infrastructure.Options;
 using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security;
@@ -16,7 +19,7 @@ public class ResetPasswordTokenServiceTest : BaseServiceTest
     public ResetPasswordTokenServiceTest()
     {
         _resetPasswordTokenService = new ResetPasswordTokenService(_passwordResetTokenRepositoryMock.Object, UniqueTokenServiceMock.Object,
-            BuildConfiguration());
+            Options.Create(BuildConfiguration().GetSection(nameof(JwtOptions)).Get<JwtOptions>()!));
 
         UniqueTokenServiceMock
             .Setup(s => s.GenerateUniqueAsync(It.IsAny<Func<string, Task<bool>>>(), It.IsAny<int>()))

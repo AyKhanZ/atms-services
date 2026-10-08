@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Contracts.Models.Users;
@@ -14,13 +15,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace ATMS.Admin.API.Controllers.v1;
 
 [Route("api/v1/account")]
-public sealed class AccountController(IMediator mediator, IConfiguration configuration) : ControllerBase
+public sealed class AccountController(IMediator mediator, IOptions<RedirectUrlOptions> redirectUrlOptions) : ControllerBase
 {
 
-    private readonly RedirectUrlOptions _redirectUrlOptions =
-        configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>() 
-        ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.RedirectUrlSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
+    private readonly RedirectUrlOptions _redirectUrlOptions = redirectUrlOptions.Value;
 
     /// <summary>
     /// Registers a new user in the system.

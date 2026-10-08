@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
@@ -9,7 +10,6 @@ using ATMS.Project.Data.Models.WorkProjects;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Models.Notifications;
 using ATMS.Project.Services.Domain.Notifications.Interfaces;
-using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Project.Services.Domain.Notifications;
 
@@ -18,7 +18,7 @@ public sealed class NotificationService(
     INotificationRepository notifications,
     IEmailDeliveryRepository emails,
     IProjectPermissionRepository permissions,
-    IConfiguration configuration) : INotificationService
+    IOptions<NotificationsOptions> notificationsOptions) : INotificationService
 {
     private static readonly TimeSpan MergeWindow = TimeSpan.FromMinutes(10);
 
@@ -32,11 +32,7 @@ public sealed class NotificationService(
         (int)NotificationTypeEnum.AddedToProject
     ];
 
-    private readonly NotificationsOptions _options =
-        configuration.GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()
-        ?? throw new ConfigurationException(
-            ConfigurationErrorTypeEnum.NotificationsSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(NotificationsOptions)));
+    private readonly NotificationsOptions _options = notificationsOptions.Value;
 
     public Task AddAsync(
         NotificationDraft draft,

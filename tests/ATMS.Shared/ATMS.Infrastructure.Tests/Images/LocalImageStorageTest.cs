@@ -1,3 +1,4 @@
+using ATMS.Infrastructure.Options;
 using ATMS.Application.Exceptions.Image;
 using ATMS.Infrastructure.Enums;
 using ATMS.Infrastructure.Images;
@@ -27,7 +28,7 @@ public sealed class LocalImageStorageTest : IDisposable
         var urlBuilder = new Mock<IImageUrlBuilder>();
         urlBuilder.Setup(x => x.BuildUrl(It.IsAny<string?>())).Returns<string?>(path => path);
 
-        _storage = new LocalImageStorage(configuration, urlBuilder.Object);
+        _storage = new LocalImageStorage(Microsoft.Extensions.Options.Options.Create(configuration.GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()!), urlBuilder.Object);
     }
 
     // A one-colour PNG of 25 million pixels is a few kilobytes on disk and about 100 MB once decoded.

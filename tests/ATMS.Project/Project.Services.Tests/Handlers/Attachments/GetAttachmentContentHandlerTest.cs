@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using ATMS.Infrastructure.Options;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Infrastructure.Files;
@@ -5,7 +7,6 @@ using ATMS.Project.Contracts.Requests.Attachments;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Handlers.Attachments;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.Attachments;
@@ -29,7 +30,7 @@ public sealed class GetAttachmentContentHandlerTest : BaseHandlerTest, IDisposab
         new(
             _attachmentRepositoryMock.Object,
             _fileStorageMock.Object,
-            new FileSignatureService(new ConfigurationBuilder().Build()));
+            new FileSignatureService(Options.Create(new AttachmentsOptions { RootPath = "attachments" })));
 
     private Attachment Stored(string contentType)
     {

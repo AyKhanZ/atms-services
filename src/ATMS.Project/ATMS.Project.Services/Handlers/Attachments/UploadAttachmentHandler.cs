@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using System.Globalization;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Entity;
@@ -16,7 +17,6 @@ using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Project.Services.Handlers.Attachments;
 
@@ -25,13 +25,10 @@ public sealed class UploadAttachmentHandler(
     IFileStorage fileStorage,
     IFileSignatureService fileSignatureService,
     IAttachmentFileNameService fileNameService,
-    IConfiguration configuration,
+    IOptions<AttachmentsOptions> attachmentsOptions,
     IMapper mapper) : IRequestHandler<UploadAttachmentCommand, AttachmentModel>
 {
-    private readonly AttachmentsOptions _options =
-        configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()
-        ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.AttachmentsSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(AttachmentsOptions)));
+    private readonly AttachmentsOptions _options = attachmentsOptions.Value;
 
     public async Task<AttachmentModel> Handle(UploadAttachmentCommand command, CancellationToken cancellationToken)
     {

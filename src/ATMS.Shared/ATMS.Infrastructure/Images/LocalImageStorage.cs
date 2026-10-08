@@ -4,7 +4,7 @@ using ATMS.Application.Exceptions.Image;
 using ATMS.Infrastructure.Enums;
 using ATMS.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -15,7 +15,7 @@ using SixLabors.ImageSharp.Processing;
 namespace ATMS.Infrastructure.Images;
 
 public sealed class LocalImageStorage(
-    IConfiguration configuration,
+    IOptions<ImagesOptions> options,
     IImageUrlBuilder imageUrlBuilder) : IImageStorage
 {
     private const string ValidationPropertyName = "Image";
@@ -30,9 +30,7 @@ public sealed class LocalImageStorage(
         MaxFrames = 1
     };
 
-    private readonly ImagesOptions _options =
-        configuration.GetSection(nameof(ImagesOptions)).Get<ImagesOptions>()
-        ?? throw new InvalidOperationException($"{nameof(ImagesOptions)} section is not configured.");
+    private readonly ImagesOptions _options = options.Value;
 
     public async Task<StoredImage> SaveAsync(
         IFormFile file,

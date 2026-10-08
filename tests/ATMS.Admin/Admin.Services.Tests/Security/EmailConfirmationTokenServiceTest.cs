@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using ATMS.Infrastructure.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using System.Security.Claims;
 using ATMS.Admin.Service.Security;
@@ -11,7 +14,7 @@ public class EmailConfirmationTokenServiceTest : BaseServiceTest
     
     public EmailConfirmationTokenServiceTest()
     {
-        _emailConfirmationTokenService = new EmailConfirmationTokenService(BuildConfiguration());
+        _emailConfirmationTokenService = new EmailConfirmationTokenService(Options.Create(BuildConfiguration().GetSection(nameof(JwtOptions)).Get<JwtOptions>()!));
     }
     
     [Fact]

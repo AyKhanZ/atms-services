@@ -1,8 +1,8 @@
+using ATMS.Infrastructure.Options;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Infrastructure.Files;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Infrastructure.Tests.Files;
 
@@ -11,9 +11,7 @@ public sealed class LocalFileStorageTest : IDisposable
     private readonly string _root = Path.Combine(Path.GetTempPath(), $"atms-attachments-{Guid.NewGuid():N}");
 
     private LocalFileStorage Storage() =>
-        new(new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?> { ["AttachmentsOptions:RootPath"] = _root })
-            .Build());
+        new(Microsoft.Extensions.Options.Options.Create(new AttachmentsOptions { RootPath = _root }));
 
     public void Dispose()
     {
@@ -71,15 +69,6 @@ public sealed class LocalFileStorageTest : IDisposable
         {
             File.Delete(_root);
         }
-    }
-
-    [Fact]
-    public void Constructor_WhenSectionIsMissing_ThrowsConfigurationException()
-    {
-        var exception = Assert.Throws<ConfigurationException>(
-            () => new LocalFileStorage(new ConfigurationBuilder().Build()));
-
-        Assert.Equal(ConfigurationErrorTypeEnum.AttachmentsSectionNotFound, exception.ErrorType);
     }
 
     [Theory]

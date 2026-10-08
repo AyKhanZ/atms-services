@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Messaging;
@@ -350,7 +351,7 @@ public class EmailDeliveryBackgroundServiceTest
         : EmailDeliveryBackgroundService(
             scopeFactory,
             retrySchedule,
-            configuration,
+            Options.Create(configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()!),
             NullLogger<EmailDeliveryBackgroundService>.Instance)
     {
         public Task<int> ProcessOnceAsync(CancellationToken cancellationToken)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Infrastructure;
@@ -113,7 +114,7 @@ public sealed class DataInitializerTest
 
     private DataInitializer CreateInitializer() =>
         new(
-            BuildConfiguration(),
+            Options.Create(BuildConfiguration().GetSection(nameof(AdminOptions)).Get<AdminOptions>()!),
             userRepository.Object,
             roleRepository.Object,
             passwordHasher.Object,

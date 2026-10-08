@@ -12,6 +12,7 @@ public static class ImageStorageExtensions
 {
     public static IServiceCollection AddLocalImageStorage(this IServiceCollection services)
     {
+        services.AddRequiredOptions<ImagesOptions>();
         services.AddScoped<IImageStorage, LocalImageStorage>();
         services.AddScoped<IImageUrlBuilder, LocalImageUrlBuilder>();
         return services;
