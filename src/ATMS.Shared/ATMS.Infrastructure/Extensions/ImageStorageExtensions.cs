@@ -35,7 +35,12 @@ public static class ImageStorageExtensions
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(imagesOptions.ImagesRootPath),
-            RequestPath = new PathString(new Uri(imagesOptions.BaseImageUrl).AbsolutePath)
+            RequestPath = new PathString(new Uri(imagesOptions.BaseImageUrl).AbsolutePath),
+            // Every upload gets a new file name, so a year-long cache never serves a replaced image.
+            OnPrepareResponse = context =>
+            {
+                context.Context.Response.Headers.CacheControl = "public,max-age=31536000,immutable";
+            }
         });
 
         return app;

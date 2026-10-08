@@ -78,6 +78,7 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
         Assert.Equal("new-access-token", result.AccessToken);
         Assert.Equal(1, result.InvitationsQueued);
         Assert.Equal(userId, updatedEvent!.Id);
+        Assert.Equal("Operations manager", updatedEvent.Position);
         Assert.Equal("colleague@baim.az", invitedEvent!.Email);
         Assert.Equal(userId, invitedEvent.InvitedByUserId);
         OnboardingRepositoryMock.Verify(

@@ -1,24 +1,30 @@
+using ATMS.Admin.Contracts.Models.Organizations;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Handlers.Users;
+using ATMS.Admin.Service.Providers.Interfaces;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Users;
 
 public class GetUserHandlerTest : BaseHandlerTest
 {
+    private readonly Mock<IOrganizationProvider> _organizationProviderMock = new();
     private readonly GetUserHandler _handler;
     
     public GetUserHandlerTest()
     {
         _handler = new GetUserHandler(
             UserRepositoryMock.Object,
+            _organizationProviderMock.Object,
             MapperMock.Object,
-            CacheServiceMock.Object);
+            CacheServiceMock.Object,
+            NullLogger<GetUserHandler>.Instance);
     }
     
     private User CreateUser(Guid? id = null) =>
@@ -203,5 +209,138 @@ public class GetUserHandlerTest : BaseHandlerTest
         UserRepositoryMock.Verify(r =>
                 r.GetAsync(user.Id, It.IsAny<CancellationToken>()),
             Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserHasNoOrganization_DoesNotAskProjectService()
+    {
+        // Arrange
+        var user = CreateUser();
+        user.OrganizationId = null;
+        SetupCachePassThrough();
+        SetupUser(user);
+
+        // Act
+        var result = await _handler.Handle(new GetUserRequest { Id = user.Id }, CancellationToken.None);
+
+        // Assert
+        Assert.Null(result.Organization);
+        _organizationProviderMock.Verify(
+            p => p.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WhenUserBelongsToOrganization_FillsOrganization()
+    {
+        // Arrange
+        var user = CreateUser();
+        user.OrganizationId = Guid.NewGuid();
+        var organization = new OrganizationModel { Id = user.OrganizationId.Value, Title = "Apple", Voen = "8056783562" };
+        SetupCachePassThrough();
+        SetupUser(user);
+
+        _organizationProviderMock
+            .Setup(p => p.GetAsync(user.OrganizationId.Value, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(organization);
+
+        // Act
+        var result = await _handler.Handle(new GetUserRequest { Id = user.Id }, CancellationToken.None);
+
+        // Assert
+        Assert.Same(organization, result.Organization);
+    }
+
+    // Project is down or slow: the user card still opens, only without the organization row.
+    [Theory]
+    [InlineData(typeof(HttpRequestException))]
+    [InlineData(typeof(TaskCanceledException))]
+    public async Task Handle_WhenProjectServiceFails_ReturnsUserWithoutOrganization(Type exceptionType)
+    {
+        // Arrange
+        var user = CreateUser();
+        user.OrganizationId = Guid.NewGuid();
+        SetupCachePassThrough();
+        SetupUser(user);
+
+        _organizationProviderMock
+            .Setup(p => p.GetAsync(user.OrganizationId.Value, It.IsAny<CancellationToken>()))
+            .ThrowsAsync((Exception)Activator.CreateInstance(exceptionType)!);
+
+        // Act
+        var result = await _handler.Handle(new GetUserRequest { Id = user.Id }, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(user.Id, result.Id);
+        Assert.Null(result.Organization);
+    }
+
+    // The organization is cached with the user: a title or logo change shows within the cache lifetime.
+    [Fact]
+    public async Task Handle_WhenUserComesFromCache_DoesNotAskProjectService()
+    {
+        // Arrange
+        var organization = new OrganizationModel { Id = Guid.NewGuid(), Title = "Apple", Voen = "8056783562" };
+        var cached = new UserModel { Id = Guid.NewGuid(), Organization = organization };
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<UserModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cached);
+
+        // Act
+        var result = await _handler.Handle(new GetUserRequest { Id = cached.Id }, CancellationToken.None);
+
+        // Assert
+        Assert.Same(organization, result.Organization);
+        _organizationProviderMock.Verify(
+            p => p.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    // The organization is deleted in Project while Admin still holds its id: the card opens without it.
+    [Fact]
+    public async Task Handle_WhenOrganizationNoLongerExists_LeavesOrganizationEmpty()
+    {
+        // Arrange
+        var user = CreateUser();
+        user.OrganizationId = Guid.NewGuid();
+        SetupCachePassThrough();
+        SetupUser(user);
+
+        _organizationProviderMock
+            .Setup(p => p.GetAsync(user.OrganizationId.Value, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((OrganizationModel?)null);
+
+        // Act
+        var result = await _handler.Handle(new GetUserRequest { Id = user.Id }, CancellationToken.None);
+
+        // Assert
+        Assert.Null(result.Organization);
+    }
+
+    private void SetupCachePassThrough()
+    {
+        CacheServiceMock
+            .Setup(c => c.GetOrSetAsync(
+                It.IsAny<string>(),
+                It.IsAny<Func<Task<UserModel>>>(),
+                It.IsAny<TimeSpan>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, Func<Task<UserModel>>, TimeSpan, CancellationToken>(
+                (_, factory, _, _) => factory()!);
+    }
+
+    private void SetupUser(User user)
+    {
+        UserRepositoryMock
+            .Setup(r => r.GetAsync(user.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        MapperMock
+            .Setup(m => m.Map<UserModel>(user))
+            .Returns(new UserModel { Id = user.Id });
     }
 }

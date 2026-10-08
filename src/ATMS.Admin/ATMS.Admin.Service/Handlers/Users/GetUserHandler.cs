@@ -1,6 +1,8 @@
-﻿using ATMS.Admin.Contracts.Models.Users;
+﻿using ATMS.Admin.Contracts.Models.Organizations;
+using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Requests.Users;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Providers.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Localization;
@@ -9,13 +11,16 @@ using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace ATMS.Admin.Service.Handlers.Users;
 
 public class GetUserHandler(
     IUserRepository userRepository,
+    IOrganizationProvider organizationProvider,
     IMapper mapper,
-    ICacheService cache
+    ICacheService cache,
+    ILogger<GetUserHandler> logger
     ) : IRequestHandler<GetUserRequest, UserModel>
 {
     public async Task<UserModel> Handle(GetUserRequest request, CancellationToken cancellationToken)
@@ -27,7 +32,7 @@ public class GetUserHandler(
                    cancellationToken)
                ?? throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
     }
-    
+
     private async Task<UserModel> GetFromDb(Guid id, string language, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetAsync(id, cancellationToken)
@@ -41,6 +46,25 @@ public class GetUserHandler(
             .Select(ur => mapper.Map<DictionaryModel<Guid>>(ur.Role))
             .ToArray();
 
+        if (user.OrganizationId.HasValue)
+        {
+            model.Organization = await GetOrganizationAsync(user.OrganizationId.Value, cancellationToken);
+        }
+
         return model;
+    }
+
+    private async Task<OrganizationModel?> GetOrganizationAsync(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await organizationProvider.GetAsync(id, cancellationToken);
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException
+                                          && !cancellationToken.IsCancellationRequested)
+        {
+            logger.LogWarning(exception, "Could not load organization {OrganizationId} from Project.", id);
+            return null;
+        }
     }
 }

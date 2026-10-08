@@ -11,4 +11,6 @@ public class UserModel
     public string Email { get; set; }
 
     public string? AvatarPath { get; set; }
+
+    public string? Position { get; set; }
 }

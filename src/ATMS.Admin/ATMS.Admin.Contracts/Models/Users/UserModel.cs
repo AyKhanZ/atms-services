@@ -1,4 +1,5 @@
-﻿using ATMS.Application.Models;
+﻿using ATMS.Admin.Contracts.Models.Organizations;
+using ATMS.Application.Models;
 
 namespace ATMS.Admin.Contracts.Models.Users;
 
@@ -34,6 +35,8 @@ public class UserModel
     public string AvatarPath { get; set; }
     
     public string? Position { get; set; }
+
+    public OrganizationModel? Organization { get; set; }
 
 
     public bool HasCompletedOnboarding { get; set; }
