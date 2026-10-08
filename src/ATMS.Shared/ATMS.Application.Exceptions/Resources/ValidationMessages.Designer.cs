@@ -60,24 +60,6 @@ namespace ATMS.Application.Exceptions.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Description is required..
-        /// </summary>
-        public static string DescriptionRequired {
-            get {
-                return ResourceManager.GetString("DescriptionRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Description must me less than {0} symbols..
-        /// </summary>
-        public static string DescriptionShouldBeLessThan {
-            get {
-                return ResourceManager.GetString("DescriptionShouldBeLessThan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to ID is required..
         /// </summary>
         public static string IdRequired {
@@ -182,7 +164,6 @@ namespace ATMS.Application.Exceptions.Resources {
         public static string InvalidSortDirection => ResourceManager.GetString("InvalidSortDirection", resourceCulture);
         public static string InvalidCursor => ResourceManager.GetString("InvalidCursor", resourceCulture);
         public static string DateOutOfRange => ResourceManager.GetString("DateOutOfRange", resourceCulture);
-        public static string InvalidDateRange => ResourceManager.GetString("InvalidDateRange", resourceCulture);
         public static string SurnameRequired => ResourceManager.GetString("SurnameRequired", resourceCulture);
         public static string SurnameShouldBeLessThan => ResourceManager.GetString("SurnameShouldBeLessThan", resourceCulture);
         public static string EmailRequired => ResourceManager.GetString("EmailRequired", resourceCulture);

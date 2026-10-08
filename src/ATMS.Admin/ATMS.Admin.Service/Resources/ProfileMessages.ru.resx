@@ -24,36 +24,6 @@
     <data name="LanguageLength" xml:space="preserve">
         <value>Длина языка должна быть {0} символа.</value>
     </data>
-    <data name="FileNameRequired" xml:space="preserve">
-        <value>Имя файла обязательно.</value>
-    </data>
-    <data name="FileNameMaxLength" xml:space="preserve">
-        <value>Максимальная длина должна быть {0} символов.</value>
-    </data>
-    <data name="MaritalStatusRequired" xml:space="preserve">
-        <value>Поле семейного положения обязательно.</value>
-    </data>
-    <data name="MaritalStatusNotSupported" xml:space="preserve">
-        <value>Введённое семейное положение не существует.</value>
-    </data>
-    <data name="GenderRequired" xml:space="preserve">
-        <value>Поле пола обязательно.</value>
-    </data>
-    <data name="GenderNotSupported" xml:space="preserve">
-        <value>Введённый пол не существует.</value>
-    </data>
-    <data name="BirthDateRequired" xml:space="preserve">
-        <value>Поле даты рождения обязательно.</value>
-    </data>
-    <data name="BirthDateMinValue" xml:space="preserve">
-        <value>Дата рождения не может быть раньше 1 января 1900 года.</value>
-    </data>
-    <data name="BirthDateMaxValue" xml:space="preserve">
-        <value>Дата рождения не может быть в будущем.</value>
-    </data>
-    <data name="BirthDateValidValue" xml:space="preserve">
-        <value>Пользователю должно быть не менее 18 лет.</value>
-    </data>
     <data name="PositionRequired" xml:space="preserve">
         <value>Поле должности обязательно.</value>
     </data>
@@ -62,9 +32,6 @@
     </data>
     <data name="PhoneNumberRequired" xml:space="preserve">
         <value>Поле номера телефона обязательно.</value>
-    </data>
-    <data name="PhoneNumberValidValue" xml:space="preserve">
-        <value>Номер телефона недействителен. Пожалуйста, укажите код страны (например, +994501234567).</value>
     </data>
     <data name="UserStatusNotSupported" xml:space="preserve">
         <value>Введённый статус пользователя не существует.</value>

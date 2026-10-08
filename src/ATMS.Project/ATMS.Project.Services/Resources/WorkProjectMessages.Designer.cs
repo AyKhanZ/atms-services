@@ -11,7 +11,6 @@ internal static class WorkProjectMessages
     private static string Get(string name) => ResourceManager.GetString(name, CultureInfo.CurrentUICulture) ?? name;
 
     internal static string NotFound => Get(nameof(NotFound));
-    internal static string SuperAdminRequired => Get(nameof(SuperAdminRequired));
     internal static string DescriptionTooLong => Get(nameof(DescriptionTooLong));
     internal static string OrganizationRequired => Get(nameof(OrganizationRequired));
     internal static string OrganizationNotFound => Get(nameof(OrganizationNotFound));

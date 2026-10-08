@@ -27,13 +27,4 @@
   <data name="NotFound" xml:space="preserve">
         <value>Организация не найдена.</value>
     </data>
-  <data name="LogoTooLarge" xml:space="preserve">
-    <value>Логотип слишком большой. Загрузите изображение до 5 МБ.</value>
-  </data>
-  <data name="LogoUnsupportedFormat" xml:space="preserve">
-    <value>Формат логотипа не поддерживается. Используйте JPG, PNG, JFIF или WEBP.</value>
-  </data>
-  <data name="LogoEmpty" xml:space="preserve">
-    <value>Файл логотипа пустой.</value>
-  </data>
 </root>

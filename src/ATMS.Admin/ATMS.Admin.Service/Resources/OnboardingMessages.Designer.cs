@@ -69,15 +69,6 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter a valid birth date..
-        /// </summary>
-        public static string InvalidBirthDate {
-            get {
-                return ResourceManager.GetString("InvalidBirthDate", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to Enter a valid email address..
         /// </summary>
         public static string InvalidEmail {
@@ -177,24 +168,6 @@ namespace ATMS.Admin.Service.Resources {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Use 10-40 characters with uppercase and lowercase letters, a number and a special character..
-        /// </summary>
-        public static string PasswordRequirements {
-            get {
-                return ResourceManager.GetString("PasswordRequirements", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Passwords do not match..
-        /// </summary>
-        public static string PasswordsDoNotMatch {
-            get {
-                return ResourceManager.GetString("PasswordsDoNotMatch", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to Phone number cannot exceed 20 characters..
         /// </summary>
         public static string PhoneNumberMaxLength {
@@ -257,13 +230,5 @@ namespace ATMS.Admin.Service.Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to The onboarding version cannot be negative..
-        /// </summary>
-        public static string VersionInvalid {
-            get {
-                return ResourceManager.GetString("VersionInvalid", resourceCulture);
-            }
-        }
     }
 }

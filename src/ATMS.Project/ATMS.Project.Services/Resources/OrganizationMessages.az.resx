@@ -27,13 +27,4 @@
   <data name="NotFound" xml:space="preserve">
         <value>Təşkilat tapılmadı.</value>
     </data>
-  <data name="LogoTooLarge" xml:space="preserve">
-    <value>Loqo faylı çox böyükdür. 5 MB-a qədər şəkil yükləyin.</value>
-  </data>
-  <data name="LogoUnsupportedFormat" xml:space="preserve">
-    <value>Loqo formatı dəstəklənmir. JPG, PNG, JFIF və ya WEBP istifadə edin.</value>
-  </data>
-  <data name="LogoEmpty" xml:space="preserve">
-    <value>Loqo faylı boşdur.</value>
-  </data>
 </root>

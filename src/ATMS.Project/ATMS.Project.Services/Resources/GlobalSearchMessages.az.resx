@@ -7,7 +7,6 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
   <data name="QueryLength" xml:space="preserve"><value>Ən azı 3 simvol və ya elementin nömrəsini daxil edin. 100 simvoldan çox olmasın.</value></data>
   <data name="TakeOutOfRange" xml:space="preserve"><value>Sorğulanan nəticə sayı yolverilməzdir. Səhifəni yeniləyib yenidən cəhd edin.</value></data>
-  <data name="ItemNotFound" xml:space="preserve"><value>Bu element silinib və ya artıq ona girişiniz yoxdur.</value></data>
   <data name="ItemRequired" xml:space="preserve"><value>Elementi müəyyən etmək mümkün olmadı. Səhifəni yeniləyib yenidən cəhd edin.</value></data>
   <data name="ItemTypeUnsupported" xml:space="preserve"><value>Bu element növü dəstəklənmir. Səhifəni yeniləyib yenidən cəhd edin.</value></data>
 </root>

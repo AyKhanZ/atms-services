@@ -15,14 +15,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DescriptionRequired" xml:space="preserve">
-        <value>Описание обязательно.</value>
-    </data>
   <data name="RoleIdRequired" xml:space="preserve">
         <value>Идентификатор роли обязателен.</value>
-    </data>
-  <data name="DescriptionShouldBeLessThan" xml:space="preserve">
-        <value>Описание должно быть меньше {0} символов.</value>
     </data>
   <data name="InvalidEmailFormat" xml:space="preserve">
         <value>Введите корректный email (например: user@example.com).</value>
@@ -53,7 +47,6 @@
   <data name="InvalidSortDirection" xml:space="preserve"><value>Направление сортировки не поддерживается.</value></data>
   <data name="InvalidCursor" xml:space="preserve"><value>Курсор продолжения имеет неверный формат.</value></data>
   <data name="DateOutOfRange" xml:space="preserve"><value>Дата должна быть в диапазоне от {0} до {1}.</value></data>
-  <data name="InvalidDateRange" xml:space="preserve"><value>Начальная дата не может быть позже конечной.</value></data>
   <data name="NameShouldBeLessThan" xml:space="preserve"><value>Имя должно содержать не более {0} символов.</value></data>
   <data name="SurnameShouldBeLessThan" xml:space="preserve"><value>Фамилия должна содержать не более {0} символов.</value></data>
   <data name="EmailRequired" xml:space="preserve"><value>Email обязателен.</value></data>

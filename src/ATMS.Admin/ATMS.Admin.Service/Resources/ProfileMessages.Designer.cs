@@ -60,78 +60,6 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Birth date cannot be in the future..
-        /// </summary>
-        public static string BirthDateMaxValue {
-            get {
-                return ResourceManager.GetString("BirthDateMaxValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Birth date cannot be earlier than January 1, 1900..
-        /// </summary>
-        public static string BirthDateMinValue {
-            get {
-                return ResourceManager.GetString("BirthDateMinValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Birth date field is required..
-        /// </summary>
-        public static string BirthDateRequired {
-            get {
-                return ResourceManager.GetString("BirthDateRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User must be at least 18 years old..
-        /// </summary>
-        public static string BirthDateValidValue {
-            get {
-                return ResourceManager.GetString("BirthDateValidValue", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Maximum length must be {0} characters..
-        /// </summary>
-        public static string FileNameMaxLength {
-            get {
-                return ResourceManager.GetString("FileNameMaxLength", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to File name is required..
-        /// </summary>
-        public static string FileNameRequired {
-            get {
-                return ResourceManager.GetString("FileNameRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The entered gender does not exist..
-        /// </summary>
-        public static string GenderNotSupported {
-            get {
-                return ResourceManager.GetString("GenderNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gender field is required..
-        /// </summary>
-        public static string GenderRequired {
-            get {
-                return ResourceManager.GetString("GenderRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Language length must be {0} characters..
         /// </summary>
         public static string LanguageLength {
@@ -159,38 +87,11 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The entered marital status is not exist..
-        /// </summary>
-        public static string MaritalStatusNotSupported {
-            get {
-                return ResourceManager.GetString("MaritalStatusNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Marital status field is required..
-        /// </summary>
-        public static string MaritalStatusRequired {
-            get {
-                return ResourceManager.GetString("MaritalStatusRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Phone number field is required..
         /// </summary>
         public static string PhoneNumberRequired {
             get {
                 return ResourceManager.GetString("PhoneNumberRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Phone number is not valid. Please include the country code (e.g. +994501234567)..
-        /// </summary>
-        public static string PhoneNumberValidValue {
-            get {
-                return ResourceManager.GetString("PhoneNumberValidValue", resourceCulture);
             }
         }
         

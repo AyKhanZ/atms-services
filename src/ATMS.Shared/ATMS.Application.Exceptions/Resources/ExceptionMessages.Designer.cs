@@ -48,12 +48,6 @@ namespace ATMS.Application.Exceptions.Resources {
             }
         }
         
-        public static string ConfigurationInitializationFailed {
-            get {
-                return ResourceManager.GetString("ConfigurationInitializationFailed", resourceCulture);
-            }
-        }
-        
         public static string InternalServerError {
             get {
                 return ResourceManager.GetString("InternalServerError", resourceCulture);
