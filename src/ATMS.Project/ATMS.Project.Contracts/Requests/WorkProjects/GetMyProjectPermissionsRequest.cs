@@ -6,7 +6,7 @@ using MediatR;
 namespace ATMS.Project.Contracts.Requests.WorkProjects;
 
 [Access(PermissionEnum.ProjectView)]
-public class GetMyProjectPermissionsRequest : IRequest<string[]>, IProjectScopedRequest
+public sealed class GetMyProjectPermissionsRequest : IRequest<string[]>, IProjectScopedRequest
 {
     public Guid ProjectId { get; init; }
 }

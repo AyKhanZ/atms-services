@@ -3,7 +3,7 @@ using RabbitMQ.Client;
 
 namespace ATMS.Messaging.Infrastructure.Initializers;
 
-public class UserInvitedQueueInitializer
+public sealed class UserInvitedQueueInitializer
 {
     public static Task InitializeAsync(IChannel channel, CancellationToken cancellationToken) =>
         QueueInitializerHelper.DeclareQueueSetAsync(

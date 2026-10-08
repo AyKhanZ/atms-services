@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ATMS.Admin.Contracts.Requests.Dictionaries;
 
-public class GetGenderDictionariesRequest : IRequest<DictionaryModel[]>;
+public sealed class GetGenderDictionariesRequest : IRequest<DictionaryModel[]>;

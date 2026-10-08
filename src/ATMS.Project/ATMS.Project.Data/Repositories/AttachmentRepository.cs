@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class AttachmentRepository(ProjectDbContext context) : IAttachmentRepository
+public sealed class AttachmentRepository(ProjectDbContext context) : IAttachmentRepository
 {
     public Task<AttachmentListItem[]> GetManyAsync(
         ACriteria<WorkTask> ownerTasks,
@@ -97,9 +97,7 @@ public class AttachmentRepository(ProjectDbContext context) : IAttachmentReposit
         await context.Attachments.AddAsync(attachment, cancellationToken);
     }
 
-    // The validator's count alone let two uploads at 99 files both pass and both save. The count
-    // and the insert run here under a lock on the task's row: a second upload to the same task
-    // waits for the first to commit, then counts 100 and is refused. Other tasks are not held up.
+    // count + insert under a row lock on the task, so two uploads at 99 files can't both pass
     public async Task<bool> AddWithinLimitAsync(Attachment attachment, int limit, CancellationToken cancellationToken)
     {
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
@@ -123,8 +121,6 @@ public class AttachmentRepository(ProjectDbContext context) : IAttachmentReposit
         return context.SaveChangesAsync(cancellationToken);
     }
 
-    // A file is found only through a live task of the project: a file of a deleted task, ticket or
-    // project, or of another project, does not exist as far as any request is concerned.
     private IQueryable<WorkTask> LiveProjectTasks(Guid projectId)
     {
         return new WorkTasksOfLiveWorkCriteria()
@@ -142,10 +138,8 @@ public class AttachmentRepository(ProjectDbContext context) : IAttachmentReposit
             ownerTasks.Any(task => task.Id == attachment.OwnerId));
     }
 
-    // The author is read past the soft-delete filter: a file stays in the list after the person
-    // who uploaded it leaves, and an inner join on the filtered users would silently drop it.
-    // IgnoreQueryFilters is not per table — it switches off every filter in the query, so the
-    // deleted files and deleted tasks it would let back in are left out here by hand.
+    // the author is read past the soft-delete filter, so files stay after the person leaves.
+    // IgnoreQueryFilters turns off all filters, so deleted files and tasks are filtered by hand
     private IQueryable<AttachmentListItem> Project(IQueryable<Attachment> attachments, IQueryable<WorkTask> ownerTasks)
     {
         return

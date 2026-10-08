@@ -6,7 +6,7 @@ using Npgsql;
 
 namespace ATMS.Admin.Data.Repositories;
 
-public class OnboardingRepository(AdminDbContext context) : IOnboardingRepository
+public sealed class OnboardingRepository(AdminDbContext context) : IOnboardingRepository
 {
     public Task<OnboardingProgress?> GetAsync(Guid userId, CancellationToken cancellationToken)
     {

@@ -5,10 +5,12 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Constants;
 using ATMS.Data.Enums;
+using ATMS.Infrastructure.Enums;
 using ATMS.Infrastructure.Images;
 using AutoMapper;
 using MediatR;
@@ -24,7 +26,7 @@ public sealed class SavePersonalInfoHandler(
     public async Task<OnboardingModel> Handle(SavePersonalInfoCommand command, CancellationToken cancellationToken)
     {
         var progress = await onboardingRepository.GetAsync(currentUser.Id, cancellationToken)
-            ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
 
         var oldAvatarPath = progress.PersonalInfo?.AvatarPath;
         string? newAvatarPath = null;
@@ -33,7 +35,7 @@ public sealed class SavePersonalInfoHandler(
         {
             var image = await imageStorage.SaveAsync(
                 command.Avatar,
-                ImageStorageFolder.Users,
+                ImageStorageFolderEnum.Users,
                 currentUser.Id,
                 cancellationToken);
             newAvatarPath = image.RelativePath;

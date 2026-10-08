@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkProjects;
 
-public class UpdateWorkProjectStatusValidator : AbstractValidator<UpdateWorkProjectStatusCommand>
+public sealed class UpdateWorkProjectStatusValidator : AbstractValidator<UpdateWorkProjectStatusCommand>
 {
     public UpdateWorkProjectStatusValidator(IDictionariesRepository dictionariesRepository)
     {

@@ -15,7 +15,6 @@ internal static class GlobalSearchMessages
 
     internal static string QueryLength => Get(nameof(QueryLength));
     internal static string TakeOutOfRange => Get(nameof(TakeOutOfRange));
-    internal static string ItemNotFound => Get(nameof(ItemNotFound));
     internal static string ItemRequired => Get(nameof(ItemRequired));
     internal static string ItemTypeUnsupported => Get(nameof(ItemTypeUnsupported));
 }

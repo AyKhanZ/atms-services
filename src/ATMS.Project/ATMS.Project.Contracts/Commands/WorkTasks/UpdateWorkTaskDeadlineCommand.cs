@@ -7,7 +7,7 @@ using MediatR;
 namespace ATMS.Project.Contracts.Commands.WorkTasks;
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.TaskEdit)]
-public class UpdateWorkTaskDeadlineCommand : IRequest, IProjectScopedRequest
+public sealed class UpdateWorkTaskDeadlineCommand : IRequest, IProjectScopedRequest
 {
     [JsonIgnore]
     public Guid ProjectId { get; set; }

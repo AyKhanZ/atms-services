@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.Search;
 
-public class GetGlobalSearchValidator : AbstractValidator<GetGlobalSearchRequest>
+public sealed class GetGlobalSearchValidator : AbstractValidator<GetGlobalSearchRequest>
 {
     public GetGlobalSearchValidator()
     {
@@ -16,7 +16,7 @@ public class GetGlobalSearchValidator : AbstractValidator<GetGlobalSearchRequest
             .Must(query =>
             {
                 var search = query?.Trim();
-                if (string.IsNullOrEmpty(search))
+                if (string.IsNullOrWhiteSpace(search))
                 {
                     return true;
                 }

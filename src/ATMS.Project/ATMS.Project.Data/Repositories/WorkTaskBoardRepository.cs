@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class WorkTaskBoardRepository(ProjectDbContext context, IWorkTaskRepository workTaskRepository) : IWorkTaskBoardRepository
+public sealed class WorkTaskBoardRepository(ProjectDbContext context, IWorkTaskRepository workTaskRepository) : IWorkTaskBoardRepository
 {
     public async Task<WorkTasksQueryResult> GetManyAsync(
         ICriteria<WorkTask> criteria,
@@ -17,10 +17,7 @@ public class WorkTaskBoardRepository(ProjectDbContext context, IWorkTaskReposito
         IReadOnlyCollection<string> languages,
         CancellationToken cancellationToken)
     {
-        // Only what a card shows, in one query. The milestone and group are not on the board, and a
-        // status or priority needs its name in the caller's language and the English fallback only:
-        // with at most two translation rows each, a single query stays small where all of them
-        // forced a split into eight round trips per page.
+        // only what the card shows, in one query; status and priority names only in the caller's language + english
         var query = criteria.Apply(context.WorkTasks
             .AsNoTracking()
             .Include(task => task.Status)
@@ -59,7 +56,7 @@ public class WorkTaskBoardRepository(ProjectDbContext context, IWorkTaskReposito
         ICriteria<WorkProjectParticipant> criteria,
         CancellationToken cancellationToken)
     {
-        // Only employees can be assigned work: the rule is the data's, not the caller's.
+        // only employees can be assignees
         var employees = new ParticipantsAmongUsersCriteria(new EmployeeUsersCriteria().Apply(context.Users));
         var participants = employees.Apply(criteria.Apply(context.WorkProjectParticipants.AsNoTracking()));
 

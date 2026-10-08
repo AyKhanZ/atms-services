@@ -4,7 +4,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Health;
 
-public class CheckReadinessHandler(IHealthRepository healthRepository) : IRequestHandler<CheckReadinessRequest, bool>
+public sealed class CheckReadinessHandler(IHealthRepository healthRepository) : IRequestHandler<CheckReadinessRequest, bool>
 {
     public Task<bool> Handle(CheckReadinessRequest request, CancellationToken cancellationToken)
     {

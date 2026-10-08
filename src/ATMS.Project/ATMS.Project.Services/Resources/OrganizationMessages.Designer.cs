@@ -60,32 +60,6 @@ namespace ATMS.Project.Services.Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Logo file is empty..
-        /// </summary>
-        public static string LogoEmpty {
-            get {
-                return ResourceManager.GetString("LogoEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logo size is too large. Please upload an image up to 5 MB..
-        /// </summary>
-        public static string LogoTooLarge {
-            get {
-                return ResourceManager.GetString("LogoTooLarge", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logo format is not supported. Use JPG, PNG, JFIF or WEBP..
-        /// </summary>
-        public static string LogoUnsupportedFormat {
-            get {
-                return ResourceManager.GetString("LogoUnsupportedFormat", resourceCulture);
-            }
-        }
                 /// <summary>
         ///   Looks up a localized string similar to Organization not found..
         /// </summary>

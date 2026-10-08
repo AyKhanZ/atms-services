@@ -3,6 +3,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Constants;
@@ -10,7 +11,7 @@ using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Onboarding;
 
-public class SaveInvitationsValidator : AbstractValidator<SaveInvitationsCommand>
+public sealed class SaveInvitationsValidator : AbstractValidator<SaveInvitationsCommand>
 {
     private const int MaxInvitations = 6;
     private readonly ICurrentUser _currentUser;
@@ -54,7 +55,7 @@ public class SaveInvitationsValidator : AbstractValidator<SaveInvitationsCommand
         CancellationToken cancellationToken)
     {
         var progress = await _onboardingRepository.GetAsNoTrackingAsync(_currentUser.Id, cancellationToken)
-            ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
 
         if (progress.User.HasCompletedOnboarding)
         {

@@ -1,6 +1,6 @@
 namespace ATMS.Messaging.Infrastructure;
 
-public class DeliveryRetrySchedule
+public sealed class DeliveryRetrySchedule
 {
     private readonly TimeSpan[] _delays =
     [

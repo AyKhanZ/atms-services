@@ -1,7 +1,7 @@
 using ATMS.Application.Realtime;
 using ATMS.Data.Enums;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Security.Interfaces;
+using ATMS.Project.Services.Domain.Security.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 

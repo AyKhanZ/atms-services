@@ -27,13 +27,4 @@
   <data name="VoenShouldBeLessThan" xml:space="preserve">
         <value>VOEN must be {0} characters or less.</value>
     </data>
-  <data name="LogoTooLarge" xml:space="preserve">
-    <value>Logo size is too large. Please upload an image up to 5 MB.</value>
-  </data>
-  <data name="LogoUnsupportedFormat" xml:space="preserve">
-    <value>Logo format is not supported. Use JPG, PNG, JFIF or WEBP.</value>
-  </data>
-  <data name="LogoEmpty" xml:space="preserve">
-    <value>Logo file is empty.</value>
-  </data>
 </root>

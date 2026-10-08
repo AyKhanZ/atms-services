@@ -1,10 +1,9 @@
+using ATMS.Data;
 
 namespace ATMS.Admin.Data.Entities.Messaging;
 
-public class EmailDelivery
+public class EmailDelivery : BaseEntity
 {
-    public Guid Id { get; set; }
-
     public Guid UserId { get; set; }
 
     public User User { get; set; }

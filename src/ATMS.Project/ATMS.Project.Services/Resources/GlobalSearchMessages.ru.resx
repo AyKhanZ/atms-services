@@ -7,7 +7,6 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
   <data name="QueryLength" xml:space="preserve"><value>Введите не меньше 3 символов или номер элемента. Не длиннее 100 символов.</value></data>
   <data name="TakeOutOfRange" xml:space="preserve"><value>Запрошено недопустимое количество результатов. Обновите страницу и попробуйте снова.</value></data>
-  <data name="ItemNotFound" xml:space="preserve"><value>Элемент удалён, или у вас больше нет к нему доступа.</value></data>
   <data name="ItemRequired" xml:space="preserve"><value>Не удалось определить элемент. Обновите страницу и попробуйте снова.</value></data>
   <data name="ItemTypeUnsupported" xml:space="preserve"><value>Такой тип элемента не поддерживается. Обновите страницу и попробуйте снова.</value></data>
 </root>

@@ -9,7 +9,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Users;
 
-public class GetProjectTeamMembersHandler(
+public sealed class GetProjectTeamMembersHandler(
     IUserRepository userRepository,
     IMapper mapper) : IRequestHandler<GetProjectTeamMembersRequest, UserModel[]>
 {

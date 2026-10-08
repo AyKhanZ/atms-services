@@ -1,3 +1,5 @@
+using ATMS.Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
@@ -7,7 +9,6 @@ using ATMS.Application.Interfaces;
 using ATMS.Data.Constants;
 using ATMS.Infrastructure.Validation;
 using FluentValidation;
-using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Admin.Service.Validation.Profile;
 
@@ -18,10 +19,10 @@ public sealed class UpdateSettingsValidator : BaseImageValidator<UpdateSettingsC
     private readonly ICurrentUser _currentUser;
 
     public UpdateSettingsValidator(
-        IConfiguration configuration,
+        IOptions<ImagesOptions> imagesOptions,
         IDictionariesRepository dictionariesRepository,
         IUserRepository userRepository,
-        ICurrentUser currentUser) : base(configuration)
+        ICurrentUser currentUser) : base(imagesOptions)
     {
         _dictionariesRepository = dictionariesRepository;
         _userRepository = userRepository;
@@ -68,7 +69,7 @@ public sealed class UpdateSettingsValidator : BaseImageValidator<UpdateSettingsC
             .WithMessage(OnboardingMessages.ProfilePhotoRequired);
     }
 
-    // The shared placeholder is what an account has before anyone chose a photo; it does not count.
+    // the default avatar doesn't count as an own photo
     private static bool HasOwnPhoto(string? avatarPath)
     {
         return !string.IsNullOrWhiteSpace(avatarPath) && avatarPath != DefaultValues.UserAvatar;

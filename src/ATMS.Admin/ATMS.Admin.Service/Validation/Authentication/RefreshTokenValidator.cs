@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Authentication;
 
-public class RefreshTokenValidator : AbstractValidator<RefreshTokenCommand>
+public sealed class RefreshTokenValidator : AbstractValidator<RefreshTokenCommand>
 {
     public RefreshTokenValidator()
     {

@@ -1,24 +1,22 @@
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATMS.Admin.Service.Security;
 
-public class EmailConfirmationTokenService(IConfiguration configuration) : IEmailConfirmationTokenService
+public sealed class EmailConfirmationTokenService(IOptions<JwtOptions> jwtOptions) : IEmailConfirmationTokenService
 {
     
-    private readonly JwtOptions _jwtOptions =
-        configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
-                string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
 
     public EmailConfirmationTokenResult GenerateToken(User user)
     {

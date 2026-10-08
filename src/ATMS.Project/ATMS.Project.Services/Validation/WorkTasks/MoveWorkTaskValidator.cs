@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkTasks;
 
-public class MoveWorkTaskValidator : AbstractValidator<MoveWorkTaskCommand>
+public sealed class MoveWorkTaskValidator : AbstractValidator<MoveWorkTaskCommand>
 {
     private readonly IWorkProjectRepository _workProjectRepository;
     private readonly IWorkTaskRepository _workTaskRepository;
@@ -51,8 +51,7 @@ public class MoveWorkTaskValidator : AbstractValidator<MoveWorkTaskCommand>
         return _workTaskRepository.IsWorkTaskExistAsync(command.ProjectId, workTaskId, cancellationToken);
     }
 
-    // A neighbour may belong to another project: the Tasks page lays out every project the user
-    // sees on one board. Whether the user may see it is checked by the handler, with the ranks.
+    // a neighbour can be from another project (the Tasks page shows all), access is checked in the handler
     private Task<bool> IsNeighbourExistsAsync(Guid? workTaskId, CancellationToken cancellationToken)
     {
         return _workTaskRepository.IsWorkTaskExistAsync(workTaskId!.Value, cancellationToken);

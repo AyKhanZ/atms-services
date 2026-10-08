@@ -1,6 +1,6 @@
 namespace ATMS.Project.Contracts.Models.Attachments;
 
-public class AttachmentContentModel
+public sealed class AttachmentContentModel
 {
     public string FileName { get; set; }
     public string ContentType { get; set; }

@@ -8,7 +8,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Dictionaries;
 
-public class GetMaritalStatusDictionariesHandler(
+public sealed class GetMaritalStatusDictionariesHandler(
     IDictionariesRepository dictionariesRepository,
     ICacheService cache)
     : IRequestHandler<GetMaritalStatusDictionariesRequest, DictionaryModel[]>

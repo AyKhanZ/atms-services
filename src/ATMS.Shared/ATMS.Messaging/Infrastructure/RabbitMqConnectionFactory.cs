@@ -1,16 +1,15 @@
+using Microsoft.Extensions.Options;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
-using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 
 namespace ATMS.Messaging.Infrastructure;
 
-public sealed class RabbitMqConnectionFactory(IConfiguration configuration)
+public sealed class RabbitMqConnectionFactory(IOptions<QueueOptions> queueOptions)
 {
-    private readonly QueueOptions _options = configuration.GetSection(nameof(QueueOptions)).Get<QueueOptions>()
-                                             ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
-                                                 string.Format(LogMessages.ConfigSectionNotFound, nameof(QueueOptions)));
+    private readonly QueueOptions _options = queueOptions.Value;
 
     private IConnection? _connection;
     

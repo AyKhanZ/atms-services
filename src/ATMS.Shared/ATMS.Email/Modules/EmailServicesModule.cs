@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Mail;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Email.Services;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
@@ -16,7 +17,7 @@ public static class EmailServicesModule
         IConfiguration configuration)
     {
         var emailOptions = configuration.GetSection(nameof(EmailOptions)).Get<EmailOptions>()
-                           ?? throw new ConfigurationException(ConfigurationErrorType.EmailSectionNotFound,
+                           ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.EmailSectionNotFound,
                                string.Format(LogMessages.ConfigSectionNotFound, nameof(EmailOptions)));
 
         var smtp = new SmtpClient(emailOptions.SmtpServer, emailOptions.Port)

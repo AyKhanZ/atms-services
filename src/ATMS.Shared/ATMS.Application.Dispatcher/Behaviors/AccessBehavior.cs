@@ -1,3 +1,4 @@
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Constants;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Resources;
@@ -29,30 +30,27 @@ public sealed class AccessBehavior<TRequest, TResponse>(
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        // Requests without SuperAdminAccess or Access attributes do not require system permission checks.
+        // no access attributes, nothing to check
         if (!RequiresSuperAdmin && !ExcludesSuperAdmin && AccessRequirements.Length == 0)
         {
             return await next(cancellationToken);
         }
 
-        // SuperAdmin has access to every system-level operation.
+        // super admin can do everything here
         if (currentUser.RoleId == RoleIds.SuperAdmin)
         {
-            // ExceptSuperAdmin overrides the usual SuperAdmin permission bypass.
             if (ExcludesSuperAdmin)
             {
-                Deny();
+                throw new AuthException(AuthErrorTypeEnum.Forbidden, ExceptionMessages.AccessDenied);
             }
 
             return await next(cancellationToken);
         }
 
-        // At this point SuperAdmin was already allowed above.
-        // If this request explicitly requires SuperAdmin, any other user must be denied.
-        // Permissions inside one attribute are alternatives. Multiple attributes are cumulative requirements.
+        // permissions inside one attribute = any of them, several attributes = all of them
         if (RequiresSuperAdmin || !HasAllSystemPermissionRequirements())
         {
-            Deny();
+            throw new AuthException(AuthErrorTypeEnum.Forbidden, ExceptionMessages.AccessDenied);
         }
 
         return await next(cancellationToken);
@@ -61,7 +59,4 @@ public sealed class AccessBehavior<TRequest, TResponse>(
     private bool HasAllSystemPermissionRequirements()
         => AccessRequirements.All(requirement =>
             requirement.Permissions.Any(permission => currentUser.Permissions.Contains(permission.ToString())));
-
-    [DoesNotReturn]
-    private static void Deny() => throw new AuthException(AuthErrorType.Forbidden, ExceptionMessages.AccessDenied);
 }

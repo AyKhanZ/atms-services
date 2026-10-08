@@ -11,7 +11,7 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/project/{projectId:guid}/work-tickets")]
-public class WorkTicketController(IMediator mediator) : ControllerBase
+public sealed class WorkTicketController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Returns a cursor-paginated page of tickets available in the selected project's plan.

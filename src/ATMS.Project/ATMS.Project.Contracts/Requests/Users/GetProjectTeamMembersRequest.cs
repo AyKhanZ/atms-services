@@ -6,4 +6,4 @@ using MediatR;
 namespace ATMS.Project.Contracts.Requests.Users;
 
 [Access(PermissionEnum.ProjectEdit)]
-public class GetProjectTeamMembersRequest : IRequest<UserModel[]>;
+public sealed class GetProjectTeamMembersRequest : IRequest<UserModel[]>;

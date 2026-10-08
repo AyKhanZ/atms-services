@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ATMS.Admin.Contracts.Requests.Onboarding;
 
-public class GetOnboardingRequest : IRequest<OnboardingModel>;
+public sealed class GetOnboardingRequest : IRequest<OnboardingModel>;

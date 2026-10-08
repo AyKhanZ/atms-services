@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkTasks;
 
-public class UpdateWorkTaskDeadlineValidator : AbstractValidator<UpdateWorkTaskDeadlineCommand>
+public sealed class UpdateWorkTaskDeadlineValidator : AbstractValidator<UpdateWorkTaskDeadlineCommand>
 {
     private readonly IWorkProjectRepository _workProjectRepository;
     private readonly IWorkTaskRepository _workTaskRepository;

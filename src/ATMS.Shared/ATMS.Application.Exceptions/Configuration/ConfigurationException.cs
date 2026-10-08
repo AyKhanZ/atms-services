@@ -1,8 +1,10 @@
-﻿namespace ATMS.Application.Exceptions.Configuration;
+﻿using ATMS.Application.Exceptions.Enums;
 
-public class ConfigurationException : Exception
+namespace ATMS.Application.Exceptions.Configuration;
+
+public sealed class ConfigurationException : Exception
 {
-    public ConfigurationErrorType ErrorType { get; }
-    public ConfigurationException(ConfigurationErrorType errorType, string message)
+    public ConfigurationErrorTypeEnum ErrorType { get; }
+    public ConfigurationException(ConfigurationErrorTypeEnum errorType, string message)
         : base(message) => ErrorType = errorType;
 }

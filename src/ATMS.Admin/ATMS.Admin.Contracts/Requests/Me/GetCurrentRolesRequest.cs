@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ATMS.Admin.Contracts.Requests.Me;
 
-public class GetCurrentRolesRequest : IRequest<DictionaryModel<Guid>[]>;
+public sealed class GetCurrentRolesRequest : IRequest<DictionaryModel<Guid>[]>;

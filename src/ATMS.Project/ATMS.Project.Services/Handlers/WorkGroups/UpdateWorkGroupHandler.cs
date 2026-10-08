@@ -1,14 +1,15 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkGroups;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Caching;
+using ATMS.Project.Services.Infrastructure;
 using ATMS.Project.Services.Resources;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkGroups;
 
-public class UpdateWorkGroupHandler(
+public sealed class UpdateWorkGroupHandler(
     IWorkGroupRepository workGroupRepository,
     IWorkTicketRepository workTicketRepository,
     IWorkTaskRepository workTaskRepository,
@@ -19,7 +20,7 @@ public class UpdateWorkGroupHandler(
         var workGroup = await workGroupRepository.FindAsync(command.ProjectId, command.WorkGroupId, cancellationToken);
         if (workGroup is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkGroupMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkGroupMessages.NotFound);
         }
 
         workGroup.Title = command.Title.Trim();

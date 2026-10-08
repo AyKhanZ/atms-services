@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ATMS.Admin.Contracts.Requests.Dictionaries;
 
-public class GetPermissionDictionariesRequest : IRequest<PermissionModel[]>;
+public sealed class GetPermissionDictionariesRequest : IRequest<PermissionModel[]>;

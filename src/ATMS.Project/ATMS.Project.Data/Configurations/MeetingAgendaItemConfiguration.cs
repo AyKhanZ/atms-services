@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class MeetingAgendaItemConfiguration : IEntityTypeConfiguration<MeetingAgendaItem>
+public sealed class MeetingAgendaItemConfiguration : IEntityTypeConfiguration<MeetingAgendaItem>
 {
     public void Configure(EntityTypeBuilder<MeetingAgendaItem> builder)
     {

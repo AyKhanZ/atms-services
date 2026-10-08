@@ -2,14 +2,8 @@ using ATMS.Application.Models;
 
 namespace ATMS.Admin.Contracts.Models.Users;
 
-public class UserListItemModel
+public sealed class UserListItemModel : AuditUserModel
 {
-    public Guid Id { get; set; }
-    
-    public string Name { get; set; }
-    
-    public string Surname { get; set; }
-    
     public string Email { get; set; }
     
 

@@ -178,7 +178,7 @@ public sealed class ProjectRealtimeInterceptor(
         _currentComments.Clear();
     }
 
-    // A soft delete is an update of IsDeleted from false to true.
+    // soft delete = IsDeleted false -> true
     private static string ActionOf(EntityEntry entry)
     {
         var deleted = entry.Property(nameof(ISoftDeletable.IsDeleted));

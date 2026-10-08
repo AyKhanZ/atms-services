@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepository
+public sealed class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepository
 {
     public Task<WorkProject?> GetAsync(
         Guid id,
@@ -69,7 +69,7 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
             .ToArrayAsync(cancellationToken);
     }
 
-    public async Task<WorkProjectParticipantRefusal?> SaveParticipantWithinLimitAsync(
+    public async Task<WorkProjectParticipantRefusalEnum?> SaveParticipantWithinLimitAsync(
         Guid projectId,
         Guid userId,
         int limit,
@@ -85,7 +85,7 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
         var participants = context.WorkProjectParticipants.Where(x => x.WorkProjectId == projectId);
         if (await participants.AnyAsync(x => x.UserId == userId, cancellationToken))
         {
-            return WorkProjectParticipantRefusal.AlreadyParticipant;
+            return WorkProjectParticipantRefusalEnum.AlreadyParticipant;
         }
 
         var invitations = await new LivePendingInvitationsCriteria(projectId)
@@ -93,7 +93,7 @@ public class WorkProjectRepository(ProjectDbContext context) : IWorkProjectRepos
             .CountAsync(cancellationToken);
         if (await participants.CountAsync(cancellationToken) + invitations >= limit)
         {
-            return WorkProjectParticipantRefusal.LimitReached;
+            return WorkProjectParticipantRefusalEnum.LimitReached;
         }
 
         await context.SaveChangesAsync(cancellationToken);

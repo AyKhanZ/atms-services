@@ -2,6 +2,7 @@ using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Localization;
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Constants;
@@ -10,7 +11,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Profile;
 
-public class UpdateLanguageHandler(
+public sealed class UpdateLanguageHandler(
     ICurrentUser currentUser,
     IUserRepository userRepository,
     IDictionariesRepository dictionariesRepository,
@@ -21,12 +22,12 @@ public class UpdateLanguageHandler(
         var entity = await userRepository.FindAsync(u => u.Id == currentUser.Id, cancellationToken);
         if (entity == null)
         {
-            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, AccountMessages.UserNotFound);
         }
         var allLanguages = await dictionariesRepository.GetLanguagesAsync(cancellationToken);
         var language = allLanguages.FirstOrDefault(x =>
                             string.Equals(x.Code, command.Language, StringComparison.OrdinalIgnoreCase))
-                       ?? throw new EntityException(EntityErrorType.NotFound, ProfileMessages.LanguageNotSupported);
+                       ?? throw new EntityException(EntityErrorTypeEnum.NotFound, ProfileMessages.LanguageNotSupported);
 
         entity.LanguageId = language.Id;
 

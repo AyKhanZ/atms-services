@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class RoleRepository(ProjectDbContext context) : IRoleRepository
+public sealed class RoleRepository(ProjectDbContext context) : IRoleRepository
 {
     public Task<List<Role>> GetManyAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken)
     {

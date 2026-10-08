@@ -5,12 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class CommentConfiguration : IEntityTypeConfiguration<Comment>
+public sealed class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
-        // The discussion lists deleted comments too, as placeholders, so the page index covers every
-        // row; the count of live ones reads the same index and skips the few deleted.
+        // deleted comments are listed too (as placeholders), so the index covers all rows
         builder.HasIndex(e => new { e.OwnerType, e.OwnerId, e.CreatedAt, e.Id })
             .IsDescending(false, false, true, true);
 

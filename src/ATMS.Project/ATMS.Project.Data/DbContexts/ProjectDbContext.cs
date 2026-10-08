@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.DbContexts;
 
-public class ProjectDbContext : DbContext
+public sealed class ProjectDbContext : DbContext
 {
-    // Comments keep their soft-delete filter under a name, so one query can lift it alone.
+    // named filter, so a query can turn off only this one
     public const string CommentSoftDeleteFilter = "CommentSoftDelete";
 
     private readonly IAuditActorAccessor? _auditActor;
@@ -135,8 +135,6 @@ public class ProjectDbContext : DbContext
         modelBuilder.Entity<WorkTask>()
             .HasQueryFilter(t => !t.IsDeleted);
 
-        // Named, so the discussion can read deleted comments as placeholders while every other
-        // filter of the same query — on tasks, tickets, projects — still holds.
         modelBuilder.Entity<Comment>()
             .HasQueryFilter(CommentSoftDeleteFilter, t => !t.IsDeleted);
 

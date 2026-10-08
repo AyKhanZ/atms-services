@@ -1,6 +1,6 @@
 namespace ATMS.Project.Contracts.Models.Search;
 
-public class GlobalSearchModel
+public sealed class GlobalSearchModel
 {
     public GlobalSearchGroupModel Projects { get; set; }
     public GlobalSearchGroupModel Tickets { get; set; }

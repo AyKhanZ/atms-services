@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Models.WorkGroups;
 using ATMS.Project.Contracts.Requests.WorkGroups;
@@ -11,7 +12,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkGroups;
 
-public class GetMilestonesHandler(
+public sealed class GetMilestonesHandler(
     IWorkProjectRepository workProjectRepository,
     IWorkGroupRepository workGroupRepository,
     IMapper mapper) : IRequestHandler<GetMilestonesRequest, KeysetPagedResult<MilestoneOptionModel>>
@@ -20,7 +21,7 @@ public class GetMilestonesHandler(
     {
         if (!await workProjectRepository.IsExistAsync(project => project.Id == request.ProjectId, cancellationToken))
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkProjectMessages.NotFound);
         }
 
         var criteria = new MilestonesByProjectCriteria(request.ProjectId, request.Search);

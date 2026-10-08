@@ -1,31 +1,25 @@
+using Microsoft.Extensions.Options;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Time;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace ATMS.Project.Services.Infrastructure;
 
-// Without cleanup the table grows for ever. By default read notifications go after 30 days and any
-// after 90: about 135 000 rows for 50 people, and it stays there. Their emails go with them. Runs on
-// start, then at night.
+// read ones go after 30 days, any after 90 (~135k rows for 50 people), emails go with them
 public sealed class NotificationCleanupBackgroundService(
     IServiceScopeFactory scopeFactory,
     BusinessTimeZone businessTimeZone,
-    IConfiguration configuration,
+    IOptions<NotificationsOptions> notificationsOptions,
     ILogger<NotificationCleanupBackgroundService> logger) : BackgroundService
 {
     private const int BatchSize = 1000;
 
-    private readonly NotificationsOptions _options =
-        configuration.GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()
-        ?? throw new ConfigurationException(
-            ConfigurationErrorType.NotificationsSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(NotificationsOptions)));
+    private readonly NotificationsOptions _options = notificationsOptions.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

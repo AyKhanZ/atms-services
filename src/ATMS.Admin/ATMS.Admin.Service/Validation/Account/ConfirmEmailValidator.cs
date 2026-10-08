@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Account;
 
-public class ConfirmEmailValidator : AbstractValidator<ConfirmEmailCommand>
+public sealed class ConfirmEmailValidator : AbstractValidator<ConfirmEmailCommand>
 {
     public ConfirmEmailValidator()
     {

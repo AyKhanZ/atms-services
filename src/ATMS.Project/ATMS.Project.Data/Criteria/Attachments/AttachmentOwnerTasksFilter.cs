@@ -3,9 +3,7 @@ using ATMS.Project.Data.Entities;
 
 namespace ATMS.Project.Data.Criteria.Attachments;
 
-// Files hang on tasks and subtasks only, so every attachments view is a choice of tasks: one task,
-// the subtasks of a task, a whole ticket or the whole project.
-public class AttachmentOwnerTasksFilter : ACriteria<WorkTask>
+public sealed class AttachmentOwnerTasksFilter : ACriteria<WorkTask>
 {
     public Guid ProjectId { get; init; }
 

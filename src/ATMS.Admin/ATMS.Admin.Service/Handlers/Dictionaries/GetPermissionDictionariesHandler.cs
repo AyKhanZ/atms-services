@@ -8,7 +8,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Dictionaries;
 
-public class GetPermissionDictionariesHandler(
+public sealed class GetPermissionDictionariesHandler(
     IPermissionRepository permissionRepository,
     ICacheService cache)
     : IRequestHandler<GetPermissionDictionariesRequest, PermissionModel[]>

@@ -5,14 +5,16 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Enums;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Authentication;
 
-public class RefreshTokenHandler(
+public sealed class RefreshTokenHandler(
     IAccessTokenService accessTokenService,
     IRefreshTokenService refreshTokenService,
+    IUniqueTokenService uniqueTokenService,
     IUserSessionRepository userSessionRepository) : IRequestHandler<RefreshTokenCommand, AccessInfoModel>
 {
     public async Task<AccessInfoModel> Handle(
@@ -20,38 +22,37 @@ public class RefreshTokenHandler(
         CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
-        var tokenHash = refreshTokenService.HashToken(command.RefreshToken);
+        var tokenHash = uniqueTokenService.Hash(command.RefreshToken);
         var session = await userSessionRepository.FindByTokenHashAsync(tokenHash, cancellationToken);
 
         if (session is null)
         {
-            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+            throw new AuthException(AuthErrorTypeEnum.InvalidToken, AuthMessages.InvalidToken);
         }
 
         if (session.RevokedAt.HasValue)
         {
             await userSessionRepository.RevokeFamilyAsync(session.FamilyId, now, cancellationToken);
-            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+            throw new AuthException(AuthErrorTypeEnum.InvalidToken, AuthMessages.InvalidToken);
         }
 
         if (session.ExpiresAt <= now || session.FamilyExpiresAt <= now)
         {
             await userSessionRepository.RevokeFamilyAsync(session.FamilyId, now, cancellationToken);
-            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+            throw new AuthException(AuthErrorTypeEnum.InvalidToken, AuthMessages.InvalidToken);
         }
 
         if (session.User.UserStatusId != (int)UserStatusEnum.Active)
         {
             await userSessionRepository.RevokeFamilyAsync(session.FamilyId, now, cancellationToken);
-            throw new AuthException(AuthErrorType.AccountInactive, AuthMessages.AccountInactive);
+            throw new AuthException(AuthErrorTypeEnum.AccountInactive, AuthMessages.AccountInactive);
         }
 
-        // The password changed after this session began: it ends even if it was created in the same
-        // instant as the change and so missed the revocation.
+        // password changed after this session started
         if (session.SessionVersion != session.User.SessionVersion)
         {
             await userSessionRepository.RevokeFamilyAsync(session.FamilyId, now, cancellationToken);
-            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+            throw new AuthException(AuthErrorTypeEnum.InvalidToken, AuthMessages.InvalidToken);
         }
 
         var accessToken = await accessTokenService.GenerateTokenAsync(session.User, cancellationToken);
@@ -74,7 +75,7 @@ public class RefreshTokenHandler(
         if (!await userSessionRepository.RotateAsync(session, replacement, now, cancellationToken))
         {
             await userSessionRepository.RevokeFamilyAsync(session.FamilyId, now, cancellationToken);
-            throw new AuthException(AuthErrorType.InvalidToken, AuthMessages.InvalidToken);
+            throw new AuthException(AuthErrorTypeEnum.InvalidToken, AuthMessages.InvalidToken);
         }
 
         return new AccessInfoModel

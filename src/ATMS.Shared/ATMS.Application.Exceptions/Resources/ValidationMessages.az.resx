@@ -15,14 +15,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DescriptionRequired" xml:space="preserve">
-        <value>Təsvir tələb olunur.</value>
-    </data>
   <data name="RoleIdRequired" xml:space="preserve">
         <value>Rol identifikatoru tələb olunur.</value>
-    </data>
-  <data name="DescriptionShouldBeLessThan" xml:space="preserve">
-        <value>Təsvir {0}-dən az simvoldan ibarət olmalıdır.</value>
     </data>
   <data name="InvalidEmailFormat" xml:space="preserve">
         <value>Düzgün e-poçt daxil edin (məsələn: user@example.com).</value>
@@ -53,7 +47,6 @@
   <data name="InvalidSortDirection" xml:space="preserve"><value>Çeşidləmə istiqaməti dəstəklənmir.</value></data>
   <data name="InvalidCursor" xml:space="preserve"><value>Davametmə kursoru yanlışdır.</value></data>
   <data name="DateOutOfRange" xml:space="preserve"><value>Tarix {0} ilə {1} arasında olmalıdır.</value></data>
-  <data name="InvalidDateRange" xml:space="preserve"><value>Başlanğıc tarixi bitmə tarixindən gec ola bilməz.</value></data>
   <data name="NameShouldBeLessThan" xml:space="preserve"><value>Ad {0} simvoldan az olmalıdır.</value></data>
   <data name="SurnameShouldBeLessThan" xml:space="preserve"><value>Soyad {0} simvoldan az olmalıdır.</value></data>
   <data name="EmailRequired" xml:space="preserve"><value>Email tələb olunur.</value></data>

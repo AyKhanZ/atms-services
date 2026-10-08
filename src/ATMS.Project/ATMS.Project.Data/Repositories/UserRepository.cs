@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class UserRepository(ProjectDbContext context) : IUserRepository
+public sealed class UserRepository(ProjectDbContext context) : IUserRepository
 {
     public async Task AddAsync(User entity, CancellationToken cancellationToken)
     {
@@ -78,7 +78,7 @@ public class UserRepository(ProjectDbContext context) : IUserRepository
     public Task<bool> IsExistAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken)
         => context.Users.AnyAsync(predicate, cancellationToken);
 
-    // Deleted users too: Admin still holds the address and would refuse to create it again.
+    // deleted users too: admin still has the address and won't create it again
     public Task<bool> IsEmailTakenAsync(string normalizedEmail, CancellationToken cancellationToken)
         => context.Users
             .IgnoreQueryFilters()

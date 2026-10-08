@@ -13,12 +13,12 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTaskBoard;
 
-public class GetWorkTaskBoardHandler(
+public sealed class GetWorkTaskBoardHandler(
     ICurrentUser currentUser,
     IWorkTaskBoardRepository workTaskBoardRepository,
     IMapper mapper) : IRequestHandler<GetWorkTaskBoardRequest, KeysetPagedResult<WorkTaskModel>>
 {
-    /// <summary>The code column's length: padding to it never cuts a code short.</summary>
+    // the code column length, padding never cuts a code
     private const int CodeWidth = 50;
 
     public async Task<KeysetPagedResult<WorkTaskModel>> Handle(GetWorkTaskBoardRequest request, CancellationToken cancellationToken)
@@ -31,7 +31,6 @@ public class GetWorkTaskBoardHandler(
                 new WorkTasksOfMyProjectsCriteria(currentUser.Id)));
         var pagination = Paginate(request);
 
-        // A name in the caller's language, or in English where it has none.
         string[] languages = [CultureHelper.CurrentLanguage, SupportedLanguages.English];
 
         var result = await workTaskBoardRepository.GetManyAsync(criteria, pagination, languages, cancellationToken);
@@ -49,22 +48,17 @@ public class GetWorkTaskBoardHandler(
         return page;
     }
 
-    /// <summary>
-    /// Each order has its own key: the board's rank, the close date, the deadline or the priority.
-    /// Tasks without a deadline stay at the end whichever way the list is turned.
-    /// </summary>
     private static IKeysetPagination<WorkTask> Paginate(GetWorkTaskBoardRequest request)
     {
         var sort = Enum.IsDefined((WorkTaskBoardSortEnum)request.Sort)
             ? (WorkTaskBoardSortEnum)request.Sort
             : WorkTaskBoardSortEnum.Rank;
-        // The cursor carries its order: a page of Title cannot be continued as Rank.
+        // the cursor keeps its sort, a Title page can't continue as Rank
         var order = sort.ToString();
 
         return sort switch
         {
-            // The code stays text, ordered like the Projects list: shorter first, then by text, so #9
-            // comes before #10 and #100. Padded to the column's width that is one key the cursor can hold.
+            // code is text: shorter first, then by text (#9 < #10 < #100), padded so the cursor holds one key
             WorkTaskBoardSortEnum.Code => new KeysetPaginationCriteria<WorkTask, string>(
                 request.Cursor, request.PageSize, request.SortDirection,
                 task => task.Code.PadLeft(CodeWidth, '0'), task => task.Id, order: order),
@@ -74,8 +68,7 @@ public class GetWorkTaskBoardHandler(
             WorkTaskBoardSortEnum.State => new KeysetPaginationCriteria<WorkTask, int>(
                 request.Cursor, request.PageSize, request.SortDirection,
                 task => task.StatusId, task => task.Id, order: order),
-            // Closed work always has its close date, so the Done column reads straight down the
-            // (StatusId, DoneAt, Id) index. Any other status may lack one: those go last.
+            // closed tasks always have DoneAt, so Done reads the (StatusId, DoneAt, Id) index; others without it go last
             WorkTaskBoardSortEnum.DoneAt => new KeysetPaginationCriteria<WorkTask, DateTime?>(
                 request.Cursor, request.PageSize, request.SortDirection,
                 task => task.DoneAt, task => task.Id,

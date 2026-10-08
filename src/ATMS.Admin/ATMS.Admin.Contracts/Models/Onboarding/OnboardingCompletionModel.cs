@@ -1,6 +1,6 @@
 namespace ATMS.Admin.Contracts.Models.Onboarding;
 
-public class OnboardingCompletionModel
+public sealed class OnboardingCompletionModel
 {
     public string AccessToken { get; set; }
 

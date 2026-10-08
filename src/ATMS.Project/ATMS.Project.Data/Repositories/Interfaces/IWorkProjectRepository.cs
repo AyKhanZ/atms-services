@@ -25,7 +25,7 @@ public interface IWorkProjectRepository
 
     Task<Guid?> GetParticipantRoleIdAsync(Guid projectId, Guid participantId, CancellationToken cancellationToken);
 
-    Task<WorkProjectParticipantRefusal?> SaveParticipantWithinLimitAsync(
+    Task<WorkProjectParticipantRefusalEnum?> SaveParticipantWithinLimitAsync(
         Guid projectId,
         Guid userId,
         int limit,

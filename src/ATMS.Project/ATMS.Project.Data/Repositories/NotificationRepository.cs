@@ -58,7 +58,6 @@ public sealed class NotificationRepository(
 
     public Task SaveChangesAsync(CancellationToken cancellationToken) => context.SaveChangesAsync(cancellationToken);
 
-    // For many notifications at once: the caller matches the type and the pair of person and entity.
     public Task<Notification[]> GetUnreadSinceAsync(
         IReadOnlyCollection<Guid> userIds,
         IReadOnlyCollection<Guid> entityIds,
@@ -148,8 +147,7 @@ public sealed class NotificationRepository(
                     .ToArray()))
             .ToArrayAsync(cancellationToken);
 
-    // Notifications are not project history: a plain DELETE is fine here. In batches, so one cleanup
-    // after a long pause never holds a lock on the whole table.
+    // not project history, so a plain DELETE is ok; in batches so the table is never locked whole
     public async Task<int> DeleteOldAsync(
         DateTime readBefore,
         DateTime createdBefore,
@@ -179,12 +177,10 @@ public sealed class NotificationRepository(
     public Task AddRangeAsync(IEnumerable<Notification> notifications, CancellationToken cancellationToken) =>
         context.Notifications.AddRangeAsync(notifications, cancellationToken);
 
-    // Query filters must be lifted by the caller for the whole query: a deleted actor keeps their
-    // name, and the deleted task, project or comment is checked here by hand to say so.
+    // the caller lifts query filters: a deleted actor keeps the name, deleted task/project/comment is checked here
     private IQueryable<NotificationRow> ToRows(IQueryable<Notification> notifications) =>
         from notification in notifications
-        // One read of the task: whether it is still there, the ticket it is in now and where it stands —
-        // read, not stored, because a task moves to another ticket, gets done or gets a new deadline.
+        // the task is read live: it can move to another ticket, get done or get a new deadline
         join task in context.WorkTasks on notification.EntityId equals task.Id into tasks
         from task in tasks.DefaultIfEmpty()
         select new NotificationRow
@@ -219,8 +215,6 @@ public sealed class NotificationRepository(
                                  !comment.IsDeleted)
         };
 
-    // Notifications are personal: every read of them by the person starts here, so another
-    // person's notification is simply not found.
     private static IQueryable<Notification> OfUser(IQueryable<Notification> query, Guid userId) =>
         query.Where(notification => notification.UserId == userId);
 }

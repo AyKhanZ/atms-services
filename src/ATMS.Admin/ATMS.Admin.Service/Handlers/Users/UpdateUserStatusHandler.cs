@@ -2,6 +2,7 @@ using ATMS.Admin.Contracts.Commands.Users;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Localization;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
@@ -10,7 +11,7 @@ using ATMS.Data.Enums;
 
 namespace ATMS.Admin.Service.Handlers.Users;
 
-public class UpdateUserStatusHandler(
+public sealed class UpdateUserStatusHandler(
     IUserRepository userRepository,
     IUserSessionRepository userSessionRepository,
     ICacheService cache) : IRequestHandler<UpdateUserStatusCommand>
@@ -20,12 +21,11 @@ public class UpdateUserStatusHandler(
         var entity = await userRepository.FindAsync(u => u.Id == command.Id, cancellationToken);
         if (entity == null)
         {
-            throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, AccountMessages.UserNotFound);
         }
 
         entity.UserStatusId = command.UserStatusId;
-        // The administrator's decision replaces any timed lockout from wrong passwords: a status set
-        // here, Locked included, has no end date.
+        // admin decision replaces the timed lock, so no end date
         entity.LockoutEnd = null;
         entity.FailedLoginCount = 0;
 

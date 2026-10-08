@@ -8,7 +8,7 @@ namespace ATMS.Project.Contracts.Requests.Attachments;
 
 [Access(PermissionEnum.ProjectView)]
 [ProjectAccess(ProjectPermissionEnum.ProjectView)]
-public class GetAttachmentsRequest : IRequest<AttachmentListModel>, IProjectScopedRequest
+public sealed class GetAttachmentsRequest : IRequest<AttachmentListModel>, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

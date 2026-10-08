@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkGroups;
 using ATMS.Project.Data.Entities;
@@ -8,7 +9,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkGroups;
 
-public class CreateWorkGroupHandler(
+public sealed class CreateWorkGroupHandler(
     IWorkProjectRepository workProjectRepository,
     IWorkGroupRepository workGroupRepository)
     : IRequestHandler<CreateWorkGroupCommand, Guid>
@@ -21,7 +22,7 @@ public class CreateWorkGroupHandler(
                 x => x.Id == command.ProjectId,
                 cancellationToken))
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkProjectMessages.NotFound);
         }
 
         if (command.ParentWorkGroupId.HasValue &&
@@ -30,7 +31,7 @@ public class CreateWorkGroupHandler(
                 command.ParentWorkGroupId.Value,
                 cancellationToken))
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkGroupMessages.ParentGroupNotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkGroupMessages.ParentGroupNotFound);
         }
 
         var workGroup = new WorkGroup

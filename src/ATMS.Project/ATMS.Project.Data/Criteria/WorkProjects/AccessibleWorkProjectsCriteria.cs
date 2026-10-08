@@ -4,7 +4,7 @@ using ATMS.Project.Data.Entities;
 
 namespace ATMS.Project.Data.Criteria.WorkProjects;
 
-public class AccessibleWorkProjectsCriteria(Guid userId, Guid roleId) : ACriteria<WorkProject>
+public sealed class AccessibleWorkProjectsCriteria(Guid userId, Guid roleId) : ACriteria<WorkProject>
 {
     public override IQueryable<WorkProject> Apply(IQueryable<WorkProject> query)
     {

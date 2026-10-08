@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
 using ATMS.Project.Contracts.Commands.Organizations;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -7,7 +8,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Organizations;
 
-public class DeleteOrganizationHandler(
+public sealed class DeleteOrganizationHandler(
     IOrganizationRepository organizationRepository,
     ICurrentUser currentUser)
     : IRequestHandler<DeleteOrganizationCommand>
@@ -19,7 +20,7 @@ public class DeleteOrganizationHandler(
 
         if (entity is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, OrganizationMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, OrganizationMessages.NotFound);
         }
 
         entity.IsDeleted = true;

@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace ATMS.Admin.Service.Handlers.Account;
 
-public class ConfirmEmailHandler(
+public sealed class ConfirmEmailHandler(
     IEmailConfirmationTokenService emailConfirmationTokenService,
     IUserRepository userRepository) : IRequestHandler<ConfirmEmailCommand, ConfirmEmailResultEnum>
 {

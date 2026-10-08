@@ -1,28 +1,30 @@
+using ATMS.Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using ATMS.Admin.Contracts.Commands.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Infrastructure.Validation;
 using FluentValidation;
-using Microsoft.Extensions.Configuration;
 using ATMS.Application.Dispatcher.Validation;
 
 namespace ATMS.Admin.Service.Validation.Onboarding;
 
-public class SavePersonalInfoValidator : BaseImageValidator<SavePersonalInfoCommand>
+public sealed class SavePersonalInfoValidator : BaseImageValidator<SavePersonalInfoCommand>
 {
     private readonly ICurrentUser _currentUser;
     private readonly IOnboardingRepository _onboardingRepository;
     private readonly IDictionariesRepository _dictionariesRepository;
 
     public SavePersonalInfoValidator(
-        IConfiguration configuration,
+        IOptions<ImagesOptions> imagesOptions,
         ICurrentUser currentUser,
         IOnboardingRepository onboardingRepository,
-        IDictionariesRepository dictionariesRepository) : base(configuration)
+        IDictionariesRepository dictionariesRepository) : base(imagesOptions)
     {
         _currentUser = currentUser;
         _onboardingRepository = onboardingRepository;
@@ -88,7 +90,7 @@ public class SavePersonalInfoValidator : BaseImageValidator<SavePersonalInfoComm
         CancellationToken cancellationToken)
     {
         var progress = await _onboardingRepository.GetAsNoTrackingAsync(_currentUser.Id, cancellationToken)
-            ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
 
         if (progress.User.HasCompletedOnboarding)
         {

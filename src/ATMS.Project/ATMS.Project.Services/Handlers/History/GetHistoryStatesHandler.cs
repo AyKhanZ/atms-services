@@ -1,18 +1,18 @@
 using ATMS.Project.Contracts.Models.History;
 using ATMS.Project.Contracts.Requests.History;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.History.Interfaces;
+using ATMS.Project.Services.Domain.History.Interfaces;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.History;
 
-public class GetHistoryStatesHandler(
+public sealed class GetHistoryStatesHandler(
     IHistoryScopeService historyScopeService,
     IHistoryRepository historyRepository,
     IHistoryValueResolver historyValueResolver)
     : IRequestHandler<GetHistoryStatesRequest, IReadOnlyCollection<HistoryStateModel>>
 {
-    // The status graph opens on the latest ones; 200 is far past what anyone scrolls back to.
+    // 200 is way more than anyone scrolls back
     private const int MaxStates = 200;
 
     public async Task<IReadOnlyCollection<HistoryStateModel>> Handle(
@@ -25,7 +25,7 @@ public class GetHistoryStatesHandler(
             request.WorkTaskId,
             cancellationToken);
 
-        // One more than is shown, to tell a list of exactly 200 from one cut at 200.
+        // take one more to know if the list was cut
         var latest = await historyRepository.GetStatusChangesAsync(
             scope.EntityType,
             scope.EntityId,
@@ -34,8 +34,6 @@ public class GetHistoryStatesHandler(
         var cut = latest.Length > MaxStates;
         var changes = cut ? latest[1..] : latest;
 
-        // Every status since the creation is here: the one the item started with was set when it was
-        // created. A cut list starts somewhere later, and that start has no date.
         var creation = cut
             ? null
             : await historyRepository.GetCreationAsync(scope.EntityType, scope.EntityId, cancellationToken);

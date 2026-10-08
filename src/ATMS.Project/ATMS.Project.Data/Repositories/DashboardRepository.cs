@@ -3,6 +3,7 @@ using ATMS.Data.Enums;
 using ATMS.Project.Data.Criteria.WorkTasks;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Enums;
 using ATMS.Project.Data.Models.Dashboard;
 using ATMS.Project.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -92,8 +93,7 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
             window,
             cancellationToken);
 
-        // A task has no "started at" column: a move to In progress is known only from its history.
-        // Every move counts, so a task taken back to work twice is started twice.
+        // no "started at" column, a move to In progress is known only from history (every move counts)
         var inProgress = ((int)WorkTaskStatusEnum.InProgress).ToString();
         var liveTaskIds = tasks.Select(task => task.Id);
         var startedByBucket = await CountByBucketAsync(
@@ -296,8 +296,7 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                 .Select(project => new DashboardActivitySubjectRow(
                     project.Id, "project", project.Code, project.Title, project.IsDeleted, null))
                 .ToDictionaryAsync(subject => subject.Id, cancellationToken);
-        // A history row can outlive its subject after a manual cleanup of the database; one such row
-        // must drop out of the feed instead of failing the whole dashboard.
+        // a history row can outlive its subject after a manual db cleanup, skip it instead of failing
         var activities = new List<DashboardActivityRow>(entries.Length);
         foreach (var entry in entries)
         {
@@ -333,8 +332,7 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
         };
     }
 
-    // Buckets are keyed by their start in business time: an hour of today, a day or the first day of
-    // a month. The database groups; only the few bucket counts come back.
+    // buckets are keyed by their start in business time (hour / day / month), the db does the grouping
     private static async Task<Dictionary<DateTime, int>> CountByBucketAsync(
         IQueryable<DateTime> moments,
         DashboardDataWindow window,
@@ -344,14 +342,14 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
 
         return window.Granularity switch
         {
-            DashboardGranularity.Hour => (await local
+            DashboardGranularityEnum.Hour => (await local
                     .GroupBy(moment => moment.Hour)
                     .Select(group => new { Hour = group.Key, Count = group.Count() })
                     .ToArrayAsync(cancellationToken))
                 .ToDictionary(
                     row => window.TodayStartUtc.AddHours(window.OffsetHours).Date.AddHours(row.Hour),
                     row => row.Count),
-            DashboardGranularity.Month => (await local
+            DashboardGranularityEnum.Month => (await local
                     .GroupBy(moment => new { moment.Year, moment.Month })
                     .Select(group => new { group.Key.Year, group.Key.Month, Count = group.Count() })
                     .ToArrayAsync(cancellationToken))

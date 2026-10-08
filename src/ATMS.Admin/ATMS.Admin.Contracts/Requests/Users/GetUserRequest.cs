@@ -6,7 +6,7 @@ using ATMS.Data.Enums;
 namespace ATMS.Admin.Contracts.Requests.Users;
 
 [Access(PermissionEnum.UserView)]
-public class GetUserRequest : IRequest<UserModel>
+public sealed class GetUserRequest : IRequest<UserModel>
 {
     public Guid Id { get; set; }
 }

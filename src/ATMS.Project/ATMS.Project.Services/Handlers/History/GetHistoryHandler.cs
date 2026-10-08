@@ -5,13 +5,13 @@ using ATMS.Project.Contracts.Requests.History;
 using ATMS.Project.Data.Criteria.History;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.History.Interfaces;
+using ATMS.Project.Services.Domain.History.Interfaces;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.History;
 
-// Not cached: every save adds to it, and it is read far less often than it is written.
-public class GetHistoryHandler(
+// not cached: every save adds to it, and it's read much less than written
+public sealed class GetHistoryHandler(
     IHistoryScopeService historyScopeService,
     IHistoryRepository historyRepository,
     IHistoryValueResolver historyValueResolver)

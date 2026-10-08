@@ -6,7 +6,7 @@ using ATMS.Data.Enums;
 namespace ATMS.Project.Contracts.Requests.Organizations;
 
 [Access(PermissionEnum.OrganizationView)]
-public class GetOrganizationRequest : IRequest<OrganizationModel>
+public sealed class GetOrganizationRequest : IRequest<OrganizationModel>
 {
     public required Guid Id { get; set; }
 }

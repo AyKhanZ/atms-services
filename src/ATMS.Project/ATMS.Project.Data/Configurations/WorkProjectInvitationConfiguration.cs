@@ -4,14 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class WorkProjectInvitationConfiguration : IEntityTypeConfiguration<WorkProjectInvitation>
+public sealed class WorkProjectInvitationConfiguration : IEntityTypeConfiguration<WorkProjectInvitation>
 {
     public void Configure(EntityTypeBuilder<WorkProjectInvitation> builder)
     {
         builder.ToTable("ProjectInvitations");
 
-        // Not unique: an invitation nobody answered for 24 hours stays pending in the table, and the
-        // same email may be invited again. The validator keeps live duplicates out.
+        // not unique: old unanswered invites stay in the table and the email can be invited again
         builder.HasIndex(e => new { e.WorkProjectId, e.NormalizedEmail })
             .HasFilter("\"Status\" = 1");
 

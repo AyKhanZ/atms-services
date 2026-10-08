@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
 using ATMS.Application.Localization;
 using ATMS.Caching.Constants;
@@ -13,7 +14,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkProjects;
 
-public class GetWorkProjectHandler(
+public sealed class GetWorkProjectHandler(
     ICurrentUser currentUser,
     IWorkProjectRepository workProjectRepository,
     IWorkProjectInvitationRepository invitationRepository,
@@ -28,7 +29,7 @@ public class GetWorkProjectHandler(
             {
                 var criteria = new AccessibleWorkProjectsCriteria(currentUser.Id, currentUser.RoleId);
                 var project = await workProjectRepository.GetAsync(request.Id, criteria, cancellationToken)
-                    ?? throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+                    ?? throw new EntityException(EntityErrorTypeEnum.NotFound, WorkProjectMessages.NotFound);
                 var invitations = await invitationRepository.GetLivePendingAsync(project.Id, cancellationToken);
 
                 var model = mapper.Map<WorkProjectModel>(project);
@@ -37,6 +38,6 @@ public class GetWorkProjectHandler(
                 return model;
             },
             CacheTtl.Entity,
-            cancellationToken) ?? throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+            cancellationToken) ?? throw new EntityException(EntityErrorTypeEnum.NotFound, WorkProjectMessages.NotFound);
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Admin.Data.Configurations.Dictionaries;
 
-public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
+public sealed class PermissionConfiguration : IEntityTypeConfiguration<Permission>
 {
     public void Configure(EntityTypeBuilder<Permission> builder)
     {
@@ -56,7 +56,7 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
     }
 }
 
-public class PermissionTranslationConfiguration : IEntityTypeConfiguration<PermissionTranslation>
+public sealed class PermissionTranslationConfiguration : IEntityTypeConfiguration<PermissionTranslation>
 {
     public void Configure(EntityTypeBuilder<PermissionTranslation> builder)
     {

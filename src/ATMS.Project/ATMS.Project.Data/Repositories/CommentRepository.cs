@@ -4,6 +4,7 @@ using ATMS.Data.Enums;
 using ATMS.Project.Data.Criteria.WorkTasks;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Entities;
+using ATMS.Project.Data.Enums;
 using ATMS.Project.Data.Models.Comments;
 using ATMS.Project.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -81,15 +82,15 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
         var visibleProjectIds = accessibleProjects
             .Apply(context.WorkProjects.AsNoTracking())
             .Select(project => project.Id);
-        // Anonymous rows on every side: a UNION ALL is translated only from plain column projections.
-        // One sequence numbers projects, tickets and tasks, so a code names one of them at most.
+        // UNION ALL is translated only from plain column projections
+        // projects, tickets and tasks share one code sequence, so a code matches one of them at most
         var projects = context.WorkProjects
             .AsNoTracking()
             .Where(project => codes.Contains(project.Code) && visibleProjectIds.Contains(project.Id))
             .Select(project => new
             {
                 project.Code,
-                Kind = CommentReferenceKind.Project,
+                Kind = CommentReferenceKindEnum.Project,
                 IsSubtask = false,
                 project.Title,
                 StatusId = project.ProjectStatusId,
@@ -103,7 +104,7 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
             .Select(ticket => new
             {
                 ticket.Code,
-                Kind = CommentReferenceKind.Ticket,
+                Kind = CommentReferenceKindEnum.Ticket,
                 IsSubtask = false,
                 ticket.Title,
                 StatusId = ticket.WorkTicketStatusId,
@@ -117,7 +118,7 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
             .Select(task => new
             {
                 task.Code,
-                Kind = CommentReferenceKind.Task,
+                Kind = CommentReferenceKindEnum.Task,
                 IsSubtask = task.ParentWorkTaskId != null,
                 task.Title,
                 task.StatusId,
@@ -145,8 +146,7 @@ public sealed class CommentRepository(ProjectDbContext context) : ICommentReposi
 
     public Task SaveChangesAsync(CancellationToken cancellationToken) => context.SaveChangesAsync(cancellationToken);
 
-    // Deleted comments stay in the discussion as placeholders; only their own filter is lifted, so
-    // a deleted task, ticket or project still hides its comments.
+    // deleted comments stay as placeholders; only their filter is lifted, a deleted task still hides them
     private IQueryable<Comment> WithDeleted() =>
         context.Comments.AsNoTracking().IgnoreQueryFilters([ProjectDbContext.CommentSoftDeleteFilter]);
 

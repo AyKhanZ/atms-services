@@ -11,7 +11,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Search;
 
-public class GetGlobalSearchHandler(
+public sealed class GetGlobalSearchHandler(
     ICurrentUser currentUser,
     IGlobalSearchRepository repository,
     IGlobalSearchRecentRepository recentRepository,
@@ -21,7 +21,7 @@ public class GetGlobalSearchHandler(
     {
         var search = request.Q?.Trim();
         var isSuperAdmin = currentUser.RoleId == RoleIds.SuperAdmin;
-        if (string.IsNullOrEmpty(search))
+        if (string.IsNullOrWhiteSpace(search))
         {
             var recent = await recentRepository.GetRecentAsync(
                 currentUser.Id, isSuperAdmin, CultureHelper.CurrentLanguage, cancellationToken);
@@ -41,10 +41,10 @@ public class GetGlobalSearchHandler(
         var groups = rows.ToLookup(row => row.ItemType);
         return new GlobalSearchModel
         {
-            Projects = MapGroup(groups[GlobalSearchItemType.Project], request.Take),
-            Tickets = MapGroup(groups[GlobalSearchItemType.Ticket], request.Take),
-            Tasks = MapGroup(groups[GlobalSearchItemType.Task], request.Take),
-            Subtasks = MapGroup(groups[GlobalSearchItemType.Subtask], request.Take)
+            Projects = MapGroup(groups[GlobalSearchItemTypeEnum.Project], request.Take),
+            Tickets = MapGroup(groups[GlobalSearchItemTypeEnum.Ticket], request.Take),
+            Tasks = MapGroup(groups[GlobalSearchItemTypeEnum.Task], request.Take),
+            Subtasks = MapGroup(groups[GlobalSearchItemTypeEnum.Subtask], request.Take)
         };
     }
 

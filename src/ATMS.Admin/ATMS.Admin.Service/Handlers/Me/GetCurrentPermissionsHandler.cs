@@ -1,6 +1,7 @@
 using ATMS.Admin.Contracts.Requests.Me;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Constants;
@@ -9,7 +10,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Me;
 
-public class GetCurrentPermissionsHandler(
+public sealed class GetCurrentPermissionsHandler(
     IUserRepository userRepository,
     ICurrentUser currentUser,
     ICacheService cache) : IRequestHandler<GetCurrentPermissionsRequest, string[]>
@@ -19,7 +20,7 @@ public class GetCurrentPermissionsHandler(
         var isExist = await userRepository.IsExistAsync(r => r.Id == currentUser.Id, cancellationToken);
         if (!isExist)
         {
-            throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
         }
         
         return await cache.GetOrSetAsync(

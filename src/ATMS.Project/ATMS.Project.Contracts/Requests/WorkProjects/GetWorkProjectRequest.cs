@@ -8,7 +8,7 @@ namespace ATMS.Project.Contracts.Requests.WorkProjects;
 
 [Access(PermissionEnum.ProjectView)]
 [ProjectAccess(ProjectPermissionEnum.ProjectView)]
-public class GetWorkProjectRequest : IRequest<WorkProjectModel>, IProjectScopedRequest
+public sealed class GetWorkProjectRequest : IRequest<WorkProjectModel>, IProjectScopedRequest
 {
     public Guid Id { get; set; }
 

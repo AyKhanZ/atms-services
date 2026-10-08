@@ -9,7 +9,7 @@ namespace ATMS.Project.Contracts.Requests.WorkTaskBoard;
 
 /// <summary>A page of tasks and subtasks from every project the caller may see.</summary>
 [Access(PermissionEnum.ProjectView)]
-public class GetWorkTaskBoardRequest : GetKeysetPaginationRequest, IRequest<KeysetPagedResult<WorkTaskModel>>
+public sealed class GetWorkTaskBoardRequest : GetKeysetPaginationRequest, IRequest<KeysetPagedResult<WorkTaskModel>>
 {
     /// <summary>Order by: board rank (1), close date (2), deadline (3), priority (4), title (5), state (6: New, In Progress, Done), numeric code (7).</summary>
     public int Sort { get; init; } = (int)WorkTaskBoardSortEnum.Rank;

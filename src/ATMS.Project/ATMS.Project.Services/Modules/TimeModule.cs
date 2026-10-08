@@ -1,6 +1,7 @@
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
-using ATMS.Project.Services.Time;
+using ATMS.Project.Services.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +17,7 @@ public static class TimeModule
         if (string.IsNullOrWhiteSpace(id))
         {
             throw new ConfigurationException(
-                ConfigurationErrorType.BusinessTimeZoneNotFound,
+                ConfigurationErrorTypeEnum.BusinessTimeZoneNotFound,
                 string.Format(LogMessages.ConfigSectionNotFound, "BusinessTimeZone"));
         }
 
@@ -28,7 +29,7 @@ public static class TimeModule
         catch (Exception exception) when (exception is TimeZoneNotFoundException or InvalidTimeZoneException)
         {
             throw new ConfigurationException(
-                ConfigurationErrorType.BusinessTimeZoneUnavailable,
+                ConfigurationErrorTypeEnum.BusinessTimeZoneUnavailable,
                 $"BusinessTimeZone '{id}' is unavailable on this server.");
         }
 

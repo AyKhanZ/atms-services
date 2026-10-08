@@ -1,5 +1,5 @@
-using ATMS.Project.Services.Board;
-using ATMS.Project.Services.Board.Interfaces;
+using ATMS.Project.Services.Domain.Board;
+using ATMS.Project.Services.Domain.Board.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Project.Services.Modules;

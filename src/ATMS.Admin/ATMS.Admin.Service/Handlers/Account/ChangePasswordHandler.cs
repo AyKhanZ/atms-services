@@ -7,6 +7,7 @@ using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Enums;
 using FluentValidation;
@@ -26,32 +27,31 @@ public sealed class ChangePasswordHandler(
     public async Task<AccessInfoModel> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
     {
         var user = await userRepository.FindAsync(u => u.Id == currentUser.Id, cancellationToken)
-            ?? throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+            ?? throw new EntityException(EntityErrorTypeEnum.NotFound, AccountMessages.UserNotFound);
 
         var now = DateTime.UtcNow;
         if (user.UserStatusId == (int)UserStatusEnum.Locked &&
             user.LockoutEnd.HasValue && user.LockoutEnd > now)
         {
             var remainingMinutes = Math.Ceiling((user.LockoutEnd.Value - now).TotalMinutes);
-            throw new AuthException(AuthErrorType.AccountLocked,
+            throw new AuthException(AuthErrorTypeEnum.AccountLocked,
                 string.Format(AuthMessages.AccountLocked, remainingMinutes));
         }
 
         if (user.UserStatusId == (int)UserStatusEnum.Inactive)
         {
-            throw new AuthException(AuthErrorType.AccountInactive, AuthMessages.AccountInactive);
+            throw new AuthException(AuthErrorTypeEnum.AccountInactive, AuthMessages.AccountInactive);
         }
 
-        // Set by an administrator: no new password and no new tokens until they lift it.
+        // locked by admin (no end date), nothing works until they unlock
         if (user.UserStatusId == (int)UserStatusEnum.Locked && !user.LockoutEnd.HasValue)
         {
-            throw new AuthException(AuthErrorType.AccountLocked, AuthMessages.AccountLockedByAdministrator);
+            throw new AuthException(AuthErrorTypeEnum.AccountLocked, AuthMessages.AccountLockedByAdministrator);
         }
 
         if (!passwordHasherService.Verify(command.OldPassword, user.PasswordHash))
         {
-            // Counted in the database in one statement, so parallel wrong passwords cannot all read
-            // the same number and slip past the limit.
+            // counted in one sql statement, so parallel attempts can't skip the limit
             var lockedNow = await userRepository.RegisterFailedPasswordAsync(
                 user.Id,
                 5,
@@ -59,10 +59,9 @@ public sealed class ChangePasswordHandler(
                 now.AddMinutes(15),
                 cancellationToken);
 
-            // The attempt that locks the account says so at once, not on the next try.
             if (lockedNow)
             {
-                throw new AuthException(AuthErrorType.AccountLocked,
+                throw new AuthException(AuthErrorTypeEnum.AccountLocked,
                     string.Format(AuthMessages.AccountLocked, 15));
             }
 
@@ -72,8 +71,7 @@ public sealed class ChangePasswordHandler(
         }
 
         user.FailedLoginCount = 0;
-        // Only the timed lockout from wrong passwords is lifted; a lock with no end date was set by
-        // hand and stays.
+        // only the timed lock from wrong passwords is lifted, an admin lock stays
         if (user.UserStatusId == (int)UserStatusEnum.Locked && user.LockoutEnd.HasValue)
         {
             user.UserStatusId = (int)UserStatusEnum.Active;
@@ -99,7 +97,7 @@ public sealed class ChangePasswordHandler(
             SessionVersion = user.SessionVersion
         }, cancellationToken);
 
-        // Another password change won the race: its session is the one that stays.
+        // another password change won the race, its session stays
         if (!await userRepository.TrySavePasswordChangeAsync(user, expectedVersion, now, cancellationToken))
         {
             throw new ConflictException(AccountMessages.PasswordChangedConcurrently);

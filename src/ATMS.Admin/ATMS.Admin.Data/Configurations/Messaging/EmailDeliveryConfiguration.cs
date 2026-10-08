@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Admin.Data.Configurations.Messaging;
 
-public class EmailDeliveryConfiguration : IEntityTypeConfiguration<EmailDelivery>
+public sealed class EmailDeliveryConfiguration : IEntityTypeConfiguration<EmailDelivery>
 {
     public void Configure(EntityTypeBuilder<EmailDelivery> builder)
     {
@@ -21,8 +21,7 @@ public class EmailDeliveryConfiguration : IEntityTypeConfiguration<EmailDelivery
         builder.Property(x => x.PasswordResetToken)
             .HasMaxLength(2000);
 
-        // Name, space and surname of the user who invited. A super administrator registers names of up
-        // to 100, so the longest is 100 + 1 + 100.
+        // "Name Surname", each up to 100, so 100 + 1 + 100
         builder.Property(x => x.InviterName)
             .HasMaxLength(201);
 

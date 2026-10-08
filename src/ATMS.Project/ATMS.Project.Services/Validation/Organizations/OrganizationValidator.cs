@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.Organizations;
 
-public class OrganizationValidator : AbstractValidator<OrganizationCommand>
+public sealed class OrganizationValidator : AbstractValidator<OrganizationCommand>
 {
     private readonly IOrganizationRepository _organizationRepository;
     

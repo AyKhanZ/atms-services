@@ -5,6 +5,7 @@ using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Enums;
@@ -22,7 +23,7 @@ public sealed class SaveSecurityHandler(
     public async Task<OnboardingModel> Handle(SaveSecurityCommand command, CancellationToken cancellationToken)
     {
         var progress = await onboardingRepository.GetAsync(currentUser.Id, cancellationToken)
-            ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
 
         progress.PendingPasswordHash = passwordHasherService.Hash(command.Password);
         progress.SecurityStatus = (int)OnboardingStepStatusEnum.Completed;

@@ -7,7 +7,7 @@ namespace ATMS.Project.Contracts.Commands.WorkTasks;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.TaskDelete)]
-public class DeleteWorkTaskCommand : IRequest, IProjectScopedRequest
+public sealed class DeleteWorkTaskCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
     public Guid WorkTaskId { get; set; }

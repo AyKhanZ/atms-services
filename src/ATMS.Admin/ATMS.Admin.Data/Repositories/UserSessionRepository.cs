@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Repositories;
 
-public class UserSessionRepository(AdminDbContext context) : IUserSessionRepository
+public sealed class UserSessionRepository(AdminDbContext context) : IUserSessionRepository
 {
     public Task<UserSession?> FindByTokenHashAsync(string tokenHash, CancellationToken cancellationToken)
     {

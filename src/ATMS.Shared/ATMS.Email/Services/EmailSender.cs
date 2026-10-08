@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATMS.Email.Services;
 
-public class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSender> logger) : IEmailSender
+public sealed class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSender> logger) : IEmailSender
 {
     private const string InviteSubject = "Confirm your account";
     private const string ForgotPasswordSubject = "Reset your password";
@@ -38,7 +38,6 @@ public class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSe
             cancellationToken);
     }
 
-    // The subject says what happened, so the inbox list alone is enough to know it.
     public Task SendAsync(string to, TaskAssignedModel model, CancellationToken cancellationToken)
     {
         return SendTemplateAsync(

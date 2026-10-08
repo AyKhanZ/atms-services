@@ -8,7 +8,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Dictionaries;
 
-public class GetUserStatusDictionariesHandler(
+public sealed class GetUserStatusDictionariesHandler(
     IDictionariesRepository dictionariesRepository,
     ICacheService cache)
     : IRequestHandler<GetUserStatusDictionariesRequest, DictionaryModel[]>

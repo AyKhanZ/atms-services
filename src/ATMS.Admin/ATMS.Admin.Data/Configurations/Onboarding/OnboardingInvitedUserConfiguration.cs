@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Admin.Data.Configurations.Onboarding;
 
-public class OnboardingInvitedUserConfiguration : IEntityTypeConfiguration<OnboardingInvitedUser>
+public sealed class OnboardingInvitedUserConfiguration : IEntityTypeConfiguration<OnboardingInvitedUser>
 {
     public void Configure(EntityTypeBuilder<OnboardingInvitedUser> builder)
     {

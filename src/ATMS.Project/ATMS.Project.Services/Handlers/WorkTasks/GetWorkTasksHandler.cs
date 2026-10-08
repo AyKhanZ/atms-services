@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Models.WorkTasks;
 using ATMS.Project.Contracts.Requests.WorkTasks;
@@ -13,7 +14,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTasks;
 
-public class GetWorkTasksHandler(
+public sealed class GetWorkTasksHandler(
     IWorkProjectRepository workProjectRepository,
     IWorkTaskRepository workTaskRepository,
     IMapper mapper) : IRequestHandler<GetWorkTasksRequest, KeysetPagedResult<WorkTaskModel>>
@@ -30,7 +31,7 @@ public class GetWorkTasksHandler(
 
         if (!await workProjectRepository.IsExistAsync(project => project.Id == request.ProjectId, cancellationToken))
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkProjectMessages.NotFound);
         }
 
         var criteria = new WorkTasksByProjectCriteria(

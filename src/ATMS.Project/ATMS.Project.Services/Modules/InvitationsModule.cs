@@ -1,5 +1,5 @@
-using ATMS.Project.Services.Invitations;
-using ATMS.Project.Services.Invitations.Interfaces;
+using ATMS.Project.Services.Domain.Invitations;
+using ATMS.Project.Services.Domain.Invitations.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Project.Services.Modules;

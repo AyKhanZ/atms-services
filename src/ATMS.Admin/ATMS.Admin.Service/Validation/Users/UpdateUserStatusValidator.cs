@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Users;
 
-public class UpdateUserStatusValidator: AbstractValidator<UpdateUserStatusCommand>
+public sealed class UpdateUserStatusValidator: AbstractValidator<UpdateUserStatusCommand>
 {
     private readonly IDictionariesRepository _dictionariesRepository;
 

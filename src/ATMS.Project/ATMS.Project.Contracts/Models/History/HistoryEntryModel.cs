@@ -2,7 +2,7 @@ using ATMS.Project.Contracts.Models.Users;
 
 namespace ATMS.Project.Contracts.Models.History;
 
-public class HistoryEntryModel
+public sealed class HistoryEntryModel
 {
     public Guid Id { get; set; }
 

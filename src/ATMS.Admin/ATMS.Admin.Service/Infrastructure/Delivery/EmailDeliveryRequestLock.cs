@@ -1,6 +1,6 @@
 namespace ATMS.Admin.Service.Infrastructure.Delivery;
 
-public class EmailDeliveryRequestLock
+public sealed class EmailDeliveryRequestLock
 {
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 

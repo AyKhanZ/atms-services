@@ -1,6 +1,6 @@
 namespace ATMS.Project.Contracts.Models.Attachments;
 
-public class AttachmentTreeGroupModel
+public sealed class AttachmentTreeGroupModel
 {
     public Guid Id { get; set; }
     public string Title { get; set; }

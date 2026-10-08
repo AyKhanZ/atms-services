@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Project.Contracts.Models.WorkGroups;
 using ATMS.Project.Contracts.Requests.WorkGroups;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -8,7 +9,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkGroups;
 
-public class GetWorkGroupsHandler(
+public sealed class GetWorkGroupsHandler(
     IWorkProjectRepository workProjectRepository,
     IWorkGroupRepository workGroupRepository,
     IMapper mapper) : IRequestHandler<GetWorkGroupsRequest, WorkGroupModel[]>
@@ -17,7 +18,7 @@ public class GetWorkGroupsHandler(
     {
         if (!await workProjectRepository.IsExistAsync(project => project.Id == request.ProjectId, cancellationToken))
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkProjectMessages.NotFound);
         }
 
         var queryResult = await workGroupRepository.GetGroupsAsync(request.ProjectId, cancellationToken);

@@ -3,6 +3,7 @@ using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Contracts.Events.Users;
 using ATMS.Data.Constants;
@@ -47,10 +48,8 @@ public class UserInvitedConsumer(
         var exists = await userRepository.FindAsync(u => u.NormalizedEmail == normalizedEmail, cancellationToken);
         if (exists is not null)
         {
-            // Project waits for a user created event to settle a project invitation. A user who was
-            // registered a moment before the invitation would never send one, and the invitation
-            // would wait forever — so the existing user is announced again. Project treats it as an
-            // update and decides whether the invitation can be accepted.
+            // project waits for UserCreated to settle the invitation, an existing user never sends it
+            // so the user is sent again and project treats it as an update
             var existingRole = (await userRepository.GetRolesAsync(exists.Id, cancellationToken)).FirstOrDefault();
             if (existingRole is null)
             {
@@ -89,7 +88,7 @@ public class UserInvitedConsumer(
         if (role is null)
         {
             throw new ConfigurationException(
-                ConfigurationErrorType.MissingSeedData,
+                ConfigurationErrorTypeEnum.MissingSeedData,
                 string.Format(LogMessages.MissingSeedData, RoleIds.Client));
         }
 

@@ -2,7 +2,7 @@ using ATMS.Project.Contracts.Models.Users;
 
 namespace ATMS.Project.Contracts.Models.Notifications;
 
-public class NotificationModel
+public sealed class NotificationModel
 {
     public Guid Id { get; set; }
 

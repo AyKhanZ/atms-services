@@ -2,6 +2,7 @@ using ATMS.Admin.Contracts.Models.Me;
 using ATMS.Admin.Contracts.Requests.Me;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Constants;
@@ -11,7 +12,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Me;
 
-public class GetMeHandler(
+public sealed class GetMeHandler(
     IUserRepository userRepository,
     ICurrentUser currentUser,
     IMapper mapper,
@@ -40,7 +41,7 @@ public class GetMeHandler(
     private async Task<MeModel> GetFromDb(CancellationToken cancellationToken)
     {
         var user = await userRepository.GetMeAsync(currentUser.Id, cancellationToken)
-                   ?? throw new AuthException(AuthErrorType.InvalidCredentials,
+                   ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials,
                        LogMessages.InvalidCredentials);
 
         return mapper.Map<MeModel>(user);

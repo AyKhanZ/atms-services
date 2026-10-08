@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Criteria.Organizations;
 
-public class OrganizationFilter : ACriteria<Organization>
+public sealed class OrganizationFilter : ACriteria<Organization>
 {
     public string? Search { get; init; }
     

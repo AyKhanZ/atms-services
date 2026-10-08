@@ -4,7 +4,7 @@ using AutoMapper;
 
 namespace ATMS.Admin.Service.Mappers;
 
-public class RequestToFilterProfile : Profile
+public sealed class RequestToFilterProfile : Profile
 {
     public RequestToFilterProfile()
     {

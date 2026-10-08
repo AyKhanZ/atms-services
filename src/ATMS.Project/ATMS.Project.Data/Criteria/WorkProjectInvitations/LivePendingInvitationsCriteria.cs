@@ -4,10 +4,7 @@ using ATMS.Project.Data.Entities;
 
 namespace ATMS.Project.Data.Criteria.WorkProjectInvitations;
 
-// Admin retries an invitation for about 16 hours. One still unanswered after 24 is dead: it is not
-// shown, takes no place in the project and does not stop the same email from being invited again.
-// Nothing deletes it — the row simply stops counting. Both the invitation and the participant
-// repositories count with this one rule.
+// an invite unanswered for 24h is dead: hidden, takes no place, the email can be invited again
 public sealed class LivePendingInvitationsCriteria(Guid workProjectId) : ACriteria<WorkProjectInvitation>
 {
     public override IQueryable<WorkProjectInvitation> Apply(IQueryable<WorkProjectInvitation> query)

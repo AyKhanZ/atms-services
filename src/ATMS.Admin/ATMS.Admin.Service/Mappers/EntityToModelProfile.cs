@@ -13,7 +13,7 @@ using AutoMapper;
 
 namespace ATMS.Admin.Service.Mappers;
 
-public class EntityToModelProfile : Profile
+public sealed class EntityToModelProfile : Profile
 {
     public EntityToModelProfile()
     {

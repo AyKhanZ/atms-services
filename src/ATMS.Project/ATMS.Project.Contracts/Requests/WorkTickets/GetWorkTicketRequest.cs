@@ -8,7 +8,7 @@ namespace ATMS.Project.Contracts.Requests.WorkTickets;
 
 [Access(PermissionEnum.ProjectView)]
 [ProjectAccess(ProjectPermissionEnum.ProjectView)]
-public class GetWorkTicketRequest : IRequest<WorkTicketModel>, IProjectScopedRequest
+public sealed class GetWorkTicketRequest : IRequest<WorkTicketModel>, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

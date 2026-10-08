@@ -1,10 +1,14 @@
 namespace ATMS.Email.Models;
 
-public class AddedToProjectModel
+public sealed class AddedToProjectModel
 {
     public required string Name { get; set; }
+
     public required string Surname { get; set; }
+
     public required string ActorName { get; set; }
+
     public required string ProjectTitle { get; set; }
+
     public required string Link { get; set; }
 }

@@ -60,15 +60,6 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Role with this name already exists ..
-        /// </summary>
-        public static string AlreadyExists {
-            get {
-                return ResourceManager.GetString("AlreadyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Role not found ..
         /// </summary>
         public static string NotFound {
@@ -77,22 +68,5 @@ namespace ATMS.Admin.Service.Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to One or more permissions do not exist ..
-        /// </summary>
-        public static string PermissionsNotFound {
-            get {
-                return ResourceManager.GetString("PermissionsNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to At least one permission should be entered ..
-        /// </summary>
-        public static string PermissionsRequired {
-            get {
-                return ResourceManager.GetString("PermissionsRequired", resourceCulture);
-            }
-        }
     }
 }

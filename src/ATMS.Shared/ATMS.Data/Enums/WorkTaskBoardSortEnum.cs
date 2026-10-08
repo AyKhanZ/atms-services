@@ -1,6 +1,6 @@
 namespace ATMS.Data.Enums;
 
-/// <summary>What the Tasks page orders by; which way round comes from the request's sort direction.</summary>
+// the direction comes from the request's sort direction
 public enum WorkTaskBoardSortEnum
 {
     Rank = 1,

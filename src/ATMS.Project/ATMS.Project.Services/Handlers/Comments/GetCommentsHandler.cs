@@ -5,7 +5,7 @@ using ATMS.Project.Contracts.Requests.Comments;
 using ATMS.Project.Data.Criteria.Comments;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Comments.Interfaces;
+using ATMS.Project.Services.Domain.Comments.Interfaces;
 using AutoMapper;
 using MediatR;
 

@@ -11,7 +11,7 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/project/{projectId:guid}/work-groups")]
-public class WorkGroupController(IMediator mediator) : ControllerBase
+public sealed class WorkGroupController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Returns the project's root groups with their milestones.

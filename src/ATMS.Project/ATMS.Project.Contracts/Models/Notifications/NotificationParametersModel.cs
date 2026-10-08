@@ -1,6 +1,6 @@
 namespace ATMS.Project.Contracts.Models.Notifications;
 
-public class NotificationParametersModel
+public sealed class NotificationParametersModel
 {
     public string? ProjectTitle { get; set; }
 

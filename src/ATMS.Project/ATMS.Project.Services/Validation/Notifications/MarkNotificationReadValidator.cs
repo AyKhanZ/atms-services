@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.Notifications;
 
-public class MarkNotificationReadValidator : AbstractValidator<MarkNotificationReadCommand>
+public sealed class MarkNotificationReadValidator : AbstractValidator<MarkNotificationReadCommand>
 {
     public MarkNotificationReadValidator(INotificationRepository notificationRepository, ICurrentUser currentUser)
     {

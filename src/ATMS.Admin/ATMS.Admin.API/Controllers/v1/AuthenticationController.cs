@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ATMS.Admin.API.Controllers.v1;
 
 [Route("api/v1/auth")]
-public class AuthenticationController(IMediator mediator) : ControllerBase
+public sealed class AuthenticationController(IMediator mediator) : ControllerBase
 {
 
     /// <summary>

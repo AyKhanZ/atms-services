@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using ATMS.Admin.Data.DbContexts;
 using ATMS.Admin.Data.Entities.Tokens;
 using ATMS.Admin.Data.Repositories.Interfaces;
@@ -6,12 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Repositories;
 
-public class PasswordResetTokenRepository(AdminDbContext context) : IPasswordResetTokenRepository
+public sealed class PasswordResetTokenRepository(AdminDbContext context) : IPasswordResetTokenRepository
 {
     public void StageConsume(PasswordResetToken passwordResetToken)
     {
-        // The token may have disappeared after it was read. Its DELETE must still affect one row,
-        // otherwise SaveChanges rejects the reset and the password transaction rolls back.
+        // if a parallel reset already deleted this link, SaveChanges fails and the whole change rolls back
         context.PasswordResetTokens.Remove(passwordResetToken);
     }
 
@@ -34,11 +33,11 @@ public class PasswordResetTokenRepository(AdminDbContext context) : IPasswordRes
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<bool> IsExistAsync(
-        string passwordResetToken,
+    public Task<bool> IsTokenHashExistsAsync(
+        string tokenHash,
         CancellationToken cancellationToken)
     {
-        return context.PasswordResetTokens.AnyAsync(t => t.Token  == passwordResetToken, cancellationToken);
+        return context.PasswordResetTokens.AnyAsync(t => t.TokenHash == tokenHash, cancellationToken);
     }
 
     public Task<PasswordResetToken?> FindAsync(
@@ -46,5 +45,12 @@ public class PasswordResetTokenRepository(AdminDbContext context) : IPasswordRes
         CancellationToken cancellationToken)
     {
         return context.PasswordResetTokens.FirstOrDefaultAsync(predicate, cancellationToken);
+    }
+
+    public async Task DeleteExpiredAsync(DateTime utcNow, CancellationToken cancellationToken)
+    {
+        await context.PasswordResetTokens
+            .Where(token => token.ExpiresAt < utcNow)
+            .ExecuteDeleteAsync(cancellationToken);
     }
 }

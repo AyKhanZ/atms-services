@@ -10,11 +10,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace ATMS.Project.Data.Interceptors;
 
-/// <summary>
-/// Writes the history in the same SaveChanges as the change itself: the change tracker already
-/// holds the old and the new value of every property, and one transaction means there is never a
-/// change without its history or a history without its change. Handlers write nothing.
-/// </summary>
+// writes history in the same SaveChanges as the change, so there's never one without the other
 public sealed class ProjectHistoryInterceptor(
     IHistoryFieldMap fieldMap,
     IAuditActorAccessor? auditActor = null) : SaveChangesInterceptor
@@ -59,7 +55,7 @@ public sealed class ProjectHistoryInterceptor(
 
     private Dictionary<(HistoryEntityTypeEnum, Guid), Draft> Collect(ProjectDbContext context)
     {
-        // SaveChanges looks for changes only after the interceptors have run.
+        // SaveChanges detects changes only after the interceptors, so do it here
         context.ChangeTracker.DetectChanges();
         DiscardUnsaved(context);
 
@@ -141,7 +137,7 @@ public sealed class ProjectHistoryInterceptor(
                 continue;
             }
 
-            // DateTime.Equals ignores the kind: the same deadline read back as UTC is not a change.
+            // DateTime.Equals ignores Kind, the same deadline read back as UTC isn't a change
             if (!property.IsModified || Equals(property.OriginalValue, property.CurrentValue))
             {
                 continue;
@@ -195,8 +191,7 @@ public sealed class ProjectHistoryInterceptor(
         draft.Changes.Add(change);
     }
 
-    // A participant and their role are separate rows, and a new role is a deleted row plus an added
-    // one. Here they become one change of the project: who, the role before and the role after.
+    // participant and role are separate rows (new role = delete + add), here it becomes one change
     private static void CollectStakeholders(
         ProjectDbContext context,
         Dictionary<(HistoryEntityTypeEnum, Guid), Draft> drafts)
@@ -291,8 +286,7 @@ public sealed class ProjectHistoryInterceptor(
         }
     }
 
-    // A save that failed — a rank taken a moment earlier on the board — is tried again with the
-    // same tracked changes. The entries of the failed attempt would be written twice.
+    // a failed save (rank conflict) is retried with the same changes, drop the old entries or they're written twice
     private static void DiscardUnsaved(ProjectDbContext context)
     {
         var unsaved = context.ChangeTracker.Entries()
@@ -311,7 +305,7 @@ public sealed class ProjectHistoryInterceptor(
             .Select(draft => draft.EntityId)
             .ToArray();
 
-    // A file is saved without its task being loaded, so the task's project is read here.
+    // a file is saved without its task loaded, so read the task's project here
     private static IQueryable<TaskProject> TaskProjects(ProjectDbContext context, Guid[] taskIds) =>
         context.WorkTasks
             .IgnoreQueryFilters()
@@ -333,7 +327,7 @@ public sealed class ProjectHistoryInterceptor(
     private static string? Format(object? value) => value switch
     {
         null => null,
-        string text => string.IsNullOrEmpty(text) ? null : text,
+        string text => string.IsNullOrWhiteSpace(text) ? null : text,
         DateTime date => date.ToString("O", CultureInfo.InvariantCulture),
         IFormattable formattable => formattable.ToString(null, CultureInfo.InvariantCulture),
         _ => value.ToString()

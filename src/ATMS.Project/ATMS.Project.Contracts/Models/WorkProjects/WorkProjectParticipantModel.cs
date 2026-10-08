@@ -1,14 +1,10 @@
+using ATMS.Application.Models;
+
 namespace ATMS.Project.Contracts.Models.WorkProjects;
 
-public class WorkProjectParticipantModel
+public sealed class WorkProjectParticipantModel : AuditUserModel
 {
-    public Guid Id { get; set; }
-
     public Guid UserId { get; set; }
-
-    public string Name { get; set; }
-
-    public string Surname { get; set; }
 
     public string Email { get; set; }
 

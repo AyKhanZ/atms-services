@@ -5,12 +5,13 @@ using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Admin.Service.Security.Interfaces;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Enums;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Account;
 
-public class ResendEmailConfirmationHandler(
+public sealed class ResendEmailConfirmationHandler(
     IUserRepository userRepository,
     IPasswordHasherService passwordHasherService,
     IPasswordService passwordService,
@@ -28,12 +29,12 @@ public class ResendEmailConfirmationHandler(
 
             if (user is null)
             {
-                throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+                throw new EntityException(EntityErrorTypeEnum.NotFound, AccountMessages.UserNotFound);
             }
 
             if (user.EmailConfirmed)
             {
-                throw new AuthException(AuthErrorType.EmailAlreadyConfirmed,
+                throw new AuthException(AuthErrorTypeEnum.EmailAlreadyConfirmed,
                     AccountMessages.EmailAlreadyConfirmed);
             }
 

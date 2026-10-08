@@ -1,13 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ATMS.Infrastructure.Options;
 
-public class AttachmentsOptions
+public sealed class AttachmentsOptions
 {
+    [Required]
     public required string RootPath { get; init; }
+
     public long MaxFileSizeBytes { get; init; } = 25 * 1024 * 1024;
     public int MaxFilesPerOwner { get; init; } = 100;
 
-    // Null until configured: the binder appends a configured array to an initialized one instead of
-    // replacing it, so a default here could never be narrowed from appsettings.
+    // no default: the binder appends to an initialized array instead of replacing it
     public string[]? AllowedExtensions { get; init; }
 
     public static readonly string[] DefaultAllowedExtensions =

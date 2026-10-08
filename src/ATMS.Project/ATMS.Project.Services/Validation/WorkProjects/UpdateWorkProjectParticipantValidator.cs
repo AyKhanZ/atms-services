@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkProjects;
 
-public class UpdateWorkProjectParticipantValidator : AbstractValidator<UpdateWorkProjectParticipantCommand>
+public sealed class UpdateWorkProjectParticipantValidator : AbstractValidator<UpdateWorkProjectParticipantCommand>
 {
     private readonly IWorkProjectRepository workProjectRepository;
     private readonly IRoleRepository roleRepository;

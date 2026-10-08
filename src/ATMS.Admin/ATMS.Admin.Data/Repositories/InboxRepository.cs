@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Repositories;
 
-public class InboxRepository(AdminDbContext context) : IInboxRepository
+public sealed class InboxRepository(AdminDbContext context) : IInboxRepository
 {
     public Task<bool> IsProcessedAsync(
         Guid messageId,

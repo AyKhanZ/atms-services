@@ -9,5 +9,5 @@ public interface IGlobalSearchRecentRepository
         Guid userId, bool isSuperAdmin, string language, CancellationToken cancellationToken);
 
     Task<bool> RecordRecentAsync(
-        Guid userId, bool isSuperAdmin, GlobalSearchItemType itemType, Guid itemId, CancellationToken cancellationToken);
+        Guid userId, bool isSuperAdmin, GlobalSearchItemTypeEnum itemType, Guid itemId, CancellationToken cancellationToken);
 }

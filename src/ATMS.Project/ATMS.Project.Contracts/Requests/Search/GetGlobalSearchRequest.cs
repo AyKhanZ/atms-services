@@ -6,7 +6,7 @@ using MediatR;
 namespace ATMS.Project.Contracts.Requests.Search;
 
 [Access(PermissionEnum.ProjectView)]
-public class GetGlobalSearchRequest : IRequest<GlobalSearchModel>
+public sealed class GetGlobalSearchRequest : IRequest<GlobalSearchModel>
 {
     /// <summary>An exact numeric code, or a title substring of at least three characters, up to 100 after trimming. Empty returns five recent items.</summary>
     public string? Q { get; set; }

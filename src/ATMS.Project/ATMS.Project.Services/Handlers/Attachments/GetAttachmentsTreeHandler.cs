@@ -8,9 +8,8 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Attachments;
 
-// Only the plan levels come back, each with a file count. Files of a ticket are read when its
-// branch is opened, so a project with thousands of files never loads them all at once.
-public class GetAttachmentsTreeHandler(
+// only the tree levels with file counts, files are loaded when a branch is opened
+public sealed class GetAttachmentsTreeHandler(
     IAttachmentRepository attachmentRepository) : IRequestHandler<GetAttachmentsTreeRequest, AttachmentTreeModel>
 {
     public async Task<AttachmentTreeModel> Handle(GetAttachmentsTreeRequest request, CancellationToken cancellationToken)

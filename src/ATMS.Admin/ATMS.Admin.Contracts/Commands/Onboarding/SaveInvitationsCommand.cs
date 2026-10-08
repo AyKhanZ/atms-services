@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ATMS.Admin.Contracts.Commands.Onboarding;
 
-public class SaveInvitationsCommand : IRequest<OnboardingModel>
+public sealed class SaveInvitationsCommand : IRequest<OnboardingModel>
 {
     public required List<InvitedUserCommand> Users { get; set; }
     

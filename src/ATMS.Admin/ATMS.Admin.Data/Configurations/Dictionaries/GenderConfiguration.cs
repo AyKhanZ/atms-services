@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Admin.Data.Configurations.Dictionaries;
 
-public class GenderConfiguration : IEntityTypeConfiguration<Gender>
+public sealed class GenderConfiguration : IEntityTypeConfiguration<Gender>
 {
     public void Configure(EntityTypeBuilder<Gender> builder)
     {
@@ -32,7 +32,7 @@ public class GenderConfiguration : IEntityTypeConfiguration<Gender>
     }
 }
 
-public class GenderTranslationConfiguration : IEntityTypeConfiguration<GenderTranslation>
+public sealed class GenderTranslationConfiguration : IEntityTypeConfiguration<GenderTranslation>
 {
     public void Configure(EntityTypeBuilder<GenderTranslation> builder)
     {

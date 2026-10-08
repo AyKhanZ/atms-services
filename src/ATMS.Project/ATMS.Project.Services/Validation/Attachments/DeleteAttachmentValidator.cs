@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.Attachments;
 
-public class DeleteAttachmentValidator : AbstractValidator<DeleteAttachmentCommand>
+public sealed class DeleteAttachmentValidator : AbstractValidator<DeleteAttachmentCommand>
 {
     private readonly IWorkProjectRepository _workProjectRepository;
     private readonly IAttachmentRepository _attachmentRepository;

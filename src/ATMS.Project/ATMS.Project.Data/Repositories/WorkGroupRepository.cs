@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class WorkGroupRepository(ProjectDbContext context) : IWorkGroupRepository
+public sealed class WorkGroupRepository(ProjectDbContext context) : IWorkGroupRepository
 {
     public async Task<KeysetPagedResult<WorkGroup>> GetMilestonesAsync(
         ACriteria<WorkGroup> criteria,

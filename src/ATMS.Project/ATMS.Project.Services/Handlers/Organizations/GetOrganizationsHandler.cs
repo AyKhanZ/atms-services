@@ -9,7 +9,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Organizations;
 
-public class GetOrganizationsHandler(
+public sealed class GetOrganizationsHandler(
     IOrganizationRepository organizationRepository,
     IMapper mapper)
     : IRequestHandler<GetOrganizationsRequest, PagedResult<OrganizationItemModel>>

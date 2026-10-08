@@ -1,4 +1,6 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
+using ATMS.Infrastructure.Enums;
 using ATMS.Infrastructure.Images;
 using ATMS.Data.Constants;
 using ATMS.Project.Contracts.Commands.Organizations;
@@ -8,7 +10,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Organizations;
 
-public class UpdateOrganizationHandler(
+public sealed class UpdateOrganizationHandler(
     IImageStorage imageStorage,
     IOrganizationRepository organizationRepository)
     : IRequestHandler<UpdateOrganizationCommand>
@@ -20,7 +22,7 @@ public class UpdateOrganizationHandler(
 
         if (entity is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, OrganizationMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, OrganizationMessages.NotFound);
         }
 
         var oldLogoPath = entity.LogoPath;
@@ -32,7 +34,7 @@ public class UpdateOrganizationHandler(
         {
             var storedImage = await imageStorage.SaveAsync(
                 command.Logo,
-                ImageStorageFolder.Organizations,
+                ImageStorageFolderEnum.Organizations,
                 entity.Id,
                 cancellationToken);
 

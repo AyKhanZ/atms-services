@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using ATMS.Infrastructure.Enums;
 
 namespace ATMS.Infrastructure.Images;
 
@@ -6,7 +7,7 @@ public interface IImageStorage
 {
     Task<StoredImage> SaveAsync(
         IFormFile file,
-        ImageStorageFolder folder,
+        ImageStorageFolderEnum folder,
         Guid ownerId,
         CancellationToken cancellationToken);
 

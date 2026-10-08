@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Localization;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
@@ -11,7 +12,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTickets;
 
-public class GetWorkTicketHandler(
+public sealed class GetWorkTicketHandler(
     IWorkTicketRepository workTicketRepository,
     IWorkTaskRepository workTaskRepository,
     ICacheService cache,
@@ -29,17 +30,17 @@ public class GetWorkTicketHandler(
                     request.ProjectId,
                     request.WorkTicketId,
                     cancellationToken)
-                    ?? throw new EntityException(EntityErrorType.NotFound, WorkTicketMessages.NotFound);
+                    ?? throw new EntityException(EntityErrorTypeEnum.NotFound, WorkTicketMessages.NotFound);
 
                 return mapper.Map<WorkTicketModel>(workTicket);
             },
             CacheTtl.Entity,
             cancellationToken)
-            ?? throw new EntityException(EntityErrorType.NotFound, WorkTicketMessages.NotFound);
+            ?? throw new EntityException(EntityErrorTypeEnum.NotFound, WorkTicketMessages.NotFound);
 
         if (workTicket.WorkProjectId != request.ProjectId)
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkTicketMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkTicketMessages.NotFound);
         }
 
         var progress = await workTaskRepository.GetProgressByTicketAsync([workTicket.Id], cancellationToken);

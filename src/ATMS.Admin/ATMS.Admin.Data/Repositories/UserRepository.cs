@@ -10,7 +10,7 @@ using ATMS.Data.Enums;
 
 namespace ATMS.Admin.Data.Repositories;
 
-public class UserRepository(AdminDbContext context) : IUserRepository
+public sealed class UserRepository(AdminDbContext context) : IUserRepository
 {
     public async Task AddAsync(User user, CancellationToken cancellationToken)
     {
@@ -114,12 +114,8 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         DateTime lockoutEnd,
         CancellationToken cancellationToken)
     {
-        // Read-and-write in one UPDATE: Postgres locks the row, so wrong passwords sent in parallel
-        // are counted one after another instead of all reading the same count and writing count + 1.
-        // Only an account that can be locked is touched: active, or with its timed lockout over. Once a
-        // parallel attempt has locked it, the rest no longer count against the next 15 minutes, and a
-        // lock set by an administrator keeps its count. A timed lockout that is over is lifted here as
-        // well, so the account reads as active again. SET reads the old row, RETURNING the new one.
+        // one UPDATE instead of read + write: postgres locks the row, so parallel wrong passwords are counted one by one
+        // only active accounts or ones with an expired timed lock are touched, an admin lock keeps its count
         const int active = (int)UserStatusEnum.Active;
         const int locked = (int)UserStatusEnum.Locked;
 
@@ -142,7 +138,7 @@ public class UserRepository(AdminDbContext context) : IUserRepository
                 """)
             .ToListAsync(cancellationToken);
 
-        // No row: a parallel attempt locked the account first, so it is locked all the same.
+        // no row = a parallel attempt locked it first
         return updated.Count == 0 || updated[0];
     }
 
@@ -152,10 +148,7 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         DateTime revokedAt,
         CancellationToken cancellationToken)
     {
-        // One transaction for the whole password change. The new version is written by a conditional
-        // UPDATE: a second change that read the same version waits on the row lock, then finds the
-        // version moved and matches nothing, so it rolls back instead of issuing a second session under
-        // the same version. A plain read-modify-write would let both through.
+        // version goes up with a conditional UPDATE: a parallel change with the same version matches 0 rows and rolls back
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
         var raised = await context.Database.ExecuteSqlAsync($"""
@@ -170,11 +163,7 @@ public class UserRepository(AdminDbContext context) : IUserRepository
             return false;
         }
 
-        // Old sessions are revoked by a plain UPDATE, not through tracked entities: a session another
-        // device is refreshing at this moment would fail the RevokedAt concurrency check and turn the
-        // whole change into an error. Here it is simply skipped; the session that refresh creates
-        // carries the old version and stops refreshing. The session this change adds is inserted by
-        // SaveChanges below, after this UPDATE, so it stays.
+        // plain UPDATE, not tracked entities: a session being refreshed right now would fail the concurrency check
         await context.Database.ExecuteSqlAsync($"""
             UPDATE "UserSessions"
             SET "RevokedAt" = {revokedAt}
@@ -190,8 +179,7 @@ public class UserRepository(AdminDbContext context) : IUserRepository
         catch (DbUpdateConcurrencyException exception) when (
             exception.Entries.Any(entry => entry.Entity is PasswordResetToken))
         {
-            // A reset token was consumed after it was read; undo the version write, the revoked
-            // sessions and the staged password, and let the handler report an invalid link.
+            // the reset link was used by someone else in the meantime, undo everything
             await transaction.RollbackAsync(cancellationToken);
             context.ChangeTracker.Clear();
             return false;

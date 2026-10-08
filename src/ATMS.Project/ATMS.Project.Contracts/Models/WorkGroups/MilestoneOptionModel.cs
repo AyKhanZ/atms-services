@@ -1,6 +1,6 @@
 namespace ATMS.Project.Contracts.Models.WorkGroups;
 
-public class MilestoneOptionModel
+public sealed class MilestoneOptionModel
 {
     public Guid Id { get; set; }
 

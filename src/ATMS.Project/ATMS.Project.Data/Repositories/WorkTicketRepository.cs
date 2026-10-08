@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class WorkTicketRepository(ProjectDbContext context) : IWorkTicketRepository
+public sealed class WorkTicketRepository(ProjectDbContext context) : IWorkTicketRepository
 {
     public async Task<KeysetPagedResult<WorkTicket>> GetManyAsync(WorkTicketsByProjectCriteria criteria, KeysetPaginationCriteria<WorkTicket> pagination, CancellationToken cancellationToken)
     {

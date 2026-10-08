@@ -1,6 +1,6 @@
 using ATMS.Application.Interfaces;
 using ATMS.Data.Criteria;
-using ATMS.Project.Contracts.Models.WorkTaskBoard;
+using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Requests.WorkTaskBoard;
 using ATMS.Project.Data.Criteria.WorkProjectParticipants;
 using ATMS.Project.Data.Entities;
@@ -10,12 +10,12 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTaskBoard;
 
-public class GetWorkTaskBoardAssigneesHandler(
+public sealed class GetWorkTaskBoardAssigneesHandler(
     ICurrentUser currentUser,
     IWorkTaskBoardRepository workTaskBoardRepository,
-    IMapper mapper) : IRequestHandler<GetWorkTaskBoardAssigneesRequest, WorkTaskBoardAssigneeModel[]>
+    IMapper mapper) : IRequestHandler<GetWorkTaskBoardAssigneesRequest, PersonModel[]>
 {
-    public async Task<WorkTaskBoardAssigneeModel[]> Handle(GetWorkTaskBoardAssigneesRequest request, CancellationToken cancellationToken)
+    public async Task<PersonModel[]> Handle(GetWorkTaskBoardAssigneesRequest request, CancellationToken cancellationToken)
     {
         var filter = mapper.Map<WorkTaskBoardAssigneesFilter>(request);
         var criteria = filter.And(new ExceptSuperAdminCriteria<WorkProjectParticipant>(
@@ -24,6 +24,6 @@ public class GetWorkTaskBoardAssigneesHandler(
 
         var people = await workTaskBoardRepository.GetAssigneesAsync(criteria, cancellationToken);
 
-        return mapper.Map<WorkTaskBoardAssigneeModel[]>(people);
+        return mapper.Map<PersonModel[]>(people);
     }
 }

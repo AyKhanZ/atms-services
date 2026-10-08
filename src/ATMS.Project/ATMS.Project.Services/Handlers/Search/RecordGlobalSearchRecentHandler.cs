@@ -7,17 +7,16 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Search;
 
-public class RecordGlobalSearchRecentHandler(ICurrentUser currentUser, IGlobalSearchRecentRepository repository)
+public sealed class RecordGlobalSearchRecentHandler(ICurrentUser currentUser, IGlobalSearchRecentRepository repository)
     : IRequestHandler<RecordGlobalSearchRecentCommand>
 {
     public Task Handle(RecordGlobalSearchRecentCommand request, CancellationToken cancellationToken)
     {
-        // An item the user cannot see is simply not written. The caller is a background ping sent
-        // while a page opens, so a missing entry is nothing to report and nothing to act on.
+        // an item the user can't see is just not saved, it's a background ping, nothing to report
         return repository.RecordRecentAsync(
             currentUser.Id,
             currentUser.RoleId == RoleIds.SuperAdmin,
-            (GlobalSearchItemType)request.ItemType,
+            (GlobalSearchItemTypeEnum)request.ItemType,
             request.ItemId,
             cancellationToken);
     }

@@ -1,6 +1,6 @@
 namespace ATMS.Admin.Contracts.Commands.Onboarding;
 
-public class InvitedUserCommand
+public sealed class InvitedUserCommand
 {
     public required string Name { get; set; }
     

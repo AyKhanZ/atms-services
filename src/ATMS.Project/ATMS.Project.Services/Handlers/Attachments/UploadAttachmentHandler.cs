@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Options;
 using System.Globalization;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Enums;
 using ATMS.Infrastructure.Files;
@@ -9,28 +11,24 @@ using ATMS.Project.Contracts.Commands.Attachments;
 using ATMS.Project.Contracts.Models.Attachments;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Attachments.Interfaces;
+using ATMS.Project.Services.Domain.Attachments.Interfaces;
 using ATMS.Project.Services.Resources;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Project.Services.Handlers.Attachments;
 
-public class UploadAttachmentHandler(
+public sealed class UploadAttachmentHandler(
     IAttachmentRepository attachmentRepository,
     IFileStorage fileStorage,
     IFileSignatureService fileSignatureService,
     IAttachmentFileNameService fileNameService,
-    IConfiguration configuration,
+    IOptions<AttachmentsOptions> attachmentsOptions,
     IMapper mapper) : IRequestHandler<UploadAttachmentCommand, AttachmentModel>
 {
-    private readonly AttachmentsOptions _options =
-        configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()
-        ?? throw new ConfigurationException(ConfigurationErrorType.AttachmentsSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(AttachmentsOptions)));
+    private readonly AttachmentsOptions _options = attachmentsOptions.Value;
 
     public async Task<AttachmentModel> Handle(UploadAttachmentCommand command, CancellationToken cancellationToken)
     {
@@ -38,8 +36,7 @@ public class UploadAttachmentHandler(
         var extension = Path.GetExtension(file.FileName).TrimStart('.').ToLowerInvariant();
         var now = DateTime.UtcNow;
 
-        // Project first, so one project can be backed up or moved as a folder; month next, so no
-        // folder collects tens of thousands of files.
+        // project/month folders: one project is easy to back up and no folder gets thousands of files
         var directory = string.Join(
             '/',
             command.ProjectId.ToString("N"),
@@ -68,7 +65,7 @@ public class UploadAttachmentHandler(
             throw;
         }
 
-        // Another upload took the last place while this file was being written.
+        // another upload took the last place while this file was being written
         if (!added)
         {
             await fileStorage.DeleteAsync(relativePath, CancellationToken.None);
@@ -81,7 +78,7 @@ public class UploadAttachmentHandler(
         }
 
         var item = await attachmentRepository.GetAsync(attachment.Id, cancellationToken)
-                   ?? throw new EntityException(EntityErrorType.NotFound, AttachmentMessages.NotFound);
+                   ?? throw new EntityException(EntityErrorTypeEnum.NotFound, AttachmentMessages.NotFound);
 
         return mapper.Map<AttachmentModel>(item);
     }

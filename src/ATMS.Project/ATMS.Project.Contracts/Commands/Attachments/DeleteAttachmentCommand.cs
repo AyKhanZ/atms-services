@@ -7,7 +7,7 @@ namespace ATMS.Project.Contracts.Commands.Attachments;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.TaskEdit)]
-public class DeleteAttachmentCommand : IRequest, IProjectScopedRequest
+public sealed class DeleteAttachmentCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

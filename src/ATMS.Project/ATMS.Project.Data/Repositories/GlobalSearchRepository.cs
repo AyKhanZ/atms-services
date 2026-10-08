@@ -6,8 +6,7 @@ using ATMS.Project.Data.Repositories.Interfaces;
 
 namespace ATMS.Project.Data.Repositories;
 
-/// <summary>Finds projects, tickets, tasks and subtasks by code or title across every project the caller can see.</summary>
-public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRepository
+public sealed class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRepository
 {
     private const int MinimumTitleLength = 3;
     private const int MaximumQueryLength = 100;
@@ -15,25 +14,17 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
     // language=sql
     private const string SearchOrder = """ORDER BY s."CreatedAt" @@dir@@, s."Id" @@dir@@""";
 
-    /// <summary>
-    /// Newest first, the same order every other list in the product uses, and the order a cursor
-    /// can page through. Ordering by code would be wrong twice over: it shows the oldest items
-    /// first, and the column holds digits as text, so #100 would sort before #99.
-    /// </summary>
+    // newest first like every other list; ordering by code would show the oldest first and #100 before #99
     // language=sql
     private const string BranchOrder = """ORDER BY @@alias@@."CreatedAt" @@dir@@, @@alias@@."Id" @@dir@@""";
 
-    private sealed record SearchBranch(GlobalSearchItemType Type, string Alias, string Sql);
+    private sealed record SearchBranch(GlobalSearchItemTypeEnum Type, string Alias, string Sql);
 
-    /// <summary>
-    /// One branch per type, each with its own limit. The limit is what lets the database stop
-    /// reading: a shared window function or a total count would force it to build every match
-    /// first, and a short query matches a large part of the table.
-    /// </summary>
+    // one branch per type with its own limit, so the db can stop reading early
     private static readonly SearchBranch[] Branches =
     [
         // language=sql
-        new(GlobalSearchItemType.Project, "p", """
+        new(GlobalSearchItemTypeEnum.Project, "p", """
         (SELECT 1 AS "ItemType", p."Id", p."Code", p."Title", p."Id" AS "ProjectId",
                 p."ProjectStatusId" AS "StatusId", NULL::uuid AS "AssigneeId",
                 NULL::uuid AS "GroupId", NULL::uuid AS "MilestoneId",
@@ -44,7 +35,7 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
          @@order@@ LIMIT @@limit@@)
         """),
         // language=sql
-        new(GlobalSearchItemType.Ticket, "t", """
+        new(GlobalSearchItemTypeEnum.Ticket, "t", """
         (SELECT 2 AS "ItemType", t."Id", t."Code", t."Title", t."WorkProjectId" AS "ProjectId",
                 t."WorkTicketStatusId" AS "StatusId", t."AssigneeId",
                 t."GroupId", t."WorkGroupId" AS "MilestoneId",
@@ -55,7 +46,7 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
          @@order@@ LIMIT @@limit@@)
         """),
         // language=sql
-        new(GlobalSearchItemType.Task, "t", """
+        new(GlobalSearchItemTypeEnum.Task, "t", """
         (SELECT 3 AS "ItemType", t."Id", t."Code", t."Title", t."WorkProjectId" AS "ProjectId",
                 t."StatusId", t."AssigneeId",
                 ticket."GroupId", ticket."WorkGroupId" AS "MilestoneId",
@@ -68,7 +59,7 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
          @@order@@ LIMIT @@limit@@)
         """),
         // language=sql
-        new(GlobalSearchItemType.Subtask, "t", """
+        new(GlobalSearchItemTypeEnum.Subtask, "t", """
         (SELECT 4 AS "ItemType", t."Id", t."Code", t."Title", t."WorkProjectId" AS "ProjectId",
                 t."StatusId", t."AssigneeId",
                 ticket."GroupId", ticket."WorkGroupId" AS "MilestoneId",
@@ -94,12 +85,10 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
             return Task.FromResult(Array.Empty<GlobalSearchRow>());
         }
 
-        // {0} super admin, {1} user, {2} language, then the predicate values, then the limit.
-        // The limit is one over what was asked for: that extra row is the "is there more"
-        // answer, and it is the only row the database produces beyond the page.
+        // {0} super admin, {1} user, {2} language, then the predicate values, then the limit
+        // limit is take + 1: the extra row tells if there is a next page
         object?[] arguments = [isSuperAdmin, userId, language, .. predicate.Arguments, take + 1];
         var limit = "{" + (arguments.Length - 1) + "}";
-        // The palette always shows the newest first; only the page lets the reader turn it round.
         const SortDirectionEnum newest = SortDirectionEnum.Desc;
         var branches = string.Join(
             "\n    UNION ALL\n",
@@ -109,15 +98,11 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
             context, $", selected AS (\n{branches}\n)", Order(SearchOrder, newest), arguments, cancellationToken);
     }
 
-    /// <summary>
-    /// The "show all" page: one type, paged by the same keyset cursor the other lists use, so a
-    /// long result list is walked in order without an offset and without a total count.
-    /// </summary>
     public Task<GlobalSearchRow[]> SearchPageAsync(
         Guid userId,
         bool isSuperAdmin,
         string search,
-        GlobalSearchItemType itemType,
+        GlobalSearchItemTypeEnum itemType,
         KeysetCursor? cursor,
         SortDirectionEnum sortDirection,
         int pageSize,
@@ -164,18 +149,12 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
             .Replace("@@limit@@", limit);
     }
 
-    /// <summary>The branch limits and the outer order have to agree, or the page would be cut
-    /// from one end and read from the other.</summary>
+    // branch limits and the outer order must agree
     private static string Order(string template, SortDirectionEnum sortDirection) =>
         template.Replace("@@dir@@", sortDirection == SortDirectionEnum.Asc ? "ASC" : "DESC");
 
-    /// <summary>
-    /// A code is matched exactly and a title by "contains", so both halves can use an index and
-    /// the OR between them stays a cheap combination of two index scans. A code prefix could not:
-    /// btree does not serve LIKE under this collation, and one unindexable half of an OR makes the
-    /// planner read the whole table, which costs the title index as well. Sql is null when the
-    /// text gives the database nothing to look for.
-    /// </summary>
+    // code is matched exactly and title by "contains", so both sides of the OR use an index
+    // Sql is null when there is nothing to search for
     private static (string? Sql, object?[] Arguments) BuildPredicate(string search, int firstIndex)
     {
         var text = search.Trim();
@@ -189,8 +168,7 @@ public class GlobalSearchRepository(ProjectDbContext context) : IGlobalSearchRep
             arguments.Add(code);
         }
 
-        // A leading # means the person is naming a code, so the title half is off. Below three
-        // characters the trigram index cannot help and the search would read the whole table.
+        // "#" means searching by code; under 3 chars the trigram index doesn't help
         if (text.Length is >= MinimumTitleLength and <= MaximumQueryLength && !text.StartsWith('#'))
         {
             parts.Add("@@alias@@.\"Title\" ILIKE {" + (firstIndex + arguments.Count) + "} ESCAPE '\\'");

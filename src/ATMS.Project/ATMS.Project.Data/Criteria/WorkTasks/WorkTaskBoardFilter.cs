@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Criteria.WorkTasks;
 
-public class WorkTaskBoardFilter : ACriteria<WorkTask>
+public sealed class WorkTaskBoardFilter : ACriteria<WorkTask>
 {
     private const int MaxSearchLength = 100;
 

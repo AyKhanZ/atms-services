@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkGroups;
 
-public class WorkGroupValidator : AbstractValidator<WorkGroupCommand>
+public sealed class WorkGroupValidator : AbstractValidator<WorkGroupCommand>
 {
     public WorkGroupValidator()
     {

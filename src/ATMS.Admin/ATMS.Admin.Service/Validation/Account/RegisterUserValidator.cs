@@ -8,7 +8,7 @@ using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Account;
 
-public class RegisterUserValidator : AbstractValidator<RegisterCommand>
+public sealed class RegisterUserValidator : AbstractValidator<RegisterCommand>
 {
     private readonly IUserRepository _userRepository;
     private readonly IRoleRepository _roleRepository;

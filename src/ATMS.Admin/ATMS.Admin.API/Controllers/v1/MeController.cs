@@ -9,7 +9,7 @@ namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/me")]
-public class MeController(IMediator mediator) : ControllerBase
+public sealed class MeController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Gets the current user, including an account that is still completing onboarding.

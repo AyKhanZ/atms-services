@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ATMS.Admin.Service.Security;
 
-public class PasswordService : IPasswordService
+public sealed class PasswordService : IPasswordService
 {
     private const string UpperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private const string LowerCaseChars = "abcdefghijklmnopqrstuvwxyz";

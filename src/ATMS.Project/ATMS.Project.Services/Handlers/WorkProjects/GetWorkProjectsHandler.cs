@@ -10,7 +10,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkProjects;
 
-public class GetWorkProjectsHandler(
+public sealed class GetWorkProjectsHandler(
     ICurrentUser currentUser,
     IWorkProjectRepository workProjectRepository,
     IMapper mapper)

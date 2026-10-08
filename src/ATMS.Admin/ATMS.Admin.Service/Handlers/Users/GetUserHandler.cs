@@ -5,6 +5,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Providers.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Localization;
 using ATMS.Application.Models;
 using ATMS.Caching.Constants;
@@ -15,7 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATMS.Admin.Service.Handlers.Users;
 
-public class GetUserHandler(
+public sealed class GetUserHandler(
     IUserRepository userRepository,
     IOrganizationProvider organizationProvider,
     IMapper mapper,
@@ -30,13 +31,13 @@ public class GetUserHandler(
                    factory: () => GetFromDb(request.Id, CultureHelper.CurrentLanguage, cancellationToken),
                    ttl: CacheTtl.Entity,
                    cancellationToken)
-               ?? throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+               ?? throw new EntityException(EntityErrorTypeEnum.NotFound, AccountMessages.UserNotFound);
     }
 
     private async Task<UserModel> GetFromDb(Guid id, string language, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetAsync(id, cancellationToken)
-                   ?? throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+                   ?? throw new EntityException(EntityErrorTypeEnum.NotFound, AccountMessages.UserNotFound);
 
         var model = mapper.Map<UserModel>(user);
         model.Gender = user.Gender.ToDictionaryModel(user.Gender.Translations, language);

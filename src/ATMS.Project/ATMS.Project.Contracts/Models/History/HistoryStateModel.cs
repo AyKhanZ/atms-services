@@ -2,7 +2,7 @@ using ATMS.Project.Contracts.Models.Users;
 
 namespace ATMS.Project.Contracts.Models.History;
 
-public class HistoryStateModel
+public sealed class HistoryStateModel
 {
     public HistoryValueModel Status { get; set; }
 

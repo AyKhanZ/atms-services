@@ -11,9 +11,8 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Attachments;
 
-// Not paged: a task holds at most 100 files and a ticket rarely more than a few hundred, and the
-// client draws a tree from the whole list. The cap keeps a runaway ticket from loading everything.
-public class GetAttachmentsHandler(
+// not paged: max 100 files per task and the client builds a tree from the full list
+public sealed class GetAttachmentsHandler(
     IAttachmentRepository attachmentRepository,
     IMapper mapper) : IRequestHandler<GetAttachmentsRequest, AttachmentListModel>
 {

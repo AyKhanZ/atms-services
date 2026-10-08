@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class HistoryEntryConfiguration : IEntityTypeConfiguration<HistoryEntry>
+public sealed class HistoryEntryConfiguration : IEntityTypeConfiguration<HistoryEntry>
 {
     public void Configure(EntityTypeBuilder<HistoryEntry> builder)
     {
@@ -16,9 +16,7 @@ public class HistoryEntryConfiguration : IEntityTypeConfiguration<HistoryEntry>
         builder.HasIndex(e => new { e.CreatedAt, e.Id })
             .IsDescending();
 
-        // The project history reads only the project, its groups and its milestones, a small part of
-        // the rows. A full index made it walk past every ticket and task entry, and cost an index
-        // write on each of them; this one holds and costs only the rows it is read for.
+        // partial index: project history reads only project/group/milestone rows, a small part of the table
         builder.HasIndex(e => new { e.WorkProjectId, e.CreatedAt, e.Id })
             .IsDescending(false, true, true)
             .HasFilter("\"EntityType\" IN (1, 2, 3)");
@@ -26,7 +24,7 @@ public class HistoryEntryConfiguration : IEntityTypeConfiguration<HistoryEntry>
         builder.Property(e => e.CreatedAt)
             .IsRequired();
 
-        // No foreign key to the entity itself: EntityId points into a different table per type.
+        // no FK: EntityId points to a different table per type
         builder.HasOne<WorkProject>()
             .WithMany()
             .HasForeignKey(e => e.WorkProjectId)

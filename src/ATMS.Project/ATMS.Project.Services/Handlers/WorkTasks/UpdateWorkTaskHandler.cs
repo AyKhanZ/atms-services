@@ -1,18 +1,19 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
-using ATMS.Project.Services.Caching;
-using ATMS.Project.Services.Board.Interfaces;
-using ATMS.Project.Services.Notifications.Interfaces;
+using ATMS.Project.Services.Infrastructure;
+using ATMS.Project.Services.Domain.Board.Interfaces;
+using ATMS.Project.Services.Domain.Notifications.Interfaces;
 using AutoMapper;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTasks;
 
-public class UpdateWorkTaskHandler(
+public sealed class UpdateWorkTaskHandler(
     IMapper mapper,
     IWorkTaskRepository workTaskRepository,
     ICacheService cache,
@@ -22,7 +23,7 @@ public class UpdateWorkTaskHandler(
     public async Task Handle(UpdateWorkTaskCommand command, CancellationToken cancellationToken)
     {
         var workTask = await workTaskRepository.FindAsync(command.ProjectId, command.WorkTaskId, cancellationToken)
-            ?? throw new EntityException(EntityErrorType.NotFound, WorkTaskMessages.NotFound);
+            ?? throw new EntityException(EntityErrorTypeEnum.NotFound, WorkTaskMessages.NotFound);
 
         var previousParentId = workTask.ParentWorkTaskId;
         var previousAssigneeId = workTask.AssigneeId;
@@ -32,7 +33,7 @@ public class UpdateWorkTaskHandler(
                 command.ProjectId,
                 command.ParentWorkTaskId.Value,
                 cancellationToken)
-              ?? throw new EntityException(EntityErrorType.NotFound, WorkTaskMessages.ParentNotFound)
+              ?? throw new EntityException(EntityErrorTypeEnum.NotFound, WorkTaskMessages.ParentNotFound)
             : null;
 
         mapper.Map(command, workTask);
@@ -43,7 +44,7 @@ public class UpdateWorkTaskHandler(
             workTask.StatusId = command.StatusId;
             workTask.DoneAt = command.StatusId == (int)WorkTaskStatusEnum.Done ? now : null;
 
-            // A new column: the card goes on top of it, the way Move to on the board puts it.
+            // new column: the card goes on top, same as Move on the board
             if (command.StatusId != (int)WorkTaskStatusEnum.Done)
             {
                 await placement.PlaceOnTopAsync(workTask, cancellationToken);

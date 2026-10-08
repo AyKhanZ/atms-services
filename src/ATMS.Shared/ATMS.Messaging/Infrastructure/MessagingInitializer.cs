@@ -4,7 +4,7 @@ using RabbitMQ.Client;
 
 namespace ATMS.Messaging.Infrastructure;
 
-public class MessagingInitializer(RabbitMqConnectionFactory connectionFactory)
+public sealed class MessagingInitializer(RabbitMqConnectionFactory connectionFactory)
 {
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {

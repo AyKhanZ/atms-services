@@ -11,7 +11,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkProjects;
 
-public class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
+public sealed class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
 {
     private readonly IWorkProjectRepository _workProjectRepository;
     private readonly IOrganizationRepository _organizationRepository;

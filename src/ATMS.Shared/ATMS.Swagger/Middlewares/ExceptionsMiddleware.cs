@@ -1,5 +1,6 @@
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using Newtonsoft.Json;
 using System.Net;
 using ATMS.Application.Exceptions.Auth;
@@ -16,7 +17,7 @@ using Npgsql;
 
 namespace ATMS.Swagger.Middlewares;
 
-public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddleware
+public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -72,22 +73,22 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
         switch (exception.AuthErrorType)
         {
-            case AuthErrorType.InvalidToken:
-            case AuthErrorType.InvalidCredentials:
-            case AuthErrorType.EmailNotConfirmed:
+            case AuthErrorTypeEnum.InvalidToken:
+            case AuthErrorTypeEnum.InvalidCredentials:
+            case AuthErrorTypeEnum.EmailNotConfirmed:
                 code = HttpStatusCode.Unauthorized;
                 break;
-            case AuthErrorType.AccountLocked:
+            case AuthErrorTypeEnum.AccountLocked:
                 code = HttpStatusCode.Locked;
                 break;
-            case AuthErrorType.Forbidden:
-            case AuthErrorType.AccountInactive:
+            case AuthErrorTypeEnum.Forbidden:
+            case AuthErrorTypeEnum.AccountInactive:
                 code = HttpStatusCode.Forbidden;
                 break;
-            case AuthErrorType.EmailAlreadyConfirmed:
+            case AuthErrorTypeEnum.EmailAlreadyConfirmed:
                 code = HttpStatusCode.Conflict;
                 break;
-            case AuthErrorType.TokenGenerationFailed:
+            case AuthErrorTypeEnum.TokenGenerationFailed:
                 logger.LogError(exception, "Authentication error: {Message}", exception.Message);
                 break;
             default:
@@ -112,7 +113,7 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
         switch (exception.ErrorType)
         {
-            case EntityErrorType.NotFound:
+            case EntityErrorTypeEnum.NotFound:
                 code = HttpStatusCode.NotFound;
                 break;
             default:
@@ -166,7 +167,6 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
 
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        // Разделяем — ошибка БД это не то же самое что NullReferenceException
         if (exception is NpgsqlException or TimeoutException)
         {
             logger.LogError(exception,
@@ -181,11 +181,10 @@ public class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddl
                 requestId = context.TraceIdentifier
             });
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.ServiceUnavailable; // 503
+            context.Response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
             return context.Response.WriteAsync(result);
         }
 
-        // Unexpected exception — unhandled case, needs immediate investigation 500
         logger.LogError(exception,
             "Unexpected exception. RequestId: {RequestId}, Path: {Path}, Method: {Method}, Message: {Message}",
             context.TraceIdentifier,

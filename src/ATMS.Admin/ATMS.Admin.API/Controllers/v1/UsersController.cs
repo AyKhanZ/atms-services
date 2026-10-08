@@ -11,7 +11,7 @@ namespace ATMS.Admin.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/users")]
-public class UsersController(IMediator mediator) : ControllerBase
+public sealed class UsersController(IMediator mediator) : ControllerBase
 {
     
     /// <summary>

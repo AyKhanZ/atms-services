@@ -14,20 +14,16 @@
   <data name="InvitationsIncomplete" xml:space="preserve"><value>Пригласите коллег или пропустите этот шаг перед завершением онбординга.</value></data>
   <data name="InvitationsManagerOnly" xml:space="preserve"><value>Приглашать коллег может только менеджер клиента.</value></data>
   <data name="InvitationsRequired" xml:space="preserve"><value>Добавьте хотя бы одного коллегу или пропустите этот шаг.</value></data>
-  <data name="InvalidBirthDate" xml:space="preserve"><value>Укажите корректную дату рождения.</value></data>
   <data name="InvalidPhoneNumber" xml:space="preserve"><value>Укажите корректный номер телефона в международном формате.</value></data>
   <data name="MinimumAge" xml:space="preserve"><value>Вам должно быть не менее 18 лет.</value></data>
   <data name="OnboardingAlreadyCompleted" xml:space="preserve"><value>Онбординг уже завершён.</value></data>
   <data name="OnboardingNotCompleted" xml:space="preserve"><value>Сначала завершите настройку аккаунта.</value></data>
   <data name="OnboardingConcurrencyConflict" xml:space="preserve"><value>Онбординг был изменён в другой вкладке. Обновите страницу и попробуйте снова.</value></data>
-  <data name="PasswordRequirements" xml:space="preserve"><value>Используйте от 10 до 40 символов, включая заглавную и строчную буквы, цифру и специальный символ.</value></data>
   <data name="PhoneNumberMaxLength" xml:space="preserve"><value>Номер телефона не может быть длиннее 20 символов.</value></data>
-  <data name="PasswordsDoNotMatch" xml:space="preserve"><value>Пароли не совпадают.</value></data>
   <data name="PersonalInfoIncomplete" xml:space="preserve"><value>Заполните личную информацию перед завершением онбординга.</value></data>
   <data name="ProfilePhotoRequired" xml:space="preserve"><value>Выберите фотографию профиля.</value></data>
   <data name="SecurityIncomplete" xml:space="preserve"><value>Выберите новый пароль перед завершением онбординга.</value></data>
   <data name="UnsupportedGender" xml:space="preserve"><value>Выберите доступный вариант пола.</value></data>
   <data name="UnsupportedLanguage" xml:space="preserve"><value>Выберите доступный язык.</value></data>
   <data name="UnsupportedMaritalStatus" xml:space="preserve"><value>Выберите доступный семейный статус.</value></data>
-  <data name="VersionInvalid" xml:space="preserve"><value>Версия онбординга не может быть отрицательной.</value></data>
 </root>

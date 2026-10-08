@@ -7,7 +7,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Dictionaries;
 
-public class GetRoleDictionariesHandler(
+public sealed class GetRoleDictionariesHandler(
     IRoleRepository roleRepository,
     ICacheService cache)
     : IRequestHandler<GetRoleDictionariesRequest, DictionaryModel<Guid>[]>

@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkGroups;
 
-public class UpdateWorkGroupValidator : AbstractValidator<UpdateWorkGroupCommand>
+public sealed class UpdateWorkGroupValidator : AbstractValidator<UpdateWorkGroupCommand>
 {
     private readonly IWorkGroupRepository _workGroupRepository;
 

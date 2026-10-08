@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasIndex(e => e.Email)
             .IsUnique();
         
-        // Email lookups ignore case: an invitation must not be sent to an address that differs only in case.
+        // case-insensitive email lookup, so the same address isn't invited twice
         builder.HasIndex(e => e.NormalizedEmail);
 
         builder.HasIndex(e => e.UserType);

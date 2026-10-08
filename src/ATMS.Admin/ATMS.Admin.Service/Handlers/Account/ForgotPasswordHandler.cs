@@ -6,7 +6,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Account;
 
-public class ForgotPasswordHandler(
+public sealed class ForgotPasswordHandler(
     IUserRepository userRepository,
     IEmailDeliveryRepository emailDeliveryRepository,
     EmailDeliveryRequestLock emailDeliveryRequestLock) : IRequestHandler<ForgotPasswordCommand>
@@ -15,12 +15,10 @@ public class ForgotPasswordHandler(
     {
         await emailDeliveryRequestLock.ExecuteAsync(async () =>
         {
-            // By the normalized address: with the same answer for every email, a case mismatch would
-            // otherwise fail silently and no letter would come.
+            // search by normalized email, otherwise a different case silently sends nothing
             var normalizedEmail = command.Email.Trim().ToUpperInvariant();
             var user = await userRepository.FindAsync(u => u.NormalizedEmail == normalizedEmail, cancellationToken);
-            // The answer is the same whether or not the address is registered, so the form cannot be
-            // used to find out who has an account.
+            // same answer for unknown emails, so nobody can check who has an account
             if (user is null)
             {
                 return;

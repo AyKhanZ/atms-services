@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Caching.Services;
 using ATMS.Caching.Services.Interfaces;
@@ -13,7 +14,7 @@ public static class CacheModule
     public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
     {
         var redisOptions = configuration.GetSection(nameof(RedisOptions)).Get<RedisOptions>()
-                      ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
+                      ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.DatabaseSectionNotFound,
                           string.Format(LogMessages.ConfigSectionNotFound, nameof(RedisOptions)));
 
         services.AddStackExchangeRedisCache(options =>

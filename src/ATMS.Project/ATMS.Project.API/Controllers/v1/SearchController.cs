@@ -12,7 +12,7 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/search")]
-public class SearchController(IMediator mediator) : ControllerBase
+public sealed class SearchController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Returns projects, tickets, tasks and subtasks with a hasMore flag per group.
@@ -63,11 +63,11 @@ public class SearchController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<KeysetPagedResult<GlobalSearchItemModel>>> GetPage(
-        GlobalSearchItemType itemType,
+        GlobalSearchItemTypeEnum itemType,
         [FromQuery] GetGlobalSearchPageRequest request,
         CancellationToken cancellationToken)
     {
-        request.ItemType = itemType;
+        request.ItemType = (int)itemType;
         return Ok(await mediator.Send(request, cancellationToken));
     }
 

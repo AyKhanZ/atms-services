@@ -6,7 +6,7 @@ namespace ATMS.Project.Contracts.Requests.WorkTaskBoard;
 
 /// <summary>How many tasks each status holds under the filters: status id to count.</summary>
 [Access(PermissionEnum.ProjectView)]
-public class GetWorkTaskBoardCountsRequest : IRequest<Dictionary<int, int>>
+public sealed class GetWorkTaskBoardCountsRequest : IRequest<Dictionary<int, int>>
 {
     /// <summary>Filter by project. Omit to take every project the caller may see.</summary>
     public Guid[] ProjectIds { get; init; } = [];

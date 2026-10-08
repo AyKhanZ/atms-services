@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Messaging;
 using ATMS.Infrastructure.Options;
@@ -20,7 +21,7 @@ public static class DataAccessModule
         this IServiceCollection services, IConfiguration configuration)
     {
         var dbOptions = configuration.GetSection(nameof(ProjectDatabaseOptions)).Get<ProjectDatabaseOptions>() 
-                        ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
+                        ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.DatabaseSectionNotFound,
                             string.Format(LogMessages.ConfigSectionNotFound, nameof(ProjectDatabaseOptions)));
         
         services.AddHistoryRecording();
@@ -33,7 +34,7 @@ public static class DataAccessModule
                 provider.GetRequiredService<ProjectHistoryInterceptor>(),
                 provider.GetRequiredService<ProjectRealtimeInterceptor>(),
                 provider.GetRequiredService<NotificationRealtimeInterceptor>(),
-                // Last: it commits the transaction it opened, after the others have seen the save.
+                // must be last: it commits its own transaction after the others
                 provider.GetRequiredService<NotificationLockInterceptor>()));
 
         services.AddScoped<IDictionariesRepository, DictionariesRepository>();

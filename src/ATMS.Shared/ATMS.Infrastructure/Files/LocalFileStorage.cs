@@ -1,19 +1,13 @@
-using ATMS.Application.Exceptions.Configuration;
-using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace ATMS.Infrastructure.Files;
 
-// Files are kept byte for byte: unlike avatars, an attachment must download exactly as uploaded.
-// The root is never served as static files; every read goes through an authorized endpoint.
-public sealed class LocalFileStorage(IConfiguration configuration) : IFileStorage
+// stored byte for byte (unlike avatars); the root is never served directly, only via an authorized endpoint
+public sealed class LocalFileStorage(IOptions<AttachmentsOptions> options) : IFileStorage
 {
-    private readonly AttachmentsOptions _options =
-        configuration.GetSection(nameof(AttachmentsOptions)).Get<AttachmentsOptions>()
-        ?? throw new ConfigurationException(ConfigurationErrorType.AttachmentsSectionNotFound,
-            string.Format(LogMessages.ConfigSectionNotFound, nameof(AttachmentsOptions)));
+    private readonly AttachmentsOptions _options = options.Value;
 
     public async Task<string> SaveAsync(
         IFormFile file,
@@ -27,8 +21,7 @@ public sealed class LocalFileStorage(IConfiguration configuration) : IFileStorag
         var destinationDirectory = Path.GetDirectoryName(destinationPath)!;
         Directory.CreateDirectory(destinationDirectory);
 
-        // Written next to the destination and moved in one step, so a half-written file never
-        // appears under its final name.
+        // write to a temp file and move it, so a half-written file never has the real name
         var tempPath = Path.Combine(destinationDirectory, $"{Guid.NewGuid():N}.tmp");
 
         try
@@ -84,9 +77,7 @@ public sealed class LocalFileStorage(IConfiguration configuration) : IFileStorag
         return Task.CompletedTask;
     }
 
-    // Several API instances must share one root (a mounted volume); an instance whose volume did
-    // not mount would save files nobody else can read. Writing a probe fails such an instance's
-    // readiness check, so the gateway never sends it traffic.
+    // all API instances share one root (mounted volume); if it didn't mount, readiness fails and the gateway skips this instance
     public async Task<bool> IsWritableAsync(CancellationToken cancellationToken)
     {
         try

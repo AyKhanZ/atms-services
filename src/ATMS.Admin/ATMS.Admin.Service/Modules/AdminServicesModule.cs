@@ -13,7 +13,7 @@ public static class AdminServicesModule
         this IServiceCollection services, IConfiguration configuration)
     {
         services.AddInfrastructureServices();
-        services.AddMessageServices(configuration);
+        services.AddMessageServices();
         services.AddRedisCache(configuration);
         services.AddCurrentUser();
         services.AddProviderServices(configuration);

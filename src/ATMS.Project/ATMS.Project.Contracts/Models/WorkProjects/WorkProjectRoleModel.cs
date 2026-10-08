@@ -1,6 +1,6 @@
 namespace ATMS.Project.Contracts.Models.WorkProjects;
 
-public class WorkProjectRoleModel
+public sealed class WorkProjectRoleModel
 {
     public Guid Id { get; set; }
 

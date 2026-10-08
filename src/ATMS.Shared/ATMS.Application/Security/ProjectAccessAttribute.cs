@@ -1,3 +1,4 @@
+using ATMS.Application.Enums;
 using ATMS.Data.Enums;
 
 namespace ATMS.Application.Security;
@@ -12,7 +13,7 @@ public sealed class ProjectAccessAttribute : Attribute
             : throw new ArgumentException(@"At least one permission must be specified.", nameof(permissions));
     }
 
-    public ProjectAccessAttribute(ProjectAccessPolicy policy)
+    public ProjectAccessAttribute(ProjectAccessPolicyEnum policy)
     {
         Policy = policy;
         Permissions = [];
@@ -20,5 +21,5 @@ public sealed class ProjectAccessAttribute : Attribute
 
     public IReadOnlyCollection<ProjectPermissionEnum> Permissions { get; }
 
-    public ProjectAccessPolicy? Policy { get; }
+    public ProjectAccessPolicyEnum? Policy { get; }
 }

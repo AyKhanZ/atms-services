@@ -24,9 +24,6 @@
   <data name="ServiceTemporarilyUnavailable" xml:space="preserve">
     <value>Сервис временно недоступен. Пожалуйста, попробуйте позже.</value>
   </data>
-  <data name="ConfigurationInitializationFailed" xml:space="preserve">
-    <value>Сервис настроен некорректно. Пожалуйста, обратитесь в поддержку.</value>
-  </data>
   <data name="AccessDenied" xml:space="preserve">
     <value>У вас нет прав для выполнения этого действия.</value>
   </data>
