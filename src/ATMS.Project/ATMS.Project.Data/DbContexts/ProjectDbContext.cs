@@ -94,15 +94,6 @@ public sealed class ProjectDbContext : DbContext
 
     public DbSet<EmailDelivery> EmailDeliveries { get; set; }
 
-    
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5435;Database=atms_project;Username=admin;Password=p@ssw0rd!");
-        }
-    }
-
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         ChangeTracker.ApplyAuditMetadata(_auditActor?.UserId);

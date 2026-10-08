@@ -2,6 +2,7 @@
 
     <PropertyGroup>
 		<PreserveCompilationContext>true</PreserveCompilationContext>
+		<UserSecretsId>atms-services</UserSecretsId>
     </PropertyGroup>
 
 	<PropertyGroup>
