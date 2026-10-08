@@ -8,7 +8,7 @@ namespace ATMS.Admin.API.Controllers;
 [AllowAnonymous]
 [ApiController]
 [Route("health")]
-public class HealthController(IMediator mediator) : ControllerBase
+public sealed class HealthController(IMediator mediator) : ControllerBase
 {
     [HttpGet("live")]
     public IActionResult Live()

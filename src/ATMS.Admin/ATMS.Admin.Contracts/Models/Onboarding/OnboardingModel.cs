@@ -1,6 +1,6 @@
 namespace ATMS.Admin.Contracts.Models.Onboarding;
 
-public class OnboardingModel
+public sealed class OnboardingModel
 {
     public string Role { get; set; }
 

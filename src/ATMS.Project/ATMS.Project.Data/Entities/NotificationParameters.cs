@@ -1,6 +1,6 @@
 namespace ATMS.Project.Data.Entities;
 
-public record NotificationParameters
+public sealed record NotificationParameters
 {
     public string? ProjectTitle { get; set; }
 

@@ -41,7 +41,7 @@ public sealed class UpdateCommentValidator : AbstractValidator<UpdateCommentComm
         return _projectRepository.IsExistAsync(project => project.Id == id, token);
     }
 
-    // One read answers both: no author means no live comment, another author means not one's own.
+    // one read: no author = no comment, another author = not yours
     private async Task CheckAuthorAsync(
         Guid id,
         ValidationContext<UpdateCommentCommand> context,

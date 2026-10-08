@@ -7,7 +7,7 @@ namespace ATMS.Project.Contracts.Commands.WorkTasks;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.TaskEdit)]
-public class UpdateWorkTaskCommand : WorkTaskCommand, IRequest, IProjectScopedRequest
+public sealed class UpdateWorkTaskCommand : WorkTaskCommand, IRequest, IProjectScopedRequest
 {
     public Guid WorkTaskId { get; set; }
     public int StatusId { get; set; }

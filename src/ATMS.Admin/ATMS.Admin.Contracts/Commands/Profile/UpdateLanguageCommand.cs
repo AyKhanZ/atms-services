@@ -6,7 +6,7 @@ namespace ATMS.Admin.Contracts.Commands.Profile;
 
 [ExceptSuperAdminAccess]
 [CompletedOnboardingAccess]
-public class UpdateLanguageCommand : IRequest
+public sealed class UpdateLanguageCommand : IRequest
 {
     public required string Language { get; set; }
 }

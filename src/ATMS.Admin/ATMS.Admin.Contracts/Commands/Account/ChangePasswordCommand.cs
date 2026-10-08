@@ -7,7 +7,7 @@ namespace ATMS.Admin.Contracts.Commands.Account;
 
 [ExceptSuperAdminAccess]
 [CompletedOnboardingAccess]
-public class ChangePasswordCommand : IRequest<AccessInfoModel>
+public sealed class ChangePasswordCommand : IRequest<AccessInfoModel>
 {
     public required string OldPassword { get; set; }
     public required string NewPassword { get; set; }

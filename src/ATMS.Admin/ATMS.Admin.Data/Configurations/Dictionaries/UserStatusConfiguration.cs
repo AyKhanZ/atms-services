@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Admin.Data.Configurations.Dictionaries;
 
-public class UserStatusConfiguration : IEntityTypeConfiguration<UserStatus>
+public sealed class UserStatusConfiguration : IEntityTypeConfiguration<UserStatus>
 {
     public void Configure(EntityTypeBuilder<UserStatus> builder)
     {
@@ -31,7 +31,7 @@ public class UserStatusConfiguration : IEntityTypeConfiguration<UserStatus>
     }
 }
 
-public class UserStatusTranslationConfiguration : IEntityTypeConfiguration<UserStatusTranslation>
+public sealed class UserStatusTranslationConfiguration : IEntityTypeConfiguration<UserStatusTranslation>
 {
     public void Configure(EntityTypeBuilder<UserStatusTranslation> builder)
     {

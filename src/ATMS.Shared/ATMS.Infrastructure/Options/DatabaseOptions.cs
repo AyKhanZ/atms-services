@@ -5,6 +5,6 @@ public class DatabaseOptions
     public required string SqlConnection { get; init; }
 }
 
-public class AdminDatabaseOptions : DatabaseOptions;
+public sealed class AdminDatabaseOptions : DatabaseOptions;
 
-public class ProjectDatabaseOptions : DatabaseOptions;
+public sealed class ProjectDatabaseOptions : DatabaseOptions;

@@ -1,6 +1,7 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Image;
+using ATMS.Infrastructure.Enums;
 using ATMS.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -19,8 +20,7 @@ public sealed class LocalImageStorage(
 {
     private const string ValidationPropertyName = "Image";
 
-    // Only the formats we accept can be decoded, so a flaw in another decoder (TIFF, GIF, BMP...) is
-    // out of reach. One frame: an animated image is stored as its first frame and cannot multiply memory.
+    // only our formats can be decoded (no TIFF/GIF/BMP decoder bugs), only the first frame of an animation
     private static readonly DecoderOptions DecoderOptions = new()
     {
         Configuration = new Configuration(
@@ -36,7 +36,7 @@ public sealed class LocalImageStorage(
 
     public async Task<StoredImage> SaveAsync(
         IFormFile file,
-        ImageStorageFolder folder,
+        ImageStorageFolderEnum folder,
         Guid ownerId,
         CancellationToken cancellationToken)
     {
@@ -56,15 +56,14 @@ public sealed class LocalImageStorage(
 
         try
         {
-            // Only the header is read here: a few-megabyte PNG can declare a canvas that takes gigabytes
-            // once decoded, so the size is refused before decoding.
+            // check the size from the header first: a small png can decode into gigabytes
             await using (var header = file.OpenReadStream())
             {
                 var info = await Image.IdentifyAsync(DecoderOptions, header, cancellationToken);
                 var pixelCount = (long)info.Width * info.Height;
                 if (pixelCount > _options.MaxPixelCount)
                 {
-                    ThrowImageValidation(
+                    throw InvalidImage(
                         "Image dimensions are too large.",
                         $"Image dimensions are too large. Maximum pixel count is {_options.MaxPixelCount}.");
                 }
@@ -73,7 +72,7 @@ public sealed class LocalImageStorage(
             await using var input = file.OpenReadStream();
             using var image = await Image.LoadAsync(DecoderOptions, input, cancellationToken);
 
-            // The orientation lives in EXIF, which is removed below: a phone photo would end up on its side.
+            // EXIF is removed below, so rotate first or phone photos end up sideways
             image.Mutate(context => context.AutoOrient());
 
             image.Metadata.ExifProfile = null;
@@ -85,11 +84,11 @@ public sealed class LocalImageStorage(
         }
         catch (UnknownImageFormatException)
         {
-            ThrowImageValidation("Invalid image file.", "Unsupported or invalid image file.");
+            throw InvalidImage("Invalid image file.", "Unsupported or invalid image file.");
         }
         catch (InvalidImageContentException)
         {
-            ThrowImageValidation("Invalid image file.", "Unsupported or invalid image file.");
+            throw InvalidImage("Invalid image file.", "Unsupported or invalid image file.");
         }
         finally
         {
@@ -124,14 +123,14 @@ public sealed class LocalImageStorage(
         return Task.CompletedTask;
     }
 
-    private static string ToFolderName(ImageStorageFolder folder) =>
+    private static string ToFolderName(ImageStorageFolderEnum folder) =>
         folder switch
         {
-            ImageStorageFolder.Users => "users",
-            ImageStorageFolder.Organizations => "organizations",
-            ImageStorageFolder.Projects => "projects",
-            ImageStorageFolder.Tickets => "tickets",
-            ImageStorageFolder.Tasks => "tasks",
+            ImageStorageFolderEnum.Users => "users",
+            ImageStorageFolderEnum.Organizations => "organizations",
+            ImageStorageFolderEnum.Projects => "projects",
+            ImageStorageFolderEnum.Tickets => "tickets",
+            ImageStorageFolderEnum.Tasks => "tasks",
             _ => throw new ArgumentOutOfRangeException(nameof(folder), folder, null)
         };
 
@@ -161,24 +160,24 @@ public sealed class LocalImageStorage(
     {
         if (file is null)
         {
-            ThrowImageValidation("Image file is required.", "Image file is required.");
+            throw InvalidImage("Image file is required.", "Image file is required.");
         }
 
         if (file.Length == 0)
         {
-            ThrowImageValidation("Image file is required.", "Image file is empty.");
+            throw InvalidImage("Image file is required.", "Image file is empty.");
         }
 
         if (file.Length > _options.MaxFileSizeBytes)
         {
-            ThrowImageValidation(
+            throw InvalidImage(
                 "Image file is too large.",
                 $"Image size must not exceed {_options.MaxFileSizeBytes} bytes.");
         }
 
         if (string.IsNullOrWhiteSpace(file.ContentType))
         {
-            ThrowImageValidation("Unsupported image format.", "Image content type is required.");
+            throw InvalidImage("Unsupported image format.", "Image content type is required.");
         }
     }
 
@@ -189,13 +188,13 @@ public sealed class LocalImageStorage(
 
         if (!allowed)
         {
-            ThrowImageValidation("Unsupported image format.", "Unsupported image type.");
+            throw InvalidImage("Unsupported image format.", "Unsupported image type.");
         }
 
         if (!imageKind.AcceptedContentTypes.Any(contentType =>
                 string.Equals(file.ContentType, contentType, StringComparison.OrdinalIgnoreCase)))
         {
-            ThrowImageValidation("Unsupported image format.", "Image content type does not match the file content.");
+            throw InvalidImage("Unsupported image format.", "Image content type does not match the file content.");
         }
     }
 
@@ -245,7 +244,7 @@ public sealed class LocalImageStorage(
             return new ImageKind(".webp", "image/webp", ["image/webp"]);
         }
 
-        ThrowImageValidation("Unsupported image format.", "Unsupported image type.");
+        throw InvalidImage("Unsupported image format.", "Unsupported image type.");
         throw new UnreachableException();
     }
 
@@ -260,21 +259,14 @@ public sealed class LocalImageStorage(
 
         if (!fullPath.StartsWith(rootWithSeparator, StringComparison.OrdinalIgnoreCase))
         {
-            ThrowImageValidation("Invalid image path.", "Invalid image path.");
+            throw InvalidImage("Invalid image path.", "Invalid image path.");
         }
 
         return fullPath;
     }
 
-    [DoesNotReturn]
-    private static void ThrowImageValidation(string userMessage, string logMessage)
-    {
-        throw new ImageException(
-            ImageErrorType.Validation,
-            userMessage,
-            logMessage,
-            ValidationPropertyName);
-    }
+    private static ImageException InvalidImage(string userMessage, string logMessage) =>
+        new(ImageErrorTypeEnum.Validation, userMessage, logMessage, ValidationPropertyName);
 
     private sealed record ImageKind(
         string Extension,

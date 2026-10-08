@@ -9,7 +9,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTaskBoard;
 
-public class GetWorkTaskBoardCountsHandler(
+public sealed class GetWorkTaskBoardCountsHandler(
     ICurrentUser currentUser,
     IWorkTaskBoardRepository workTaskBoardRepository,
     IMapper mapper) : IRequestHandler<GetWorkTaskBoardCountsRequest, Dictionary<int, int>>

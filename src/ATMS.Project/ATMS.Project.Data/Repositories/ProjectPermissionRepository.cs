@@ -25,8 +25,7 @@ public sealed class ProjectPermissionRepository(ProjectDbContext context) : IPro
             .ToArrayAsync(cancellationToken);
     }
 
-    // One query for every project and person at once; a pair that came from neither list together is
-    // dropped by the caller.
+    // one query for all projects and users, the caller drops pairs that don't match
     public Task<ProjectUserRow[]> GetUsersWithPermissionAsync(
         IReadOnlyCollection<Guid> projectIds,
         IReadOnlyCollection<Guid> userIds,

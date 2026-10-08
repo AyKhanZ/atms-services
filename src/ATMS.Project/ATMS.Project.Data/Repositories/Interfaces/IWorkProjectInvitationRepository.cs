@@ -5,7 +5,7 @@ namespace ATMS.Project.Data.Repositories.Interfaces;
 
 public interface IWorkProjectInvitationRepository
 {
-    Task<WorkProjectParticipantRefusal?> AddWithinLimitAsync(
+    Task<WorkProjectParticipantRefusalEnum?> AddWithinLimitAsync(
         WorkProjectInvitation invitation,
         int limit,
         CancellationToken cancellationToken);

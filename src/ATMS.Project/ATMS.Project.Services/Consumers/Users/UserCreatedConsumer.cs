@@ -3,7 +3,7 @@ using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Invitations.Interfaces;
+using ATMS.Project.Services.Domain.Invitations.Interfaces;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -44,9 +44,7 @@ public sealed class UserCreatedConsumer(
             await userRepository.AddAsync(user, cancellationToken);
         }
 
-        // Before the inbox record: if settling fails, the retry must find the message unprocessed
-        // and settle what is still pending. An existing user counts too — Admin announces one again
-        // when an invitation arrived for an email that was registered a moment before.
+        // before the inbox record: if this fails, the retry must still see the message as unprocessed
         await invitationService.SettlePendingAsync(user, cancellationToken);
 
         await inboxRepository.AddAsync(

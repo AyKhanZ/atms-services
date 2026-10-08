@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ATMS.Application.Infrastructure;
 
-public class AuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccessor) 
+public sealed class AuthorizationDelegatingHandler(IHttpContextAccessor httpContextAccessor) 
     : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(
@@ -14,7 +14,7 @@ public class AuthorizationDelegatingHandler(IHttpContextAccessor httpContextAcce
             .Request.Headers.Authorization
             .FirstOrDefault();
 
-        if (!string.IsNullOrEmpty(header) && header.StartsWith("Bearer "))
+        if (!string.IsNullOrWhiteSpace(header) && header.StartsWith("Bearer "))
         {
             var token = header["Bearer ".Length..];
             request.Headers.Authorization = 

@@ -10,7 +10,7 @@ namespace ATMS.Project.Contracts.Requests.History;
 
 [Access(PermissionEnum.ProjectView)]
 [ProjectAccess(ProjectPermissionEnum.ProjectView)]
-public class GetHistoryRequest : GetKeysetPaginationRequest, IRequest<KeysetPagedResult<HistoryEntryModel>>, IProjectScopedRequest
+public sealed class GetHistoryRequest : GetKeysetPaginationRequest, IRequest<KeysetPagedResult<HistoryEntryModel>>, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

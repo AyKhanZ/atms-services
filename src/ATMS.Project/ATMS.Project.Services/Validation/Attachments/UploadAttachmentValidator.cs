@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Project.Services.Validation.Attachments;
 
-public class UploadAttachmentValidator : AbstractValidator<UploadAttachmentCommand>
+public sealed class UploadAttachmentValidator : AbstractValidator<UploadAttachmentCommand>
 {
     private readonly IWorkProjectRepository _workProjectRepository;
     private readonly IAttachmentRepository _attachmentRepository;

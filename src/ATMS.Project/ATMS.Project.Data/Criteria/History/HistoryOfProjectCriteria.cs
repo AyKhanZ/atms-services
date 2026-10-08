@@ -4,7 +4,6 @@ using ATMS.Project.Data.Entities;
 
 namespace ATMS.Project.Data.Criteria.History;
 
-// Groups and milestones have no page of their own, so their changes belong to the project's history.
 public sealed class HistoryOfProjectCriteria(Guid projectId) : ACriteria<HistoryEntry>
 {
     public override IQueryable<HistoryEntry> Apply(IQueryable<HistoryEntry> query) =>

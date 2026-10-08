@@ -6,6 +6,7 @@ using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Constants;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Constants;
 using ATMS.Infrastructure.Options;
@@ -15,13 +16,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ATMS.Admin.Service.Security;
 
-public class AccessTokenService(
+public sealed class AccessTokenService(
     IUserRepository userRepository,
     IConfiguration configuration) : IAccessTokenService
 {
     private readonly JwtOptions _jwtOptions =
         configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
-        ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
+        ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.JwtSectionNotFound,
             string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
     public async Task<AccessTokenResult> GenerateTokenAsync(User user, CancellationToken cancellationToken)

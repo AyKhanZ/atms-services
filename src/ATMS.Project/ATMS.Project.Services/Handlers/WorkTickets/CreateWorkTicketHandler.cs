@@ -8,7 +8,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTickets;
 
-public class CreateWorkTicketHandler(
+public sealed class CreateWorkTicketHandler(
     IMapper mapper,
     IWorkTicketRepository workTicketRepository,
     IEntityCodeGenerator codeGenerator) : IRequestHandler<CreateWorkTicketCommand, Guid>

@@ -4,9 +4,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Infrastructure.Files;
 
-// The browser's content type is written by the client, so a file is trusted only when its first
-// bytes agree with its extension. Office Open XML, OpenDocument and ZIP share one signature: telling
-// them apart would mean opening the archive, and a renamed ZIP is still harmless on download.
+// the content type comes from the client, so trust the first bytes, not the header
+// docx/odt/zip share one signature, a renamed zip is still harmless to download
 public sealed class FileSignatureService(IConfiguration configuration) : IFileSignatureService
 {
     private const int TextProbeLength = 8 * 1024;
@@ -103,8 +102,7 @@ public sealed class FileSignatureService(IConfiguration configuration) : IFileSi
         };
     }
 
-    // A zero byte never appears in UTF-8 or single-byte text, but is in every executable and
-    // archive. UTF-16 is the one text encoding full of zeros, and it announces itself with a BOM.
+    // zero byte = binary (exe, archive); utf-16 text has zeros too, but it starts with a BOM
     private static bool IsText(ReadOnlySpan<byte> head)
     {
         var isUtf16 = head.Length >= 2 &&

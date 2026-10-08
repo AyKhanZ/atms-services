@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Profile;
 
-public class UpdateLanguageValidator : AbstractValidator<UpdateLanguageCommand>
+public sealed class UpdateLanguageValidator : AbstractValidator<UpdateLanguageCommand>
 {
     public UpdateLanguageValidator()
     {

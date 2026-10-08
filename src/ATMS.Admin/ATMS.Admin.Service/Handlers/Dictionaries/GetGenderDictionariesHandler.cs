@@ -8,7 +8,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Dictionaries;
 
-public class GetGenderDictionariesHandler(
+public sealed class GetGenderDictionariesHandler(
     IDictionariesRepository dictionariesRepository,
     ICacheService cache)
     : IRequestHandler<GetGenderDictionariesRequest, DictionaryModel[]>

@@ -15,7 +15,7 @@ using AutoMapper;
 
 namespace ATMS.Project.Services.Mappers;
 
-public class RequestToFilterProfile : Profile
+public sealed class RequestToFilterProfile : Profile
 {
     public RequestToFilterProfile()
     {

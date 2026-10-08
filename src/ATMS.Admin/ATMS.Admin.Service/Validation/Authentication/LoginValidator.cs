@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Authentication;
 
-public class LoginValidator : AbstractValidator<LoginCommand>
+public sealed class LoginValidator : AbstractValidator<LoginCommand>
 {
 
     public LoginValidator()

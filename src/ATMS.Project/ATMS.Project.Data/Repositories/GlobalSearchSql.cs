@@ -5,15 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-/// <summary>
-/// SQL shared by search and by the recent items: who may see what, and how a found row is turned
-/// into what the list draws. Kept in one place so the two repositories cannot disagree about
-/// access.
-/// </summary>
+// shared by search and recent items, so both agree on access
 internal static class GlobalSearchSql
 {
-    // Raw SQL bypasses EF query filters. Keep deletion and project boundaries explicit here.
-    // {0} is "the caller is a super administrator", {1} is the caller's user id.
+    // raw sql skips EF filters, so deleted rows and project access are checked by hand
+    // {0} is super admin, {1} is the user id
     // language=sql
     public const string AccessScope = """
         WITH accessible_projects AS NOT MATERIALIZED (
@@ -37,8 +33,7 @@ internal static class GlobalSearchSql
         )
         """;
 
-    // Enrich only the bounded rows. No entity materialization, tracking or Include is needed.
-    // {2} is the language the status names are shown in.
+    // only the page rows are enriched here, {2} is the language
     // language=sql
     public const string Projection = """
         SELECT s."ItemType", s."Id", s."Code", s."Title", s."ProjectId",
@@ -68,11 +63,7 @@ internal static class GlobalSearchSql
         LEFT JOIN "Tasks" parent ON parent."Id" = s."ParentTaskId" AND NOT parent."IsDeleted"
         """;
 
-    /// <summary>
-    /// Runs the access scope, the rows the caller picked as <c>selected</c>, and the projection
-    /// that turns them into list rows. The first three arguments are always the super administrator
-    /// flag, the user id and the language.
-    /// </summary>
+    // the first three args are always: super admin flag, user id, language
     public static Task<GlobalSearchRow[]> QueryAsync(
         ProjectDbContext context,
         string selected,

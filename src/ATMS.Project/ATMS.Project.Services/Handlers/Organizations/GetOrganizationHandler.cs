@@ -6,7 +6,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Organizations;
 
-public class GetOrganizationHandler(
+public sealed class GetOrganizationHandler(
     IOrganizationRepository organizationRepository,
     IMapper mapper)
     : IRequestHandler<GetOrganizationRequest, OrganizationModel>

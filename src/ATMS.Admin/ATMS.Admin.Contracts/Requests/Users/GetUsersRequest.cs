@@ -8,7 +8,7 @@ using ATMS.Data.Enums;
 namespace ATMS.Admin.Contracts.Requests.Users;
 
 [Access(PermissionEnum.UserView)]
-public class GetUsersRequest : GetPaginationRequest, IRequest<PagedResult<UserListItemModel>>
+public sealed class GetUsersRequest : GetPaginationRequest, IRequest<PagedResult<UserListItemModel>>
 {
     /// <summary>
     /// Search text for filtering by name, surname, email or position.

@@ -7,6 +7,6 @@ namespace ATMS.Project.Contracts.Commands.WorkTickets;
 
 [Access(PermissionEnum.ProjectView)]
 [ProjectAccess(ProjectPermissionEnum.TicketCreate)]
-public class CreateWorkTicketCommand : WorkTicketCommand, IRequest<Guid>, IProjectScopedRequest
+public sealed class CreateWorkTicketCommand : WorkTicketCommand, IRequest<Guid>, IProjectScopedRequest
 {
 }

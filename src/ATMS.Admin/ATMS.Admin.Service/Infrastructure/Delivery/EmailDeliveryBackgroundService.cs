@@ -1,3 +1,4 @@
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
@@ -27,7 +28,7 @@ public class EmailDeliveryBackgroundService(
     private readonly RedirectUrlOptions _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()
         ?? throw new ConfigurationException(
-            ConfigurationErrorType.RedirectUrlSectionNotFound,
+            ConfigurationErrorTypeEnum.RedirectUrlSectionNotFound,
             string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

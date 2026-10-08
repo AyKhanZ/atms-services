@@ -8,7 +8,7 @@ namespace ATMS.Project.Contracts.Commands.Attachments;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.TaskEdit)]
-public class RenameAttachmentCommand : IRequest, IProjectScopedRequest
+public sealed class RenameAttachmentCommand : IRequest, IProjectScopedRequest
 {
     [JsonIgnore]
     public Guid ProjectId { get; set; }

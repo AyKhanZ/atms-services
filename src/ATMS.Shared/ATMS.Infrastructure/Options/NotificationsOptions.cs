@@ -1,6 +1,6 @@
 namespace ATMS.Infrastructure.Options;
 
-public class NotificationsOptions
+public sealed class NotificationsOptions
 {
     public TimeOnly DeadlineReminderTime { get; init; } = new(9, 0);
 
@@ -10,10 +10,9 @@ public class NotificationsOptions
 
     public int RetentionDays { get; init; } = 90;
 
-    // Off while the SMTP account is a test one with a small monthly limit. Off means no email rows
-    // are written and nothing is sent, so switching it on later does not send a backlog.
+    // off while smtp is a test account with a small limit; off = no email rows, so no backlog later
     public bool SendEmails { get; init; }
 
-    // The interface the links in emails lead to.
+    // frontend url for the links in emails
     public required string AppUrl { get; init; }
 }

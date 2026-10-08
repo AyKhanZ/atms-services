@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ATMS.Project.Contracts.Requests.Dictionaries;
 
-public class GetWorkTicketStatusDictionariesRequest : IRequest<DictionaryModel[]>;
+public sealed class GetWorkTicketStatusDictionariesRequest : IRequest<DictionaryModel[]>;

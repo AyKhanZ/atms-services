@@ -1,6 +1,7 @@
 using ATMS.Admin.Contracts.Requests.Me;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Models;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
@@ -11,7 +12,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Me;
 
-public class GetCurrentRolesHandler(
+public sealed class GetCurrentRolesHandler(
     IUserRepository userRepository,
     ICurrentUser currentUser,
     IMapper mapper,
@@ -22,7 +23,7 @@ public class GetCurrentRolesHandler(
         var isExist = await userRepository.IsExistAsync(r => r.Id == currentUser.Id, cancellationToken);
         if (!isExist)
         {
-            throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
         }
         
         return await cache.GetOrSetAsync(

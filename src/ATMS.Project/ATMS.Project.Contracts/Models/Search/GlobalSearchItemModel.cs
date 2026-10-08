@@ -3,7 +3,7 @@ using ATMS.Project.Contracts.Models.Users;
 
 namespace ATMS.Project.Contracts.Models.Search;
 
-public class GlobalSearchItemModel
+public sealed class GlobalSearchItemModel
 {
     public int ItemType { get; set; }
     public Guid Id { get; set; }

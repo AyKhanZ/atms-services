@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkTasks;
 
-public class DeleteWorkTaskValidator : AbstractValidator<DeleteWorkTaskCommand>
+public sealed class DeleteWorkTaskValidator : AbstractValidator<DeleteWorkTaskCommand>
 {
     public DeleteWorkTaskValidator()
     {

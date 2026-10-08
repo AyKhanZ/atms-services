@@ -1,5 +1,5 @@
-using ATMS.Project.Services.Comments;
-using ATMS.Project.Services.Comments.Interfaces;
+using ATMS.Project.Services.Domain.Comments;
+using ATMS.Project.Services.Domain.Comments.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Project.Services.Modules;

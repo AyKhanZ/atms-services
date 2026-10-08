@@ -1,15 +1,16 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkTickets;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
-using ATMS.Project.Services.Caching;
+using ATMS.Project.Services.Infrastructure;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTickets;
 
-public class DeleteWorkTicketHandler(
+public sealed class DeleteWorkTicketHandler(
     ICurrentUser currentUser,
     IWorkTicketRepository workTicketRepository,
     ICacheService cache) : IRequestHandler<DeleteWorkTicketCommand>
@@ -19,7 +20,7 @@ public class DeleteWorkTicketHandler(
         var workTicket = await workTicketRepository.FindAsync(command.ProjectId, command.WorkTicketId, cancellationToken);
         if (workTicket is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkTicketMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkTicketMessages.NotFound);
         }
 
         workTicket.IsDeleted = true;

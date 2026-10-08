@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
+public sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
 {
     public void Configure(EntityTypeBuilder<Organization> builder)
     {

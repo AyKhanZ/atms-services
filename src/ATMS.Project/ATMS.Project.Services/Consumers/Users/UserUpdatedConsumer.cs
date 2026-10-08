@@ -3,7 +3,7 @@ using ATMS.Contracts.Events.Users;
 using ATMS.Messaging.Configuration;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Caching;
+using ATMS.Project.Services.Infrastructure;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -49,8 +49,7 @@ public class UserUpdatedConsumer(
             cancellationToken);
         await userRepository.SaveAsync(cancellationToken);
 
-        // Project details carry the participant's name, avatar and onboarding flag and stay cached for
-        // five minutes; without this the Invited status outlived onboarding by that much.
+        // project details cache the participant's name, avatar and onboarding for 5 min, so drop them
         foreach (var projectId in await workProjectRepository.GetIdsByParticipantAsync(user.Id, cancellationToken))
         {
             await cache.RemoveWorkProjectAsync(projectId, cancellationToken);

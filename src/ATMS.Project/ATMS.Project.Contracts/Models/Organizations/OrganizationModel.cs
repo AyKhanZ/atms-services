@@ -2,7 +2,7 @@ using ATMS.Project.Contracts.Models.Users;
 
 namespace ATMS.Project.Contracts.Models.Organizations;
 
-public class OrganizationModel
+public sealed class OrganizationModel
 {
     public Guid Id { get; set; }
     

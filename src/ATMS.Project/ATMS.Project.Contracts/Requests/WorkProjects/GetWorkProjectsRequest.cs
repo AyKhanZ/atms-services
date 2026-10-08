@@ -8,7 +8,7 @@ using ATMS.Data.Enums;
 namespace ATMS.Project.Contracts.Requests.WorkProjects;
 
 [Access(PermissionEnum.ProjectView)]
-public class GetWorkProjectsRequest : GetPaginationRequest, IRequest<PagedResult<WorkProjectItemModel>>
+public sealed class GetWorkProjectsRequest : GetPaginationRequest, IRequest<PagedResult<WorkProjectItemModel>>
 {
     /// <summary>Search by project title, code or organization name.</summary>
     public string? Search { get; init; }

@@ -10,7 +10,7 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/project/{projectId:guid}/history")]
-public class HistoryController(IMediator mediator) : ControllerBase
+public sealed class HistoryController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Returns who changed what and when, newest first.

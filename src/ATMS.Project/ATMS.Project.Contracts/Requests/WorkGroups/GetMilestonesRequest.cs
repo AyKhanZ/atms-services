@@ -10,7 +10,7 @@ namespace ATMS.Project.Contracts.Requests.WorkGroups;
 
 [Access(PermissionEnum.ProjectView)]
 [ProjectAccess(ProjectPermissionEnum.ProjectView)]
-public class GetMilestonesRequest : GetKeysetPaginationRequest, IRequest<KeysetPagedResult<MilestoneOptionModel>>, IProjectScopedRequest
+public sealed class GetMilestonesRequest : GetKeysetPaginationRequest, IRequest<KeysetPagedResult<MilestoneOptionModel>>, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

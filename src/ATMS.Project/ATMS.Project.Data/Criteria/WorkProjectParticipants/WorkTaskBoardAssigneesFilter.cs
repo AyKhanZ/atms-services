@@ -3,7 +3,7 @@ using ATMS.Project.Data.Entities;
 
 namespace ATMS.Project.Data.Criteria.WorkProjectParticipants;
 
-public class WorkTaskBoardAssigneesFilter : ACriteria<WorkProjectParticipant>
+public sealed class WorkTaskBoardAssigneesFilter : ACriteria<WorkProjectParticipant>
 {
     public IReadOnlyCollection<Guid> ProjectIds { get; init; } = [];
 

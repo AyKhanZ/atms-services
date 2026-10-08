@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Repositories;
 
-public class PermissionRepository(AdminDbContext context) : IPermissionRepository
+public sealed class PermissionRepository(AdminDbContext context) : IPermissionRepository
 {
     public Task<List<int>> GetIdsAsync(CancellationToken cancellationToken)
     {

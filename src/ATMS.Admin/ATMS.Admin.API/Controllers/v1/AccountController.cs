@@ -2,6 +2,7 @@ using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Contracts.Models;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Models;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
@@ -13,12 +14,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace ATMS.Admin.API.Controllers.v1;
 
 [Route("api/v1/account")]
-public class AccountController(IMediator mediator, IConfiguration configuration) : ControllerBase
+public sealed class AccountController(IMediator mediator, IConfiguration configuration) : ControllerBase
 {
 
     private readonly RedirectUrlOptions _redirectUrlOptions =
         configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>() 
-        ?? throw new ConfigurationException(ConfigurationErrorType.RedirectUrlSectionNotFound,
+        ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.RedirectUrlSectionNotFound,
             string.Format(LogMessages.ConfigSectionNotFound, nameof(RedirectUrlOptions)));
 
     /// <summary>

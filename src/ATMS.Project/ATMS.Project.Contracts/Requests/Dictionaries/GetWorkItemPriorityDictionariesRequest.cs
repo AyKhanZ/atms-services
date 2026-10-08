@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ATMS.Project.Contracts.Requests.Dictionaries;
 
-public class GetWorkItemPriorityDictionariesRequest : IRequest<DictionaryModel[]>;
+public sealed class GetWorkItemPriorityDictionariesRequest : IRequest<DictionaryModel[]>;

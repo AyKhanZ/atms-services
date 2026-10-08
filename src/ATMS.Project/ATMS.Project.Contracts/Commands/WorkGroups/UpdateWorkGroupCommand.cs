@@ -7,7 +7,7 @@ namespace ATMS.Project.Contracts.Commands.WorkGroups;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.ProjectEdit)]
-public class UpdateWorkGroupCommand : WorkGroupCommand, IRequest, IProjectScopedRequest
+public sealed class UpdateWorkGroupCommand : WorkGroupCommand, IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

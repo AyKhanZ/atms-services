@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Criteria.WorkProjects;
 
-public class WorkProjectsFilter : ACriteria<WorkProject>
+public sealed class WorkProjectsFilter : ACriteria<WorkProject>
 {
     public string? Search { get; init; }
 
@@ -71,8 +71,7 @@ public class WorkProjectsFilter : ACriteria<WorkProject>
 
         return SortBy?.ToLowerInvariant() switch
         {
-            // Length first, then the text. The code is a number kept as text, so sorting it as
-            // text alone would put #100 before #99; within one length the two orders agree.
+            // code is a number stored as text: sort by length first, otherwise #100 goes before #99
             "code" => ascending
                 ? query.OrderBy(x => x.Code.Length).ThenBy(x => x.Code)
                 : query.OrderByDescending(x => x.Code.Length).ThenByDescending(x => x.Code),

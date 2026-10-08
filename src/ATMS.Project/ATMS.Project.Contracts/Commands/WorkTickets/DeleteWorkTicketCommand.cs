@@ -7,7 +7,7 @@ namespace ATMS.Project.Contracts.Commands.WorkTickets;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.TicketDelete)]
-public class DeleteWorkTicketCommand : IRequest, IProjectScopedRequest
+public sealed class DeleteWorkTicketCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

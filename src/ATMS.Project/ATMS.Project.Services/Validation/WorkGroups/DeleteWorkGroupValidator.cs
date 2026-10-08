@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkGroups;
 
-public class DeleteWorkGroupValidator : AbstractValidator<DeleteWorkGroupCommand>
+public sealed class DeleteWorkGroupValidator : AbstractValidator<DeleteWorkGroupCommand>
 {
     public DeleteWorkGroupValidator()
     {

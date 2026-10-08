@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.DbContexts;
 
-public class AdminDbContext: DbContext
+public sealed class AdminDbContext: DbContext
 {
     private readonly IAuditActorAccessor? _auditActor;
 

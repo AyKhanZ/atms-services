@@ -5,7 +5,6 @@ using ATMS.Data.Enums;
 
 namespace ATMS.Data.Criteria;
 
-/// <summary>Where the next page starts: the last row's key and id, the direction, and which order they belong to.</summary>
 public sealed record KeysetCursor(string Key, Guid Id, SortDirectionEnum SortDirection, string? Order = null)
 {
     private static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web);
@@ -15,7 +14,6 @@ public sealed record KeysetCursor(string Key, Guid Id, SortDirectionEnum SortDir
 
     public TKey KeyAs<TKey>() => Read<TKey>(Key);
 
-    /// <summary>Whether the key reads as this type at all: a date that is not a date, for one, does not.</summary>
     public bool TryKeyAs<TKey>()
     {
         try
@@ -60,7 +58,7 @@ public sealed record KeysetCursor(string Key, Guid Id, SortDirectionEnum SortDir
             .Replace('/', '_');
     }
 
-    /// <summary>An empty key means the row had no value there — a task without a deadline, for one.</summary>
+    // empty key = no value (e.g. a task without a deadline)
     private static string Write<TKey>(TKey key) => key switch
     {
         null => string.Empty,

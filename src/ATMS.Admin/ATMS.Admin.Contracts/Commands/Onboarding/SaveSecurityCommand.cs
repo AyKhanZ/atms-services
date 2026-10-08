@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ATMS.Admin.Contracts.Commands.Onboarding;
 
-public class SaveSecurityCommand : IRequest<OnboardingModel>
+public sealed class SaveSecurityCommand : IRequest<OnboardingModel>
 {
     public required string Password { get; set; }
     

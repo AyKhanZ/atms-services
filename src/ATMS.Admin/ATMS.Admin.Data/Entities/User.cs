@@ -26,8 +26,7 @@ public class User : AuditableUserBase
 
     public DateTime? LockoutEnd { get; set; }
 
-    // Raised when the password changes or is reset. A session issued under an older value no longer
-    // refreshes, even one created in the same instant by a sign-in with the old password.
+    // +1 on every password change, sessions with an older value stop refreshing
     public int SessionVersion { get; set; }
 
 
@@ -65,5 +64,5 @@ public class User : AuditableUserBase
     #endregion
 
 
-    public List<UserRole> UserRoles { get; set; } = [];
+    public ICollection<UserRole> UserRoles { get; set; } = [];
 }

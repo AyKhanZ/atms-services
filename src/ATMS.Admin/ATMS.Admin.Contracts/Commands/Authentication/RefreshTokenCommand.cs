@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ATMS.Admin.Contracts.Commands.Authentication;
 
-public class RefreshTokenCommand : IRequest<AccessInfoModel>
+public sealed class RefreshTokenCommand : IRequest<AccessInfoModel>
 {
     public required string RefreshToken { get; init; }
 }

@@ -19,7 +19,7 @@ public static class SecurityModule
         services.AddScoped<IEmailConfirmationTokenService, EmailConfirmationTokenService>();
         services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
-        services.AddHostedService<UserSessionCleanupBackgroundService>();
+        services.AddHostedService<ExpiredTokenCleanupBackgroundService>();
 
         return services;
     }

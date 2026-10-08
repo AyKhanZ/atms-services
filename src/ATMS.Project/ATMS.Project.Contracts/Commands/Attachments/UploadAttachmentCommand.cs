@@ -9,7 +9,7 @@ namespace ATMS.Project.Contracts.Commands.Attachments;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.TaskEdit)]
-public class UploadAttachmentCommand : IRequest<AttachmentModel>, IProjectScopedRequest
+public sealed class UploadAttachmentCommand : IRequest<AttachmentModel>, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

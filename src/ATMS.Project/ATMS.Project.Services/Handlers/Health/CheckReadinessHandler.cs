@@ -5,7 +5,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Health;
 
-public class CheckReadinessHandler(
+public sealed class CheckReadinessHandler(
     IHealthRepository healthRepository,
     IFileStorage fileStorage) : IRequestHandler<CheckReadinessRequest, bool>
 {

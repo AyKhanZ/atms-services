@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkTickets;
 
-public class CreateWorkTicketValidator : AbstractValidator<CreateWorkTicketCommand>
+public sealed class CreateWorkTicketValidator : AbstractValidator<CreateWorkTicketCommand>
 {
     public CreateWorkTicketValidator(
         IWorkTicketRepository workTicketRepository,

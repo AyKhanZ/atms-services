@@ -1,13 +1,9 @@
+using ATMS.Application.Models;
+
 namespace ATMS.Project.Contracts.Models.Users;
 
-public class UserModel
+public sealed class UserModel : AuditUserModel
 {
-    public Guid Id { get; set; }
-    
-    public string Name { get; set; }
-    
-    public string Surname { get; set; }
-    
     public string Email { get; set; }
 
     public string? AvatarPath { get; set; }

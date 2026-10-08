@@ -3,6 +3,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Infrastructure.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Contracts.Events.Users;
 using ATMS.Data.Constants;
@@ -23,7 +24,7 @@ public sealed class DataInitializer(
     
     private readonly AdminOptions _adminOptions =
         configuration.GetSection(nameof(AdminOptions)).Get<AdminOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.AdminSectionNotFound,
+            ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.AdminSectionNotFound,
                 string.Format(LogMessages.ConfigSectionNotFound, nameof(AdminOptions)));
     
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
@@ -38,7 +39,7 @@ public sealed class DataInitializer(
         if (role is null)
         {
             throw new ConfigurationException(
-                ConfigurationErrorType.MissingSeedData,
+                ConfigurationErrorTypeEnum.MissingSeedData,
                 string.Format(LogMessages.MissingSeedData, RoleIds.SuperAdmin));
         }
 

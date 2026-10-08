@@ -1,3 +1,4 @@
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Criteria;
 using ATMS.Project.Data.Entities;
 using ATMS.Application.Exceptions.Entity;
@@ -7,15 +8,15 @@ using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Criteria.WorkTasks;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Caching;
-using ATMS.Project.Services.Board.Interfaces;
-using ATMS.Project.Services.Notifications.Interfaces;
+using ATMS.Project.Services.Infrastructure;
+using ATMS.Project.Services.Domain.Board.Interfaces;
+using ATMS.Project.Services.Domain.Notifications.Interfaces;
 using ATMS.Project.Services.Resources;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkTasks;
 
-public class MoveWorkTaskHandler(
+public sealed class MoveWorkTaskHandler(
     IWorkTaskRepository workTaskRepository,
     ICacheService cache,
     ICurrentUser currentUser,
@@ -25,7 +26,7 @@ public class MoveWorkTaskHandler(
     public async Task Handle(MoveWorkTaskCommand command, CancellationToken cancellationToken)
     {
         var workTask = await workTaskRepository.FindAsync(command.ProjectId, command.WorkTaskId, cancellationToken)
-            ?? throw new EntityException(EntityErrorType.NotFound, WorkTaskMessages.NotFound);
+            ?? throw new EntityException(EntityErrorTypeEnum.NotFound, WorkTaskMessages.NotFound);
 
         var now = DateTime.UtcNow;
         var previousStatusId = workTask.StatusId;
@@ -36,7 +37,7 @@ public class MoveWorkTaskHandler(
             workTask.DoneAt = command.StatusId == (int)WorkTaskStatusEnum.Done ? now : null;
         }
 
-        // Done keeps its own order, by close date: a card there needs no place of its own.
+        // Done is ordered by close date, no rank needed
         if (command.StatusId != (int)WorkTaskStatusEnum.Done)
         {
             var hasNeighbours = new[] { command.PreviousWorkTaskId, command.NextWorkTaskId }
@@ -44,7 +45,7 @@ public class MoveWorkTaskHandler(
 
             if (hasNeighbours)
             {
-                // The neighbours are looked up among the cards of that column the caller may see.
+                // neighbours only among the cards of that column the caller can see
                 var neighbourCriteria = new WorkTaskBoardFilter { StatusIds = [command.StatusId] }
                     .And(new ExceptSuperAdminCriteria<WorkTask>(
                         currentUser.RoleId,

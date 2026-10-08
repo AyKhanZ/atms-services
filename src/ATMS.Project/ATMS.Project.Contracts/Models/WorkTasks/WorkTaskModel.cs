@@ -1,9 +1,9 @@
 using ATMS.Application.Models;
-using ATMS.Project.Contracts.Models.WorkItems;
+using ATMS.Project.Contracts.Models.Users;
 
 namespace ATMS.Project.Contracts.Models.WorkTasks;
 
-public class WorkTaskModel
+public sealed class WorkTaskModel
 {
     public Guid Id { get; set; }
     public string Code { get; set; }
@@ -22,7 +22,7 @@ public class WorkTaskModel
     public DictionaryModel Priority { get; set; }
     public DateTime? Deadline { get; set; }
     public DateTime? DoneAt { get; set; }
-    public WorkItemAssigneeModel? Assignee { get; set; }
+    public PersonModel? Assignee { get; set; }
     public int SubtaskCount { get; set; }
     public int DoneSubtaskCount { get; set; }
     public int CommentsCount { get; set; }

@@ -6,7 +6,7 @@ public static class PasswordHelper
 {
     private const string SpecialCharacters = "!@#$%^&*()-_+=";
 
-    // Allows only Latin letters, digits and the special characters accepted by our password policy.
+    // latin letters, digits and the allowed special chars only
     private static readonly Regex AllowedCharactersPattern = new(
         @"^[A-Za-z\d!@#$%^&*()\-_+=]+$",
         RegexOptions.Compiled);
@@ -21,8 +21,7 @@ public static class PasswordHelper
             return false;
         }
 
-        // A valid password always has an uppercase letter, digit and special character.
-        // Some flows, such as onboarding, also require a lowercase letter.
+        // upper + digit + special always, lowercase only in some flows (onboarding)
         return password.Any(char.IsUpper) &&
                (!requireLowercase || password.Any(char.IsLower)) &&
                password.Any(char.IsDigit) &&

@@ -1,6 +1,6 @@
 namespace ATMS.Email.Models;
 
-public class ForgotPasswordModel
+public sealed class ForgotPasswordModel
 {
     public required string Email { get; set; }
     public required string Name { get; set; }

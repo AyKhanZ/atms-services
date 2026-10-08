@@ -11,7 +11,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Users;
 
-public class GetUsersHandler(
+public sealed class GetUsersHandler(
     IUserRepository userRepository,
     IMapper mapper
 ) : IRequestHandler<GetUsersRequest, PagedResult<UserListItemModel>>

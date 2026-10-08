@@ -1,6 +1,6 @@
 ﻿namespace ATMS.Infrastructure.Options;
 
-public class JwtOptions
+public sealed class JwtOptions
 {
     public required string Key { get; init; }
     public required string Issuer { get; init; }

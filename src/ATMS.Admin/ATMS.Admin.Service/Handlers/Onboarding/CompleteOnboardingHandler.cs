@@ -5,6 +5,7 @@ using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Constants;
@@ -28,7 +29,7 @@ public sealed class CompleteOnboardingHandler(
     public async Task<OnboardingCompletionModel> Handle(CompleteOnboardingCommand command, CancellationToken cancellationToken)
     {
         var progress = await onboardingRepository.GetAsync(currentUser.Id, cancellationToken)
-            ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
 
         if (progress.User.HasCompletedOnboarding)
         {

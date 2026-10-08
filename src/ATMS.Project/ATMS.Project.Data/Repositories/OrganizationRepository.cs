@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class OrganizationRepository(ProjectDbContext context) : IOrganizationRepository
+public sealed class OrganizationRepository(ProjectDbContext context) : IOrganizationRepository
 {
     public async Task<Organization?> GetAsync(Expression<Func<Organization, bool>> predicate, CancellationToken cancellationToken)
     {

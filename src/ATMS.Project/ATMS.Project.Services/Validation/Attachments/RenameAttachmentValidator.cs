@@ -1,12 +1,12 @@
 using ATMS.Project.Contracts.Commands.Attachments;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Attachments.Interfaces;
+using ATMS.Project.Services.Domain.Attachments.Interfaces;
 using ATMS.Project.Services.Resources;
 using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.Attachments;
 
-public class RenameAttachmentValidator : AbstractValidator<RenameAttachmentCommand>
+public sealed class RenameAttachmentValidator : AbstractValidator<RenameAttachmentCommand>
 {
     private readonly IWorkProjectRepository _workProjectRepository;
     private readonly IAttachmentRepository _attachmentRepository;

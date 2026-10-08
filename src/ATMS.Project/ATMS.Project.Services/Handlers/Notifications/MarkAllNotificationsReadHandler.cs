@@ -22,9 +22,8 @@ public sealed class MarkAllNotificationsReadHandler(
             return;
         }
 
-        // ExecuteUpdate bypasses the change tracker, so publish the count after the update commits.
-        // Not cancelled with the request: the rows are already read, and the person's other tabs must
-        // learn it even when this tab closed right after the click.
+        // ExecuteUpdate skips the change tracker, so the count is pushed here after it
+        // no cancellation: other tabs must learn it even if this one was closed
         try
         {
             var unreadCount = await notifications.CountUnreadAsync(userId, CancellationToken.None);

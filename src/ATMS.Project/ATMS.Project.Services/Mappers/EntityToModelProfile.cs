@@ -12,7 +12,6 @@ using ATMS.Project.Contracts.Models.WorkProjects;
 using ATMS.Project.Contracts.Models.WorkGroups;
 using ATMS.Project.Contracts.Models.WorkItems;
 using ATMS.Project.Data.Models.WorkTasks;
-using ATMS.Project.Contracts.Models.WorkTaskBoard;
 using ATMS.Project.Contracts.Models.WorkTasks;
 using ATMS.Project.Contracts.Models.WorkTickets;
 using ATMS.Project.Contracts.Models.Search;
@@ -23,7 +22,7 @@ using AutoMapper;
 
 namespace ATMS.Project.Services.Mappers;
 
-public class EntityToModelProfile : Profile
+public sealed class EntityToModelProfile : Profile
 {
     public EntityToModelProfile()
     {
@@ -130,12 +129,12 @@ public class EntityToModelProfile : Profile
                 x => x.Name,
                 expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
 
-        CreateMap<WorkProjectParticipant, WorkItemAssigneeModel>()
+        CreateMap<WorkProjectParticipant, PersonModel>()
             .ForMember(x => x.Name, expression => expression.MapFrom(x => x.User.Name))
             .ForMember(x => x.Surname, expression => expression.MapFrom(x => x.User.Surname))
             .ForMember(x => x.AvatarPath, expression => expression.MapFrom(x => x.User.AvatarPath));
 
-        CreateMap<WorkTaskBoardAssignee, WorkTaskBoardAssigneeModel>()
+        CreateMap<WorkTaskBoardAssignee, PersonModel>()
             .ForMember(x => x.Id, expression => expression.MapFrom(x => x.UserId));
 
         CreateMap<WorkTicket, WorkTicketModel>()
@@ -163,7 +162,7 @@ public class EntityToModelProfile : Profile
 
         CreateMap<AttachmentOwnerTask, DictionaryModel<Guid>>()
             .ForMember(x => x.Name, options => options.MapFrom(x => x.Title));
-        CreateMap<AttachmentAuthor, AttachmentAuthorModel>();
+        CreateMap<AttachmentAuthor, PersonModel>();
         CreateMap<AttachmentListItem, AttachmentModel>();
 
         CreateMap<WorkTask, WorkTaskModel>()

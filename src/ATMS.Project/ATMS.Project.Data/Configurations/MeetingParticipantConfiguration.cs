@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class MeetingParticipantConfiguration : IEntityTypeConfiguration<MeetingParticipant>
+public sealed class MeetingParticipantConfiguration : IEntityTypeConfiguration<MeetingParticipant>
 {
     public void Configure(EntityTypeBuilder<MeetingParticipant> builder)
     {

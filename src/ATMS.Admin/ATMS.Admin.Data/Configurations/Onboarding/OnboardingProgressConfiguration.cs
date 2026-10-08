@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Admin.Data.Configurations.Onboarding;
 
-public class OnboardingProgressConfiguration : IEntityTypeConfiguration<OnboardingProgress>
+public sealed class OnboardingProgressConfiguration : IEntityTypeConfiguration<OnboardingProgress>
 {
     public void Configure(EntityTypeBuilder<OnboardingProgress> builder)
     {

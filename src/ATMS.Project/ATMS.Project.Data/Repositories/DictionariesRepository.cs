@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class DictionariesRepository(ProjectDbContext context) : IDictionariesRepository
+public sealed class DictionariesRepository(ProjectDbContext context) : IDictionariesRepository
 {
     public Task<bool> IsProjectKindExistAsync(int id, CancellationToken cancellationToken = default)
     {

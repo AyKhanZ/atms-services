@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
+public sealed class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 {
     public const string UniqueRankIndex = "IX_Tasks_StatusId_Rank";
 
@@ -21,9 +21,7 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
         builder.HasIndex(e => e.Code)
             .IsUnique();
 
-        // The Tasks page searches "code or title" with ILIKE. Without this index the Title one is
-        // useless for that query: an OR can use indexes only when both sides have one. A code is
-        // written once at creation, so the index costs next to nothing on writes.
+        // trigram index for the "code or title" ILIKE search, an OR uses indexes only if both sides have one
         builder.HasIndex(e => e.Code, "IX_Tasks_Code_Trigram")
             .HasMethod("gin")
             .HasOperators("gin_trgm_ops");
@@ -34,9 +32,7 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 
         builder.HasIndex(e => new { e.WorkProjectId, e.CreatedAt, e.Id });
 
-        // One card per place in a New or In Progress column: two moves to the same spot at the same
-        // moment would otherwise save the same key, and nothing could ever go between them again.
-        // Done is ordered by close date, not by rank, and deleted cards hold no place.
+        // one card per place in New / In Progress, two moves to the same spot can't save the same rank
         builder.HasIndex(e => new { e.StatusId, e.Rank }, UniqueRankIndex)
             .IsUnique()
             .HasFilter($"\"IsDeleted\" = false AND \"StatusId\" <> {(int)WorkTaskStatusEnum.Done}");
@@ -48,8 +44,7 @@ public class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 
         builder.HasIndex(e => new { e.Rank, e.Id });
 
-        // Plain ascending on both columns: the list sorts priority both ways with the id in the same
-        // direction, and PostgreSQL reads one index backwards as well as forwards.
+        // postgres reads an index both ways, so plain ascending works for both sort directions
         builder.HasIndex(e => new { e.PriorityId, e.Id });
 
 

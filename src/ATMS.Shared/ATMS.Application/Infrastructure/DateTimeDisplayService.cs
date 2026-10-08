@@ -2,7 +2,7 @@ using ATMS.Application.Interfaces;
 
 namespace ATMS.Application.Infrastructure;
 
-public class DateTimeDisplayService : IDateTimeDisplayService
+public sealed class DateTimeDisplayService : IDateTimeDisplayService
 {
     private static readonly TimeZoneInfo BakuTimeZone =
         TimeZoneInfo.FindSystemTimeZoneById("Asia/Baku");

@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkTickets;
 
-public class DeleteWorkTicketValidator : AbstractValidator<DeleteWorkTicketCommand>
+public sealed class DeleteWorkTicketValidator : AbstractValidator<DeleteWorkTicketCommand>
 {
     private readonly IWorkTicketRepository _workTicketRepository;
 

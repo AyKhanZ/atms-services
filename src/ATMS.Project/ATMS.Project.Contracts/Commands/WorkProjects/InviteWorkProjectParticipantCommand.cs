@@ -7,7 +7,7 @@ namespace ATMS.Project.Contracts.Commands.WorkProjects;
 
 [Access(PermissionEnum.ProjectView)]
 [ProjectAccess(ProjectPermissionEnum.ParticipantInviteClient)]
-public class InviteWorkProjectParticipantCommand : IRequest, IProjectScopedRequest
+public sealed class InviteWorkProjectParticipantCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

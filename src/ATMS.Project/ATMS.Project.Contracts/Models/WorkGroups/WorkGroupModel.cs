@@ -2,7 +2,7 @@ using ATMS.Application.Models;
 
 namespace ATMS.Project.Contracts.Models.WorkGroups;
 
-public class WorkGroupModel
+public sealed class WorkGroupModel
 {
     public Guid Id { get; set; }
 

@@ -11,9 +11,9 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/project/{projectId:guid}")]
-public class AttachmentController(IMediator mediator) : ControllerBase
+public sealed class AttachmentController(IMediator mediator) : ControllerBase
 {
-    // 25 MB of file plus room for the multipart envelope.
+    // 25 MB file + multipart overhead
     private const long MaxUploadRequestBytes = 26 * 1024 * 1024;
 
     /// <summary>

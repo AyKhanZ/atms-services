@@ -1,3 +1,4 @@
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Models.WorkItems;
 using System.Globalization;
@@ -8,12 +9,13 @@ using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.Dashboard;
 using ATMS.Project.Contracts.Requests.Dashboard;
 using ATMS.Project.Data.Criteria.WorkProjects;
+using ATMS.Project.Data.Enums;
 using ATMS.Project.Data.Models.Dashboard;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Dashboard;
-using ATMS.Project.Services.Time;
-using ATMS.Project.Services.Dictionaries.Interfaces;
-using ATMS.Project.Services.History.Interfaces;
+using ATMS.Project.Services.Models.Dashboard;
+using ATMS.Project.Services.Infrastructure;
+using ATMS.Project.Services.Domain.Dictionaries.Interfaces;
+using ATMS.Project.Services.Domain.History.Interfaces;
 using ATMS.Project.Services.Resources;
 using FluentValidation;
 using FluentValidation.Results;
@@ -36,8 +38,7 @@ public sealed class GetDashboardHandler(
         var query = httpContextAccessor.HttpContext?.Request.Query;
         if (query is not null)
         {
-            // A malformed date never reaches the request: model binding drops it, and the range would
-            // then read as "pick both dates" instead of what actually went wrong.
+            // model binding drops a broken date, so check it here, otherwise the error says "pick both dates"
             foreach (var field in new[] { nameof(request.From), nameof(request.To) })
             {
                 if (query.TryGetValue(field, out var rawDate) &&
@@ -68,7 +69,7 @@ public sealed class GetDashboardHandler(
         if (request.ProjectId is { } projectId &&
             !await dashboardRepository.IsProjectAccessibleAsync(accessibleProjects, projectId, cancellationToken))
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkProjectMessages.NotFound);
         }
 
         var isClient = currentUser.RoleId == RoleIds.Client || currentUser.RoleId == RoleIds.ClientManager;
@@ -95,8 +96,8 @@ public sealed class GetDashboardHandler(
         var buckets = Buckets(window);
         var labelFormat = window.Data.Granularity switch
         {
-            DashboardGranularity.Hour => "yyyy-MM-ddTHH:mm",
-            DashboardGranularity.Month => "yyyy-MM",
+            DashboardGranularityEnum.Hour => "yyyy-MM-ddTHH:mm",
+            DashboardGranularityEnum.Month => "yyyy-MM",
             _ => "yyyy-MM-dd"
         };
 
@@ -265,7 +266,7 @@ public sealed class GetDashboardHandler(
             : (int)Math.Round((value - previousValue) * 100d / previousValue, MidpointRounding.AwayFromZero)
     };
 
-    // Every bucket of the period is present, empty ones as zero, so the line never breaks.
+    // every bucket is there, empty ones as 0, so the line doesn't break
     private static DateTime[] Buckets(DashboardPeriodWindow window)
     {
         var first = window.FirstDay.ToDateTime(TimeOnly.MinValue);
@@ -275,8 +276,8 @@ public sealed class GetDashboardHandler(
 
         return window.Data.Granularity switch
         {
-            DashboardGranularity.Hour => Enumerable.Range(0, 24).Select(hour => first.AddHours(hour)).ToArray(),
-            DashboardGranularity.Month => Enumerable.Range(0, months).Select(monthStart.AddMonths).ToArray(),
+            DashboardGranularityEnum.Hour => Enumerable.Range(0, 24).Select(hour => first.AddHours(hour)).ToArray(),
+            DashboardGranularityEnum.Month => Enumerable.Range(0, months).Select(monthStart.AddMonths).ToArray(),
             _ => Enumerable.Range(0, window.LastDay.DayNumber - window.FirstDay.DayNumber + 1)
                 .Select(offset => first.AddDays(offset))
                 .ToArray()

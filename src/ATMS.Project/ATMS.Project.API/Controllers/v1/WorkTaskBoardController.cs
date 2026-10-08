@@ -1,6 +1,6 @@
 using ATMS.Application.Models;
 using ATMS.Data.Criteria;
-using ATMS.Project.Contracts.Models.WorkTaskBoard;
+using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Models.WorkTasks;
 using ATMS.Project.Contracts.Requests.WorkTaskBoard;
 using MediatR;
@@ -11,7 +11,7 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/work-tasks")]
-public class WorkTaskBoardController(IMediator mediator) : ControllerBase
+public sealed class WorkTaskBoardController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Returns a cursor-paginated page of tasks and subtasks across the caller's projects.
@@ -72,12 +72,12 @@ public class WorkTaskBoardController(IMediator mediator) : ControllerBase
     /// <response code="401">The user is not authenticated.</response>
     /// <response code="403">The user does not have permission to view projects.</response>
     [HttpGet("assignees")]
-    [ProducesResponseType(typeof(WorkTaskBoardAssigneeModel[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PersonModel[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<WorkTaskBoardAssigneeModel[]>> GetAssignees([FromQuery] GetWorkTaskBoardAssigneesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<PersonModel[]>> GetAssignees([FromQuery] GetWorkTaskBoardAssigneesRequest request, CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(request, cancellationToken));
     }

@@ -7,7 +7,7 @@ namespace ATMS.Project.Contracts.Commands.WorkProjects;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.ParticipantEdit)]
-public class UpdateWorkProjectParticipantCommand : IRequest, IProjectScopedRequest
+public sealed class UpdateWorkProjectParticipantCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

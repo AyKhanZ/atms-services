@@ -1,10 +1,11 @@
+
 using ATMS.Data.Enums;
 
 namespace ATMS.Project.Data.Models.Search;
 
-public class GlobalSearchRow
+public sealed class GlobalSearchRow
 {
-    public GlobalSearchItemType ItemType { get; set; }
+    public GlobalSearchItemTypeEnum ItemType { get; set; }
     public Guid Id { get; set; }
     public string Code { get; set; }
     public string Title { get; set; }

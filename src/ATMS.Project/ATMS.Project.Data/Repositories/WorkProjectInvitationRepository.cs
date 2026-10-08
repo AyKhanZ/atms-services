@@ -8,14 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class WorkProjectInvitationRepository(ProjectDbContext context) : IWorkProjectInvitationRepository
+public sealed class WorkProjectInvitationRepository(ProjectDbContext context) : IWorkProjectInvitationRepository
 {
-    // The validator's checks alone let two invitations at 19 participants both pass, or the same email
-    // be invited twice at once. The checks and the insert run here under a lock on the project's row: a
-    // second invitation to the same project waits for the first to commit, then sees it. Other projects
-    // are not held up. Whatever else the caller has added to the context — the outbox message — is saved
-    // in the same commit.
-    public async Task<WorkProjectParticipantRefusal?> AddWithinLimitAsync(
+    // checks + insert under a lock on the project row, so two invites at 19 participants or the same email can't both pass
+    // the outbox message added by the caller is saved in the same commit
+    public async Task<WorkProjectParticipantRefusalEnum?> AddWithinLimitAsync(
         WorkProjectInvitation invitation,
         int limit,
         CancellationToken cancellationToken)
@@ -29,14 +26,14 @@ public class WorkProjectInvitationRepository(ProjectDbContext context) : IWorkPr
             .Apply(context.WorkProjectInvitations);
         if (await invitations.AnyAsync(x => x.NormalizedEmail == invitation.NormalizedEmail, cancellationToken))
         {
-            return WorkProjectParticipantRefusal.AlreadyInvited;
+            return WorkProjectParticipantRefusalEnum.AlreadyInvited;
         }
 
         var participants = await context.WorkProjectParticipants
             .CountAsync(x => x.WorkProjectId == invitation.WorkProjectId, cancellationToken);
         if (participants + await invitations.CountAsync(cancellationToken) >= limit)
         {
-            return WorkProjectParticipantRefusal.LimitReached;
+            return WorkProjectParticipantRefusalEnum.LimitReached;
         }
 
         await context.WorkProjectInvitations.AddAsync(invitation, cancellationToken);
@@ -57,7 +54,7 @@ public class WorkProjectInvitationRepository(ProjectDbContext context) : IWorkPr
             .ToListAsync(cancellationToken);
     }
 
-    // Every pending invitation, dead ones too: an answer from Admin that comes late still settles it.
+    // dead ones too: a late answer from admin still settles it
     public Task<List<WorkProjectInvitation>> GetPendingByEmailAsync(
         string normalizedEmail,
         CancellationToken cancellationToken)

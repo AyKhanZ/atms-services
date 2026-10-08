@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ATMS.Admin.Service.Validation.Account;
 
-public class ForgotPasswordValidator : AbstractValidator<ForgotPasswordCommand>
+public sealed class ForgotPasswordValidator : AbstractValidator<ForgotPasswordCommand>
 {
     public ForgotPasswordValidator()
     {

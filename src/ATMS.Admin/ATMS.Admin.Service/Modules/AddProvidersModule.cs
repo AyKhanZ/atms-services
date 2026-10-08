@@ -1,6 +1,7 @@
 using ATMS.Admin.Service.Providers;
 using ATMS.Admin.Service.Providers.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Infrastructure;
 using ATMS.Infrastructure.Options;
@@ -17,7 +18,7 @@ public static class AddProvidersModule
         services.AddHttpClient("ProjectClient", client =>
         {
             var providerOptions = configuration.GetSection(nameof(ProviderOptions)).Get<ProviderOptions>()
-                                  ?? throw new ConfigurationException(ConfigurationErrorType.ProviderSectionNotFound,
+                                  ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.ProviderSectionNotFound,
                                       string.Format(LogMessages.ConfigSectionNotFound, nameof(ProviderOptions)));
 
             

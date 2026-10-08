@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATMS.Project.Services.Infrastructure;
 
-public class MessageRetentionBackgroundService(
+public sealed class MessageRetentionBackgroundService(
     IServiceScopeFactory scopeFactory,
     ILogger<MessageRetentionBackgroundService> logger) : BackgroundService
 {
@@ -18,7 +18,7 @@ public class MessageRetentionBackgroundService(
 
         do
         {
-            // Each table on its own: a failure in one must not leave the other uncleaned for a day.
+            // each table separately, one failure shouldn't stop the other
             await DeleteAsync(
                 "outbox",
                 provider => provider.GetRequiredService<IOutboxRepository>()

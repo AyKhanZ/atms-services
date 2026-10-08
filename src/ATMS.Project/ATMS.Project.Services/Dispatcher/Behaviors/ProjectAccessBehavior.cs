@@ -1,10 +1,11 @@
+using ATMS.Application.Enums;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Security;
-using System.Diagnostics.CodeAnalysis;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Requests.Security;
-using ATMS.Project.Services.Security.Interfaces;
+using ATMS.Project.Services.Domain.Security.Interfaces;
 using MediatR;
 
 namespace ATMS.Project.Services.Dispatcher.Behaviors;
@@ -37,12 +38,12 @@ public sealed class ProjectAccessBehavior<TRequest, TResponse>(
 
         if (request is not IProjectScopedRequest projectRequest)
         {
-            throw new AuthException(AuthErrorType.Forbidden, ExceptionMessages.ProjectAccessDenied);
+            throw new AuthException(AuthErrorTypeEnum.Forbidden, ExceptionMessages.ProjectAccessDenied);
         }
 
         if (projectRequest.ProjectId == Guid.Empty)
         {
-            throw new AuthException(AuthErrorType.Forbidden, ExceptionMessages.ProjectAccessDenied);
+            throw new AuthException(AuthErrorTypeEnum.Forbidden, ExceptionMessages.ProjectAccessDenied);
         }
 
         var requirements = await ResolveRequirementsAsync(projectRequest, cancellationToken);
@@ -54,7 +55,7 @@ public sealed class ProjectAccessBehavior<TRequest, TResponse>(
 
         if (!hasAccess)
         {
-            Deny();
+            throw new AuthException(AuthErrorTypeEnum.Forbidden, ExceptionMessages.ProjectAccessDenied);
         }
 
         return await next(cancellationToken);
@@ -77,7 +78,7 @@ public sealed class ProjectAccessBehavior<TRequest, TResponse>(
 
         foreach (var attribute in AccessRequirements)
         {
-            if (attribute.Policy is not ProjectAccessPolicy policy)
+            if (attribute.Policy is not ProjectAccessPolicyEnum policy)
             {
                 continue;
             }
@@ -94,8 +95,4 @@ public sealed class ProjectAccessBehavior<TRequest, TResponse>(
             .Concat(policyRequirements)
             .ToArray();
     }
-
-    [DoesNotReturn]
-    private static void Deny() =>
-        throw new AuthException(AuthErrorType.Forbidden, ExceptionMessages.ProjectAccessDenied);
 }

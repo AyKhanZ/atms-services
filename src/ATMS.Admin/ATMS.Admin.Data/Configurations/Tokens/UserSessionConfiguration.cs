@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Admin.Data.Configurations.Tokens;
 
-public class UserSessionConfiguration : IEntityTypeConfiguration<UserSession>
+public sealed class UserSessionConfiguration : IEntityTypeConfiguration<UserSession>
 {
     public void Configure(EntityTypeBuilder<UserSession> builder)
     {

@@ -10,7 +10,7 @@ namespace ATMS.Project.Contracts.Requests.WorkTickets;
 
 [Access(PermissionEnum.ProjectView)]
 [ProjectAccess(ProjectPermissionEnum.ProjectView)]
-public class GetWorkTicketsRequest : GetKeysetPaginationRequest,
+public sealed class GetWorkTicketsRequest : GetKeysetPaginationRequest,
     IRequest<KeysetPagedResult<WorkTicketModel>>,
     IProjectScopedRequest
 {

@@ -11,7 +11,7 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/organization")]
-public class OrganizationController(IMediator mediator) : ControllerBase
+public sealed class OrganizationController(IMediator mediator) : ControllerBase
 {
     
     /// <summary>

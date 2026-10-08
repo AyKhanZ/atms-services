@@ -7,17 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-/// <summary>What the user opened recently, offered back by the search box before anything is typed.</summary>
-public class GlobalSearchRecentRepository(ProjectDbContext context) : IGlobalSearchRecentRepository
+public sealed class GlobalSearchRecentRepository(ProjectDbContext context) : IGlobalSearchRecentRepository
 {
     private const int RecentRetention = 20;
     private const int RecentTake = 5;
 
-    /// <summary>
-    /// Every branch carries a constant item type, so the planner drops the branches that cannot
-    /// match and probes the rest by primary key. Comparing against a column instead would make it
-    /// build the user's whole visible tree to enrich five rows.
-    /// </summary>
+    // a constant item type per branch, so the planner drops the branches that can't match
     // language=sql
     private const string RecentBranches = """
         , recent AS (
@@ -77,11 +72,9 @@ public class GlobalSearchRecentRepository(ProjectDbContext context) : IGlobalSea
     }
 
     public async Task<bool> RecordRecentAsync(
-        Guid userId, bool isSuperAdmin, GlobalSearchItemType itemType, Guid itemId, CancellationToken cancellationToken)
+        Guid userId, bool isSuperAdmin, GlobalSearchItemTypeEnum itemType, Guid itemId, CancellationToken cancellationToken)
     {
-        // No transaction and no lock: this runs on every page a person opens, and the upsert is
-        // already atomic on its own. Two writers can leave a couple of rows above the retention
-        // limit for a moment, which costs nothing — reads take the newest five either way.
+        // no transaction or lock: it runs on every page open and the upsert is atomic, a few extra rows for a moment are fine
         var command = FormattableStringFactory.Create(
             $"{GlobalSearchSql.AccessScope}\n" + """
             INSERT INTO "GlobalSearchRecentItems" ("UserId", "ItemType", "ItemId", "OpenedAt")
@@ -99,7 +92,6 @@ public class GlobalSearchRecentRepository(ProjectDbContext context) : IGlobalSea
             return false;
         }
 
-        // Walks the (UserId, OpenedAt DESC) index and touches at most a couple of rows.
         await context.Database.ExecuteSqlAsync($"""
             DELETE FROM "GlobalSearchRecentItems"
             WHERE "UserId" = {userId} AND ("ItemType", "ItemId") IN (
@@ -110,22 +102,22 @@ public class GlobalSearchRecentRepository(ProjectDbContext context) : IGlobalSea
         return true;
     }
 
-    /// <summary>Whether the caller may see the item, per kind. {3} is the item id.</summary>
-    private static string VisibilityCheck(GlobalSearchItemType itemType) => itemType switch
+    // {3} is the item id
+    private static string VisibilityCheck(GlobalSearchItemTypeEnum itemType) => itemType switch
     {
-        GlobalSearchItemType.Project => """
+        GlobalSearchItemTypeEnum.Project => """
             SELECT 1 FROM accessible_projects p WHERE p."Id" = {3}
             """,
-        GlobalSearchItemType.Ticket => """
+        GlobalSearchItemTypeEnum.Ticket => """
             SELECT 1 FROM visible_tickets t WHERE t."Id" = {3}
             """,
-        GlobalSearchItemType.Task => """
+        GlobalSearchItemTypeEnum.Task => """
             SELECT 1 FROM "Tasks" t
             JOIN visible_tickets ticket ON ticket."Id" = t."WorkTicketId"
                 AND ticket."WorkProjectId" = t."WorkProjectId"
             WHERE t."Id" = {3} AND NOT t."IsDeleted" AND t."ParentWorkTaskId" IS NULL
             """,
-        GlobalSearchItemType.Subtask => """
+        GlobalSearchItemTypeEnum.Subtask => """
             SELECT 1 FROM "Tasks" t
             JOIN visible_tickets ticket ON ticket."Id" = t."WorkTicketId"
                 AND ticket."WorkProjectId" = t."WorkProjectId"

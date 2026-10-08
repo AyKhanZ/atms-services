@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class WorkProjectParticipantConfiguration : IEntityTypeConfiguration<WorkProjectParticipant>
+public sealed class WorkProjectParticipantConfiguration : IEntityTypeConfiguration<WorkProjectParticipant>
 {
     public void Configure(EntityTypeBuilder<WorkProjectParticipant> builder)
     {

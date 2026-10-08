@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkProjects;
 
-public class CancelWorkProjectInvitationValidator : AbstractValidator<CancelWorkProjectInvitationCommand>
+public sealed class CancelWorkProjectInvitationValidator : AbstractValidator<CancelWorkProjectInvitationCommand>
 {
     private readonly IWorkProjectRepository _workProjectRepository;
     private readonly IWorkProjectInvitationRepository _invitationRepository;
@@ -22,7 +22,7 @@ public class CancelWorkProjectInvitationValidator : AbstractValidator<CancelWork
             .NotEmpty().WithMessage(ValidationMessages.IdRequired)
             .MustAsync(IsProjectExistsAsync).WithMessage(WorkProjectMessages.NotFound);
 
-        // Accepted a moment ago, or already cancelled in another tab: there is nothing left to cancel.
+        // accepted a moment ago or cancelled in another tab
         RuleFor(x => x.InvitationId).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(ValidationMessages.IdRequired)
             .MustAsync(IsInvitationPendingAsync).WithMessage(WorkProjectMessages.InvitationNotPending)

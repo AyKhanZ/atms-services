@@ -1,6 +1,6 @@
 namespace ATMS.Project.Contracts.Models.Search;
 
-public class GlobalSearchGroupModel
+public sealed class GlobalSearchGroupModel
 {
     public GlobalSearchItemModel[] Items { get; set; } = [];
 

@@ -1,7 +1,7 @@
 using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Services.Infrastructure;
-using ATMS.Project.Services.Notifications;
-using ATMS.Project.Services.Notifications.Interfaces;
+using ATMS.Project.Services.Domain.Notifications;
+using ATMS.Project.Services.Domain.Notifications.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Project.Services.Modules;

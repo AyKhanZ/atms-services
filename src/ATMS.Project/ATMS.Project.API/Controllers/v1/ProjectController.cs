@@ -13,7 +13,7 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/project")]
-public class ProjectController(IMediator mediator) : ControllerBase
+public sealed class ProjectController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Returns paginated and filtered projects available to the current user.

@@ -1,5 +1,5 @@
-using ATMS.Project.Services.Dictionaries;
-using ATMS.Project.Services.Dictionaries.Interfaces;
+using ATMS.Project.Services.Domain.Dictionaries;
+using ATMS.Project.Services.Domain.Dictionaries.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Project.Services.Modules;

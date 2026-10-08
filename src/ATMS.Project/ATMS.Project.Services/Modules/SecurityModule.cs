@@ -1,5 +1,5 @@
-using ATMS.Project.Services.Security;
-using ATMS.Project.Services.Security.Interfaces;
+using ATMS.Project.Services.Domain.Security;
+using ATMS.Project.Services.Domain.Security.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Project.Services.Modules;

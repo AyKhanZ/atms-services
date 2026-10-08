@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using ATMS.Application.Constants;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Interfaces;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ATMS.Application.Infrastructure;
 
-public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser, IAuditActorAccessor
+public sealed class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser, IAuditActorAccessor
 {
     Guid? IAuditActorAccessor.UserId => TryGetUserId();
 
@@ -19,7 +20,7 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
             var id = TryGetUserId();
             if (!id.HasValue)
             {
-                throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+                throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
             }
             return id.Value;
         }
@@ -34,7 +35,7 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
 
             if (claim is null || !Guid.TryParse(claim, out var roleId))
             {
-                throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+                throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
             }
             return roleId;
         }
@@ -56,7 +57,7 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
 
             if (claim is null || !Guid.TryParse(claim, out var orgId))
             {
-                throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+                throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
             }
             return orgId;
         }
@@ -69,11 +70,11 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
             var claim = httpContextAccessor.HttpContext?.User
                 .FindFirst(CustomClaimTypes.UserType)?.Value;
 
-            return claim ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            return claim ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
         }
     }
 
-    // The token is reissued when onboarding completes, so the claim never lags behind the database.
+    // the token is reissued when onboarding completes, so the claim is up to date
     public bool HasCompletedOnboarding => string.Equals(
         httpContextAccessor.HttpContext?.User.FindFirst(CustomClaimTypes.OnboardingCompleted)?.Value,
         bool.TrueString,

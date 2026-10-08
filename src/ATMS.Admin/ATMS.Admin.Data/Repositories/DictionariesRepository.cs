@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Repositories;
 
-public class DictionariesRepository(AdminDbContext context) : IDictionariesRepository
+public sealed class DictionariesRepository(AdminDbContext context) : IDictionariesRepository
 {
     public Task<List<Gender>> GetGendersAsync(CancellationToken cancellationToken = default)
     {

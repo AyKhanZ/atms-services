@@ -1,3 +1,4 @@
+using ATMS.Infrastructure.Enums;
 using ATMS.Infrastructure.Images;
 using ATMS.Project.Contracts.Commands.Organizations;
 using ATMS.Project.Data.Entities;
@@ -7,7 +8,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Organizations;
 
-public class CreateOrganizationHandler(
+public sealed class CreateOrganizationHandler(
     IMapper mapper,
     IImageStorage imageStorage,
     IOrganizationRepository organizationRepository)
@@ -22,7 +23,7 @@ public class CreateOrganizationHandler(
         {
             var storedImage = await imageStorage.SaveAsync(
                 command.Logo,
-                ImageStorageFolder.Organizations,
+                ImageStorageFolderEnum.Organizations,
                 entity.Id,
                 cancellationToken);
 

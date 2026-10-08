@@ -4,6 +4,7 @@ using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Admin.Service.Security.Models;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
@@ -12,12 +13,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ATMS.Admin.Service.Security;
 
-public class EmailConfirmationTokenService(IConfiguration configuration) : IEmailConfirmationTokenService
+public sealed class EmailConfirmationTokenService(IConfiguration configuration) : IEmailConfirmationTokenService
 {
     
     private readonly JwtOptions _jwtOptions =
         configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
-            ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
+            ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.JwtSectionNotFound,
                 string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
     public EmailConfirmationTokenResult GenerateToken(User user)

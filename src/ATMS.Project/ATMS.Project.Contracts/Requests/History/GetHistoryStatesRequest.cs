@@ -8,7 +8,7 @@ namespace ATMS.Project.Contracts.Requests.History;
 
 [Access(PermissionEnum.ProjectView)]
 [ProjectAccess(ProjectPermissionEnum.ProjectView)]
-public class GetHistoryStatesRequest : IRequest<IReadOnlyCollection<HistoryStateModel>>, IProjectScopedRequest
+public sealed class GetHistoryStatesRequest : IRequest<IReadOnlyCollection<HistoryStateModel>>, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

@@ -1,16 +1,17 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
-using ATMS.Project.Services.Caching;
-using ATMS.Project.Services.Security.Interfaces;
+using ATMS.Project.Services.Infrastructure;
+using ATMS.Project.Services.Domain.Security.Interfaces;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkProjects;
 
-public class DeleteWorkProjectHandler(
+public sealed class DeleteWorkProjectHandler(
     ICurrentUser currentUser,
     IWorkProjectRepository workProjectRepository,
     ICacheService cache,
@@ -22,7 +23,7 @@ public class DeleteWorkProjectHandler(
         var project = await workProjectRepository.FindAsync(command.Id, cancellationToken);
         if (project is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkProjectMessages.NotFound);
         }
 
         var now = DateTime.UtcNow;

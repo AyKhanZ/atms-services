@@ -13,7 +13,7 @@ using Npgsql;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
+public sealed class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
 {
     public async Task<WorkTasksQueryResult> GetManyAsync(
         WorkTasksByProjectCriteria criteria,
@@ -228,10 +228,8 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
 
     public async Task RenumberColumnAsync(int statusId, CancellationToken cancellationToken)
     {
-        // Every key in the column spread evenly again, in the same order. Two steps inside one
-        // transaction: the rank is unique within a column, and a single UPDATE could give one card
-        // a key another card still holds. '~' is never a digit of a key, so the first step cannot
-        // collide either. Deleted cards keep theirs: the unique index leaves them out.
+        // spread all keys evenly in 2 steps in one transaction: rank is unique per column, so one UPDATE could collide
+        // '~' is never a key digit, so step 1 is safe; deleted cards are outside the unique index
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
         await context.Database.ExecuteSqlInterpolatedAsync($"""
@@ -294,7 +292,7 @@ public class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepository
             ConstraintName: WorkTaskConfiguration.UniqueRankIndex
         })
         {
-            // Someone took this place in the column a moment earlier; the caller picks another.
+            // someone took this place a moment ago, the caller picks another
             return false;
         }
     }

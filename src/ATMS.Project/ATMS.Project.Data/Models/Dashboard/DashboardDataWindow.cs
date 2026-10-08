@@ -1,3 +1,6 @@
+
+using ATMS.Project.Data.Enums;
+
 namespace ATMS.Project.Data.Models.Dashboard;
 
 public sealed record DashboardDataWindow(
@@ -7,4 +10,4 @@ public sealed record DashboardDataWindow(
     DateTime PeriodEndUtc,
     DateTime DueEndUtc,
     double OffsetHours,
-    DashboardGranularity Granularity);
+    DashboardGranularityEnum Granularity);

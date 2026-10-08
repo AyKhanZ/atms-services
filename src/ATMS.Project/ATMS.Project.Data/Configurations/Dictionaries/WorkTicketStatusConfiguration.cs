@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations.Dictionaries;
 
-public class WorkTicketStatusConfiguration : IEntityTypeConfiguration<WorkTicketStatus>
+public sealed class WorkTicketStatusConfiguration : IEntityTypeConfiguration<WorkTicketStatus>
 {
     public void Configure(EntityTypeBuilder<WorkTicketStatus> builder)
     {
@@ -32,7 +32,7 @@ public class WorkTicketStatusConfiguration : IEntityTypeConfiguration<WorkTicket
     }
 }
 
-public class WorkTicketStatusTranslationConfiguration : IEntityTypeConfiguration<WorkTicketStatusTranslation>
+public sealed class WorkTicketStatusTranslationConfiguration : IEntityTypeConfiguration<WorkTicketStatusTranslation>
 {
     public void Configure(EntityTypeBuilder<WorkTicketStatusTranslation> builder)
     {

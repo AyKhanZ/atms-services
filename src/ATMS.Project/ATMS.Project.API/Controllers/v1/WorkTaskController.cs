@@ -11,7 +11,7 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/project/{projectId:guid}/work-tasks")]
-public class WorkTaskController(IMediator mediator) : ControllerBase
+public sealed class WorkTaskController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Returns a cursor-paginated page of tasks in the selected project.

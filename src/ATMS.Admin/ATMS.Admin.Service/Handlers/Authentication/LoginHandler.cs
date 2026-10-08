@@ -6,12 +6,13 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Enums;
 using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Authentication;
 
-public class LoginHandler(
+public sealed class LoginHandler(
     IUserRepository userRepository,
     IUserSessionRepository userSessionRepository,
     IAccessTokenService accessTokenService,
@@ -24,7 +25,7 @@ public class LoginHandler(
 
         if (user is null)
         {
-            throw new AuthException(AuthErrorType.InvalidCredentials,
+            throw new AuthException(AuthErrorTypeEnum.InvalidCredentials,
                 AuthMessages.InvalidLoginCredentials);
         }
 
@@ -72,7 +73,7 @@ public class LoginHandler(
     {
         if (!user.EmailConfirmed)
         {
-            throw new AuthException(AuthErrorType.EmailNotConfirmed,
+            throw new AuthException(AuthErrorTypeEnum.EmailNotConfirmed,
                 AuthMessages.EmailNotConfirmed);
         }
     }
@@ -82,12 +83,11 @@ public class LoginHandler(
         switch (user.UserStatusId)
         {
             case (int)UserStatusEnum.Inactive:
-                throw new AuthException(AuthErrorType.AccountInactive,
+                throw new AuthException(AuthErrorTypeEnum.AccountInactive,
                     AuthMessages.AccountInactive);
-            // Locked with no end date was set by an administrator, not by wrong passwords: it lasts
-            // until they lift it, and a correct password does not.
+            // no end date = locked by admin, a correct password doesn't help
             case (int)UserStatusEnum.Locked when !user.LockoutEnd.HasValue:
-                throw new AuthException(AuthErrorType.AccountLocked,
+                throw new AuthException(AuthErrorTypeEnum.AccountLocked,
                     AuthMessages.AccountLockedByAdministrator);
             case (int)UserStatusEnum.Locked when
                 user.LockoutEnd.HasValue &&
@@ -96,7 +96,7 @@ public class LoginHandler(
                 var remaining = user.LockoutEnd.Value - DateTime.UtcNow;
                 var remainingMinutes = Math.Ceiling(remaining.TotalMinutes);
 
-                throw new AuthException(AuthErrorType.AccountLocked,
+                throw new AuthException(AuthErrorTypeEnum.AccountLocked,
                     string.Format(AuthMessages.AccountLocked, remainingMinutes));
             }
         }
@@ -118,8 +118,7 @@ public class LoginHandler(
             return;
         }
 
-        // Saves the lifted expired lockout, if any; the count itself is updated in the database in
-        // one statement, so parallel wrong passwords cannot all read the same number.
+        // saves the lifted lock if any, the fail count itself is updated in sql
         await userRepository.SaveAsync(cancellationToken);
 
         var now = DateTime.UtcNow;
@@ -130,7 +129,7 @@ public class LoginHandler(
             now.AddMinutes(15),
             cancellationToken);
 
-        throw new AuthException(AuthErrorType.InvalidCredentials,
+        throw new AuthException(AuthErrorTypeEnum.InvalidCredentials,
             AuthMessages.InvalidLoginCredentials);
     }
 }

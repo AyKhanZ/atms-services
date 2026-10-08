@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Criteria.Users;
 
-public class UserFilter : ACriteria<User>
+public sealed class UserFilter : ACriteria<User>
 {
     public string? Search { get; init; }
     

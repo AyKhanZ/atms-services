@@ -5,7 +5,7 @@ using ATMS.Project.Contracts.Requests.Security;
 namespace ATMS.Project.Contracts.Commands.WorkProjects;
 
 [SuperAdminAccess]
-public class DeleteWorkProjectCommand : IRequest, IProjectScopedRequest
+public sealed class DeleteWorkProjectCommand : IRequest, IProjectScopedRequest
 {
     public required Guid Id { get; set; }
 

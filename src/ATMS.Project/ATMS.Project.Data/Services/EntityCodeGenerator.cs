@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Services;
 
-public class EntityCodeGenerator(ProjectDbContext context) : IEntityCodeGenerator
+public sealed class EntityCodeGenerator(ProjectDbContext context) : IEntityCodeGenerator
 {
     public async Task<string> GetNextAsync(CancellationToken cancellationToken)
     {

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-public class HealthRepository(ProjectDbContext context) : IHealthRepository
+public sealed class HealthRepository(ProjectDbContext context) : IHealthRepository
 {
     public Task<bool> IsReadyAsync(CancellationToken cancellationToken)
     {

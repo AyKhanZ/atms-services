@@ -8,7 +8,7 @@ namespace ATMS.Admin.Contracts.Commands.Profile;
 
 [ExceptSuperAdminAccess]
 [CompletedOnboardingAccess]
-public class UpdateSettingsCommand : IRequest<ProfileModel>
+public sealed class UpdateSettingsCommand : IRequest<ProfileModel>
 {
     public required string Name { get; set; }
     public required string Surname { get; set; }

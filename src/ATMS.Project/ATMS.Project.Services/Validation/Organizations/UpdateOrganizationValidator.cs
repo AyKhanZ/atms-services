@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ATMS.Project.Services.Validation.Organizations;
 
-public class UpdateOrganizationValidator : BaseImageValidator<UpdateOrganizationCommand>
+public sealed class UpdateOrganizationValidator : BaseImageValidator<UpdateOrganizationCommand>
 {
     public UpdateOrganizationValidator(
         IOrganizationRepository organizationRepository,

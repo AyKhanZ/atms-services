@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
 using ATMS.Project.Contracts.Commands.Notifications;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -14,7 +15,7 @@ public sealed class MarkNotificationReadHandler(
     public async Task Handle(MarkNotificationReadCommand command, CancellationToken cancellationToken)
     {
         var notification = await notifications.FindAsync(currentUser.Id, command.NotificationId, cancellationToken)
-            ?? throw new EntityException(EntityErrorType.NotFound, NotificationMessages.NotFound);
+            ?? throw new EntityException(EntityErrorTypeEnum.NotFound, NotificationMessages.NotFound);
 
         if (notification.ReadAt is not null)
         {

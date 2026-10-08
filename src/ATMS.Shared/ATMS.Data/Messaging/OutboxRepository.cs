@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Data.Messaging;
 
-// Admin and Project each keep the outbox in their own database; the context says which one.
-public class OutboxRepository<TContext>(TContext context) : IOutboxRepository
+// admin and project have their own outbox table, the context decides which
+public sealed class OutboxRepository<TContext>(TContext context) : IOutboxRepository
     where TContext : DbContext
 {
     private DbSet<OutboxMessage> OutboxMessages => context.Set<OutboxMessage>();

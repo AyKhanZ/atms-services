@@ -8,7 +8,7 @@ using ATMS.Data.Enums;
 namespace ATMS.Project.Contracts.Requests.Organizations;
 
 [Access(PermissionEnum.OrganizationView)]
-public class GetOrganizationsRequest : GetPaginationRequest, IRequest<PagedResult<OrganizationItemModel>>
+public sealed class GetOrganizationsRequest : GetPaginationRequest, IRequest<PagedResult<OrganizationItemModel>>
 {
     /// <summary>Search by title or voen (starts with, case-insensitive)</summary>
     public string? Search { get; init; }

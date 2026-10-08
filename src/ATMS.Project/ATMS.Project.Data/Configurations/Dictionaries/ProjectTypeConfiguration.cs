@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations.Dictionaries;
 
-public class ProjectTypeConfiguration : IEntityTypeConfiguration<ProjectType>
+public sealed class ProjectTypeConfiguration : IEntityTypeConfiguration<ProjectType>
 {
     public void Configure(EntityTypeBuilder<ProjectType> builder)
     {
@@ -31,7 +31,7 @@ public class ProjectTypeConfiguration : IEntityTypeConfiguration<ProjectType>
     }
 }
 
-public class ProjectTypeTranslationConfiguration : IEntityTypeConfiguration<ProjectTypeTranslation>
+public sealed class ProjectTypeTranslationConfiguration : IEntityTypeConfiguration<ProjectTypeTranslation>
 {
     public void Configure(EntityTypeBuilder<ProjectTypeTranslation> builder)
     {

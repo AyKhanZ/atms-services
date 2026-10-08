@@ -5,11 +5,7 @@ using ATMS.Data.Enums;
 
 namespace ATMS.Data.Criteria;
 
-/// <summary>
-/// One page of a list ordered by a key and the id behind it. The key is whatever column the list is
-/// ordered by: a creation date, a deadline, a priority, a manual rank.
-/// </summary>
-public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
+public sealed class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
 {
     private const int MaxPageSize = 50;
 
@@ -50,8 +46,7 @@ public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
         var ascending = SortDirection == SortDirectionEnum.Asc;
         query = ApplyCursor(query);
 
-        // Rows without a key go last whichever way the rest is ordered; otherwise a page of empty
-        // deadlines would open the list.
+        // rows without a key go last either way, otherwise empty deadlines open the list
         var ordered = _emptyKeysLast
             ? query.OrderBy(EmptyKeySelector())
             : null;
@@ -106,7 +101,7 @@ public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
             ? Expression.GreaterThan(id, cursorId)
             : Expression.LessThan(id, cursorId);
 
-        // The page ended among the rows without a key: only they are left.
+        // the page ended inside the rows without a key, only they are left
         if (_emptyKeysLast && Cursor.Key.Length == 0)
         {
             var noKey = Expression.Equal(key, Expression.Constant(null, typeof(TKey)));
@@ -133,7 +128,7 @@ public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
         return query.Where(Expression.Lambda<Func<T, bool>>(predicate, parameter));
     }
 
-    /// <summary>Text is compared by the database's own order; everything else by its operators.</summary>
+    // text by the db collation, everything else by operators
     private static Expression Compare(Expression key, Expression cursorKey, bool ascending)
     {
         if (typeof(TKey) != typeof(string))
@@ -175,10 +170,7 @@ public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
         return value;
     }
 
-    /// <summary>
-    /// A cursor from another order, another direction or with a key that is not this order's type is
-    /// refused with a 400 here, not left to fail as a 500 in the query or to page the wrong list.
-    /// </summary>
+    // a cursor from another sort or with a wrong key type -> 400 here, not a 500 later
     private static KeysetCursor? DecodeCursor(string? cursor, SortDirectionEnum sortDirection, string? order)
     {
         if (string.IsNullOrWhiteSpace(cursor))
@@ -204,7 +196,6 @@ public class KeysetPaginationCriteria<T, TKey> : IKeysetPagination<T>
     }
 }
 
-/// <summary>The usual list: newest or oldest first by creation date.</summary>
 public sealed class KeysetPaginationCriteria<T>(
     string? cursor,
     int pageSize,

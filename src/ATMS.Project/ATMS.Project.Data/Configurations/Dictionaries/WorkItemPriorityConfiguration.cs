@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations.Dictionaries;
 
-public class WorkItemPriorityConfiguration : IEntityTypeConfiguration<WorkItemPriority>
+public sealed class WorkItemPriorityConfiguration : IEntityTypeConfiguration<WorkItemPriority>
 {
     public void Configure(EntityTypeBuilder<WorkItemPriority> builder)
     {
@@ -30,7 +30,7 @@ public class WorkItemPriorityConfiguration : IEntityTypeConfiguration<WorkItemPr
     }
 }
 
-public class WorkItemPriorityTranslationConfiguration : IEntityTypeConfiguration<WorkItemPriorityTranslation>
+public sealed class WorkItemPriorityTranslationConfiguration : IEntityTypeConfiguration<WorkItemPriorityTranslation>
 {
     public void Configure(EntityTypeBuilder<WorkItemPriorityTranslation> builder)
     {

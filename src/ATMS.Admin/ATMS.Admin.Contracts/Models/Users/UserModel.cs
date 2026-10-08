@@ -3,14 +3,8 @@ using ATMS.Application.Models;
 
 namespace ATMS.Admin.Contracts.Models.Users;
 
-public class UserModel
-{
-    public Guid Id { get; set; }
-    
-    public string Name { get; set; }
-    
-    public string Surname { get; set; }
-    
+public sealed class UserModel : AuditUserModel
+{ 
     public string Email { get; set; }
     
     public string PhoneNumber { get; set; }

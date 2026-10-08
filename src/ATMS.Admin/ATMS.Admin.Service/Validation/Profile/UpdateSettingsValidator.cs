@@ -68,7 +68,7 @@ public sealed class UpdateSettingsValidator : BaseImageValidator<UpdateSettingsC
             .WithMessage(OnboardingMessages.ProfilePhotoRequired);
     }
 
-    // The shared placeholder is what an account has before anyone chose a photo; it does not count.
+    // the default avatar doesn't count as an own photo
     private static bool HasOwnPhoto(string? avatarPath)
     {
         return !string.IsNullOrWhiteSpace(avatarPath) && avatarPath != DefaultValues.UserAvatar;

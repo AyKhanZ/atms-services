@@ -1,5 +1,6 @@
 using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkGroups;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -8,7 +9,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkGroups;
 
-public class DeleteWorkGroupHandler(
+public sealed class DeleteWorkGroupHandler(
     ICurrentUser currentUser,
     IWorkGroupRepository workGroupRepository) : IRequestHandler<DeleteWorkGroupCommand>
 {
@@ -20,7 +21,7 @@ public class DeleteWorkGroupHandler(
             cancellationToken);
         if (workGroup is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkGroupMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkGroupMessages.NotFound);
         }
 
         var hasChildren = await workGroupRepository.HasChildrenAsync(

@@ -2,6 +2,7 @@ using ATMS.Admin.Contracts.Models.Onboarding;
 using ATMS.Admin.Contracts.Requests.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Exceptions.Auth;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using AutoMapper;
@@ -17,7 +18,7 @@ public sealed class GetOnboardingHandler(
     public async Task<OnboardingModel> Handle(GetOnboardingRequest request, CancellationToken cancellationToken)
     {
         var progress = await onboardingRepository.GetOrCreateAsync(currentUser.Id, cancellationToken)
-            ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
 
         return mapper.Map<OnboardingModel>(progress);
     }

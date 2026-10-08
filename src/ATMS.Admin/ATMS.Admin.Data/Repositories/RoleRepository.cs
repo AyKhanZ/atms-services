@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Repositories;
 
-public class RoleRepository(AdminDbContext context) : IRoleRepository
+public sealed class RoleRepository(AdminDbContext context) : IRoleRepository
 {
     public async Task CreateAsync(Role entity, CancellationToken cancellationToken)
     {

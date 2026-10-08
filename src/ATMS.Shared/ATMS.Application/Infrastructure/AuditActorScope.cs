@@ -3,8 +3,7 @@ using ATMS.Data.Interfaces;
 
 namespace ATMS.Application.Infrastructure;
 
-// Audit columns and history take the author from the signed-in user. A consumer has no request and no
-// user, so one that saves on someone's behalf — a participant joining by invitation — names them here.
+// a consumer has no signed-in user, so when it saves on someone's behalf it sets the author here
 public sealed class AuditActorScope(ICurrentUser currentUser) : IAuditActorScope, IAuditActorAccessor
 {
     private Guid? _actorId;

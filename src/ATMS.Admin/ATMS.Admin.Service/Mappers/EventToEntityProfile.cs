@@ -5,7 +5,7 @@ using AutoMapper;
 
 namespace ATMS.Admin.Service.Mappers;
 
-public class EventToEntityProfile : Profile
+public sealed class EventToEntityProfile : Profile
 {
     public EventToEntityProfile()
     {

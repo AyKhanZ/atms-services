@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.Search;
 
-public class RecordGlobalSearchRecentValidator : AbstractValidator<RecordGlobalSearchRecentCommand>
+public sealed class RecordGlobalSearchRecentValidator : AbstractValidator<RecordGlobalSearchRecentCommand>
 {
     public RecordGlobalSearchRecentValidator()
     {
@@ -13,7 +13,7 @@ public class RecordGlobalSearchRecentValidator : AbstractValidator<RecordGlobalS
             .NotEmpty().WithMessage(GlobalSearchMessages.ItemRequired);
 
         RuleFor(command => command.ItemType)
-            .Must(itemType => Enum.IsDefined((GlobalSearchItemType)itemType))
+            .Must(itemType => Enum.IsDefined((GlobalSearchItemTypeEnum)itemType))
             .WithMessage(GlobalSearchMessages.ItemTypeUnsupported);
     }
 }

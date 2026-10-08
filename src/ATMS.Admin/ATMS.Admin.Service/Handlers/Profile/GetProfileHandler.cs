@@ -3,6 +3,7 @@ using ATMS.Admin.Contracts.Requests.Profile;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
@@ -24,12 +25,12 @@ public sealed class GetProfileHandler(
                    factory: async () =>
                    {
                        var user = await userRepository.GetAsync(currentUser.Id, cancellationToken)
-                           ?? throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+                           ?? throw new EntityException(EntityErrorTypeEnum.NotFound, AccountMessages.UserNotFound);
 
                        return mapper.Map<ProfileModel>(user);
                    },
                    ttl: CacheTtl.Entity,
                    cancellationToken)
-               ?? throw new EntityException(EntityErrorType.NotFound, AccountMessages.UserNotFound);
+               ?? throw new EntityException(EntityErrorTypeEnum.NotFound, AccountMessages.UserNotFound);
     }
 }

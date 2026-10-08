@@ -6,7 +6,7 @@ using ATMS.Application.Security;
 namespace ATMS.Admin.Contracts.Commands.Account;
 
 [Access(PermissionEnum.UserEdit)]
-public class RegisterCommand: IRequest<UserModel>
+public sealed class RegisterCommand: IRequest<UserModel>
 {
     public required string Name { get; init; }
     

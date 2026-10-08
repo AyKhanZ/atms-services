@@ -2,13 +2,13 @@ using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Data.Services.Interfaces;
-using ATMS.Project.Services.Notifications.Interfaces;
+using ATMS.Project.Services.Domain.Notifications.Interfaces;
 using AutoMapper;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkProjects;
 
-public class CreateWorkProjectHandler(
+public sealed class CreateWorkProjectHandler(
     IMapper mapper,
     IWorkProjectRepository workProjectRepository,
     IEntityCodeGenerator codeGenerator,

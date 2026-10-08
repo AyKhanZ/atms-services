@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.Organizations;
 
-public class DeleteOrganizationValidator : AbstractValidator<DeleteOrganizationCommand>
+public sealed class DeleteOrganizationValidator : AbstractValidator<DeleteOrganizationCommand>
 {
     public DeleteOrganizationValidator()
     {

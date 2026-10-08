@@ -6,7 +6,7 @@ using AutoMapper;
 
 namespace ATMS.Admin.Service.Mappers.Actions;
 
-public class OnboardingModelMappingAction : IMappingAction<OnboardingProgress, OnboardingModel>
+public sealed class OnboardingModelMappingAction : IMappingAction<OnboardingProgress, OnboardingModel>
 {
     private const int MaxInvitations = 6;
 

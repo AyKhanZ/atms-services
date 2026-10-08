@@ -7,13 +7,11 @@ using Microsoft.Extensions.Logging;
 namespace ATMS.Application.Dispatcher.Behaviors;
 
 /// <summary>
-/// Sets the thread culture before executing the request.
-/// Must be placed before access and validation behaviors so localized resources use the request language.
-///
 /// Language priority:
 /// 1. Accept-Language header
 /// 2. "en" — Default
 /// </summary>
+// must be registered before access and validation, so their messages use the request language
 public sealed class LocalizationBehavior<TRequest, TResponse>(
     IHttpContextAccessor httpContextAccessor,
     ILogger<LocalizationBehavior<TRequest, TResponse>> logger)
@@ -42,13 +40,13 @@ public sealed class LocalizationBehavior<TRequest, TResponse>(
             return SupportedLanguages.Default;
         }
 
-        // 1. Accept-Language header (standard HTTP)
+        // 1. Accept-Language header
         var acceptLanguage = httpContext.Request.Headers["Accept-Language"].ToString();
         if (string.IsNullOrWhiteSpace(acceptLanguage))
         {
             return SupportedLanguages.Default;
         }
-        // Parse "ru-RU,ru;q=0.9,en;q=0.8" → take first supported
+        // "ru-RU,ru;q=0.9,en;q=0.8" -> first supported
         var parsed = acceptLanguage
             .Split(',')
             .Select(x => x.Split(';')[0].Trim()) // remove q-factor
@@ -70,6 +68,6 @@ public sealed class LocalizationBehavior<TRequest, TResponse>(
         });
 
         Thread.CurrentThread.CurrentCulture = culture;
-        Thread.CurrentThread.CurrentUICulture = culture; // ← affects .resx lookup
+        Thread.CurrentThread.CurrentUICulture = culture; // used by the .resx lookup
     }
 }

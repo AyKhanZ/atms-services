@@ -1,5 +1,6 @@
 using System.Globalization;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Enums;
 using ATMS.Email.Models;
@@ -8,7 +9,7 @@ using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Models.Notifications;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Comments.Interfaces;
+using ATMS.Project.Services.Domain.Comments.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,10 +17,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATMS.Project.Services.Infrastructure;
 
-// Sends the emails written together with their notifications, the way EmailDeliveryBackgroundService
-// does in Admin: a failed send is tried again on the retry schedule, so an email that had a
-// notification goes out sooner or later. What it points to is read at send time: an email about a
-// task deleted in the meantime is not sent at all.
+// data is read at send time, so an email about a deleted task is not sent
 public class NotificationEmailBackgroundService(
     IServiceScopeFactory scopeFactory,
     DeliveryRetrySchedule retrySchedule,
@@ -33,13 +31,12 @@ public class NotificationEmailBackgroundService(
     private readonly NotificationsOptions _options =
         configuration.GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()
         ?? throw new ConfigurationException(
-            ConfigurationErrorType.NotificationsSectionNotFound,
+            ConfigurationErrorTypeEnum.NotificationsSectionNotFound,
             string.Format(LogMessages.ConfigSectionNotFound, nameof(NotificationsOptions)));
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // Emails off means none leave at all, not even those queued while they were on: the switch is
-        // there to save the monthly limit of a test SMTP account.
+        // emails off = nothing leaves, not even the queue (saves the test smtp limit)
         if (!_options.SendEmails)
         {
             return;
@@ -101,8 +98,7 @@ public class NotificationEmailBackgroundService(
                 .GetRequiredService<INotificationRepository>()
                 .GetRowAsync(delivery.NotificationId, cancellationToken);
 
-            // Nothing to send any more: the person or the work is gone. Done, not failed: no retry
-            // would change that.
+            // the person or the work is gone: mark done, a retry won't help
             if (notification is not null && delivery.RecipientEmail is { } email && !IsGone(notification))
             {
                 var mentionStillPresent = true;
@@ -253,17 +249,15 @@ public class NotificationEmailBackgroundService(
                     Link = link
                 },
                 cancellationToken),
-            // Only the types above are ever queued; anything else has nothing to send.
             _ => Task.CompletedTask
         };
     }
 
-    // The subject is built from these values, and SMTP refuses a subject with a line break in it: a
-    // title pasted with one would fail every attempt. Any run of white space becomes one space.
+    // smtp refuses a subject with a line break, so collapse the whitespace
     private static string OneLine(string value) =>
         string.Join(' ', value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 
-    // "TASK #41 Payment form", as the bell writes it.
+    // "TASK #41 Payment form", like the bell
     private static string TaskLabel(NotificationRow notification)
     {
         var parameters = notification.Parameters;
@@ -271,7 +265,7 @@ public class NotificationEmailBackgroundService(
         return OneLine($"{kind} #{parameters.TaskCode} {parameters.TaskTitle}");
     }
 
-    // The same page the bell opens: the task under the ticket it is in now, a comment on its Details.
+    // the same page the bell opens
     private string Link(NotificationRow notification)
     {
         var app = _options.AppUrl.TrimEnd('/');

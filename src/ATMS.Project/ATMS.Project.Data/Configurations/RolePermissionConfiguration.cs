@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermission>
+public sealed class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermission>
 {
     private static readonly IReadOnlyDictionary<Guid, ProjectPermissionEnum[]> PermissionsByRole =
         new Dictionary<Guid, ProjectPermissionEnum[]>
@@ -28,7 +28,7 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
                 ProjectPermissionEnum.ParticipantInviteClient,
                 ProjectPermissionEnum.ParticipantInviteEmployee
             ],
-            // The team works the tickets and tasks; only the project manager deletes someone else's comment.
+            // the team works on tickets and tasks, only the PM deletes other people's comments
             [RoleIds.BusinessConsultant] = TeamMember(),
             [RoleIds.Developer] = TeamMember(),
             [RoleIds.OrgClientManager] =

@@ -11,7 +11,7 @@ namespace ATMS.Admin.API.Controllers.v1;
 [Authorize]
 [ApiController]
 [Route("api/v1/profile")]
-public class ProfileController(IMediator mediator) : ControllerBase
+public sealed class ProfileController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Gets the authenticated user's personal settings. Super admins cannot use personal settings.

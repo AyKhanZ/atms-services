@@ -2,4 +2,4 @@
 
 namespace ATMS.Admin.Contracts.Requests.Me;
 
-public class GetCurrentPermissionsRequest : IRequest<string[]>;
+public sealed class GetCurrentPermissionsRequest : IRequest<string[]>;

@@ -20,7 +20,7 @@ public sealed class GetNotificationsHandler(
         GetNotificationsRequest request,
         CancellationToken cancellationToken)
     {
-        // Always newest first: the list is a feed, and the bell shows its head.
+        // always newest first, it's a feed
         var pagination = new KeysetPaginationCriteria<NotificationRow>(request.Cursor, request.PageSize, SortDirectionEnum.Desc);
         var page = await notifications.GetManyAsync(
             currentUser.Id,

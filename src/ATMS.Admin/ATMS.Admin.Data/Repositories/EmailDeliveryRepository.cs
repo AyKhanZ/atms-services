@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Admin.Data.Repositories;
 
-public class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRepository
+public sealed class EmailDeliveryRepository(AdminDbContext context) : IEmailDeliveryRepository
 {
     public async Task<Guid> AddConfirmationAsync(
         Guid userId,

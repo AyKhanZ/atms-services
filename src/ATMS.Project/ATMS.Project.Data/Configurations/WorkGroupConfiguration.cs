@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class WorkGroupConfiguration : IEntityTypeConfiguration<WorkGroup>
+public sealed class WorkGroupConfiguration : IEntityTypeConfiguration<WorkGroup>
 {
     public void Configure(EntityTypeBuilder<WorkGroup> builder)
     {

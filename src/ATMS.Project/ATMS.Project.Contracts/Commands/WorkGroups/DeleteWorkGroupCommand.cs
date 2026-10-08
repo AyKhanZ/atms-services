@@ -7,7 +7,7 @@ namespace ATMS.Project.Contracts.Commands.WorkGroups;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.ProjectEdit)]
-public class DeleteWorkGroupCommand : IRequest, IProjectScopedRequest
+public sealed class DeleteWorkGroupCommand : IRequest, IProjectScopedRequest
 {
     public Guid ProjectId { get; set; }
 

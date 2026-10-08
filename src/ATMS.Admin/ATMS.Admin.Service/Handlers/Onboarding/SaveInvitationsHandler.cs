@@ -5,6 +5,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Data.Enums;
@@ -21,16 +22,16 @@ public sealed class SaveInvitationsHandler(
     public async Task<OnboardingModel> Handle(SaveInvitationsCommand command, CancellationToken cancellationToken)
     {
         var progress = await onboardingRepository.GetAsync(currentUser.Id, cancellationToken)
-            ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
 
         progress.InvitedUsers.Clear();
-        progress.InvitedUsers.AddRange(command.Users.Select(commandUser =>
+        foreach (var commandUser in command.Users)
         {
             var invitedUser = mapper.Map<OnboardingInvitedUser>(commandUser);
             invitedUser.OnboardingUserId = currentUser.Id;
             invitedUser.NormalizedEmail = invitedUser.Email.ToUpperInvariant();
-            return invitedUser;
-        }));
+            progress.InvitedUsers.Add(invitedUser);
+        }
         progress.InvitationsStatus = (int)OnboardingStepStatusEnum.Completed;
 
         var saved = await onboardingRepository.TrySaveAsync(progress, command.Version, cancellationToken);

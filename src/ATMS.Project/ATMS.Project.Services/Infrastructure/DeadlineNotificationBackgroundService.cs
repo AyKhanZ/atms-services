@@ -1,8 +1,8 @@
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
-using ATMS.Project.Services.Notifications.Interfaces;
-using ATMS.Project.Services.Time;
+using ATMS.Project.Services.Domain.Notifications.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,8 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATMS.Project.Services.Infrastructure;
 
-// Deadline reminders once a day at a fixed hour of the business day, not every 24 hours from start:
-// people get them with their morning, whenever the service was restarted.
+// once a day at a fixed business hour (not every 24h from start), so people get it in the morning
 public sealed class DeadlineNotificationBackgroundService(
     IServiceScopeFactory scopeFactory,
     BusinessTimeZone businessTimeZone,
@@ -21,13 +20,12 @@ public sealed class DeadlineNotificationBackgroundService(
     private readonly NotificationsOptions _options =
         configuration.GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()
         ?? throw new ConfigurationException(
-            ConfigurationErrorType.NotificationsSectionNotFound,
+            ConfigurationErrorTypeEnum.NotificationsSectionNotFound,
             string.Format(LogMessages.ConfigSectionNotFound, nameof(NotificationsOptions)));
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // Down at the hour of the pass: it runs on start instead. The reminder keys keep the
-        // morning's pass, if there was one, from being sent twice.
+        // started after the pass time: run now, the dedup keys stop double sends
         if (businessTimeZone.HasReached(DateTime.UtcNow, _options.DeadlineReminderTime))
         {
             await RemindAsync(stoppingToken);

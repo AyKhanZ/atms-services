@@ -3,8 +3,8 @@ using ATMS.Project.Contracts.Commands.Comments;
 using ATMS.Project.Contracts.Models.Comments;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Comments.Interfaces;
-using ATMS.Project.Services.Notifications.Interfaces;
+using ATMS.Project.Services.Domain.Comments.Interfaces;
+using ATMS.Project.Services.Domain.Notifications.Interfaces;
 using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Comments;

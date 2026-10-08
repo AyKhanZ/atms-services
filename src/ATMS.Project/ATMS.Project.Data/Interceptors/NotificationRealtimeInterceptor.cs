@@ -10,16 +10,12 @@ using Microsoft.Extensions.Logging;
 
 namespace ATMS.Project.Data.Interceptors;
 
-// The bell of every person who got something: notification.created for a new or merged
-// notification, notification.read when only what they read changed. Pushed after the commit, the
-// same way ProjectRealtimeInterceptor pushes changes of work: nothing for a change that was rolled
-// back. One event per person per commit.
 public sealed class NotificationRealtimeInterceptor(
     IRealtimeEventPublisher publisher,
     IServiceScopeFactory scopeFactory,
     ILogger<NotificationRealtimeInterceptor> logger) : SaveChangesInterceptor, IDbTransactionInterceptor
 {
-    // By recipient: the newest notification they got, or null when only what they read changed.
+    // recipient -> newest notification id, null if only "read" changed
     private readonly Dictionary<Guid, Guid?> _current = [];
     private readonly Dictionary<Guid, Guid?> _pending = [];
 
@@ -133,7 +129,7 @@ public sealed class NotificationRealtimeInterceptor(
         }
     }
 
-    // A merge into an unread notification moves its time up: for the person it is news again.
+    // a merge into an unread one moves it up, it's news again
     private void Collect(EntityEntry<Notification> entry)
     {
         var notification = entry.Entity;
@@ -147,7 +143,6 @@ public sealed class NotificationRealtimeInterceptor(
         }
     }
 
-    // The newest notification of a person wins; a read after it keeps it.
     private void MergeCurrent()
     {
         foreach (var (userId, notificationId) in _current)
@@ -207,8 +202,7 @@ public sealed class NotificationRealtimeInterceptor(
         }
     }
 
-    // Counted after the commit, on a context of its own: a failing count must never touch the
-    // transaction of the change itself, and the committed transaction cannot run a query anyway.
+    // own context: the committed transaction can't run queries, and a failed count must not touch the change
     private async Task<Dictionary<Guid, int>> CountUnreadAsync(IReadOnlyCollection<Guid> userIds)
     {
         await using var scope = scopeFactory.CreateAsyncScope();

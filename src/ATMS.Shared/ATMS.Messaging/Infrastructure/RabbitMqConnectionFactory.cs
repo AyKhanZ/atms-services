@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +10,7 @@ namespace ATMS.Messaging.Infrastructure;
 public sealed class RabbitMqConnectionFactory(IConfiguration configuration)
 {
     private readonly QueueOptions _options = configuration.GetSection(nameof(QueueOptions)).Get<QueueOptions>()
-                                             ?? throw new ConfigurationException(ConfigurationErrorType.DatabaseSectionNotFound,
+                                             ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.DatabaseSectionNotFound,
                                                  string.Format(LogMessages.ConfigSectionNotFound, nameof(QueueOptions)));
 
     private IConnection? _connection;

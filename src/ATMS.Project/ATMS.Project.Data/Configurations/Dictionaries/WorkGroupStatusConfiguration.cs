@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations.Dictionaries;
 
-public class WorkGroupStatusConfiguration : IEntityTypeConfiguration<WorkGroupStatus>
+public sealed class WorkGroupStatusConfiguration : IEntityTypeConfiguration<WorkGroupStatus>
 {
     public void Configure(EntityTypeBuilder<WorkGroupStatus> builder)
     {
@@ -31,7 +31,7 @@ public class WorkGroupStatusConfiguration : IEntityTypeConfiguration<WorkGroupSt
     }
 }
 
-public class WorkGroupStatusTranslationConfiguration : IEntityTypeConfiguration<WorkGroupStatusTranslation>
+public sealed class WorkGroupStatusTranslationConfiguration : IEntityTypeConfiguration<WorkGroupStatusTranslation>
 {
     public void Configure(EntityTypeBuilder<WorkGroupStatusTranslation> builder)
     {

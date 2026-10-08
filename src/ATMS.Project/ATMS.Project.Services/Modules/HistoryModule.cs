@@ -1,5 +1,5 @@
-using ATMS.Project.Services.History;
-using ATMS.Project.Services.History.Interfaces;
+using ATMS.Project.Services.Domain.History;
+using ATMS.Project.Services.Domain.History.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Project.Services.Modules;

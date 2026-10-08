@@ -7,7 +7,7 @@ using AutoMapper;
 
 namespace ATMS.Project.Services.Mappers;
 
-public class CommandToEntityProfile : Profile
+public sealed class CommandToEntityProfile : Profile
 {
     public CommandToEntityProfile()
     {

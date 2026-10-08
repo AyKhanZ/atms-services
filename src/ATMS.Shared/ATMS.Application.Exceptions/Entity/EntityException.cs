@@ -1,8 +1,10 @@
-﻿namespace ATMS.Application.Exceptions.Entity;
+﻿using ATMS.Application.Exceptions.Enums;
 
-public class EntityException : Exception
+namespace ATMS.Application.Exceptions.Entity;
+
+public sealed class EntityException : Exception
 {
-    public EntityErrorType ErrorType { get; }
-    public EntityException(EntityErrorType errorType, string message)
+    public EntityErrorTypeEnum ErrorType { get; }
+    public EntityException(EntityErrorTypeEnum errorType, string message)
         : base(message) => ErrorType = errorType;
 }

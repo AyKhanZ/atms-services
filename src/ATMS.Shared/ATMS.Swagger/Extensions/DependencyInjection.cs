@@ -1,3 +1,4 @@
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Swagger.Middlewares;
 using Microsoft.Extensions.DependencyInjection;
 using System.IdentityModel.Tokens.Jwt;
@@ -53,7 +54,7 @@ public static class DependencyInjection
             .AddJwtBearer(options =>
             {
                 var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>()
-                                 ?? throw new ConfigurationException(ConfigurationErrorType.JwtSectionNotFound,
+                                 ?? throw new ConfigurationException(ConfigurationErrorTypeEnum.JwtSectionNotFound,
                                      string.Format(LogMessages.ConfigSectionNotFound, nameof(JwtOptions)));
 
                 options.RequireHttpsMetadata = true;

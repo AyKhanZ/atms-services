@@ -4,8 +4,7 @@ using ATMS.Project.Data.Services.Interfaces;
 
 namespace ATMS.Project.Data.Services;
 
-// A white list: a column nobody has decided about stays out of the history. The test over the EF
-// model fails for a property that is in neither list, so a new column cannot slip past unnoticed.
+// white list: HistoryFieldMapTest fails for a column that is in neither list
 public sealed class HistoryFieldMap : IHistoryFieldMap
 {
     private static readonly string[] AuditProperties =
@@ -65,9 +64,9 @@ public sealed class HistoryFieldMap : IHistoryFieldMap
     private readonly Dictionary<Type, HashSet<string>> _ignored = new()
     {
         [typeof(WorkProject)] = [..AuditProperties, nameof(WorkProject.Code)],
-        // A milestone never changes its group, and the project is fixed from the start.
+        // a milestone never changes its group, the project is fixed
         [typeof(WorkGroup)] = [..AuditProperties, nameof(WorkGroup.ParentWorkGroupId), nameof(WorkGroup.WorkProjectId)],
-        // The ticket's own status is WorkTicketStatusId; StatusId is inherited from the task and always New.
+        // the ticket's own status is WorkTicketStatusId, StatusId comes from the task and is always New
         [typeof(WorkTicket)] =
         [
             ..AuditProperties,
@@ -75,7 +74,7 @@ public sealed class HistoryFieldMap : IHistoryFieldMap
             nameof(WorkTicket.StatusId),
             nameof(WorkTicket.WorkProjectId)
         ],
-        // Rank changes with every drag inside a column, DoneAt follows the status: both are noise.
+        // Rank changes on every drag and DoneAt follows the status, both are noise
         [typeof(WorkTask)] =
         [
             ..AuditProperties,

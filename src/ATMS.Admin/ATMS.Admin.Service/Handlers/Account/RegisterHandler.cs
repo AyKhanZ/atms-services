@@ -5,6 +5,7 @@ using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Contracts.Events.Users;
@@ -15,7 +16,7 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Account;
 
-public class RegisterHandler(
+public sealed class RegisterHandler(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     ICurrentUser currentUser,
@@ -34,7 +35,7 @@ public class RegisterHandler(
         if (role is null)
         {
             throw new ConfigurationException(
-                ConfigurationErrorType.MissingSeedData,
+                ConfigurationErrorTypeEnum.MissingSeedData,
                 string.Format(LogMessages.MissingSeedData, command.RoleId));
         }
 

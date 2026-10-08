@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
+public sealed class NotificationConfiguration : IEntityTypeConfiguration<Notification>
 {
     public void Configure(EntityTypeBuilder<Notification> builder)
     {
@@ -15,17 +15,16 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
 
         builder.HasIndex(e => new { e.CreatedAt, e.Id });
 
-        // The Unread list walks only unread rows instead of skipping every read one on the way.
+        // unread only, so the Unread list doesn't walk past all the read rows
         builder.HasIndex(e => new { e.UserId, e.CreatedAt, e.Id }, "IX_Notifications_UserId_CreatedAt_Id_Unread")
             .IsDescending(false, true, true)
             .HasFilter("\"ReadAt\" IS NULL");
 
-        // Finds the unread notification a new one merges into, and counts the unread for the bell:
-        // both read only unread rows, a small part of the table once people read what they get.
+        // finds the unread one to merge into and counts the bell, both read only unread rows
         builder.HasIndex(e => new { e.UserId, e.Type, e.EntityId })
             .HasFilter("\"ReadAt\" IS NULL");
 
-        // One deadline reminder per person per deadline, however many passes or instances run.
+        // one deadline reminder per person per deadline
         builder.HasIndex(e => new { e.UserId, e.DedupKey })
             .IsUnique()
             .HasFilter("\"DedupKey\" IS NOT NULL");
@@ -44,8 +43,7 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
 
         builder.ComplexProperty(e => e.Parameters, parameters => parameters.ToJson());
 
-        // No foreign key to the entity or the comment: they are soft-deleted, and a notification
-        // outlives them to say so.
+        // no FK: the entity and the comment are soft-deleted, the notification lives longer
         builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(e => e.UserId)

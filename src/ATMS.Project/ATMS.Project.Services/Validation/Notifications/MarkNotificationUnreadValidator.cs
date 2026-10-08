@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.Notifications;
 
-public class MarkNotificationUnreadValidator : AbstractValidator<MarkNotificationUnreadCommand>
+public sealed class MarkNotificationUnreadValidator : AbstractValidator<MarkNotificationUnreadCommand>
 {
     public MarkNotificationUnreadValidator(INotificationRepository notificationRepository, ICurrentUser currentUser)
     {

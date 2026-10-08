@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkTasks;
 
-public class CreateWorkTaskValidator : AbstractValidator<CreateWorkTaskCommand>
+public sealed class CreateWorkTaskValidator : AbstractValidator<CreateWorkTaskCommand>
 {
     private readonly IWorkTaskRepository _workTaskRepository;
     

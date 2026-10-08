@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ATMS.Admin.Contracts.Commands.Onboarding;
 
-public class SavePersonalInfoCommand : IRequest<OnboardingModel>
+public sealed class SavePersonalInfoCommand : IRequest<OnboardingModel>
 {
     public required string Name { get; set; }
     

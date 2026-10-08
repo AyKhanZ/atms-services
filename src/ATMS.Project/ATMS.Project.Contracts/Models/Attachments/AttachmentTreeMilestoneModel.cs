@@ -1,6 +1,6 @@
 namespace ATMS.Project.Contracts.Models.Attachments;
 
-public class AttachmentTreeMilestoneModel
+public sealed class AttachmentTreeMilestoneModel
 {
     public Guid Id { get; set; }
     public string Title { get; set; }

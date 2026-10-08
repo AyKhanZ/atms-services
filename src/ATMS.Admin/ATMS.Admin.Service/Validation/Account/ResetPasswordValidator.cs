@@ -5,7 +5,7 @@ using ATMS.Admin.Service.Resources;
 
 namespace ATMS.Admin.Service.Validation.Account;
 
-public class ResetPasswordValidator : AbstractValidator<ResetPasswordCommand>
+public sealed class ResetPasswordValidator : AbstractValidator<ResetPasswordCommand>
 {
     public ResetPasswordValidator()
     {

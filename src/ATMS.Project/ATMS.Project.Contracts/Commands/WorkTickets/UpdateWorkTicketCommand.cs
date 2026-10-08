@@ -7,7 +7,7 @@ namespace ATMS.Project.Contracts.Commands.WorkTickets;
 
 [Access(PermissionEnum.ProjectEdit)]
 [ProjectAccess(ProjectPermissionEnum.TicketEdit)]
-public class UpdateWorkTicketCommand : WorkTicketCommand, IRequest, IProjectScopedRequest
+public sealed class UpdateWorkTicketCommand : WorkTicketCommand, IRequest, IProjectScopedRequest
 {
     public Guid WorkTicketId { get; set; }
 

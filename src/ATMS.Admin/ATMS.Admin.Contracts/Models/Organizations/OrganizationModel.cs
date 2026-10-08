@@ -1,6 +1,6 @@
 ﻿namespace ATMS.Admin.Contracts.Models.Organizations;
 
-public class OrganizationModel
+public sealed class OrganizationModel
 {
     public Guid Id { get; set; }
     

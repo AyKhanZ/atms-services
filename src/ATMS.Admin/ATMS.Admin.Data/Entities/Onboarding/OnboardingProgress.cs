@@ -21,5 +21,5 @@ public class OnboardingProgress
 
     public OnboardingPersonalInfo? PersonalInfo { get; set; }
 
-    public List<OnboardingInvitedUser> InvitedUsers { get; set; } = [];
+    public ICollection<OnboardingInvitedUser> InvitedUsers { get; set; } = [];
 }

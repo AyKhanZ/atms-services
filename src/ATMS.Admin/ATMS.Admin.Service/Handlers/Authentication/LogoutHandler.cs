@@ -5,13 +5,13 @@ using MediatR;
 
 namespace ATMS.Admin.Service.Handlers.Authentication;
 
-public class LogoutHandler(
+public sealed class LogoutHandler(
     IUserSessionRepository userSessionRepository,
-    IRefreshTokenService refreshTokenService) : IRequestHandler<LogoutCommand>
+    IUniqueTokenService uniqueTokenService) : IRequestHandler<LogoutCommand>
 {
     public async Task Handle(LogoutCommand command, CancellationToken cancellationToken)
     {
-        var tokenHash = refreshTokenService.HashToken(command.RefreshToken);
+        var tokenHash = uniqueTokenService.Hash(command.RefreshToken);
         var session = await userSessionRepository.FindByTokenHashAsync(tokenHash, cancellationToken);
 
         if (session is null || session.RevokedAt.HasValue)

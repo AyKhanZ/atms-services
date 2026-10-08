@@ -1,9 +1,10 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Models.Comments;
 using ATMS.Project.Contracts.Requests.Comments;
 using ATMS.Project.Data.Repositories.Interfaces;
-using ATMS.Project.Services.Comments.Interfaces;
+using ATMS.Project.Services.Domain.Comments.Interfaces;
 using ATMS.Project.Services.Resources;
 using MediatR;
 
@@ -19,7 +20,7 @@ public sealed class GetCommentHandler(
         if (comment is null || (request.WorkTaskId is { } workTaskId &&
             (comment.OwnerType != (int)CommentOwnerTypeEnum.Task || comment.OwnerId != workTaskId)))
         {
-            throw new EntityException(EntityErrorType.NotFound, CommentMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, CommentMessages.NotFound);
         }
 
         var mapped = await models.BuildAsync(request.ProjectId, [comment], cancellationToken);

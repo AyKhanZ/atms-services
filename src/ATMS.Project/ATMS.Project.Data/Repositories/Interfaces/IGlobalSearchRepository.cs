@@ -13,7 +13,7 @@ public interface IGlobalSearchRepository
         Guid userId,
         bool isSuperAdmin,
         string search,
-        GlobalSearchItemType itemType,
+        GlobalSearchItemTypeEnum itemType,
         KeysetCursor? cursor,
         SortDirectionEnum sortDirection,
         int pageSize,

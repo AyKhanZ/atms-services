@@ -10,7 +10,7 @@ using FluentValidation;
 
 namespace ATMS.Project.Services.Validation.WorkProjects;
 
-public class AddWorkProjectParticipantValidator : AbstractValidator<AddWorkProjectParticipantCommand>
+public sealed class AddWorkProjectParticipantValidator : AbstractValidator<AddWorkProjectParticipantCommand>
 {
     private readonly IWorkProjectRepository workProjectRepository;
     private readonly IWorkProjectInvitationRepository invitationRepository;
@@ -50,7 +50,7 @@ public class AddWorkProjectParticipantValidator : AbstractValidator<AddWorkProje
             return;
         }
 
-        // Invitations still waiting for an account become participants within seconds.
+        // pending invitations become participants in seconds, so they count
         var invitations = await invitationRepository.GetLivePendingAsync(project.Id, cancellationToken);
         if (project.WorkProjectParticipants.Count + invitations.Count >= WorkProjectParticipantLimit.Max)
         {

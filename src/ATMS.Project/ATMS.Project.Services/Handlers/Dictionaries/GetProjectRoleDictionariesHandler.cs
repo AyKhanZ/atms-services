@@ -10,7 +10,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.Dictionaries;
 
-public class GetProjectRoleDictionariesHandler(
+public sealed class GetProjectRoleDictionariesHandler(
     IRoleRepository roleRepository,
     ICacheService cache,
     IMapper mapper)

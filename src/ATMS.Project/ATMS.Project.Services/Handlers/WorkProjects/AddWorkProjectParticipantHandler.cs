@@ -1,13 +1,14 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Project.Contracts.Commands.WorkProjects;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Enums;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
-using ATMS.Project.Services.Caching;
-using ATMS.Project.Services.Notifications.Interfaces;
-using ATMS.Project.Services.Security.Interfaces;
+using ATMS.Project.Services.Infrastructure;
+using ATMS.Project.Services.Domain.Notifications.Interfaces;
+using ATMS.Project.Services.Domain.Security.Interfaces;
 using ATMS.Project.Services.Validation.WorkProjects;
 using FluentValidation;
 using FluentValidation.Results;
@@ -15,7 +16,7 @@ using MediatR;
 
 namespace ATMS.Project.Services.Handlers.WorkProjects;
 
-public class AddWorkProjectParticipantHandler(
+public sealed class AddWorkProjectParticipantHandler(
     IWorkProjectRepository workProjectRepository,
     ICacheService cache,
     IProjectPermissionService projectPermissionService,
@@ -27,7 +28,7 @@ public class AddWorkProjectParticipantHandler(
         var project = await workProjectRepository.FindAsync(command.ProjectId, cancellationToken);
         if (project is null)
         {
-            throw new EntityException(EntityErrorType.NotFound, WorkProjectMessages.NotFound);
+            throw new EntityException(EntityErrorTypeEnum.NotFound, WorkProjectMessages.NotFound);
         }
 
         project.WorkProjectParticipants.Add(new WorkProjectParticipant
@@ -56,7 +57,7 @@ public class AddWorkProjectParticipantHandler(
             [
                 new ValidationFailure(
                     nameof(AddWorkProjectParticipantCommand.UserId),
-                    refusal == WorkProjectParticipantRefusal.AlreadyParticipant
+                    refusal == WorkProjectParticipantRefusalEnum.AlreadyParticipant
                         ? WorkProjectMessages.DuplicateParticipant
                         : string.Format(WorkProjectMessages.ParticipantsLimitExceeded, WorkProjectParticipantLimit.Max))
             ]);

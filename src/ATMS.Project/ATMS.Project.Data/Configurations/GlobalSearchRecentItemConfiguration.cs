@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class GlobalSearchRecentItemConfiguration : IEntityTypeConfiguration<GlobalSearchRecentItem>
+public sealed class GlobalSearchRecentItemConfiguration : IEntityTypeConfiguration<GlobalSearchRecentItem>
 {
     public void Configure(EntityTypeBuilder<GlobalSearchRecentItem> builder)
     {

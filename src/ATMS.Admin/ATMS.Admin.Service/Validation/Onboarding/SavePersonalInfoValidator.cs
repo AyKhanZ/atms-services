@@ -3,6 +3,7 @@ using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Resources;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
 using ATMS.Infrastructure.Validation;
@@ -12,7 +13,7 @@ using ATMS.Application.Dispatcher.Validation;
 
 namespace ATMS.Admin.Service.Validation.Onboarding;
 
-public class SavePersonalInfoValidator : BaseImageValidator<SavePersonalInfoCommand>
+public sealed class SavePersonalInfoValidator : BaseImageValidator<SavePersonalInfoCommand>
 {
     private readonly ICurrentUser _currentUser;
     private readonly IOnboardingRepository _onboardingRepository;
@@ -88,7 +89,7 @@ public class SavePersonalInfoValidator : BaseImageValidator<SavePersonalInfoComm
         CancellationToken cancellationToken)
     {
         var progress = await _onboardingRepository.GetAsNoTrackingAsync(_currentUser.Id, cancellationToken)
-            ?? throw new AuthException(AuthErrorType.InvalidCredentials, LogMessages.InvalidCredentials);
+            ?? throw new AuthException(AuthErrorTypeEnum.InvalidCredentials, LogMessages.InvalidCredentials);
 
         if (progress.User.HasCompletedOnboarding)
         {

@@ -8,7 +8,7 @@ namespace ATMS.Project.API.Controllers.v1;
 
 [Authorize]
 [Route("api/v1/dictionary")]
-public class DictionaryController(IMediator mediator) : ControllerBase
+public sealed class DictionaryController(IMediator mediator) : ControllerBase
 {
     
     /// <summary>

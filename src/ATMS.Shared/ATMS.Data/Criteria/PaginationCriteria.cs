@@ -26,8 +26,7 @@ public sealed class PaginationCriteria<T> : ACriteria<T>
     public int PageSize { get; }
     public int Skip => (Page - 1) * PageSize;
 
-    // Пагинация применяется отдельно — ПОСЛЕ Count()
-    // поэтому Apply здесь ничего не делает с фильтрами
+    // paging is applied separately, after Count(), so Apply does nothing here
     public override IQueryable<T> Apply(IQueryable<T> query)
         => query.Skip(Skip).Take(PageSize);
 }

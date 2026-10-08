@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATMS.Project.Data.Configurations;
 
-public class WorkTicketConfiguration : IEntityTypeConfiguration<WorkTicket>
+public sealed class WorkTicketConfiguration : IEntityTypeConfiguration<WorkTicket>
 {
     public void Configure(EntityTypeBuilder<WorkTicket> builder)
     {

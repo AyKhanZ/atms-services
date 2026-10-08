@@ -1,6 +1,6 @@
 using ATMS.Infrastructure.Extensions;
-using ATMS.Project.Services.Attachments;
-using ATMS.Project.Services.Attachments.Interfaces;
+using ATMS.Project.Services.Domain.Attachments;
+using ATMS.Project.Services.Domain.Attachments.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ATMS.Project.Services.Modules;

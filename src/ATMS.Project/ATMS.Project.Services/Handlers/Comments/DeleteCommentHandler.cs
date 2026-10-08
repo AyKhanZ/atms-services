@@ -1,4 +1,5 @@
 using ATMS.Application.Exceptions.Entity;
+using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
 using ATMS.Project.Contracts.Commands.Comments;
 using ATMS.Project.Data.Repositories.Interfaces;
@@ -14,7 +15,7 @@ public sealed class DeleteCommentHandler(
     public async Task Handle(DeleteCommentCommand command, CancellationToken cancellationToken)
     {
         var comment = await comments.FindAsync(command.ProjectId, command.CommentId, cancellationToken)
-            ?? throw new EntityException(EntityErrorType.NotFound, CommentMessages.NotFound);
+            ?? throw new EntityException(EntityErrorTypeEnum.NotFound, CommentMessages.NotFound);
 
         comment.IsDeleted = true;
         comment.DeletedAt = DateTime.UtcNow;

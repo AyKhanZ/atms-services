@@ -1,8 +1,10 @@
-﻿namespace ATMS.Application.Exceptions.Auth;
+﻿using ATMS.Application.Exceptions.Enums;
 
-public class AuthException : Exception
+namespace ATMS.Application.Exceptions.Auth;
+
+public sealed class AuthException : Exception
 {
-    public AuthErrorType AuthErrorType { get; set; }
-    public AuthException(AuthErrorType authErrorType, string message)
+    public AuthErrorTypeEnum AuthErrorType { get; set; }
+    public AuthException(AuthErrorTypeEnum authErrorType, string message)
         : base(message) => AuthErrorType = authErrorType;
 }

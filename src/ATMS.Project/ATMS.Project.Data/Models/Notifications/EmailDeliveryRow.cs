@@ -1,6 +1,6 @@
 namespace ATMS.Project.Data.Models.Notifications;
 
-// The recipient is null when the person was deleted after the notification was written.
+// Recipient is null if the user was deleted after the notification
 public sealed record EmailDeliveryRow(
     Guid Id,
     int Status,

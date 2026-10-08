@@ -5,7 +5,7 @@ using ATMS.Admin.Service.Providers.Interfaces;
 
 namespace ATMS.Admin.Service.Providers;
 
-public class OrganizationsProvider(IHttpClientFactory factory) : IOrganizationProvider
+public sealed class OrganizationsProvider(IHttpClientFactory factory) : IOrganizationProvider
 {
     public async Task<OrganizationModel?> GetAsync(Guid id, CancellationToken cancellationToken)
     {

@@ -8,10 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ATMS.Project.Data.Repositories;
 
-// The history outlives what it points at: a deleted milestone was still the milestone the ticket
-// sat in, and a person who left is still the one who made the change. Every lookup reads past the
-// soft-delete filters; the ids come from this project's own history rows.
-public class HistoryRepository(ProjectDbContext context) : IHistoryRepository
+// history outlives what it points to, so lookups read past the soft-delete filters
+public sealed class HistoryRepository(ProjectDbContext context) : IHistoryRepository
 {
     public async Task<KeysetPagedResult<HistoryEntry>> GetManyAsync(
         ACriteria<HistoryEntry> criteria,

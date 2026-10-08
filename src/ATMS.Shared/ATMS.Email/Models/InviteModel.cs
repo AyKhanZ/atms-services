@@ -1,6 +1,6 @@
 namespace ATMS.Email.Models;
 
-public class InviteModel
+public sealed class InviteModel
 {
     public required string Email { get; set; }
     public required string Password { get; set; }
