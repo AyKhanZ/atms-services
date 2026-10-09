@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Greeting" xml:space="preserve"><value>Hello {0},</value></data>
+  <data name="GreetingNoName" xml:space="preserve"><value>Hello there,</value></data>
+  <data name="FooterAutomated" xml:space="preserve"><value>This is an automated email from BAIM.</value></data>
+  <data name="FooterNoReply" xml:space="preserve"><value>Please do not reply to this message.</value></data>
+  <data name="FooterCompany" xml:space="preserve"><value>Business Automation and Innovation Center</value></data>
+  <data name="FooterAddress" xml:space="preserve"><value>Füzuli street 49, “Füzuli Residence” Business Center</value></data>
+  <data name="ButtonFallbackBefore" xml:space="preserve"><value>If the button does not work, open the</value></data>
+  <data name="ButtonFallbackAfter" xml:space="preserve"><value>.</value></data>
+  <data name="ConfirmationLink" xml:space="preserve"><value>confirmation link</value></data>
+  <data name="PasswordResetLink" xml:space="preserve"><value>password reset link</value></data>
+  <data name="TaskLink" xml:space="preserve"><value>task link</value></data>
+  <data name="CommentLink" xml:space="preserve"><value>comment link</value></data>
+  <data name="ProjectLink" xml:space="preserve"><value>project link</value></data>
+  <data name="Someone" xml:space="preserve"><value>Someone</value></data>
+  <data name="TaskKind" xml:space="preserve"><value>TASK</value></data>
+  <data name="SubtaskKind" xml:space="preserve"><value>SUBTASK</value></data>
+  <data name="ProjectLabel" xml:space="preserve"><value>Project:</value></data>
+  <data name="LinkValidUntil" xml:space="preserve"><value>This link is valid until {0}.</value></data>
+  <data name="PasswordLabel" xml:space="preserve"><value>Password:</value></data>
+  <data name="LoginLabel" xml:space="preserve"><value>Login:</value></data>
+  <data name="InviteSubject" xml:space="preserve"><value>Confirm your account</value></data>
+  <data name="InviteHeading" xml:space="preserve"><value>Welcome!</value></data>
+  <data name="InviteReadyTitle" xml:space="preserve"><value>Your account is ready</value></data>
+  <data name="InviteReadyText" xml:space="preserve"><value>Confirm your email to activate access and start using BAIM.</value></data>
+  <data name="InvitedToBaim" xml:space="preserve"><value>invited you to BAIM.</value></data>
+  <data name="InvitedToProjectBefore" xml:space="preserve"><value>invited you to the project “</value></data>
+  <data name="InvitedToProjectAfter" xml:space="preserve"><value>”.</value></data>
+  <data name="InviteCredentials" xml:space="preserve"><value>Use the credentials below after confirming your email.</value></data>
+  <data name="InviteButton" xml:space="preserve"><value>Confirm email</value></data>
+  <data name="ForgotPasswordSubject" xml:space="preserve"><value>Reset your password</value></data>
+  <data name="ForgotPasswordHeading" xml:space="preserve"><value>Reset password</value></data>
+  <data name="ForgotPasswordCardTitle" xml:space="preserve"><value>Need a new password?</value></data>
+  <data name="ForgotPasswordCardText" xml:space="preserve"><value>You can safely choose a new password using the button below.</value></data>
+  <data name="ForgotPasswordBody" xml:space="preserve"><value>We received a password reset request for your BAIM account.</value></data>
+  <data name="AccountLabel" xml:space="preserve"><value>Account:</value></data>
+  <data name="ForgotPasswordIgnore" xml:space="preserve"><value>If you did not request this, you can safely ignore this email.</value></data>
+  <data name="ForgotPasswordButton" xml:space="preserve"><value>Reset password</value></data>
+  <data name="TaskAssignedSubject" xml:space="preserve"><value>{0} assigned you {1}</value></data>
+  <data name="TaskAssignedTitle" xml:space="preserve"><value>A task for you</value></data>
+  <data name="TaskAssignedHeading" xml:space="preserve"><value>New task</value></data>
+  <data name="TaskAssignedAction" xml:space="preserve"><value>assigned this task to you.</value></data>
+  <data name="OpenTaskButton" xml:space="preserve"><value>Open task</value></data>
+  <data name="MentionedSubject" xml:space="preserve"><value>{0} mentioned you in a comment: {1}</value></data>
+  <data name="MentionedTitle" xml:space="preserve"><value>You were mentioned</value></data>
+  <data name="MentionedAction" xml:space="preserve"><value>mentioned you in a comment on this task.</value></data>
+  <data name="MentionedHint" xml:space="preserve"><value>Open it to read the comment and answer.</value></data>
+  <data name="OpenCommentButton" xml:space="preserve"><value>Open comment</value></data>
+  <data name="DueTodaySubject" xml:space="preserve"><value>{0} is due today</value></data>
+  <data name="DueTodayHeading" xml:space="preserve"><value>Due today</value></data>
+  <data name="DueTodayBody" xml:space="preserve"><value>This task is due today.</value></data>
+  <data name="DueTodayHint" xml:space="preserve"><value>If it is already done, mark it as done so the team sees it.</value></data>
+  <data name="TaskOverdueSubject" xml:space="preserve"><value>{0} is overdue</value></data>
+  <data name="TaskOverdueHeading" xml:space="preserve"><value>Overdue task</value></data>
+  <data name="TaskOverdueBody" xml:space="preserve"><value>This task was due on {0} and is still open.</value></data>
+  <data name="TaskOverdueHint" xml:space="preserve"><value>Finish it, or move the deadline so the plan stays right.</value></data>
+  <data name="AddedToProjectSubject" xml:space="preserve"><value>{0} added you to {1}</value></data>
+  <data name="AddedToProjectTitle" xml:space="preserve"><value>You were added to a project</value></data>
+  <data name="AddedToProjectHeading" xml:space="preserve"><value>New project</value></data>
+  <data name="AddedToProjectCard" xml:space="preserve"><value>You are now a participant.</value></data>
+  <data name="AddedToProjectBefore" xml:space="preserve"><value>added you to </value></data>
+  <data name="AddedToProjectAfter" xml:space="preserve"><value>.</value></data>
+  <data name="AddedToProjectHint" xml:space="preserve"><value>You can now see its tickets and tasks.</value></data>
+  <data name="OpenProjectButton" xml:space="preserve"><value>Open project</value></data>
+</root>

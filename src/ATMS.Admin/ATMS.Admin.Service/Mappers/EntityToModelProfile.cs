@@ -47,7 +47,7 @@ public sealed class EntityToModelProfile : Profile
                 options => options.MapFrom(source =>
                     source.PersonalInfo != null
                         ? source.PersonalInfo.LanguageId
-                        : source.User.LanguageId))
+                        : (int?)null))
             .ForMember(destination => destination.AvatarPath,
                 options => options.MapFrom(source =>
                     source.PersonalInfo != null

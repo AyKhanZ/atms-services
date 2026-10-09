@@ -99,6 +99,19 @@ public sealed class UserEventMapperTest
         Assert.Equal(updated, user.Position);
     }
 
+    [Theory]
+    [InlineData("ru")]
+    [InlineData(null)]
+    public void MapUpdatedEvent_CopiesLanguage(string? language)
+    {
+        var user = new User { Id = Guid.NewGuid(), Language = "en" };
+        var message = new UserUpdatedEvent(user.Id, "Aykhan", "Zeynalov", "avatar.png", true, Language: language);
+
+        CreateMapper().Map(message, user);
+
+        Assert.Equal(language, user.Language);
+    }
+
     private static IMapper CreateMapper()
     {
         var services = new ServiceCollection();

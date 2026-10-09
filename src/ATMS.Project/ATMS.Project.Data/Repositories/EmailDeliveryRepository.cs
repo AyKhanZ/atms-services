@@ -36,7 +36,8 @@ public sealed class EmailDeliveryRepository(ProjectDbContext context) : IEmailDe
              user == null ? null : user.Email,
              user == null ? null : user.Name,
              user == null ? null : user.Surname,
-             user != null && user.IsActive))
+             user != null && user.IsActive,
+             user == null ? null : user.Language))
         .FirstOrDefaultAsync(cancellationToken);
 
     public async Task MarkProcessedAsync(Guid id, CancellationToken cancellationToken)

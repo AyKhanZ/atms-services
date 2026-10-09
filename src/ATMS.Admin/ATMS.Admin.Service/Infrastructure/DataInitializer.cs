@@ -19,7 +19,8 @@ public sealed class DataInitializer(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IPasswordHasherService passwordHasherService,
-    IOutboxRepository outboxRepository) : IDataInitializer
+    IOutboxRepository outboxRepository,
+    IDefaultUserLanguage defaultUserLanguage) : IDataInitializer
 {
     
     private readonly AdminOptions _adminOptions = adminOptions.Value;
@@ -59,7 +60,7 @@ public sealed class DataInitializer(
                 IsAdmin = true,
                 HasCompletedOnboarding = true,
                 OnboardingCompletedAt = DateTime.UtcNow,
-                LanguageId = DefaultValues.Language,
+                LanguageId = await defaultUserLanguage.GetLanguageIdAsync(cancellationToken),
                 AvatarPath = DefaultValues.UserAvatar,
                 UserRoles = [new UserRole { RoleId = role.Id, UserId = userId }]
             };

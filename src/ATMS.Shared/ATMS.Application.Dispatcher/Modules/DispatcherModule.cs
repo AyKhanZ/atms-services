@@ -1,6 +1,8 @@
 using ATMS.Application.Dispatcher.Behaviors;
 using ATMS.Application.Dispatcher.Validation;
 using ATMS.Contracts.Requests;
+using ATMS.Infrastructure.Extensions;
+using ATMS.Infrastructure.Options;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +36,7 @@ public static class DispatcherModule
 
     public static IServiceCollection AddLocalizationBehavior(this IServiceCollection services)
     {
+        services.AddRequiredOptions<LocalizationOptions>();
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LocalizationBehavior<,>));
 
         return services;

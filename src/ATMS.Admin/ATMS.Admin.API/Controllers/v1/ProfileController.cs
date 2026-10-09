@@ -22,12 +22,14 @@ public sealed class ProfileController(IMediator mediator) : ControllerBase
     /// <response code="403">Personal settings are unavailable to super admins.</response>
     /// <response code="404">The current user was not found.</response>
     /// <response code="409">The user must complete onboarding before opening settings.</response>
+    /// <response code="500">An unexpected server error occurred.</response>
     [HttpGet]
     [ProducesResponseType(typeof(ProfileModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProfileModel>> Get(CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(new GetProfileRequest(), cancellationToken));
@@ -44,6 +46,7 @@ public sealed class ProfileController(IMediator mediator) : ControllerBase
     /// <response code="403">Personal settings are unavailable to super admins.</response>
     /// <response code="404">The current user was not found.</response>
     /// <response code="409">The user must complete onboarding first.</response>
+    /// <response code="500">An unexpected server error occurred.</response>
     [HttpPut("settings")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(typeof(ProfileModel), StatusCodes.Status200OK)]
@@ -52,6 +55,7 @@ public sealed class ProfileController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProfileModel>> UpdateSettings(
         [FromForm] UpdateSettingsCommand command, CancellationToken cancellationToken)
     {
@@ -69,6 +73,7 @@ public sealed class ProfileController(IMediator mediator) : ControllerBase
     /// <response code="403">Personal settings are unavailable to super admins.</response>
     /// <response code="404">The current user or language was not found.</response>
     /// <response code="409">The user must complete onboarding first.</response>
+    /// <response code="500">An unexpected server error occurred.</response>
     [HttpPatch("language")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
@@ -76,6 +81,7 @@ public sealed class ProfileController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateLanguage(
         [FromBody] UpdateLanguageCommand command, CancellationToken cancellationToken)
     {

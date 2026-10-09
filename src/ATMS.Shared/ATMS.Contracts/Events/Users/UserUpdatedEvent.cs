@@ -6,4 +6,5 @@ public sealed record UserUpdatedEvent(
     string Surname,
     string AvatarPath,
     bool HasCompletedOnboarding,
-    string? Position = null);
+    string? Position = null,
+    string? Language = null);

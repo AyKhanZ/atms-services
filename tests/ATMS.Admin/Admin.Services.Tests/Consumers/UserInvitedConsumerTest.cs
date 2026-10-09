@@ -4,6 +4,7 @@ using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Consumers.Users;
+using ATMS.Admin.Service.Infrastructure.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Contracts.Events.Users;
 using ATMS.Data.Constants;
@@ -31,6 +32,7 @@ public class UserInvitedConsumerTest
     private readonly Mock<IEmailDeliveryRepository> _emailDeliveryRepositoryMock = new();
     private readonly Mock<IOnboardingRepository> _onboardingRepositoryMock = new();
     private readonly Mock<IMapper> _mapperMock = new();
+    private readonly Mock<IDefaultUserLanguage> _defaultUserLanguageMock = new();
     private readonly User _inviter = new()
     {
         Id = Guid.NewGuid(),
@@ -45,6 +47,9 @@ public class UserInvitedConsumerTest
             .ReturnsAsync(new Role { Id = RoleIds.Client, UserType = (int)UserTypeEnum.Client });
         _passwordServiceMock.Setup(x => x.GenerateRandomPassword()).Returns("Temporary1!");
         _passwordHasherMock.Setup(x => x.Hash("Temporary1!")).Returns("hash");
+        _defaultUserLanguageMock
+            .Setup(x => x.GetLanguageIdAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync((int)LanguageEnum.English);
         _mapperMock
             .Setup(x => x.Map<User>(It.IsAny<UserInvitedEvent>()))
             .Returns<UserInvitedEvent>(message => new User
@@ -82,6 +87,9 @@ public class UserInvitedConsumerTest
         _onboardingRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<OnboardingProgress>(), It.IsAny<CancellationToken>()),
             Times.Once);
+        _userRepositoryMock.Verify(x => x.AddAsync(
+            It.Is<User>(user => user.LanguageId == (int)LanguageEnum.English),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -233,6 +241,7 @@ public class UserInvitedConsumerTest
             .AddSingleton(_emailDeliveryRepositoryMock.Object)
             .AddSingleton(_onboardingRepositoryMock.Object)
             .AddSingleton(_mapperMock.Object)
+            .AddSingleton(_defaultUserLanguageMock.Object)
             .BuildServiceProvider();
         var consumer = new TestUserInvitedConsumer(
             new RabbitMqConnectionFactory(Options.Create(CreateQueueConfiguration().GetSection(nameof(QueueOptions)).Get<QueueOptions>()!)),

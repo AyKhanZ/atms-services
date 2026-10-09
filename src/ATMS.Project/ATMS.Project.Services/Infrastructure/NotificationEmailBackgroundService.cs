@@ -3,8 +3,10 @@ using System.Globalization;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
+using ATMS.Application.Localization;
 using ATMS.Data.Enums;
 using ATMS.Email.Models;
+using ATMS.Email.Resources;
 using ATMS.Email.Services.Interfaces;
 using ATMS.Infrastructure.Options;
 using ATMS.Messaging.Infrastructure;
@@ -23,12 +25,14 @@ public class NotificationEmailBackgroundService(
     DeliveryRetrySchedule retrySchedule,
     ICommentMentionService mentions,
     IOptions<NotificationsOptions> notificationsOptions,
+    IOptions<LocalizationOptions> localizationOptions,
     ILogger<NotificationEmailBackgroundService> logger) : BackgroundService
 {
     private const int BatchSize = 20;
     private static readonly TimeSpan EmptyQueueDelay = TimeSpan.FromSeconds(5);
 
     private readonly NotificationsOptions _options = notificationsOptions.Value;
+    private readonly string _defaultLanguage = localizationOptions.Value.DefaultLanguage;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -180,18 +184,25 @@ public class NotificationEmailBackgroundService(
         IEmailSender sender,
         CancellationToken cancellationToken)
     {
+        var language = string.IsNullOrWhiteSpace(delivery.RecipientLanguage)
+            ? _defaultLanguage
+            : delivery.RecipientLanguage;
+        var culture = CultureInfo.GetCultureInfo(SupportedLanguages.ToCulture(SupportedLanguages.Normalize(language)));
         var name = delivery.RecipientName ?? string.Empty;
         var surname = delivery.RecipientSurname ?? string.Empty;
-        var actor = notification.Actor is { } person ? OneLine($"{person.Name} {person.Surname}") : "Someone";
+        var actor = notification.Actor is { } person
+            ? OneLine($"{person.Name} {person.Surname}")
+            : EmailMessages.Get(nameof(EmailMessages.Someone), culture);
         var parameters = notification.Parameters;
         var projectTitle = OneLine(parameters.ProjectTitle ?? string.Empty);
-        var taskLabel = TaskLabel(notification);
+        var taskLabel = TaskLabel(notification, culture);
         var link = Link(notification);
 
         return (NotificationTypeEnum)notification.Type switch
         {
             NotificationTypeEnum.TaskAssigned => sender.SendAsync(
                 to,
+                language,
                 new TaskAssignedModel
                 {
                     Name = name,
@@ -204,6 +215,7 @@ public class NotificationEmailBackgroundService(
                 cancellationToken),
             NotificationTypeEnum.Mentioned => sender.SendAsync(
                 to,
+                language,
                 new MentionedModel
                 {
                     Name = name,
@@ -216,6 +228,7 @@ public class NotificationEmailBackgroundService(
                 cancellationToken),
             NotificationTypeEnum.DueToday => sender.SendAsync(
                 to,
+                language,
                 new DueTodayModel
                 {
                     Name = name,
@@ -227,18 +240,20 @@ public class NotificationEmailBackgroundService(
                 cancellationToken),
             NotificationTypeEnum.TaskOverdue => sender.SendAsync(
                 to,
+                language,
                 new TaskOverdueModel
                 {
                     Name = name,
                     Surname = surname,
                     TaskLabel = taskLabel,
                     ProjectTitle = projectTitle,
-                    Deadline = parameters.Deadline?.ToString("d MMM yyyy", CultureInfo.InvariantCulture) ?? string.Empty,
+                    Deadline = parameters.Deadline?.ToString("d MMM yyyy", culture) ?? string.Empty,
                     Link = link
                 },
                 cancellationToken),
             NotificationTypeEnum.AddedToProject => sender.SendAsync(
                 to,
+                language,
                 new AddedToProjectModel
                 {
                     Name = name,
@@ -256,11 +271,14 @@ public class NotificationEmailBackgroundService(
     private static string OneLine(string value) =>
         string.Join(' ', value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 
-    // "TASK #41 Payment form", like the bell
-    private static string TaskLabel(NotificationRow notification)
+    // "TASK #41 Payment form", like the bell. The kind word is the recipient's.
+    private static string TaskLabel(NotificationRow notification, CultureInfo culture)
     {
         var parameters = notification.Parameters;
-        var kind = parameters.TaskKind == (int)WorkTaskKindEnum.Subtask ? "SUBTASK" : "TASK";
+        var kindName = parameters.TaskKind == (int)WorkTaskKindEnum.Subtask
+            ? nameof(EmailMessages.SubtaskKind)
+            : nameof(EmailMessages.TaskKind);
+        var kind = EmailMessages.Get(kindName, culture);
         return OneLine($"{kind} #{parameters.TaskCode} {parameters.TaskTitle}");
     }
 

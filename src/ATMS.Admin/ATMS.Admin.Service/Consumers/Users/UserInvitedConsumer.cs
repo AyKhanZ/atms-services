@@ -1,6 +1,7 @@
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Infrastructure.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
@@ -35,6 +36,7 @@ public class UserInvitedConsumer(
         var emailDeliveryRepository = serviceProvider.GetRequiredService<IEmailDeliveryRepository>();
         var onboardingRepository = serviceProvider.GetRequiredService<IOnboardingRepository>();
         var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var defaultUserLanguage = serviceProvider.GetRequiredService<IDefaultUserLanguage>();
 
         if (await inboxRepository.IsProcessedAsync(
                 messageId,
@@ -94,6 +96,8 @@ public class UserInvitedConsumer(
 
         var entity = mapper.Map<User>(message);
         entity.Id = Guid.NewGuid();
+        // without it the column default (Azerbaijani) wins over LocalizationOptions
+        entity.LanguageId = await defaultUserLanguage.GetLanguageIdAsync(cancellationToken);
 
         var userRole = new UserRole
         {

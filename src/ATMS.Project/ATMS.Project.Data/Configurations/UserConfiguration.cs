@@ -36,6 +36,9 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(e => e.Position)
             .HasMaxLength(100);
+
+        builder.Property(e => e.Language)
+            .HasMaxLength(2);
         
         builder.Property(e => e.UserType)
             .IsRequired();

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using ATMS.Messaging.Infrastructure;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Entities.Messaging;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Infrastructure.Delivery;
@@ -38,6 +39,7 @@ public class EmailDeliveryBackgroundServiceTest
         emailSender
             .Setup(x => x.SendAsync(
                 delivery.User.Email,
+                It.IsAny<string>(),
                 It.Is<InviteModel>(model =>
                     model.Password == "Temporary1!" &&
                     model.Link.Contains("token")),
@@ -82,9 +84,38 @@ public class EmailDeliveryBackgroundServiceTest
 
         emailSender.Verify(x => x.SendAsync(
             delivery.User.Email,
+            "RU",
             It.Is<InviteModel>(model =>
                 model.InviterName == inviterName &&
                 model.ProjectTitle == projectTitle),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ProcessBatchAsync_WhenProfileHasNoLanguage_UsesDefaultLanguage()
+    {
+        var delivery = CreateDelivery();
+        delivery.User.Language = null!;
+        var repository = new Mock<IEmailDeliveryRepository>();
+        var tokenService = new Mock<IEmailConfirmationTokenService>();
+        var emailSender = new Mock<IEmailSender>();
+        repository
+            .Setup(x => x.ClaimPendingAsync(20, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([delivery]);
+        repository
+            .Setup(x => x.GetAsync(delivery.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(delivery);
+        tokenService
+            .Setup(x => x.GenerateToken(delivery.User))
+            .Returns(new EmailConfirmationTokenResult("token", DateTime.UtcNow.AddHours(24)));
+        var worker = CreateWorker(repository.Object, tokenService.Object, emailSender.Object);
+
+        await worker.ProcessOnceAsync(CancellationToken.None);
+
+        emailSender.Verify(x => x.SendAsync(
+            delivery.User.Email,
+            "en",
+            It.IsAny<InviteModel>(),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -106,6 +137,7 @@ public class EmailDeliveryBackgroundServiceTest
             .Returns(new EmailConfirmationTokenResult("token", DateTime.UtcNow.AddHours(24)));
         emailSender
             .Setup(x => x.SendAsync(
+                It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<InviteModel>(),
                 It.IsAny<CancellationToken>()))
@@ -146,6 +178,7 @@ public class EmailDeliveryBackgroundServiceTest
         emailSender
             .Setup(x => x.SendAsync(
                 It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<InviteModel>(),
                 It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -182,6 +215,7 @@ public class EmailDeliveryBackgroundServiceTest
         emailSender
             .Setup(x => x.SendAsync(
                 delivery.User.Email,
+                It.IsAny<string>(),
                 It.Is<ForgotPasswordModel>(model => model.Link.Contains("existing-token")),
                 It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -226,6 +260,7 @@ public class EmailDeliveryBackgroundServiceTest
         emailSender
             .Setup(x => x.SendAsync(
                 delivery.User.Email,
+                It.IsAny<string>(),
                 It.Is<ForgotPasswordModel>(model => model.Link.Contains("new-token")),
                 It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -269,6 +304,7 @@ public class EmailDeliveryBackgroundServiceTest
         emailSender
             .Setup(x => x.SendAsync(
                 delivery.User.Email,
+                It.IsAny<string>(),
                 It.Is<ForgotPasswordModel>(model => model.Link.Contains("replacement-token")),
                 It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -326,7 +362,8 @@ public class EmailDeliveryBackgroundServiceTest
                 Id = Guid.NewGuid(),
                 Email = "user@baim.az",
                 Name = "Aykhan",
-                Surname = "Zeynalov"
+                Surname = "Zeynalov",
+                Language = new Language { Code = "RU" }
             },
             Type = (int)EmailDeliveryTypeEnum.Confirmation,
             TemporaryPassword = "Temporary1!",
@@ -352,6 +389,7 @@ public class EmailDeliveryBackgroundServiceTest
             scopeFactory,
             retrySchedule,
             Options.Create(configuration.GetSection(nameof(RedirectUrlOptions)).Get<RedirectUrlOptions>()!),
+            Options.Create(new LocalizationOptions { DefaultLanguage = "en" }),
             NullLogger<EmailDeliveryBackgroundService>.Instance)
     {
         public Task<int> ProcessOnceAsync(CancellationToken cancellationToken)

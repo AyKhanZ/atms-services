@@ -1,3 +1,4 @@
+using ATMS.Admin.Contracts.Models.Onboarding;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Service.Modules;
@@ -43,6 +44,28 @@ public sealed class OnboardingMapperTest
         Assert.Equal("Aykhan", user.Name);
         Assert.Equal(new DateTime(1995, 5, 20), user.BirthDate);
         Assert.Equal("users/avatar.webp", user.AvatarPath);
+    }
+
+    [Fact]
+    public void MapPersonalInfo_LeavesLanguageEmptyUntilTheStepIsSaved()
+    {
+        using var provider = BuildProvider();
+        var mapper = provider.GetRequiredService<IMapper>();
+        var progress = new OnboardingProgress
+        {
+            User = new User
+            {
+                Email = "account@baim.az",
+                Name = "Aykhan",
+                Surname = "Zeynalov",
+                LanguageId = 1
+            }
+        };
+
+        var model = mapper.Map<OnboardingPersonalInfoModel>(progress);
+
+        Assert.Null(model.LanguageId);
+        Assert.Equal("Aykhan", model.Name);
     }
 
     private static ServiceProvider BuildProvider()

@@ -1,5 +1,6 @@
 using ATMS.Admin.Contracts.Commands.Onboarding;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Service.Handlers.Onboarding;
 using ATMS.Admin.Service.Security.Models;
@@ -66,6 +67,9 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
                 destination.MaritalStatusId = source.MaritalStatusId;
             })
             .Returns(progress.User);
+        DictionariesRepositoryMock
+            .Setup(x => x.GetLanguagesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Language { Id = 2, Code = "EN", Name = "English", NativeName = "English" }]);
         var handler = CreateHandler();
 
         var result = await handler.Handle(new CompleteOnboardingCommand { Version = 7 }, CancellationToken.None);
@@ -79,6 +83,7 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
         Assert.Equal(1, result.InvitationsQueued);
         Assert.Equal(userId, updatedEvent!.Id);
         Assert.Equal("Operations manager", updatedEvent.Position);
+        Assert.Equal("en", updatedEvent.Language);
         Assert.Equal("colleague@baim.az", invitedEvent!.Email);
         Assert.Equal(userId, invitedEvent.InvitedByUserId);
         OnboardingRepositoryMock.Verify(
@@ -124,7 +129,8 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
             MapperMock.Object,
             AccessTokenServiceMock.Object,
             CacheServiceMock.Object,
-            OutboxRepositoryMock.Object);
+            OutboxRepositoryMock.Object,
+            DictionariesRepositoryMock.Object);
     }
 
     private static OnboardingProgress CreateReadyProgress(Guid userId, Guid invitationId)

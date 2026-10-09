@@ -42,8 +42,9 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(100)
             .IsRequired();
 
+        // column default stays the seeded Azerbaijani row; new users take LocalizationOptions.DefaultLanguage
         builder.Property(e => e.LanguageId)
-            .HasDefaultValue(DefaultValues.Language)
+            .HasDefaultValue((int)LanguageEnum.Azerbaijan)
             .IsRequired();
 
         builder.HasOne(e => e.Language)

@@ -8,6 +8,7 @@ using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Application.Interfaces;
+using ATMS.Application.Localization;
 using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Contracts.Events.Users;
@@ -24,7 +25,8 @@ public sealed class CompleteOnboardingHandler(
     IMapper mapper,
     IAccessTokenService accessTokenService,
     ICacheService cache,
-    IOutboxRepository outboxRepository) : IRequestHandler<CompleteOnboardingCommand, OnboardingCompletionModel>
+    IOutboxRepository outboxRepository,
+    IDictionariesRepository dictionariesRepository) : IRequestHandler<CompleteOnboardingCommand, OnboardingCompletionModel>
 {
     public async Task<OnboardingCompletionModel> Handle(CompleteOnboardingCommand command, CancellationToken cancellationToken)
     {
@@ -69,7 +71,8 @@ public sealed class CompleteOnboardingHandler(
                 user.Surname,
                 user.AvatarPath,
                 user.HasCompletedOnboarding,
-                user.Position),
+                user.Position,
+                await LanguageCodeAsync(user.LanguageId, cancellationToken)),
             cancellationToken);
 
         foreach (var invitedUser in progress.InvitedUsers)
@@ -101,5 +104,12 @@ public sealed class CompleteOnboardingHandler(
             AccessTokenExpireTime = accessToken.ExpiresInMinutes,
             InvitationsQueued = progress.InvitedUsers.Count
         };
+    }
+
+    private async Task<string?> LanguageCodeAsync(int languageId, CancellationToken cancellationToken)
+    {
+        var languages = await dictionariesRepository.GetLanguagesAsync(cancellationToken);
+        var code = languages.FirstOrDefault(language => language.Id == languageId)?.Code;
+        return code is null ? null : SupportedLanguages.Normalize(code);
     }
 }

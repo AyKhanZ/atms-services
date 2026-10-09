@@ -23,6 +23,7 @@ namespace ATMS.Admin.Service.Handlers.Profile;
 public sealed class UpdateSettingsHandler(
     ICurrentUser currentUser,
     IUserRepository userRepository,
+    IDictionariesRepository dictionariesRepository,
     IOutboxRepository outboxRepository,
     IImageStorage imageStorage,
     ICacheService cache,
@@ -68,7 +69,8 @@ public sealed class UpdateSettingsHandler(
                     user.Surname,
                     user.AvatarPath,
                     user.HasCompletedOnboarding,
-                    user.Position),
+                    user.Position,
+                    await LanguageCodeAsync(user.LanguageId, cancellationToken)),
                 cancellationToken);
 
             await userRepository.SaveAsync(cancellationToken);
@@ -107,5 +109,12 @@ public sealed class UpdateSettingsHandler(
         }
 
         return mapper.Map<ProfileModel>(user);
+    }
+
+    private async Task<string?> LanguageCodeAsync(int languageId, CancellationToken cancellationToken)
+    {
+        var languages = await dictionariesRepository.GetLanguagesAsync(cancellationToken);
+        var code = languages.FirstOrDefault(language => language.Id == languageId)?.Code;
+        return code is null ? null : SupportedLanguages.Normalize(code);
     }
 }

@@ -1,4 +1,7 @@
+using System.Globalization;
+using ATMS.Application.Localization;
 using ATMS.Email.Models;
+using ATMS.Email.Resources;
 using ATMS.Email.Services.Interfaces;
 using FluentEmail.Core;
 using Microsoft.Extensions.Logging;
@@ -7,9 +10,6 @@ namespace ATMS.Email.Services;
 
 public sealed class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<EmailSender> logger) : IEmailSender
 {
-    private const string InviteSubject = "Confirm your account";
-    private const string ForgotPasswordSubject = "Reset your password";
-
     private const string InviteTemplate = "InviteTemplate.cshtml";
     private const string ForgotPasswordTemplate = "ForgotPasswordTemplate.cshtml";
     private const string TaskAssignedTemplate = "TaskAssignedTemplate.cshtml";
@@ -18,74 +18,102 @@ public sealed class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<
     private const string TaskOverdueTemplate = "TaskOverdueTemplate.cshtml";
     private const string AddedToProjectTemplate = "AddedToProjectTemplate.cshtml";
 
-    public Task SendAsync(string to, InviteModel model, CancellationToken cancellationToken)
+    public Task SendAsync(string to, string language, InviteModel model, CancellationToken cancellationToken)
     {
-        return SendTemplateAsync(
-            to,
-            InviteSubject,
-            InviteTemplate,
-            model,
-            cancellationToken);
+        return SendLocalizedAsync(to, language, () => EmailMessages.InviteSubject, InviteTemplate, model, cancellationToken);
     }
 
-    public Task SendAsync(string to, ForgotPasswordModel model, CancellationToken cancellationToken)
+    public Task SendAsync(string to, string language, ForgotPasswordModel model, CancellationToken cancellationToken)
     {
-        return SendTemplateAsync(
+        return SendLocalizedAsync(
             to,
-            ForgotPasswordSubject,
+            language,
+            () => EmailMessages.ForgotPasswordSubject,
             ForgotPasswordTemplate,
             model,
             cancellationToken);
     }
 
-    public Task SendAsync(string to, TaskAssignedModel model, CancellationToken cancellationToken)
+    public Task SendAsync(string to, string language, TaskAssignedModel model, CancellationToken cancellationToken)
     {
-        return SendTemplateAsync(
+        return SendLocalizedAsync(
             to,
-            $"{model.ActorName} assigned you {model.TaskLabel}",
+            language,
+            () => string.Format(CultureInfo.CurrentCulture, EmailMessages.TaskAssignedSubject, model.ActorName, model.TaskLabel),
             TaskAssignedTemplate,
             model,
             cancellationToken);
     }
 
-    public Task SendAsync(string to, MentionedModel model, CancellationToken cancellationToken)
+    public Task SendAsync(string to, string language, MentionedModel model, CancellationToken cancellationToken)
     {
-        return SendTemplateAsync(
+        return SendLocalizedAsync(
             to,
-            $"{model.ActorName} mentioned you in {model.TaskLabel}",
+            language,
+            () => string.Format(CultureInfo.CurrentCulture, EmailMessages.MentionedSubject, model.ActorName, model.TaskLabel),
             MentionedTemplate,
             model,
             cancellationToken);
     }
 
-    public Task SendAsync(string to, DueTodayModel model, CancellationToken cancellationToken)
+    public Task SendAsync(string to, string language, DueTodayModel model, CancellationToken cancellationToken)
     {
-        return SendTemplateAsync(
+        return SendLocalizedAsync(
             to,
-            $"{model.TaskLabel} is due today",
+            language,
+            () => string.Format(CultureInfo.CurrentCulture, EmailMessages.DueTodaySubject, model.TaskLabel),
             DueTodayTemplate,
             model,
             cancellationToken);
     }
 
-    public Task SendAsync(string to, TaskOverdueModel model, CancellationToken cancellationToken)
+    public Task SendAsync(string to, string language, TaskOverdueModel model, CancellationToken cancellationToken)
     {
-        return SendTemplateAsync(
+        return SendLocalizedAsync(
             to,
-            $"{model.TaskLabel} is overdue",
+            language,
+            () => string.Format(CultureInfo.CurrentCulture, EmailMessages.TaskOverdueSubject, model.TaskLabel),
             TaskOverdueTemplate,
             model,
             cancellationToken);
     }
 
-    public Task SendAsync(string to, AddedToProjectModel model, CancellationToken cancellationToken)
+    public Task SendAsync(string to, string language, AddedToProjectModel model, CancellationToken cancellationToken)
     {
-        return SendTemplateAsync(
+        return SendLocalizedAsync(
             to,
-            $"{model.ActorName} added you to {model.ProjectTitle}",
+            language,
+            () => string.Format(CultureInfo.CurrentCulture, EmailMessages.AddedToProjectSubject, model.ActorName, model.ProjectTitle),
             AddedToProjectTemplate,
             model,
             cancellationToken);
+    }
+
+    // resx and the template follow CurrentUICulture; put it back so the next recipient is not stuck with this one
+    private async Task SendLocalizedAsync<TModel>(
+        string to,
+        string language,
+        Func<string> subject,
+        string templateName,
+        TModel model,
+        CancellationToken cancellationToken)
+    {
+        var culture = new CultureInfo(SupportedLanguages.ToCulture(SupportedLanguages.Normalize(language)));
+        var previousCulture = CultureInfo.CurrentCulture;
+        var previousUiCulture = CultureInfo.CurrentUICulture;
+
+        try
+        {
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+
+            await SendTemplateAsync(to, subject(), templateName, model, cancellationToken);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+            CultureInfo.CurrentUICulture = previousUiCulture;
+        }
     }
 
     private async Task SendTemplateAsync<TModel>(
@@ -136,5 +164,4 @@ public sealed class EmailSender(IFluentEmailFactory fluentEmailFactory, ILogger<
 
         throw new InvalidOperationException($"SMTP rejected the email. {errors}");
     }
-
 }

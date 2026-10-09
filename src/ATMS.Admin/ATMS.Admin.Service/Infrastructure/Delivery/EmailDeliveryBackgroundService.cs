@@ -20,12 +20,14 @@ public class EmailDeliveryBackgroundService(
     IServiceScopeFactory scopeFactory,
     DeliveryRetrySchedule retrySchedule,
     IOptions<RedirectUrlOptions> redirectUrlOptions,
+    IOptions<LocalizationOptions> localizationOptions,
     ILogger<EmailDeliveryBackgroundService> logger) : BackgroundService
 {
     private const int BatchSize = 20;
     private static readonly TimeSpan EmptyQueueDelay = TimeSpan.FromSeconds(5);
 
     private readonly RedirectUrlOptions _redirectUrlOptions = redirectUrlOptions.Value;
+    private readonly string _defaultLanguage = localizationOptions.Value.DefaultLanguage;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -161,6 +163,7 @@ public class EmailDeliveryBackgroundService(
 
         await emailSender.SendAsync(
             delivery.User.Email,
+            LanguageOf(delivery),
             new InviteModel
             {
                 Email = delivery.User.Email,
@@ -192,6 +195,7 @@ public class EmailDeliveryBackgroundService(
 
         await emailSender.SendAsync(
             delivery.User.Email,
+            LanguageOf(delivery),
             new ForgotPasswordModel
             {
                 Email = delivery.User.Email,
@@ -227,5 +231,11 @@ public class EmailDeliveryBackgroundService(
             cancellationToken);
 
         return tokenResult;
+    }
+
+    private string LanguageOf(Admin.Data.Entities.Messaging.EmailDelivery delivery)
+    {
+        var code = delivery.User.Language?.Code;
+        return string.IsNullOrWhiteSpace(code) ? _defaultLanguage : code;
     }
 }

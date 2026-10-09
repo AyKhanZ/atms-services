@@ -14,6 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\ATMS.Application\ATMS.Application.csproj" />
 	  <ProjectReference Include="..\ATMS.Application.Exceptions\ATMS.Application.Exceptions.csproj" />
 	</ItemGroup>
 </Project>

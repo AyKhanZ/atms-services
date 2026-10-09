@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Greeting" xml:space="preserve"><value>Здравствуйте, {0}!</value></data>
+  <data name="GreetingNoName" xml:space="preserve"><value>Здравствуйте!</value></data>
+  <data name="FooterAutomated" xml:space="preserve"><value>Это автоматическое письмо от BAIM.</value></data>
+  <data name="FooterNoReply" xml:space="preserve"><value>Не отвечайте на это письмо.</value></data>
+  <data name="FooterCompany" xml:space="preserve"><value>Центр автоматизации бизнеса и инноваций</value></data>
+  <data name="FooterAddress" xml:space="preserve"><value>улица Фюзули, 49, бизнес-центр «Füzuli Residence»</value></data>
+  <data name="ButtonFallbackBefore" xml:space="preserve"><value>Если кнопка не сработает, откройте</value></data>
+  <data name="ButtonFallbackAfter" xml:space="preserve"><value>.</value></data>
+  <data name="ConfirmationLink" xml:space="preserve"><value>ссылку подтверждения</value></data>
+  <data name="PasswordResetLink" xml:space="preserve"><value>ссылку для сброса пароля</value></data>
+  <data name="TaskLink" xml:space="preserve"><value>ссылку на задачу</value></data>
+  <data name="CommentLink" xml:space="preserve"><value>ссылку на комментарий</value></data>
+  <data name="ProjectLink" xml:space="preserve"><value>ссылку на проект</value></data>
+  <data name="Someone" xml:space="preserve"><value>Кто-то</value></data>
+  <data name="TaskKind" xml:space="preserve"><value>ЗАДАЧА</value></data>
+  <data name="SubtaskKind" xml:space="preserve"><value>ПОДЗАДАЧА</value></data>
+  <data name="ProjectLabel" xml:space="preserve"><value>Проект:</value></data>
+  <data name="LinkValidUntil" xml:space="preserve"><value>Ссылка действует до {0}.</value></data>
+  <data name="PasswordLabel" xml:space="preserve"><value>Пароль:</value></data>
+  <data name="LoginLabel" xml:space="preserve"><value>Логин:</value></data>
+  <data name="InviteSubject" xml:space="preserve"><value>Подтвердите аккаунт</value></data>
+  <data name="InviteHeading" xml:space="preserve"><value>Добро пожаловать!</value></data>
+  <data name="InviteReadyTitle" xml:space="preserve"><value>Аккаунт готов</value></data>
+  <data name="InviteReadyText" xml:space="preserve"><value>Подтвердите email, чтобы открыть доступ и начать работу в BAIM.</value></data>
+  <data name="InvitedToBaim" xml:space="preserve"><value>пригласил(а) вас в BAIM.</value></data>
+  <data name="InvitedToProjectBefore" xml:space="preserve"><value>пригласил(а) вас в проект «</value></data>
+  <data name="InvitedToProjectAfter" xml:space="preserve"><value>».</value></data>
+  <data name="InviteCredentials" xml:space="preserve"><value>После подтверждения email войдите с этими данными.</value></data>
+  <data name="InviteButton" xml:space="preserve"><value>Подтвердить email</value></data>
+  <data name="ForgotPasswordSubject" xml:space="preserve"><value>Сброс пароля</value></data>
+  <data name="ForgotPasswordHeading" xml:space="preserve"><value>Сбросить пароль</value></data>
+  <data name="ForgotPasswordCardTitle" xml:space="preserve"><value>Нужен новый пароль?</value></data>
+  <data name="ForgotPasswordCardText" xml:space="preserve"><value>Новый пароль можно задать кнопкой ниже.</value></data>
+  <data name="ForgotPasswordBody" xml:space="preserve"><value>Поступил запрос на сброс пароля вашего аккаунта BAIM.</value></data>
+  <data name="AccountLabel" xml:space="preserve"><value>Аккаунт:</value></data>
+  <data name="ForgotPasswordIgnore" xml:space="preserve"><value>Если вы не запрашивали сброс, это письмо можно не читать.</value></data>
+  <data name="ForgotPasswordButton" xml:space="preserve"><value>Сбросить пароль</value></data>
+  <data name="TaskAssignedSubject" xml:space="preserve"><value>{0} назначил(а) вам {1}</value></data>
+  <data name="TaskAssignedTitle" xml:space="preserve"><value>Задача для вас</value></data>
+  <data name="TaskAssignedHeading" xml:space="preserve"><value>Новая задача</value></data>
+  <data name="TaskAssignedAction" xml:space="preserve"><value>назначил(а) вам эту задачу.</value></data>
+  <data name="OpenTaskButton" xml:space="preserve"><value>Открыть задачу</value></data>
+  <data name="MentionedSubject" xml:space="preserve"><value>{0} упомянул(а) вас в комментарии: {1}</value></data>
+  <data name="MentionedTitle" xml:space="preserve"><value>Вас упомянули</value></data>
+  <data name="MentionedAction" xml:space="preserve"><value>упомянул(а) вас в комментарии к этой задаче.</value></data>
+  <data name="MentionedHint" xml:space="preserve"><value>Откройте, чтобы прочитать комментарий и ответить.</value></data>
+  <data name="OpenCommentButton" xml:space="preserve"><value>Открыть комментарий</value></data>
+  <data name="DueTodaySubject" xml:space="preserve"><value>Срок сегодня: {0}</value></data>
+  <data name="DueTodayHeading" xml:space="preserve"><value>Срок сегодня</value></data>
+  <data name="DueTodayBody" xml:space="preserve"><value>Срок этой задачи — сегодня.</value></data>
+  <data name="DueTodayHint" xml:space="preserve"><value>Если задача уже выполнена, отметьте её выполненной — так команда это увидит.</value></data>
+  <data name="TaskOverdueSubject" xml:space="preserve"><value>Просрочено: {0}</value></data>
+  <data name="TaskOverdueHeading" xml:space="preserve"><value>Просроченная задача</value></data>
+  <data name="TaskOverdueBody" xml:space="preserve"><value>Срок этой задачи был {0}, она всё ещё не закрыта.</value></data>
+  <data name="TaskOverdueHint" xml:space="preserve"><value>Завершите её или перенесите срок, чтобы план оставался верным.</value></data>
+  <data name="AddedToProjectSubject" xml:space="preserve"><value>{0} добавил(а) вас в проект {1}</value></data>
+  <data name="AddedToProjectTitle" xml:space="preserve"><value>Вас добавили в проект</value></data>
+  <data name="AddedToProjectHeading" xml:space="preserve"><value>Новый проект</value></data>
+  <data name="AddedToProjectCard" xml:space="preserve"><value>Теперь вы участник.</value></data>
+  <data name="AddedToProjectBefore" xml:space="preserve"><value>добавил(а) вас в проект </value></data>
+  <data name="AddedToProjectAfter" xml:space="preserve"><value>.</value></data>
+  <data name="AddedToProjectHint" xml:space="preserve"><value>Теперь вам видны его тикеты и задачи.</value></data>
+  <data name="OpenProjectButton" xml:space="preserve"><value>Открыть проект</value></data>
+</root>

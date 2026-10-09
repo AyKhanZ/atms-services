@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>1.3</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="Greeting" xml:space="preserve"><value>Salam, {0}!</value></data>
+  <data name="GreetingNoName" xml:space="preserve"><value>Salam!</value></data>
+  <data name="FooterAutomated" xml:space="preserve"><value>Bu, BAIM-dən avtomatik məktubdur.</value></data>
+  <data name="FooterNoReply" xml:space="preserve"><value>Bu məktuba cavab verməyin.</value></data>
+  <data name="FooterCompany" xml:space="preserve"><value>Biznesin Avtomatlaşdırılması və İnnovasiya Mərkəzi</value></data>
+  <data name="FooterAddress" xml:space="preserve"><value>Füzuli küçəsi 49, “Füzuli Residence” Biznes Mərkəzi</value></data>
+  <data name="ButtonFallbackBefore" xml:space="preserve"><value>Düymə işləməsə,</value></data>
+  <data name="ButtonFallbackAfter" xml:space="preserve"><value> açın.</value></data>
+  <data name="ConfirmationLink" xml:space="preserve"><value>təsdiq keçidini</value></data>
+  <data name="PasswordResetLink" xml:space="preserve"><value>şifrə sıfırlama keçidini</value></data>
+  <data name="TaskLink" xml:space="preserve"><value>tapşırıq keçidini</value></data>
+  <data name="CommentLink" xml:space="preserve"><value>şərh keçidini</value></data>
+  <data name="ProjectLink" xml:space="preserve"><value>layihə keçidini</value></data>
+  <data name="Someone" xml:space="preserve"><value>Kimsə</value></data>
+  <data name="TaskKind" xml:space="preserve"><value>TAPŞIRIQ</value></data>
+  <data name="SubtaskKind" xml:space="preserve"><value>ALT TAPŞIRIQ</value></data>
+  <data name="ProjectLabel" xml:space="preserve"><value>Layihə:</value></data>
+  <data name="LinkValidUntil" xml:space="preserve"><value>Keçid {0} tarixinədək etibarlıdır.</value></data>
+  <data name="PasswordLabel" xml:space="preserve"><value>Şifrə:</value></data>
+  <data name="LoginLabel" xml:space="preserve"><value>Giriş:</value></data>
+  <data name="InviteSubject" xml:space="preserve"><value>Hesabı təsdiqləyin</value></data>
+  <data name="InviteHeading" xml:space="preserve"><value>Xoş gəlmisiniz!</value></data>
+  <data name="InviteReadyTitle" xml:space="preserve"><value>Hesab hazırdır</value></data>
+  <data name="InviteReadyText" xml:space="preserve"><value>Girişi açmaq və BAIM-də işə başlamaq üçün e-poçtu təsdiqləyin.</value></data>
+  <data name="InvitedToBaim" xml:space="preserve"><value>sizi BAIM-ə dəvət etdi.</value></data>
+  <data name="InvitedToProjectBefore" xml:space="preserve"><value>sizi «</value></data>
+  <data name="InvitedToProjectAfter" xml:space="preserve"><value>» layihəsinə dəvət etdi.</value></data>
+  <data name="InviteCredentials" xml:space="preserve"><value>E-poçtu təsdiqlədikdən sonra aşağıdakı məlumatlarla daxil olun.</value></data>
+  <data name="InviteButton" xml:space="preserve"><value>E-poçtu təsdiqlə</value></data>
+  <data name="ForgotPasswordSubject" xml:space="preserve"><value>Şifrənin sıfırlanması</value></data>
+  <data name="ForgotPasswordHeading" xml:space="preserve"><value>Şifrəni sıfırla</value></data>
+  <data name="ForgotPasswordCardTitle" xml:space="preserve"><value>Yeni şifrə lazımdır?</value></data>
+  <data name="ForgotPasswordCardText" xml:space="preserve"><value>Aşağıdakı düymə ilə yeni şifrə təyin edə bilərsiniz.</value></data>
+  <data name="ForgotPasswordBody" xml:space="preserve"><value>BAIM hesabınız üçün şifrə sıfırlama sorğusu gəldi.</value></data>
+  <data name="AccountLabel" xml:space="preserve"><value>Hesab:</value></data>
+  <data name="ForgotPasswordIgnore" xml:space="preserve"><value>Bunu siz istəməmisinizsə, məktuba fikir verməyin.</value></data>
+  <data name="ForgotPasswordButton" xml:space="preserve"><value>Şifrəni sıfırla</value></data>
+  <data name="TaskAssignedSubject" xml:space="preserve"><value>{0} sizə {1} təyin etdi</value></data>
+  <data name="TaskAssignedTitle" xml:space="preserve"><value>Sizin üçün tapşırıq</value></data>
+  <data name="TaskAssignedHeading" xml:space="preserve"><value>Yeni tapşırıq</value></data>
+  <data name="TaskAssignedAction" xml:space="preserve"><value>sizə bu tapşırığı təyin etdi.</value></data>
+  <data name="OpenTaskButton" xml:space="preserve"><value>Tapşırığı aç</value></data>
+  <data name="MentionedSubject" xml:space="preserve"><value>{0} sizi şərhdə qeyd etdi: {1}</value></data>
+  <data name="MentionedTitle" xml:space="preserve"><value>Sizi qeyd etdilər</value></data>
+  <data name="MentionedAction" xml:space="preserve"><value>sizi bu tapşırığın şərhində qeyd etdi.</value></data>
+  <data name="MentionedHint" xml:space="preserve"><value>Şərhi oxumaq və cavab vermək üçün açın.</value></data>
+  <data name="OpenCommentButton" xml:space="preserve"><value>Şərhi aç</value></data>
+  <data name="DueTodaySubject" xml:space="preserve"><value>Bu gün bitməlidir: {0}</value></data>
+  <data name="DueTodayHeading" xml:space="preserve"><value>Bu gün bitməlidir</value></data>
+  <data name="DueTodayBody" xml:space="preserve"><value>Bu tapşırığın son tarixi bu gündür.</value></data>
+  <data name="DueTodayHint" xml:space="preserve"><value>Tapşırıq artıq hazırdırsa, onu hazır kimi qeyd edin ki, komanda görsün.</value></data>
+  <data name="TaskOverdueSubject" xml:space="preserve"><value>Vaxtı keçib: {0}</value></data>
+  <data name="TaskOverdueHeading" xml:space="preserve"><value>Vaxtı keçmiş tapşırıq</value></data>
+  <data name="TaskOverdueBody" xml:space="preserve"><value>Bu tapşırığın son tarixi {0} idi və o hələ bitməyib.</value></data>
+  <data name="TaskOverdueHint" xml:space="preserve"><value>Onu bitirin və ya son tarixi köçürün ki, müddətlər düzgün qalsın.</value></data>
+  <data name="AddedToProjectSubject" xml:space="preserve"><value>{0} sizi {1} layihəsinə əlavə etdi</value></data>
+  <data name="AddedToProjectTitle" xml:space="preserve"><value>Sizi layihəyə əlavə etdilər</value></data>
+  <data name="AddedToProjectHeading" xml:space="preserve"><value>Yeni layihə</value></data>
+  <data name="AddedToProjectCard" xml:space="preserve"><value>İndi iştirakçısınız.</value></data>
+  <data name="AddedToProjectBefore" xml:space="preserve"><value>sizi </value></data>
+  <data name="AddedToProjectAfter" xml:space="preserve"><value> layihəsinə əlavə etdi.</value></data>
+  <data name="AddedToProjectHint" xml:space="preserve"><value>İndi onun tiket və tapşırıqlarını görə bilərsiniz.</value></data>
+  <data name="OpenProjectButton" xml:space="preserve"><value>Layihəni aç</value></data>
+</root>
