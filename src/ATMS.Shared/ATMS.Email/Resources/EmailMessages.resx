@@ -8,7 +8,7 @@
   <data name="GreetingNoName" xml:space="preserve"><value>Hello there,</value></data>
   <data name="FooterAutomated" xml:space="preserve"><value>This is an automated email from BAIM.</value></data>
   <data name="FooterNoReply" xml:space="preserve"><value>Please do not reply to this message.</value></data>
-  <data name="FooterCompany" xml:space="preserve"><value>Business Automation &amp; Innovation Center</value></data>
+  <data name="FooterCompany" xml:space="preserve"><value>Business Automation and Innovation Center</value></data>
   <data name="FooterAddress" xml:space="preserve"><value>Füzuli street 49, “Füzuli Residence” Business Center</value></data>
   <data name="ButtonFallbackBefore" xml:space="preserve"><value>If the button does not work, open the</value></data>
   <data name="ButtonFallbackAfter" xml:space="preserve"><value>.</value></data>
