@@ -5,6 +5,8 @@ using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Handlers.Profile;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Caching.Constants;
+using ATMS.Contracts.Events.Users;
+using ATMS.Messaging.Configuration;
 using Moq;
 
 namespace Admin.Services.Tests.Handlers.Profile;
@@ -19,6 +21,7 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
             CurrentUserMock.Object,
             UserRepositoryMock.Object,
             DictionariesRepositoryMock.Object,
+            OutboxRepositoryMock.Object,
             CacheServiceMock.Object);
 
         DictionariesRepositoryMock
@@ -50,6 +53,11 @@ public class UpdateLanguageHandlerTest : BaseHandlerTest
         // Assert
         Assert.Equal(1, user.LanguageId);
         CacheServiceMock.Verify(x => x.RemoveAsync(CacheKeys.Admin.ProfileById(user.Id), It.IsAny<CancellationToken>()), Times.Once);
+        OutboxRepositoryMock.Verify(x => x.AddAsync(
+            MessagingConstants.Exchanges.UserEvents,
+            MessagingConstants.RoutingKeys.UserUpdated,
+            It.Is<UserUpdatedEvent>(message => message.Id == user.Id && message.Language == "az"),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

@@ -4,7 +4,7 @@ using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Consumers.Users;
-using ATMS.Admin.Service.Infrastructure;
+using ATMS.Admin.Service.Infrastructure.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Contracts.Events.Users;
 using ATMS.Data.Constants;

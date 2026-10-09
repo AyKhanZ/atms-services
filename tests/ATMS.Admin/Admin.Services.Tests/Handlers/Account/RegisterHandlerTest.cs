@@ -4,7 +4,7 @@ using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Service.Handlers.Account;
-using ATMS.Admin.Service.Infrastructure;
+using ATMS.Admin.Service.Infrastructure.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Enums;

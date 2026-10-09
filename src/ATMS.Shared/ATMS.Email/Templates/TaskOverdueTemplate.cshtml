@@ -1,16 +1,17 @@
+@using ATMS.Email.Resources
+@using System.Globalization
 @model ATMS.Email.Models.TaskOverdueModel
 @{
-    var fullName = $"{Model.Name} {Model.Surname}".Trim();
-    var greetingName = string.IsNullOrWhiteSpace(fullName) ? "there" : fullName;
+    var greeting = EmailGreeting.For(Model.Name, Model.Surname);
     const string logoUrl = "https://baim.az/wp-content/uploads/2025/05/cropped-cropped-group-26.png";
 }
 <!doctype html>
-<html lang="en">
+<html lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Overdue task</title>
+  <title>@EmailMessages.TaskOverdueHeading</title>
 </head>
 <body style="margin:0;padding:0;background:#fffaf3;color:#1f2937;font-family:Roboto,Arial,sans-serif;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin:0;padding:0;background:#fffaf3;">
@@ -24,7 +25,7 @@
           </tr>
           <tr>
             <td align="center" style="padding:15px 24px;background:#ff8800;color:#ffffff;">
-              <div style="font-family:Roboto,Arial,sans-serif;font-size:22px;line-height:28px;font-weight:800;">Overdue task</div>
+              <div style="font-family:Roboto,Arial,sans-serif;font-size:22px;line-height:28px;font-weight:800;">@EmailMessages.TaskOverdueHeading</div>
             </td>
           </tr>
           <tr>
@@ -36,7 +37,7 @@
                   </td>
                   <td valign="top" style="padding:18px 18px 18px 0;color:#1f2937;">
                     <div style="font-size:16px;line-height:22px;font-weight:800;">@Model.TaskLabel</div>
-                    <div style="margin-top:4px;font-size:13px;line-height:19px;color:#536176;">Project: @Model.ProjectTitle</div>
+                    <div style="margin-top:4px;font-size:13px;line-height:19px;color:#536176;">@EmailMessages.ProjectLabel @Model.ProjectTitle</div>
                   </td>
                 </tr>
               </table>
@@ -44,19 +45,19 @@
           </tr>
           <tr>
             <td style="padding:0 34px 0;font-size:15px;line-height:22px;color:#1f2937;">
-              <p style="margin:0 0 18px;">Hello @greetingName,</p>
-              <p style="margin:0 0 18px;">This task was due on <strong>@Model.Deadline</strong> and is still open.</p>
-              <p style="margin:0 0 18px;">Finish it, or move the deadline so the plan stays right.</p>
+              <p style="margin:0 0 18px;">@greeting</p>
+              <p style="margin:0 0 18px;">@string.Format(CultureInfo.CurrentCulture, EmailMessages.TaskOverdueBody, Model.Deadline)</p>
+              <p style="margin:0 0 18px;">@EmailMessages.TaskOverdueHint</p>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding:10px 34px 28px;">
-              <a href="@Model.Link" style="display:block;width:100%;max-width:340px;background:#ff8800;border-radius:50px;color:#ffffff;font-size:16px;line-height:44px;font-weight:700;text-align:center;text-decoration:none;">Open task</a>
+              <a href="@Model.Link" style="display:block;width:100%;max-width:340px;background:#ff8800;border-radius:50px;color:#ffffff;font-size:16px;line-height:44px;font-weight:700;text-align:center;text-decoration:none;">@EmailMessages.OpenTaskButton</a>
             </td>
           </tr>
           <tr>
             <td align="center" style="padding:0 34px 34px;font-size:13px;line-height:20px;color:#64748b;">
-              <p style="margin:0;">If the button does not work, open the <a href="@Model.Link" style="color:#f57c00;text-decoration:underline;">task link</a>.</p>
+              <p style="margin:0;">@EmailMessages.ButtonFallbackBefore <a href="@Model.Link" style="color:#f57c00;text-decoration:underline;">@EmailMessages.TaskLink</a>@EmailMessages.ButtonFallbackAfter</p>
             </td>
           </tr>
           <tr>
@@ -64,8 +65,8 @@
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;text-align:center;">
                 <tr>
                   <td align="center" style="padding:0 0 10px;color:#536176;font-size:13px;line-height:18px;">
-                    <div style="font-weight:700;color:#1f2937;">Business Automation & Innovation Center</div>
-                    <div style="margin-top:3px;">Füzuli street 49, “Füzuli Residence” Business Center</div>
+                    <div style="font-weight:700;color:#1f2937;">@EmailMessages.FooterCompany</div>
+                    <div style="margin-top:3px;">@EmailMessages.FooterAddress</div>
                     <div style="margin-top:12px;">
                       <span style="display:inline-block;width:14px;height:14px;margin-right:6px;vertical-align:-2px;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
@@ -88,8 +89,8 @@
               </table>
               <div style="height:1px;background:#ececec;line-height:1px;font-size:1px;">&nbsp;</div>
               <div style="padding:10px 0 0;text-align:center;color:#536176;font-size:12px;line-height:17px;">
-                This is an automated email from BAIM.<br>
-                Please do not reply to this message.
+                @EmailMessages.FooterAutomated<br>
+                @EmailMessages.FooterNoReply
               </div>
             </td>
           </tr>

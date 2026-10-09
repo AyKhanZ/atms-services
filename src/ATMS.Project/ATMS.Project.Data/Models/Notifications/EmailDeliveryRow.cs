@@ -9,4 +9,5 @@ public sealed record EmailDeliveryRow(
     string? RecipientEmail,
     string? RecipientName,
     string? RecipientSurname,
-    bool RecipientIsActive);
+    bool RecipientIsActive,
+    string? RecipientLanguage = null);

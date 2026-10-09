@@ -9,6 +9,7 @@ using ATMS.Messaging.Infrastructure;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Consumers.Users;
+using ATMS.Project.Services.Modules;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,6 +70,30 @@ public class UserUpdatedConsumerTest
 
         _userRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
         _cacheMock.Verify(x => x.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task HandleAsync_SavesTheLanguageFromTheEvent()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddMapperServices();
+        services.AddSingleton(_userRepositoryMock.Object);
+        services.AddSingleton(_inboxRepositoryMock.Object);
+        services.AddSingleton(_workProjectRepositoryMock.Object);
+        services.AddSingleton(_cacheMock.Object);
+        var provider = services.BuildServiceProvider();
+        var consumer = new TestUserUpdatedConsumer(
+            new RabbitMqConnectionFactory(Options.Create(CreateQueueConfiguration().GetSection(nameof(QueueOptions)).Get<QueueOptions>()!)),
+            provider.GetRequiredService<IServiceScopeFactory>());
+
+        await consumer.RunAsync(
+            new UserUpdatedEvent(_user.Id, "Nigar", "Huseynova", "avatar.png", true, Language: "az"),
+            Guid.NewGuid(),
+            provider);
+
+        Assert.Equal("az", _user.Language);
+        _userRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     private Task RunAsync(UserUpdatedEvent message)

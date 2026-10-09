@@ -14,6 +14,8 @@ public class User : UserAccountBase, ISoftDeletable
 
     public string? Position { get; set; }
 
+    public string? Language { get; set; }
+
     public string NormalizedEmail { get; set; }
 
     public int UserType { get; set; }

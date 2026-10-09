@@ -105,6 +105,7 @@ public sealed class EmailDeliveryRepository(AdminDbContext context) : IEmailDeli
         return context.EmailDeliveries
             .AsNoTracking()
             .Include(x => x.User)
+            .ThenInclude(x => x.Language)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

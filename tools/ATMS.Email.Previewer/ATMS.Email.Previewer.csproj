@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ATMS.Shared\ATMS.Application\ATMS.Application.csproj" />
     <ProjectReference Include="..\..\src\ATMS.Shared\ATMS.Email\ATMS.Email.csproj" />
     <PackageReference Include="FluentEmail.Razor" />
   </ItemGroup>

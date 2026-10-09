@@ -106,6 +106,7 @@ public class NotificationEmailBackgroundServiceTest
         Assert.Equal(1, count);
         _sender.Verify(sender => sender.SendAsync(
             "aykhan@baim.az",
+            "en",
             It.Is<TaskAssignedModel>(model =>
                 model.Name == "Aykhan" &&
                 model.ActorName == "Leyla Mammadova" &&
@@ -141,6 +142,7 @@ public class NotificationEmailBackgroundServiceTest
 
         _sender.Verify(sender => sender.SendAsync(
             It.IsAny<string>(),
+            "en",
             It.Is<TaskAssignedModel>(model =>
                 model.TaskLabel == "TASK #41 Payment form v2" &&
                 model.ProjectTitle == "Project Alpha" &&
@@ -159,6 +161,7 @@ public class NotificationEmailBackgroundServiceTest
 
         _sender.Verify(sender => sender.SendAsync(
             It.IsAny<string>(),
+            "en",
             It.Is<MentionedModel>(model => model.Link.EndsWith("#comment-11111111-1111-1111-1111-111111111111")),
             It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -206,9 +209,99 @@ public class NotificationEmailBackgroundServiceTest
 
         _sender.Verify(sender => sender.SendAsync(
             It.IsAny<string>(),
+            "en",
             It.Is<TaskOverdueModel>(model => model.Deadline == "5 Oct 2026"),
             It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    [Fact]
+    public async Task ProcessBatchAsync_WhenRecipientLanguageIsMissing_UsesDefaultLanguage()
+    {
+        Notification(NotificationTypeEnum.TaskAssigned);
+
+        await Worker().ProcessOnceAsync(CancellationToken.None);
+
+        _sender.Verify(sender => sender.SendAsync(
+            It.IsAny<string>(),
+            "en",
+            It.Is<TaskAssignedModel>(model => model.TaskLabel == "TASK #41 Payment form"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ProcessBatchAsync_UsesTheRecipientLanguageForKindSomeoneAndDeadline()
+    {
+        RecipientLanguage("ru");
+        _notifications.Setup(repository => repository.GetRowAsync(_delivery.NotificationId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new NotificationRow
+            {
+                Id = _delivery.NotificationId,
+                Type = (int)NotificationTypeEnum.TaskAssigned,
+                WorkProjectId = ProjectId,
+                EntityType = (int)NotificationEntityTypeEnum.WorkTask,
+                EntityId = TaskId,
+                WorkTicketId = TicketId,
+                Parameters = new NotificationParameters
+                {
+                    ProjectTitle = "Project Alpha",
+                    TaskCode = "71",
+                    TaskTitle = "Payment form",
+                    TaskKind = (int)WorkTaskKindEnum.Subtask
+                }
+            });
+
+        await Worker().ProcessOnceAsync(CancellationToken.None);
+
+        _sender.Verify(sender => sender.SendAsync(
+            It.IsAny<string>(),
+            "ru",
+            It.Is<TaskAssignedModel>(model =>
+                model.ActorName == "Кто-то" &&
+                model.TaskLabel == "ПОДЗАДАЧА #71 Payment form"),
+            It.IsAny<CancellationToken>()), Times.Once);
+
+        _notifications.Setup(repository => repository.GetRowAsync(_delivery.NotificationId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new NotificationRow
+            {
+                Id = _delivery.NotificationId,
+                Type = (int)NotificationTypeEnum.TaskOverdue,
+                WorkProjectId = ProjectId,
+                EntityType = (int)NotificationEntityTypeEnum.WorkTask,
+                EntityId = TaskId,
+                WorkTicketId = TicketId,
+                Parameters = new NotificationParameters
+                {
+                    ProjectTitle = "Project Alpha",
+                    TaskCode = "71",
+                    TaskTitle = "Payment form",
+                    TaskKind = (int)WorkTaskKindEnum.Subtask,
+                    Deadline = new DateOnly(2026, 10, 5)
+                }
+            });
+
+        await Worker().ProcessOnceAsync(CancellationToken.None);
+
+        _sender.Verify(sender => sender.SendAsync(
+            It.IsAny<string>(),
+            "ru",
+            It.Is<TaskOverdueModel>(model =>
+                model.TaskLabel == "ПОДЗАДАЧА #71 Payment form" &&
+                model.Deadline == "5 окт. 2026"),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    private void RecipientLanguage(string language) =>
+        _deliveries.Setup(repository => repository.GetAsync(_delivery.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new EmailDeliveryRow(
+                _delivery.Id,
+                (int)DeliveryStatusEnum.Pending,
+                _delivery.NotificationId,
+                RecipientUserId,
+                "aykhan@baim.az",
+                "Aykhan",
+                "Zeynalov",
+                true,
+                language));
 
     [Fact]
     public async Task ProcessBatchAsync_LeadsAnAddedToProjectToTheProject()
@@ -219,6 +312,7 @@ public class NotificationEmailBackgroundServiceTest
 
         _sender.Verify(sender => sender.SendAsync(
             It.IsAny<string>(),
+            "en",
             It.Is<AddedToProjectModel>(model => model.Link == $"http://localhost:4200/projects/{ProjectId}"),
             It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -244,7 +338,7 @@ public class NotificationEmailBackgroundServiceTest
     {
         Notification(NotificationTypeEnum.DueToday);
         _sender.Setup(sender => sender.SendAsync(
-                It.IsAny<string>(), It.IsAny<DueTodayModel>(), It.IsAny<CancellationToken>()))
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DueTodayModel>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("SMTP unavailable"));
 
         await Worker().ProcessOnceAsync(CancellationToken.None);
@@ -280,6 +374,7 @@ public class NotificationEmailBackgroundServiceTest
             new DeliveryRetrySchedule(),
             new CommentMentionService(),
             Options.Create(configuration.GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()!),
+            Options.Create(new LocalizationOptions { DefaultLanguage = "en" }),
             NullLogger<NotificationEmailBackgroundService>.Instance)
     {
         public Task<int> ProcessOnceAsync(CancellationToken cancellationToken) => ProcessBatchAsync(cancellationToken);

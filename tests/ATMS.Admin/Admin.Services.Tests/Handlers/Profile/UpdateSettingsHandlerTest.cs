@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Profile;
 using ATMS.Admin.Contracts.Models.Profile;
 using ATMS.Admin.Data.Entities;
+using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Handlers.Profile;
 using ATMS.Contracts.Events.Users;
 using ATMS.Infrastructure.Enums;
@@ -31,9 +32,14 @@ public class UpdateSettingsHandlerTest : BaseHandlerTest
                 BirthDate = user.BirthDate.HasValue ? DateOnly.FromDateTime(user.BirthDate.Value) : null
             });
 
+        DictionariesRepositoryMock
+            .Setup(x => x.GetLanguagesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new Language { Id = 2, Code = "EN", Name = "English", NativeName = "English" }]);
+
         return new UpdateSettingsHandler(
             CurrentUserMock.Object,
             UserRepositoryMock.Object,
+            DictionariesRepositoryMock.Object,
             OutboxRepositoryMock.Object,
             _imageStorage.Object,
             CacheServiceMock.Object,
@@ -77,7 +83,7 @@ public class UpdateSettingsHandlerTest : BaseHandlerTest
         OutboxRepositoryMock.Verify(x => x.AddAsync(
             MessagingConstants.Exchanges.UserEvents,
             MessagingConstants.RoutingKeys.UserUpdated,
-            It.Is<UserUpdatedEvent>(e => e.Id == user.Id && e.Position == "Developer"),
+            It.Is<UserUpdatedEvent>(e => e.Id == user.Id && e.Position == "Developer" && e.Language == "en"),
             It.IsAny<CancellationToken>()), Times.Once);
     }
 

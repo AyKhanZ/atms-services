@@ -1,15 +1,11 @@
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Infrastructure.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
 namespace ATMS.Admin.Service.Infrastructure;
-
-public interface IDefaultUserLanguage
-{
-    Task<int> GetLanguageIdAsync(CancellationToken cancellationToken = default);
-}
 
 public sealed class DefaultUserLanguage(
     IOptions<LocalizationOptions> localizationOptions,
