@@ -13,9 +13,6 @@ public interface IDictionariesRepository
 
     Task<List<Language>> GetLanguagesAsync(CancellationToken cancellationToken = default);
     
-    Task<bool> IsUserStatusExistAsync(Expression<Func<UserStatus, bool>> predicate,
-        CancellationToken cancellationToken = default);
-    
     Task<bool> IsMaritalStatusExistAsync(Expression<Func<MaritalStatus, bool>> predicate,
         CancellationToken cancellationToken = default);
 

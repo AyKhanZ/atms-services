@@ -47,7 +47,8 @@ public class NotificationEmailBackgroundServiceTest
                 RecipientUserId,
                 "aykhan@baim.az",
                 "Aykhan",
-                "Zeynalov"));
+                "Zeynalov",
+                true));
     }
 
     private void Notification(NotificationTypeEnum type, bool entityDeleted = false, bool commentDeleted = false) =>
@@ -160,6 +161,27 @@ public class NotificationEmailBackgroundServiceTest
             It.IsAny<string>(),
             It.Is<MentionedModel>(model => model.Link.EndsWith("#comment-11111111-1111-1111-1111-111111111111")),
             It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ProcessBatchAsync_WhenTheRecipientIsInactive_SkipsTheEmailAndMarksItProcessed()
+    {
+        Notification(NotificationTypeEnum.DueToday);
+        _deliveries.Setup(repository => repository.GetAsync(_delivery.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new EmailDeliveryRow(
+                _delivery.Id,
+                (int)DeliveryStatusEnum.Pending,
+                _delivery.NotificationId,
+                RecipientUserId,
+                "aykhan@baim.az",
+                "Aykhan",
+                "Zeynalov",
+                false));
+
+        await Worker().ProcessOnceAsync(CancellationToken.None);
+
+        _sender.VerifyNoOtherCalls();
+        _deliveries.Verify(repository => repository.MarkProcessedAsync(_delivery.Id, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

@@ -194,6 +194,21 @@ public class InviteWorkProjectParticipantValidatorTest : BaseValidatorTest
     }
 
     [Fact]
+    public async Task Validate_WhenTheUserIsInactive_Fails()
+    {
+        _userRepositoryMock
+            .Setup(x => x.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new User { NormalizedEmail = "NIGAR@CLIENT.AZ", IsActive = false });
+
+        var result = await _validator.ValidateAsync(CreateCommand());
+
+        Assert.Contains(result.Errors, x => x.PropertyName == nameof(InviteWorkProjectParticipantCommand.Email));
+        _userRepositoryMock.Verify(
+            x => x.IsEmailTakenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
     public async Task Validate_WhenEmailBelongsToAnotherUser_Fails()
     {
         _userRepositoryMock

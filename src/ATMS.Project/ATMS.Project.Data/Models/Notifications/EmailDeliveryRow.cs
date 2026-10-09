@@ -8,4 +8,5 @@ public sealed record EmailDeliveryRow(
     Guid RecipientUserId,
     string? RecipientEmail,
     string? RecipientName,
-    string? RecipientSurname);
+    string? RecipientSurname,
+    bool RecipientIsActive);

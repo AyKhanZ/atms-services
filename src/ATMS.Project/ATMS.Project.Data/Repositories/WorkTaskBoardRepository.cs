@@ -56,8 +56,9 @@ public sealed class WorkTaskBoardRepository(ProjectDbContext context, IWorkTaskR
         ICriteria<WorkProjectParticipant> criteria,
         CancellationToken cancellationToken)
     {
-        // only employees can be assignees
-        var employees = new ParticipantsAmongUsersCriteria(new EmployeeUsersCriteria().Apply(context.Users));
+        // only active employees can be chosen; people already on a task stay there
+        var activeEmployees = new EmployeeUsersCriteria().And(new ActiveUsersCriteria()).Apply(context.Users);
+        var employees = new ParticipantsAmongUsersCriteria(activeEmployees);
         var participants = employees.Apply(criteria.Apply(context.WorkProjectParticipants.AsNoTracking()));
 
         var people = await participants

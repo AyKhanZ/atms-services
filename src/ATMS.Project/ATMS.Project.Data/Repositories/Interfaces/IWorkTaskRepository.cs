@@ -39,6 +39,8 @@ public interface IWorkTaskRepository
 
     Task<bool> IsProjectParticipantExistAsync(Guid projectId, Guid participantId, CancellationToken cancellationToken);
 
+    Task<bool> CanBeAssignedAsync(Guid participantId, Guid? currentWorkTaskId, CancellationToken cancellationToken);
+
     Task<bool> IsStaffProjectParticipantExistAsync(Guid projectId, Guid participantId, CancellationToken cancellationToken);
 
     Task<IReadOnlyDictionary<Guid, WorkTaskProgress>> GetProgressByParentAsync(

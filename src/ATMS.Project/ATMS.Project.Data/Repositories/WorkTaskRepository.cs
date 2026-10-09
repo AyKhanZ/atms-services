@@ -147,6 +147,15 @@ public sealed class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepo
             cancellationToken);
     }
 
+    public Task<bool> CanBeAssignedAsync(Guid participantId, Guid? currentWorkTaskId, CancellationToken cancellationToken)
+    {
+        return context.WorkProjectParticipants.AnyAsync(
+            participant => participant.Id == participantId &&
+                           (participant.User.IsActive ||
+                            context.WorkTasks.Any(item => item.Id == currentWorkTaskId && item.AssigneeId == participantId)),
+            cancellationToken);
+    }
+
     public Task<bool> IsProjectParticipantExistAsync(Guid projectId, Guid participantId, CancellationToken cancellationToken)
     {
         return context.WorkProjectParticipants.AnyAsync(

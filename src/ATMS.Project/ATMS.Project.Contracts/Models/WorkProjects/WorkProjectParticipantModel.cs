@@ -12,6 +12,8 @@ public sealed class WorkProjectParticipantModel : AuditUserModel
 
     public bool HasCompletedOnboarding { get; set; }
 
+    public bool IsActive { get; set; } = true;
+
     public string Category { get; set; }
 
     public WorkProjectRoleModel Role { get; set; }

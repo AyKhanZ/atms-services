@@ -71,6 +71,12 @@ public sealed class AddWorkProjectParticipantValidator : AbstractValidator<AddWo
             return;
         }
 
+        if (!user.IsActive)
+        {
+            context.AddFailure(nameof(command.UserId), WorkProjectMessages.ParticipantInactive);
+            return;
+        }
+
         var role = (await roleRepository.GetManyAsync([command.RoleId], cancellationToken)).SingleOrDefault();
         if (role is null)
         {

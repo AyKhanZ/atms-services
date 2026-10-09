@@ -43,12 +43,6 @@ public sealed class ChangePasswordHandler(
             throw new AuthException(AuthErrorTypeEnum.AccountInactive, AuthMessages.AccountInactive);
         }
 
-        // locked by admin (no end date), nothing works until they unlock
-        if (user.UserStatusId == (int)UserStatusEnum.Locked && !user.LockoutEnd.HasValue)
-        {
-            throw new AuthException(AuthErrorTypeEnum.AccountLocked, AuthMessages.AccountLockedByAdministrator);
-        }
-
         if (!passwordHasherService.Verify(command.OldPassword, user.PasswordHash))
         {
             // counted in one sql statement, so parallel attempts can't skip the limit
@@ -71,7 +65,7 @@ public sealed class ChangePasswordHandler(
         }
 
         user.FailedLoginCount = 0;
-        // only the timed lock from wrong passwords is lifted, an admin lock stays
+        // a correct password ends the timed lock from wrong passwords
         if (user.UserStatusId == (int)UserStatusEnum.Locked && user.LockoutEnd.HasValue)
         {
             user.UserStatusId = (int)UserStatusEnum.Active;

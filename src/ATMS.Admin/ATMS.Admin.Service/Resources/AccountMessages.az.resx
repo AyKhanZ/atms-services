@@ -85,4 +85,6 @@
     <data name="PasswordChangedConcurrently" xml:space="preserve"><value>Şifrə indicə başqa pəncərədə dəyişdirildi. Yeni şifrə ilə daxil olun.</value></data>
     <data name="OldPasswordIncorrect" xml:space="preserve"><value>Cari parol yanlışdır.</value></data>
     <data name="NewPasswordMustDiffer" xml:space="preserve"><value>Cari paroldan fərqli parol seçin.</value></data>
+    <data name="CannotChangeOwnStatus" xml:space="preserve"><value>Öz statusunuzu dəyişmək olmaz.</value></data>
+    <data name="CannotChangeSuperAdminStatus" xml:space="preserve"><value>Super inzibatçının statusunu dəyişmək olmaz.</value></data>
 </root>

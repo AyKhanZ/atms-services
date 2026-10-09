@@ -30,6 +30,7 @@ internal static class WorkTaskMessages
     internal static string PriorityRequired => Get(nameof(PriorityRequired));
     internal static string PriorityUnsupported => Get(nameof(PriorityUnsupported));
     internal static string AssigneeNotFound => Get(nameof(AssigneeNotFound));
+    internal static string AssigneeInactive => Get(nameof(AssigneeInactive));
     internal static string AssigneeMustBeStaff => Get(nameof(AssigneeMustBeStaff));
     internal static string DeadlineOutOfRange => Get(nameof(DeadlineOutOfRange));
     internal static string HierarchyFilterConflict => Get(nameof(HierarchyFilterConflict));

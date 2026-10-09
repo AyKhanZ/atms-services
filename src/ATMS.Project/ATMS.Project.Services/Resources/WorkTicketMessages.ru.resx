@@ -24,4 +24,5 @@
   <data name="PriorityUnsupported" xml:space="preserve"><value>Выбранный приоритет больше недоступен. Выберите другой приоритет.</value></data>
   <data name="AssigneeNotFound" xml:space="preserve"><value>Выбранный исполнитель не является участником этого проекта. Выберите участника проекта.</value></data>
   <data name="DeadlineOutOfRange" xml:space="preserve"><value>Укажите срок в диапазоне от 01.01.1900 до 31.12.2100.</value></data>
+  <data name="AssigneeInactive" xml:space="preserve"><value>Этот пользователь неактивен, назначить его нельзя. Выберите активного участника.</value></data>
 </root>

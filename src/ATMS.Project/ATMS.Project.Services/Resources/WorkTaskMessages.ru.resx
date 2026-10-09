@@ -28,4 +28,5 @@
   </data>
   <data name="BoardPositionChanged" xml:space="preserve"><value>Порядок задач изменился. Обновите доску и повторите попытку.</value></data>
   <data name="BoardPositionUnavailable" xml:space="preserve"><value>Не удалось переместить задачу сюда. Выберите другое место на доске.</value></data>
+  <data name="AssigneeInactive" xml:space="preserve"><value>Этот пользователь неактивен, назначить его нельзя. Выберите активного участника.</value></data>
 </root>

@@ -90,4 +90,6 @@
     <data name="PasswordChangedConcurrently" xml:space="preserve"><value>Пароль только что сменили в другом окне. Войдите с новым паролем.</value></data>
     <data name="OldPasswordIncorrect" xml:space="preserve"><value>Текущий пароль неверен.</value></data>
     <data name="NewPasswordMustDiffer" xml:space="preserve"><value>Выберите пароль, который отличается от текущего.</value></data>
+    <data name="CannotChangeOwnStatus" xml:space="preserve"><value>Нельзя изменить свой статус.</value></data>
+    <data name="CannotChangeSuperAdminStatus" xml:space="preserve"><value>Нельзя изменить статус суперадминистратора.</value></data>
 </root>

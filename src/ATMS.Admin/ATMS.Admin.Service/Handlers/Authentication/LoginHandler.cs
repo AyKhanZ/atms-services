@@ -85,10 +85,6 @@ public sealed class LoginHandler(
             case (int)UserStatusEnum.Inactive:
                 throw new AuthException(AuthErrorTypeEnum.AccountInactive,
                     AuthMessages.AccountInactive);
-            // no end date = locked by admin, a correct password doesn't help
-            case (int)UserStatusEnum.Locked when !user.LockoutEnd.HasValue:
-                throw new AuthException(AuthErrorTypeEnum.AccountLocked,
-                    AuthMessages.AccountLockedByAdministrator);
             case (int)UserStatusEnum.Locked when
                 user.LockoutEnd.HasValue &&
                 user.LockoutEnd > DateTime.UtcNow:

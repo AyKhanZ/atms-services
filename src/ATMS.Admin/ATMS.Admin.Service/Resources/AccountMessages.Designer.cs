@@ -198,5 +198,9 @@ namespace ATMS.Admin.Service.Resources {
         public static string OldPasswordIncorrect => ResourceManager.GetString("OldPasswordIncorrect", resourceCulture);
 
         public static string NewPasswordMustDiffer => ResourceManager.GetString("NewPasswordMustDiffer", resourceCulture);
+
+        public static string CannotChangeOwnStatus => ResourceManager.GetString("CannotChangeOwnStatus", resourceCulture);
+
+        public static string CannotChangeSuperAdminStatus => ResourceManager.GetString("CannotChangeSuperAdminStatus", resourceCulture);
     }
 }

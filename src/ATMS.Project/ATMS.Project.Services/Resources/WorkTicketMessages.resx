@@ -24,4 +24,5 @@
   <data name="PriorityUnsupported" xml:space="preserve"><value>The selected priority is no longer available. Choose another priority.</value></data>
   <data name="AssigneeNotFound" xml:space="preserve"><value>The selected assignee is not a participant of this project. Choose a project participant.</value></data>
   <data name="DeadlineOutOfRange" xml:space="preserve"><value>Enter a deadline between 01.01.1900 and 31.12.2100.</value></data>
+  <data name="AssigneeInactive" xml:space="preserve"><value>This person is inactive and can't be assigned. Choose an active participant.</value></data>
 </root>

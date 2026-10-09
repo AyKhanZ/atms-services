@@ -53,7 +53,6 @@ public sealed class RolePermissionConfiguration : IEntityTypeConfiguration<RoleP
             // Client
             new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.Client },
             
-            new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.Client },
             
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.Client },
             
@@ -63,7 +62,6 @@ public sealed class RolePermissionConfiguration : IEntityTypeConfiguration<RoleP
             // Client Manager
             new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.ClientManager },
             
-            new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.ClientManager },
             
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.ClientManager },
             
@@ -74,7 +72,6 @@ public sealed class RolePermissionConfiguration : IEntityTypeConfiguration<RoleP
             // Employee
             new { PermissionId = (int)PermissionEnum.RoleView, RoleId = RoleIds.Employee },
             
-            new { PermissionId = (int)PermissionEnum.UserView, RoleId = RoleIds.Employee },
             
             new { PermissionId = (int)PermissionEnum.ProjectView, RoleId = RoleIds.Employee },
             new { PermissionId = (int)PermissionEnum.ProjectEdit, RoleId = RoleIds.Employee },

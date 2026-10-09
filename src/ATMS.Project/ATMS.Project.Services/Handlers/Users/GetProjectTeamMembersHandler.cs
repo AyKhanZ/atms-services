@@ -16,7 +16,8 @@ public sealed class GetProjectTeamMembersHandler(
     public async Task<UserModel[]> Handle(GetProjectTeamMembersRequest request, CancellationToken cancellationToken)
     {
         var criteria = new NotAdminCriteria<User>()
-            .And(new NotClientUsersCriteria());
+            .And(new NotClientUsersCriteria())
+            .And(new ActiveUsersCriteria());
 
         var users = await userRepository.GetManyAsync(criteria, cancellationToken);
 

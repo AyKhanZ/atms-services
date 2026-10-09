@@ -202,6 +202,7 @@ public sealed class EntityToModelProfile : Profile
             .ForMember(
                 x => x.HasCompletedOnboarding,
                 expression => expression.MapFrom(x => x.User.HasCompletedOnboarding))
+            .ForMember(x => x.IsActive, expression => expression.MapFrom(x => x.User.IsActive))
             .ForMember(
                 x => x.Category,
                 expression => expression.MapFrom(x =>

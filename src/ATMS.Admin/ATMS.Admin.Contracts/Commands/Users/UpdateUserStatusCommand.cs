@@ -1,11 +1,10 @@
 using System.Text.Json.Serialization;
 using MediatR;
 using ATMS.Application.Security;
-using ATMS.Data.Enums;
 
 namespace ATMS.Admin.Contracts.Commands.Users;
 
-[Access(PermissionEnum.UserDelete)]
+[SuperAdminAccess]
 public sealed class UpdateUserStatusCommand : IRequest
 {
     [JsonIgnore]

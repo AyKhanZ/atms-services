@@ -33,5 +33,7 @@
   <data name="InvitationAlreadyParticipant" xml:space="preserve"><value>This person is already a participant of this project.</value></data>
   <data name="InvitationAlreadySent" xml:space="preserve"><value>This email has already been invited to this project.</value></data>
   <data name="InvitationEmailInUse" xml:space="preserve"><value>This email can't be invited to this project.</value></data>
+  <data name="InvitationUserInactive" xml:space="preserve"><value>This person is inactive and can't be invited to a project.</value></data>
+  <data name="ParticipantInactive" xml:space="preserve"><value>An inactive person can't be added to a project.</value></data>
   <data name="InvitationNotPending" xml:space="preserve"><value>This invitation is no longer waiting. Refresh the list to see who has joined.</value></data>
 </root>

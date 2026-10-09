@@ -31,4 +31,5 @@
   </data>
   <data name="BoardPositionChanged" xml:space="preserve"><value>The task order has changed. Refresh the board and try again.</value></data>
   <data name="BoardPositionUnavailable" xml:space="preserve"><value>The task cannot be placed here. Choose another position on the board.</value></data>
+  <data name="AssigneeInactive" xml:space="preserve"><value>This person is inactive and can't be assigned. Choose an active participant.</value></data>
 </root>

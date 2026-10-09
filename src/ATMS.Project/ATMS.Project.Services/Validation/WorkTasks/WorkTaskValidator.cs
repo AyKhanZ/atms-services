@@ -34,7 +34,8 @@ public sealed class WorkTaskValidator : AbstractValidator<WorkTaskCommand>
         RuleFor(command => command.AssigneeId).Cascade(CascadeMode.Stop)
             .Must(id => !id.HasValue || id.Value != Guid.Empty).WithMessage(WorkTaskMessages.AssigneeNotFound)
             .MustAsync(IsParticipantAsync).When(command => command.ProjectId != Guid.Empty).WithMessage(WorkTaskMessages.AssigneeNotFound)
-            .MustAsync(IsStaffAsync).When(command => command.ProjectId != Guid.Empty).WithMessage(WorkTaskMessages.AssigneeMustBeStaff);
+            .MustAsync(IsStaffAsync).When(command => command.ProjectId != Guid.Empty).WithMessage(WorkTaskMessages.AssigneeMustBeStaff)
+            .MustAsync(CanBeAssignedAsync).When(command => command.ProjectId != Guid.Empty).WithMessage(WorkTaskMessages.AssigneeInactive);
     }
 
     private async Task<bool> IsParticipantAsync(WorkTaskCommand command, Guid? assigneeId, CancellationToken cancellationToken)
@@ -45,5 +46,11 @@ public sealed class WorkTaskValidator : AbstractValidator<WorkTaskCommand>
     private async Task<bool> IsStaffAsync(WorkTaskCommand command, Guid? assigneeId, CancellationToken cancellationToken)
     {
         return !assigneeId.HasValue || await _workTaskRepository.IsStaffProjectParticipantExistAsync(command.ProjectId, assigneeId.Value, cancellationToken);
+    }
+
+    private async Task<bool> CanBeAssignedAsync(WorkTaskCommand command, Guid? assigneeId, CancellationToken cancellationToken)
+    {
+        var current = command is UpdateWorkTaskCommand update ? update.WorkTaskId : (Guid?)null;
+        return !assigneeId.HasValue || await _workTaskRepository.CanBeAssignedAsync(assigneeId.Value, current, cancellationToken);
     }
 }

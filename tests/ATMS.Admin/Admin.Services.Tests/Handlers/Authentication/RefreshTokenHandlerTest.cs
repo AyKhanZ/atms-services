@@ -120,6 +120,23 @@ public class RefreshTokenHandlerTest : BaseHandlerTest
         VerifyFamilyRevoked(session.FamilyId);
     }
 
+    [Fact]
+    public async Task Handle_WhenUserIsTemporarilyLocked_KeepsTheSession()
+    {
+        var session = CreateSession();
+        session.User.UserStatusId = (int)UserStatusEnum.Locked;
+        session.User.LockoutEnd = DateTime.UtcNow.AddMinutes(10);
+        SetupSuccessfulRotation(session);
+
+        var result = await _handler.Handle(CreateCommand(), CancellationToken.None);
+
+        Assert.Equal(NewRefreshToken, result.RefreshToken);
+        UserSessionRepositoryMock.Verify(repository => repository.RevokeFamilyAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<DateTime>(),
+            It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     // A sign-in with the old password that raced a password change got a session under the old
     // version; it must not refresh into a new one.
     [Fact]

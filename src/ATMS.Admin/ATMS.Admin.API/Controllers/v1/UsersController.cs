@@ -69,15 +69,17 @@ public sealed class UsersController(IMediator mediator) : ControllerBase
     /// <param name="command">Command containing user status.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="204">User status successfully changed.</response>
-    /// <response code="400">Validation error, e.g., password format invalid or missing fields.</response>
+    /// <response code="400">Validation error, e.g. unsupported status or missing fields.</response>
     /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden, for example changing your own status or a super administrator's status.</response>
     /// <response code="404">User with specified ID not found.</response>
     /// <response code="500">Unhandled server error.</response>
     [HttpPatch("status/{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateUserStatus(Guid id ,[FromBody] UpdateUserStatusCommand command, CancellationToken cancellationToken)
     {

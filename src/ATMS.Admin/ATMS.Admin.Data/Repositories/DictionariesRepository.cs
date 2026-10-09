@@ -40,13 +40,6 @@ public sealed class DictionariesRepository(AdminDbContext context) : IDictionari
             .ToListAsync(cancellationToken);
     }
 
-    public Task<bool> IsUserStatusExistAsync(
-        Expression<Func<UserStatus, bool>> predicate,
-        CancellationToken cancellationToken = default)
-    {
-        return context.UserStatuses.AnyAsync(predicate, cancellationToken);
-    }
-
     public Task<bool> IsMaritalStatusExistAsync(
         Expression<Func<MaritalStatus, bool>> predicate,
         CancellationToken cancellationToken = default)

@@ -28,4 +28,5 @@
   </data>
   <data name="BoardPositionChanged" xml:space="preserve"><value>Tapşırıqların sırası dəyişib. Lövhəni yeniləyib yenidən cəhd edin.</value></data>
   <data name="BoardPositionUnavailable" xml:space="preserve"><value>Tapşırığı buraya yerləşdirmək mümkün olmadı. Lövhədə başqa yer seçin.</value></data>
+  <data name="AssigneeInactive" xml:space="preserve"><value>Bu istifadəçi qeyri-aktivdir, onu təyin etmək olmaz. Aktiv iştirakçı seçin.</value></data>
 </root>

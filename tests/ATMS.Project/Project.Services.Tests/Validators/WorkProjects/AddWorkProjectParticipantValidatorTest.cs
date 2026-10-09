@@ -81,6 +81,29 @@ public class AddWorkProjectParticipantValidatorTest : BaseValidatorTest
         Assert.Contains(result.Errors, x => x.PropertyName == nameof(AddWorkProjectParticipantCommand.UserId));
     }
 
+    [Fact]
+    public async Task Validate_WhenTheUserIsInactive_FailsOnUser()
+    {
+        var command = CreateCommand();
+        _userRepositoryMock
+            .Setup(x => x.GetManyAsync(
+                It.IsAny<IEnumerable<Guid>>(),
+                It.IsAny<ACriteria<User>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([
+                new User
+                {
+                    Id = command.UserId,
+                    UserType = (int)UserTypeEnum.Employee,
+                    IsActive = false
+                }
+            ]);
+
+        var result = await _validator.ValidateAsync(command);
+
+        Assert.Contains(result.Errors, x => x.PropertyName == nameof(command.UserId));
+    }
+
     private void AddParticipants(int count)
     {
         for (var i = 0; i < count; i++)

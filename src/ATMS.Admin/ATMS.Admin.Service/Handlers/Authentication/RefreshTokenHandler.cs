@@ -42,7 +42,8 @@ public sealed class RefreshTokenHandler(
             throw new AuthException(AuthErrorTypeEnum.InvalidToken, AuthMessages.InvalidToken);
         }
 
-        if (session.User.UserStatusId != (int)UserStatusEnum.Active)
+        // a timed lock only blocks a new sign-in, the session that is already open stays
+        if (session.User.UserStatusId == (int)UserStatusEnum.Inactive)
         {
             await userSessionRepository.RevokeFamilyAsync(session.FamilyId, now, cancellationToken);
             throw new AuthException(AuthErrorTypeEnum.AccountInactive, AuthMessages.AccountInactive);

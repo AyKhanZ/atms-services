@@ -69,15 +69,6 @@ namespace ATMS.Admin.Service.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your account is locked. Contact your administrator..
-        /// </summary>
-        public static string AccountLockedByAdministrator {
-            get {
-                return ResourceManager.GetString("AccountLockedByAdministrator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Account is locked. Try again in {0} minutes ..
         /// </summary>
         public static string AccountLocked {
