@@ -24,4 +24,5 @@
   <data name="PriorityUnsupported" xml:space="preserve"><value>Seçilmiş prioritet artıq əlçatan deyil. Başqa prioritet seçin.</value></data>
   <data name="AssigneeNotFound" xml:space="preserve"><value>Seçilmiş icraçı bu layihənin iştirakçısı deyil. Layihə iştirakçısı seçin.</value></data>
   <data name="DeadlineOutOfRange" xml:space="preserve"><value>Son tarixi 01.01.1900 ilə 31.12.2100 aralığında daxil edin.</value></data>
+  <data name="AssigneeInactive" xml:space="preserve"><value>Bu istifadəçi qeyri-aktivdir, onu təyin etmək olmaz. Aktiv iştirakçı seçin.</value></data>
 </root>

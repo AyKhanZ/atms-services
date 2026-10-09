@@ -3,6 +3,7 @@ using System;
 using ATMS.Admin.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATMS.Admin.Data.Migrations
 {
     [DbContext(typeof(AdminDbContext))]
-    partial class AdminDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261008210749_PublishInactiveUserStatuses")]
+    partial class PublishInactiveUserStatuses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1228,6 +1231,11 @@ namespace ATMS.Admin.Data.Migrations
                         },
                         new
                         {
+                            PermissionId = 4,
+                            RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
+                        },
+                        new
+                        {
                             PermissionId = 7,
                             RoleId = new Guid("dc91d07f-2a00-486b-8a90-aa7b4c688de8")
                         },
@@ -1239,6 +1247,11 @@ namespace ATMS.Admin.Data.Migrations
                         new
                         {
                             PermissionId = 1,
+                            RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
                             RoleId = new Guid("4c0a7e27-0576-4738-9f73-1d9cc14374a5")
                         },
                         new
@@ -1259,6 +1272,11 @@ namespace ATMS.Admin.Data.Migrations
                         new
                         {
                             PermissionId = 1,
+                            RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
+                        },
+                        new
+                        {
+                            PermissionId = 4,
                             RoleId = new Guid("58a8f620-1550-41a2-8693-336fd9bbeb53")
                         },
                         new

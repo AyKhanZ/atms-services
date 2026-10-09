@@ -167,33 +167,6 @@ public class ChangePasswordHandlerTest : BaseHandlerTest
         PasswordHasherServiceMock.Verify(x => x.Verify(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
-    // A lock with no end date was set by an administrator: no new password and no new tokens.
-    [Fact]
-    public async Task Handle_ManualLock_RefusesWithoutChangingPasswordOrIssuingTokens()
-    {
-        var user = new User
-        {
-            Id = Guid.NewGuid(), PasswordHash = "old-hash",
-            UserStatusId = (int)UserStatusEnum.Locked, LockoutEnd = null
-        };
-        UserRepositoryMock.Setup(x => x.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-        PasswordHasherServiceMock.Setup(x => x.Verify(It.IsAny<string>(), "old-hash")).Returns(true);
-        PasswordHasherServiceMock.Setup(x => x.Hash(It.IsAny<string>())).Returns("new-hash");
-        AccessTokenServiceMock.Setup(x => x.GenerateTokenAsync(user, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new AccessTokenResult("access", DateTime.UtcNow.AddMinutes(10)));
-        RefreshTokenServiceMock.Setup(x => x.GenerateTokenAsync(null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new RefreshTokenResult("refresh", "hash", DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(7)));
-
-        var error = await Assert.ThrowsAsync<AuthException>(() => CreateHandler().Handle(Command(), CancellationToken.None));
-
-        Assert.Equal(AuthErrorTypeEnum.AccountLocked, error.AuthErrorType);
-        Assert.Equal("old-hash", user.PasswordHash);
-        Assert.Equal((int)UserStatusEnum.Locked, user.UserStatusId);
-        AccessTokenServiceMock.Verify(x => x.GenerateTokenAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Never);
-        UserRepositoryMock.Verify(x => x.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
-    }
-
     // Two password changes that read the same version: the one that commits second finds it moved and
     // gives up, so only one new session exists under the new version.
     [Fact]

@@ -18,6 +18,9 @@ public static class EventMessagesModule
         services.AddSingleton<UserUpdatedConsumer>();
         services.AddHostedService<ConsumerHostedService<UserUpdatedConsumer>>();
 
+        services.AddSingleton<UserStatusChangedConsumer>();
+        services.AddHostedService<ConsumerHostedService<UserStatusChangedConsumer>>();
+
         services.AddSingleton<DeliveryRetrySchedule>();
         services.AddHostedService<OutboxBackgroundService>();
         services.AddHostedService<MessageRetentionBackgroundService>();

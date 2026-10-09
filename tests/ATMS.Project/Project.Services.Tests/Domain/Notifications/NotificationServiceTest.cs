@@ -1,3 +1,4 @@
+using ATMS.Data.Criteria;
 using Microsoft.Extensions.Options;
 using ATMS.Infrastructure.Options;
 using ATMS.Data.Enums;
@@ -21,6 +22,7 @@ public class NotificationServiceTest
     private readonly Mock<INotificationRepository> _notifications = new();
     private readonly Mock<IEmailDeliveryRepository> _emails = new();
     private readonly Mock<IProjectPermissionRepository> _permissions = new();
+    private readonly Mock<IUserRepository> _users = new();
     private readonly List<Notification> _added = [];
     private readonly List<EmailDelivery> _queued = [];
 
@@ -35,6 +37,11 @@ public class NotificationServiceTest
             .Callback<IEnumerable<EmailDelivery>, CancellationToken>((deliveries, _) => _queued.AddRange(deliveries))
             .Returns(Task.CompletedTask);
         UnreadSince();
+        _users
+            .Setup(repository => repository.GetManyAsync(
+                It.IsAny<IEnumerable<Guid>>(), It.IsAny<ACriteria<User>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IEnumerable<Guid> ids, ACriteria<User> _, CancellationToken _) =>
+                ids.Select(id => new User { Id = id, IsActive = true }).ToList());
         _notifications
             .Setup(repository => repository.GetDedupKeysAsync(
                 It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<IReadOnlyCollection<string>>(), It.IsAny<CancellationToken>()))
@@ -42,7 +49,7 @@ public class NotificationServiceTest
     }
 
     private NotificationService Service(bool sendEmails = false) =>
-        new(_notifications.Object, _emails.Object, _permissions.Object, Options.Create(Configuration(sendEmails).GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()!));
+        new(_notifications.Object, _emails.Object, _permissions.Object, _users.Object, Options.Create(Configuration(sendEmails).GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()!));
 
     private static IConfiguration Configuration(bool sendEmails) =>
         new ConfigurationBuilder()
@@ -412,5 +419,22 @@ public class NotificationServiceTest
 
         Assert.Single(_added);
         _emails.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task AddAsync_WhenTheRecipientIsInactive_KeepsTheNotificationAndSkipsTheEmail()
+    {
+        var assignee = Guid.NewGuid();
+        ProjectViewers(assignee);
+        // the active-only query finds nobody
+        _users
+            .Setup(repository => repository.GetManyAsync(
+                It.IsAny<IEnumerable<Guid>>(), It.IsAny<ACriteria<User>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+
+        await Service(sendEmails: true).AddAsync(Draft(NotificationTypeEnum.DueToday), [assignee], CancellationToken.None);
+
+        Assert.Equal(assignee, Assert.Single(_added).UserId);
+        Assert.Empty(_queued);
     }
 }

@@ -23,6 +23,7 @@ public sealed class MessagingInitializer(RabbitMqConnectionFactory connectionFac
 
             await UserCreatedQueueInitializer.InitializeAsync(channel, cancellationToken);
             await UserUpdatedQueueInitializer.InitializeAsync(channel, cancellationToken);
+            await UserStatusChangedQueueInitializer.InitializeAsync(channel, cancellationToken);
             await UserInvitedQueueInitializer.InitializeAsync(channel, cancellationToken);
         }
     }

@@ -28,6 +28,26 @@ public class UpdateWorkTaskValidatorTest
             .ReturnsAsync(true);
     }
 
+    [Fact]
+    public async Task Validate_LetsAnInactiveAssigneeKeepTheirTask()
+    {
+        var command = Command();
+        command.AssigneeId = Guid.NewGuid();
+        _tasks
+            .Setup(x => x.IsProjectParticipantExistAsync(ProjectId, command.AssigneeId.Value, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        _tasks
+            .Setup(x => x.IsStaffProjectParticipantExistAsync(ProjectId, command.AssigneeId.Value, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        _tasks
+            .Setup(x => x.CanBeAssignedAsync(command.AssigneeId.Value, TaskId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var result = await Validator().ValidateAsync(command);
+
+        Assert.DoesNotContain(result.Errors, error => error.PropertyName == nameof(command.AssigneeId));
+    }
+
     private UpdateWorkTaskValidator Validator() =>
         new(_tasks.Object, _dictionaries.Object);
 

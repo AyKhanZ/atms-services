@@ -115,7 +115,7 @@ public sealed class UserRepository(AdminDbContext context) : IUserRepository
         CancellationToken cancellationToken)
     {
         // one UPDATE instead of read + write: postgres locks the row, so parallel wrong passwords are counted one by one
-        // only active accounts or ones with an expired timed lock are touched, an admin lock keeps its count
+        // only active accounts or ones with an expired timed lock are touched
         const int active = (int)UserStatusEnum.Active;
         const int locked = (int)UserStatusEnum.Locked;
 

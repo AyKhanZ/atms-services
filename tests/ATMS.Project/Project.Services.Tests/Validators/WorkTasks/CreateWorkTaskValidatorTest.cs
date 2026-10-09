@@ -12,6 +12,7 @@ public class CreateWorkTaskValidatorTest : BaseValidatorTest
         WorkTasksRepositoryMock.Setup(x => x.IsWorkTicketExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         WorkTasksRepositoryMock.Setup(x => x.IsProjectParticipantExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         WorkTasksRepositoryMock.Setup(x => x.IsStaffProjectParticipantExistAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        WorkTasksRepositoryMock.Setup(x => x.CanBeAssignedAsync(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
         DictionariesRepositoryMock.Setup(x => x.IsWorkItemPriorityExistAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
     }
 
@@ -110,6 +111,20 @@ public class CreateWorkTaskValidatorTest : BaseValidatorTest
                 command.ProjectId,
                 command.AssigneeId.Value,
                 It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        var result = await Validator().ValidateAsync(command);
+
+        Assert.Contains(result.Errors, error => error.PropertyName == nameof(command.AssigneeId));
+    }
+
+    [Fact]
+    public async Task Validate_WhenAssigneeIsInactive_FailsAssigneeValidation()
+    {
+        var command = ValidCommand();
+        command.AssigneeId = Guid.NewGuid();
+        WorkTasksRepositoryMock
+            .Setup(x => x.CanBeAssignedAsync(command.AssigneeId.Value, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
         var result = await Validator().ValidateAsync(command);

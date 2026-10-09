@@ -51,7 +51,10 @@ public sealed class WorkTicketValidator : AbstractValidator<WorkTicketCommand>
             .WithMessage(WorkTicketMessages.AssigneeNotFound)
             .MustAsync(IsAssigneeValidAsync)
             .When(command => command.ProjectId != Guid.Empty)
-            .WithMessage(WorkTicketMessages.AssigneeNotFound);
+            .WithMessage(WorkTicketMessages.AssigneeNotFound)
+            .MustAsync(CanBeAssignedAsync)
+            .When(command => command.ProjectId != Guid.Empty)
+            .WithMessage(WorkTicketMessages.AssigneeInactive);
     }
 
     private Task<bool> IsMilestoneValidAsync(WorkTicketCommand command, Guid milestoneId, CancellationToken cancellationToken)
@@ -62,5 +65,11 @@ public sealed class WorkTicketValidator : AbstractValidator<WorkTicketCommand>
     private async Task<bool> IsAssigneeValidAsync(WorkTicketCommand command, Guid? assigneeId, CancellationToken cancellationToken)
     {
         return !assigneeId.HasValue || await _workTicketRepository.IsProjectParticipantExistAsync(command.ProjectId, assigneeId.Value, cancellationToken);
+    }
+
+    private async Task<bool> CanBeAssignedAsync(WorkTicketCommand command, Guid? assigneeId, CancellationToken cancellationToken)
+    {
+        var current = command is UpdateWorkTicketCommand update ? update.WorkTicketId : (Guid?)null;
+        return !assigneeId.HasValue || await _workTicketRepository.CanBeAssignedAsync(assigneeId.Value, current, cancellationToken);
     }
 }

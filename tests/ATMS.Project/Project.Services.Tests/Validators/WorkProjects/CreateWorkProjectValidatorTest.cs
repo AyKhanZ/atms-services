@@ -68,6 +68,83 @@ public class CreateWorkProjectValidatorTest : BaseValidatorTest
     }
 
     [Fact]
+    public async Task Validate_WhenANewParticipantIsInactive_Fails()
+    {
+        var command = CreateCommand();
+        var userId = command.Participants[0].UserId;
+        _userRepositoryMock
+            .Setup(x => x.GetManyAsync(
+                It.Is<IEnumerable<Guid>>(ids => ids.Contains(userId)),
+                It.IsAny<ACriteria<User>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([
+                new User
+                {
+                    Id = userId,
+                    UserType = (int)UserTypeEnum.Employee,
+                    IsActive = false
+                }
+            ]);
+
+        var result = await _validator.ValidateAsync(command);
+
+        Assert.Contains(result.Errors, x => x.PropertyName == nameof(command.Participants));
+    }
+
+    [Fact]
+    public async Task Validate_WhenAnInactivePersonIsAlreadyOnTheProject_Passes()
+    {
+        var userId = Guid.NewGuid();
+        var command = new UpdateWorkProjectCommand
+        {
+            Id = Guid.NewGuid(),
+            Title = "Project",
+            OrganizationId = Guid.NewGuid(),
+            ProjectTypeId = 1,
+            ProjectKindId = 1,
+            ProjectStatusId = 1,
+            Participants =
+            [
+                new WorkProjectParticipantCommand
+                {
+                    UserId = userId,
+                    RoleId = RoleIds.Developer
+                }
+            ]
+        };
+        _userRepositoryMock
+            .Setup(x => x.GetManyAsync(
+                It.Is<IEnumerable<Guid>>(ids => ids.Contains(userId)),
+                It.IsAny<ACriteria<User>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([
+                new User
+                {
+                    Id = userId,
+                    UserType = (int)UserTypeEnum.Employee,
+                    IsActive = false
+                }
+            ]);
+        _workProjectRepositoryMock
+            .Setup(x => x.FindAsync(command.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new WorkProject
+            {
+                Id = command.Id,
+                WorkProjectParticipants = [new WorkProjectParticipant { UserId = userId }]
+            });
+        var validator = new UpdateWorkProjectValidator(
+            _workProjectRepositoryMock.Object,
+            OrganizationRepositoryMock.Object,
+            _dictionariesRepositoryMock.Object,
+            _userRepositoryMock.Object,
+            _roleRepositoryMock.Object);
+
+        var result = await validator.ValidateAsync(command);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
     public async Task Validate_WhenOrganizationAndParticipantsAreEmpty_PassesValidation()
     {
         var command = CreateCommand();

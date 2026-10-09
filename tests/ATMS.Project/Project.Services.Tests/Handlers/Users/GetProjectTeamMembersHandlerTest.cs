@@ -44,4 +44,25 @@ public class GetProjectTeamMembersHandlerTest : BaseHandlerTest
 
         Assert.Equal(expected, result);
     }
+
+    [Fact]
+    public async Task Handle_LeavesOutInactiveEmployees()
+    {
+        var active = new User { Id = Guid.NewGuid(), UserType = (int)UserTypeEnum.Employee, IsActive = true };
+        var inactive = new User { Id = Guid.NewGuid(), UserType = (int)UserTypeEnum.Employee, IsActive = false };
+        _userRepositoryMock
+            .Setup(repository => repository.GetManyAsync(
+                It.IsAny<ACriteria<User>>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<ACriteria<User>, CancellationToken>((criteria, _) =>
+                Task.FromResult(criteria.Apply(new[] { active, inactive }.AsQueryable()).ToList()));
+        MapperMock
+            .Setup(mapper => mapper.Map<UserModel[]>(
+                It.Is<List<User>>(items => items.Count == 1 && items[0].Id == active.Id)))
+            .Returns([new UserModel { Id = active.Id }]);
+
+        var result = await _handler.Handle(new GetProjectTeamMembersRequest(), CancellationToken.None);
+
+        Assert.Equal(active.Id, Assert.Single(result).Id);
+    }
 }

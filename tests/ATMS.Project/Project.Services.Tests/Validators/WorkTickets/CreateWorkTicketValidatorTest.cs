@@ -97,6 +97,20 @@ public class CreateWorkTicketValidatorTest
         Assert.Contains(result.Errors, error => error.PropertyName == nameof(command.AssigneeId));
     }
 
+    [Fact]
+    public async Task Validate_WhenAssigneeIsInactive_FailsAssigneeValidation()
+    {
+        var command = ValidCommand();
+        command.AssigneeId = Guid.NewGuid();
+        _workTicketRepository
+            .Setup(repository => repository.CanBeAssignedAsync(command.AssigneeId.Value, null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        var result = await _validator.ValidateAsync(command);
+
+        Assert.Contains(result.Errors, error => error.PropertyName == nameof(command.AssigneeId));
+    }
+
     private static CreateWorkTicketCommand ValidCommand()
     {
         return new CreateWorkTicketCommand

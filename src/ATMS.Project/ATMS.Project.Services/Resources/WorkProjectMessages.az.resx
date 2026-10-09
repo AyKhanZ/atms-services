@@ -8,5 +8,7 @@
   <data name="InvitationAlreadyParticipant" xml:space="preserve"><value>Bu şəxs artıq layihənin iştirakçısıdır.</value></data>
   <data name="InvitationAlreadySent" xml:space="preserve"><value>Bu e-poçta artıq bu layihəyə dəvət göndərilib.</value></data>
   <data name="InvitationEmailInUse" xml:space="preserve"><value>Bu e-poçtu bu layihəyə dəvət etmək olmaz.</value></data>
+  <data name="InvitationUserInactive" xml:space="preserve"><value>Bu şəxs qeyri-aktivdir və onu layihəyə dəvət etmək olmaz.</value></data>
+  <data name="ParticipantInactive" xml:space="preserve"><value>Qeyri-aktiv şəxsi layihəyə əlavə etmək olmaz.</value></data>
   <data name="InvitationNotPending" xml:space="preserve"><value>Bu dəvət artıq cavab gözləmir. Kimin qoşulduğunu görmək üçün siyahını yeniləyin.</value></data>
 </root>

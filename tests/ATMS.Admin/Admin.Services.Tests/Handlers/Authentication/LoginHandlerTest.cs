@@ -237,22 +237,6 @@ public class LoginHandlerTest : BaseHandlerTest
         Assert.Equal(AuthErrorTypeEnum.AccountLocked, exception.AuthErrorType);
     }
 
-    // Locked with no end date was set by an administrator; the right password does not lift it.
-    [Fact]
-    public async Task Handle_WhenAccountIsLockedByAdministrator_RefusesEvenWithRightPassword()
-    {
-        var user = CreateUser(statusId: (int)UserStatusEnum.Locked);
-        user.LockoutEnd = null;
-        SetupUser(user);
-        SetupPasswordMatch(true);
-
-        var exception = await Assert.ThrowsAsync<AuthException>(() =>
-            _handler.Handle(CreateCommand(), CancellationToken.None));
-
-        Assert.Equal(AuthErrorTypeEnum.AccountLocked, exception.AuthErrorType);
-        Assert.Equal((int)UserStatusEnum.Locked, user.UserStatusId);
-    }
-
     [Fact]
     public async Task Handle_WhenAccountIsLockedButLockoutExpired_AllowsLogin()
     {

@@ -36,5 +36,7 @@ internal static class WorkProjectMessages
     internal static string InvitationAlreadyParticipant => Get(nameof(InvitationAlreadyParticipant));
     internal static string InvitationAlreadySent => Get(nameof(InvitationAlreadySent));
     internal static string InvitationEmailInUse => Get(nameof(InvitationEmailInUse));
+    internal static string InvitationUserInactive => Get(nameof(InvitationUserInactive));
+    internal static string ParticipantInactive => Get(nameof(ParticipantInactive));
     internal static string InvitationNotPending => Get(nameof(InvitationNotPending));
 }

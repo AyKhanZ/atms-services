@@ -42,5 +42,8 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(e => e.IsAdmin)
             .IsRequired();
+
+        builder.Property(e => e.IsActive)
+            .HasDefaultValue(true);
     }
 }

@@ -1,30 +1,19 @@
-using System.Linq.Expressions;
 using ATMS.Admin.Contracts.Commands.Users;
-using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Service.Validation.Users;
-using Moq;
+using ATMS.Data.Enums;
 
 namespace Admin.Services.Tests.Validators.Users;
 
-public class UpdateUserStatusValidatorTest : BaseValidatorTest
+public class UpdateUserStatusValidatorTest
 {
-    private readonly UpdateUserStatusValidator _validator;
+    private readonly UpdateUserStatusValidator _validator = new();
 
-    public UpdateUserStatusValidatorTest()
+    [Theory]
+    [InlineData(UserStatusEnum.Active)]
+    [InlineData(UserStatusEnum.Inactive)]
+    public async Task Validate_WhenStatusIsActiveOrInactive_PassesValidation(UserStatusEnum status)
     {
-        _validator = new UpdateUserStatusValidator(DictionariesRepositoryMock.Object);
-    }
-
-    [Fact]
-    public async Task Validate_WhenValid_PassesValidation()
-    {
-        DictionariesRepositoryMock
-            .Setup(r => r.IsUserStatusExistAsync(
-                It.IsAny<Expression<Func<UserStatus, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        var command = new UpdateUserStatusCommand { Id = Guid.NewGuid(), UserStatusId = 1 };
+        var command = new UpdateUserStatusCommand { Id = Guid.NewGuid(), UserStatusId = (int)status };
 
         var result = await _validator.ValidateAsync(command);
 
@@ -34,7 +23,7 @@ public class UpdateUserStatusValidatorTest : BaseValidatorTest
     [Fact]
     public async Task Validate_WhenIdEmpty_FailsValidation()
     {
-        var command = new UpdateUserStatusCommand { Id = Guid.Empty, UserStatusId = 1 };
+        var command = new UpdateUserStatusCommand { Id = Guid.Empty, UserStatusId = (int)UserStatusEnum.Active };
 
         var result = await _validator.ValidateAsync(command);
 
@@ -53,16 +42,12 @@ public class UpdateUserStatusValidatorTest : BaseValidatorTest
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(command.UserStatusId));
     }
 
-    [Fact]
-    public async Task Validate_WhenUserStatusNotFound_FailsValidation()
+    [Theory]
+    [InlineData(UserStatusEnum.Locked)]
+    [InlineData((UserStatusEnum)99)]
+    public async Task Validate_WhenStatusIsNotActiveOrInactive_FailsValidation(UserStatusEnum status)
     {
-        DictionariesRepositoryMock
-            .Setup(r => r.IsUserStatusExistAsync(
-                It.IsAny<Expression<Func<UserStatus, bool>>>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        var command = new UpdateUserStatusCommand { Id = Guid.NewGuid(), UserStatusId = 99 };
+        var command = new UpdateUserStatusCommand { Id = Guid.NewGuid(), UserStatusId = (int)status };
 
         var result = await _validator.ValidateAsync(command);
 

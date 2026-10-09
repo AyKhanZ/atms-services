@@ -4,6 +4,7 @@ using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Enums;
 using ATMS.Infrastructure.Options;
+using ATMS.Project.Data.Criteria.Users;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.Notifications;
 using ATMS.Project.Data.Models.WorkProjects;
@@ -18,6 +19,7 @@ public sealed class NotificationService(
     INotificationRepository notifications,
     IEmailDeliveryRepository emails,
     IProjectPermissionRepository permissions,
+    IUserRepository users,
     IOptions<NotificationsOptions> notificationsOptions) : INotificationService
 {
     private static readonly TimeSpan MergeWindow = TimeSpan.FromMinutes(10);
@@ -85,9 +87,23 @@ public sealed class NotificationService(
 
         if (_options.SendEmails)
         {
+            var emailable = created.Where(notification => EmailedTypes.Contains(notification.Type)).ToArray();
+            if (emailable.Length == 0)
+            {
+                return;
+            }
+
+            // an inactive person still gets the bell, just no email
+            var activeUserIds = (await users.GetManyAsync(
+                    emailable.Select(notification => notification.UserId).Distinct(),
+                    new ActiveUsersCriteria(),
+                    cancellationToken))
+                .Select(user => user.Id)
+                .ToHashSet();
+
             await emails.AddRangeAsync(
-                created
-                    .Where(notification => EmailedTypes.Contains(notification.Type))
+                emailable
+                    .Where(notification => activeUserIds.Contains(notification.UserId))
                     .Select(notification => new EmailDelivery
                     {
                         Id = Guid.NewGuid(),

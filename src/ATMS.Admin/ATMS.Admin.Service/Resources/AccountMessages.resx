@@ -89,4 +89,6 @@
     <data name="PasswordChangedConcurrently" xml:space="preserve"><value>The password was just changed in another window. Sign in with the new password.</value></data>
     <data name="OldPasswordIncorrect" xml:space="preserve"><value>Current password is incorrect.</value></data>
     <data name="NewPasswordMustDiffer" xml:space="preserve"><value>Choose a password different from your current password.</value></data>
+    <data name="CannotChangeOwnStatus" xml:space="preserve"><value>You cannot change your own status.</value></data>
+    <data name="CannotChangeSuperAdminStatus" xml:space="preserve"><value>You cannot change the super administrator's status.</value></data>
 </root>

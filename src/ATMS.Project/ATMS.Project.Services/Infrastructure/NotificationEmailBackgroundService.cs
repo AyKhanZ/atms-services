@@ -94,8 +94,11 @@ public class NotificationEmailBackgroundService(
                 .GetRequiredService<INotificationRepository>()
                 .GetRowAsync(delivery.NotificationId, cancellationToken);
 
-            // the person or the work is gone: mark done, a retry won't help
-            if (notification is not null && delivery.RecipientEmail is { } email && !IsGone(notification))
+            // inactive, deleted or the work is gone: mark done, a retry won't help
+            if (notification is not null &&
+                delivery.RecipientIsActive &&
+                delivery.RecipientEmail is { } email &&
+                !IsGone(notification))
             {
                 var mentionStillPresent = true;
                 if (notification.Type == (int)NotificationTypeEnum.Mentioned)

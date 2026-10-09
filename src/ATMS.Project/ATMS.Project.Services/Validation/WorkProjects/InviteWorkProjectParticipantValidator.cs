@@ -83,6 +83,15 @@ public sealed class InviteWorkProjectParticipantValidator : AbstractValidator<In
             return;
         }
 
+        var existing = await _userRepository.FindAsync(
+            user => user.NormalizedEmail == normalizedEmail,
+            cancellationToken);
+        if (existing is { IsActive: false })
+        {
+            context.AddFailure(WorkProjectMessages.InvitationUserInactive);
+            return;
+        }
+
         if (await _userRepository.IsEmailTakenAsync(normalizedEmail, cancellationToken))
         {
             context.AddFailure(WorkProjectMessages.InvitationEmailInUse);

@@ -148,6 +148,24 @@ public sealed class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
             return;
         }
 
+        // someone already on the project can stay after they become inactive; a new pick cannot
+        var inactiveIds = users.Where(user => !user.IsActive).Select(user => user.Id).ToArray();
+        if (inactiveIds.Length > 0)
+        {
+            var alreadyThere = new HashSet<Guid>();
+            if (command is UpdateWorkProjectCommand update)
+            {
+                var current = await _workProjectRepository.FindAsync(update.Id, cancellationToken);
+                alreadyThere = current?.WorkProjectParticipants.Select(participant => participant.UserId).ToHashSet() ?? [];
+            }
+
+            if (inactiveIds.Any(id => !alreadyThere.Contains(id)))
+            {
+                context.AddFailure(nameof(command.Participants), WorkProjectMessages.ParticipantInactive);
+                return;
+            }
+        }
+
         var roles = await _roleRepository.GetManyAsync(command.Participants.Select(x => x.RoleId).Distinct(), cancellationToken);
 
         if (roles.Count != command.Participants.Select(x => x.RoleId).Distinct().Count())

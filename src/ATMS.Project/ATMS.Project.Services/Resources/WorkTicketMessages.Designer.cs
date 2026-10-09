@@ -29,5 +29,6 @@ internal static class WorkTicketMessages
     internal static string PriorityRequired => Get(nameof(PriorityRequired));
     internal static string PriorityUnsupported => Get(nameof(PriorityUnsupported));
     internal static string AssigneeNotFound => Get(nameof(AssigneeNotFound));
+    internal static string AssigneeInactive => Get(nameof(AssigneeInactive));
     internal static string DeadlineOutOfRange => Get(nameof(DeadlineOutOfRange));
 }

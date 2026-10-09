@@ -20,6 +20,11 @@ public static class MessagingConstants
         public const string ProjectUserUpdated = "atms.project.user.updated";
         public const string ProjectUserUpdatedRetry = "atms.project.user.updated.retry";
         public const string ProjectUserUpdatedDead = "atms.project.user.updated.dead";
+
+        // User status
+        public const string ProjectUserStatusChanged = "atms.project.user.status.changed";
+        public const string ProjectUserStatusChangedRetry = "atms.project.user.status.changed.retry";
+        public const string ProjectUserStatusChangedDead = "atms.project.user.status.changed.dead";
         
         // Create User
         public const string ProjectUserCreated = "atms.project.user.created";
@@ -37,6 +42,7 @@ public static class MessagingConstants
         // User
         public const string UserCreated = "user.created";
         public const string UserUpdated = "user.updated";
+        public const string UserStatusChanged = "user.status.changed";
         public const string UserInvited = "user.invited";
         // public const string OrganizationArchived = "organization.archived";
     }
