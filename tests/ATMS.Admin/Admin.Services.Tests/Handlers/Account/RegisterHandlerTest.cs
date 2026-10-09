@@ -4,6 +4,7 @@ using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Service.Handlers.Account;
+using ATMS.Admin.Service.Infrastructure;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Data.Enums;
@@ -19,6 +20,7 @@ public class RegisterHandlerTest : BaseHandlerTest
 
     private const string FakePassword = "RandPass1!";
     private const string FakePasswordHash = "hashed-password";
+    private readonly Mock<IDefaultUserLanguage> DefaultUserLanguageMock = new();
     public RegisterHandlerTest()
     {
         _handler = new RegisterHandler(
@@ -30,11 +32,16 @@ public class RegisterHandlerTest : BaseHandlerTest
             PasswordHasherServiceMock.Object,
             OnboardingRepositoryMock.Object,
             OutboxRepositoryMock.Object,
-            EmailDeliveryRepositoryMock.Object);
+            EmailDeliveryRepositoryMock.Object,
+            DefaultUserLanguageMock.Object);
 
         PasswordServiceMock
             .Setup(p => p.GenerateRandomPassword())
             .Returns(FakePassword);
+
+        DefaultUserLanguageMock
+            .Setup(x => x.GetLanguageIdAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync((int)LanguageEnum.English);
 
         PasswordHasherServiceMock
             .Setup(p => p.Hash(FakePassword))
@@ -140,6 +147,23 @@ public class RegisterHandlerTest : BaseHandlerTest
             It.IsAny<CancellationToken>()), Times.Once);
         UserRepositoryMock.Verify(r => r.SaveAsync(
             It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_GivesNewUserTheConfiguredDefaultLanguage()
+    {
+        // Arrange
+        var command = CreateCommand();
+        var entity = new User { Id = Guid.NewGuid() };
+
+        SetupMapper(command, entity);
+        SetupRole(command.RoleId);
+
+        // Act
+        await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.Equal((int)LanguageEnum.English, entity.LanguageId);
     }
 
     [Fact]

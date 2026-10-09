@@ -24,6 +24,7 @@ public sealed class DataInitializerTest
     private readonly Mock<IRoleRepository> roleRepository = new();
     private readonly Mock<IPasswordHasherService> passwordHasher = new();
     private readonly Mock<IOutboxRepository> outboxRepository = new();
+    private readonly Mock<IDefaultUserLanguage> defaultUserLanguage = new();
 
     [Fact]
     public async Task InitializeAsync_WhenSuperAdminAlreadyExists_QueuesMissingUserCreatedEvent()
@@ -84,6 +85,9 @@ public sealed class DataInitializerTest
     {
         SetupRole();
         passwordHasher.Setup(x => x.Hash("password")).Returns("password-hash");
+        defaultUserLanguage
+            .Setup(x => x.GetLanguageIdAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync((int)LanguageEnum.English);
         userRepository
             .Setup(x => x.FindAsync(It.IsAny<System.Linq.Expressions.Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
@@ -102,6 +106,7 @@ public sealed class DataInitializerTest
                 user.Email == Email &&
                 user.PasswordHash == "password-hash" &&
                 user.AvatarPath == DefaultValues.UserAvatar &&
+                user.LanguageId == (int)LanguageEnum.English &&
                 user.UserRoles.Single().RoleId == RoleIds.SuperAdmin),
             It.IsAny<CancellationToken>()), Times.Once);
         outboxRepository.Verify(x => x.AddAsync(
@@ -118,7 +123,8 @@ public sealed class DataInitializerTest
             userRepository.Object,
             roleRepository.Object,
             passwordHasher.Object,
-            outboxRepository.Object);
+            outboxRepository.Object,
+            defaultUserLanguage.Object);
 
     private void SetupRole()
     {

@@ -12,6 +12,7 @@ public static class InfrastructureModule
         this IServiceCollection services)
     {
         services.AddRequiredOptions<AdminOptions>();
+        services.AddScoped<IDefaultUserLanguage, DefaultUserLanguage>();
         services.AddScoped<IDataInitializer, DataInitializer>();
         services.AddLocalImageStorage();
         

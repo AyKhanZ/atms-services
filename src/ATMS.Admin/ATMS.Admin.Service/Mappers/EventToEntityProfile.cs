@@ -23,8 +23,6 @@ public sealed class EventToEntityProfile : Profile
             .ForMember(destination => destination.InvitedById,
                 options => options.MapFrom(source => source.InvitedByUserId))
             .ForMember(destination => destination.AvatarPath,
-                options => options.MapFrom(_ => DefaultValues.UserAvatar))
-            .ForMember(destination => destination.LanguageId,
-                options => options.MapFrom(_ => DefaultValues.Language));
+                options => options.MapFrom(_ => DefaultValues.UserAvatar));
     }
 }

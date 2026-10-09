@@ -3,6 +3,7 @@ using ATMS.Admin.Contracts.Models.Users;
 using ATMS.Admin.Data.Entities;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Data.Repositories.Interfaces;
+using ATMS.Admin.Service.Infrastructure;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
@@ -25,7 +26,8 @@ public sealed class RegisterHandler(
     IPasswordHasherService passwordHasherService,
     IOnboardingRepository onboardingRepository,
     IOutboxRepository outboxRepository,
-    IEmailDeliveryRepository emailDeliveryRepository)
+    IEmailDeliveryRepository emailDeliveryRepository,
+    IDefaultUserLanguage defaultUserLanguage)
     : IRequestHandler<RegisterCommand, UserModel>
 {
     public async Task<UserModel> Handle(RegisterCommand command, CancellationToken cancellationToken)
@@ -42,6 +44,8 @@ public sealed class RegisterHandler(
         var entity = mapper.Map<User>(command);
         entity.Id = Guid.NewGuid();
         entity.NormalizedEmail = command.Email.Trim().ToUpperInvariant();
+        // without it the column default (Azerbaijani) wins over LocalizationOptions
+        entity.LanguageId = await defaultUserLanguage.GetLanguageIdAsync(cancellationToken);
 
         var userRole = new UserRole
         {
