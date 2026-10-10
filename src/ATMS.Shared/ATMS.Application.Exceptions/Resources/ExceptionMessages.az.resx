@@ -30,4 +30,13 @@
   <data name="ProjectAccessDenied" xml:space="preserve">
     <value>Bu layihəyə giriş icazəniz yoxdur.</value>
   </data>
+  <data name="TooManyRequests" xml:space="preserve">
+    <value>Həddindən çox sorğu. {0} saniyədən sonra yenidən cəhd edin.</value>
+  </data>
+  <data name="TooManyRequestsMinutes" xml:space="preserve">
+    <value>Həddindən çox sorğu. {0} dəqiqədən sonra yenidən cəhd edin.</value>
+  </data>
+  <data name="DailyLimitReached" xml:space="preserve">
+    <value>Gündəlik limit bitdi. Sabah yenidən cəhd edin.</value>
+  </data>
 </root>

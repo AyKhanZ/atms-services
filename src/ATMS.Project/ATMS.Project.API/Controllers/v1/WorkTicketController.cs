@@ -3,9 +3,11 @@ using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Commands.WorkTickets;
 using ATMS.Project.Contracts.Models.WorkTickets;
 using ATMS.Project.Contracts.Requests.WorkTickets;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -92,6 +94,7 @@ public sealed class WorkTicketController(IMediator mediator) : ControllerBase
     /// <response code="404">Project or milestone with the specified ID was not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPost]
+    [EnableRateLimiting(RateLimitPolicies.Creates)]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]

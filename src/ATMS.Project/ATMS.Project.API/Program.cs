@@ -6,6 +6,7 @@ using ATMS.Swagger.Constants;
 using ATMS.Application.Realtime;
 using ATMS.Project.API.Hubs;
 using ATMS.Project.API.Realtime;
+using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,12 +18,15 @@ builder.Services
     .AddProjectServices(builder.Configuration)
     .AddJwtSecurityServices(builder.Configuration)
     .AddAuthorizationPolicies()
+    .AddRateLimitingPolicies(builder.Configuration)
     .AddRealtime()
     .AddSwaggerDocumentation(SwaggerConstants.ApiProjectTitle);
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+
+app.UseProxyForwardedHeaders(builder.Configuration);
 
 if (app.Environment.IsDevelopment())
 {
@@ -45,7 +49,9 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseRateLimiter();
+
 app.MapControllers();
-app.MapHub<RealtimeHub>(RealtimeConstants.HubPath);
+app.MapHub<RealtimeHub>(RealtimeConstants.HubPath).DisableRateLimiting();
 
 app.Run();

@@ -4,9 +4,11 @@ using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.Search;
 using ATMS.Project.Contracts.Models.Search;
 using ATMS.Project.Contracts.Requests.Search;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -29,6 +31,7 @@ public sealed class SearchController(IMediator mediator) : ControllerBase
     /// <response code="403">The user does not have project viewing permission.</response>
     /// <response code="500">The search could not be completed because of an unexpected server error.</response>
     [HttpGet]
+    [EnableRateLimiting(RateLimitPolicies.Heavy)]
     [ProducesResponseType(typeof(GlobalSearchModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
@@ -57,6 +60,7 @@ public sealed class SearchController(IMediator mediator) : ControllerBase
     /// <response code="403">The user does not have project viewing permission.</response>
     /// <response code="500">The search could not be completed because of an unexpected server error.</response>
     [HttpGet("{itemType}")]
+    [EnableRateLimiting(RateLimitPolicies.Heavy)]
     [ProducesResponseType(typeof(KeysetPagedResult<GlobalSearchItemModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
@@ -9,6 +10,7 @@ using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.Notifications;
 using ATMS.Project.Data.Models.WorkProjects;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Project.Services.Infrastructure;
 using ATMS.Project.Services.Models.Notifications;
 using ATMS.Project.Services.Domain.Notifications.Interfaces;
 
@@ -20,7 +22,9 @@ public sealed class NotificationService(
     IEmailDeliveryRepository emails,
     IProjectPermissionRepository permissions,
     IUserRepository users,
-    IOptions<NotificationsOptions> notificationsOptions) : INotificationService
+    IOptions<NotificationsOptions> notificationsOptions,
+    BusinessTimeZone businessTimeZone,
+    ILogger<NotificationService> logger) : INotificationService
 {
     private static readonly TimeSpan MergeWindow = TimeSpan.FromMinutes(10);
 
@@ -100,18 +104,51 @@ public sealed class NotificationService(
                     cancellationToken))
                 .Select(user => user.Id)
                 .ToHashSet();
+            var toSend = emailable.Where(notification => activeUserIds.Contains(notification.UserId)).ToArray();
+            if (toSend.Length == 0)
+            {
+                return;
+            }
+
+            var startOfDay = businessTimeZone.StartOfDayUtc(businessTimeZone.Today(now));
+            var sentToday = await emails.CountSinceAsync(startOfDay, cancellationToken);
+            var sentByUser = await emails.CountByUserSinceAsync(
+                toSend.Select(notification => notification.UserId).Distinct().ToArray(),
+                startOfDay,
+                cancellationToken);
+            var budget = EmailBudget.Take(
+                toSend,
+                sentToday,
+                sentByUser,
+                _options.MaxEmailsPerUserPerDay,
+                _options.MaxEmailsPerDay);
+
+            if (budget.SkippedForUser > 0)
+            {
+                logger.LogInformation(
+                    "{Count} notification emails skipped, daily limit per recipient",
+                    budget.SkippedForUser);
+            }
+
+            if (budget.ServiceLimitReached)
+            {
+                logger.LogWarning("Daily email limit of the service reached");
+            }
+
+            if (budget.Accepted.Count == 0)
+            {
+                return;
+            }
 
             await emails.AddRangeAsync(
-                emailable
-                    .Where(notification => activeUserIds.Contains(notification.UserId))
-                    .Select(notification => new EmailDelivery
-                    {
-                        Id = Guid.NewGuid(),
-                        NotificationId = notification.Id,
-                        Status = (int)DeliveryStatusEnum.Pending,
-                        CreatedAt = now,
-                        NextAttemptAt = now
-                    }),
+                budget.Accepted.Select(notification => new EmailDelivery
+                {
+                    Id = Guid.NewGuid(),
+                    NotificationId = notification.Id,
+                    Status = (int)DeliveryStatusEnum.Pending,
+                    CreatedAt = now,
+                    NextAttemptAt = now
+                }),
                 cancellationToken);
         }
     }

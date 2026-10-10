@@ -45,22 +45,9 @@ public sealed class LocalizationBehavior<TRequest, TResponse>(
             return defaultLanguage;
         }
 
-        // 1. Accept-Language header
+        // 1. Accept-Language header, 2. configured default
         var acceptLanguage = httpContext.Request.Headers.AcceptLanguage.ToString();
-        if (string.IsNullOrWhiteSpace(acceptLanguage))
-        {
-            return defaultLanguage;
-        }
-        // "ru-RU,ru;q=0.9,en;q=0.8" -> first supported
-        var parsed = acceptLanguage
-            .Split(',')
-            .Select(x => x.Split(';')[0].Trim()) // remove q-factor
-            .Select(x => x.Length >= 2 ? x[..2].ToLowerInvariant() : x) // "ru-RU" → "ru"
-            .FirstOrDefault(SupportedLanguages.IsSupported);
-
-        return parsed ??
-               // 2. configured default
-               defaultLanguage;
+        return SupportedLanguages.FromAcceptLanguage(acceptLanguage) ?? defaultLanguage;
     }
 
     private static void SetCulture(string language)

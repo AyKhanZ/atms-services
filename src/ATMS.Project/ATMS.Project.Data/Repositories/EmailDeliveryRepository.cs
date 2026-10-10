@@ -12,6 +12,26 @@ public sealed class EmailDeliveryRepository(ProjectDbContext context) : IEmailDe
     public Task AddRangeAsync(IEnumerable<EmailDelivery> deliveries, CancellationToken cancellationToken) =>
         context.EmailDeliveries.AddRangeAsync(deliveries, cancellationToken);
 
+    public Task<int> CountSinceAsync(DateTime since, CancellationToken cancellationToken) =>
+        context.EmailDeliveries.CountAsync(delivery => delivery.CreatedAt >= since, cancellationToken);
+
+    public Task<Dictionary<Guid, int>> CountByUserSinceAsync(
+        IReadOnlyCollection<Guid> userIds,
+        DateTime since,
+        CancellationToken cancellationToken)
+    {
+        if (userIds.Count == 0)
+        {
+            return Task.FromResult(new Dictionary<Guid, int>());
+        }
+
+        return context.EmailDeliveries
+            .Where(delivery => delivery.CreatedAt >= since && userIds.Contains(delivery.Notification.UserId))
+            .GroupBy(delivery => delivery.Notification.UserId)
+            .Select(group => new { UserId = group.Key, Count = group.Count() })
+            .ToDictionaryAsync(row => row.UserId, row => row.Count, cancellationToken);
+    }
+
     public Task<EmailDelivery[]> ClaimPendingAsync(int batchSize, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;

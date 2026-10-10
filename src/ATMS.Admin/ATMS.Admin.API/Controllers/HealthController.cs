@@ -2,12 +2,14 @@ using ATMS.Admin.Contracts.Requests.Health;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Admin.API.Controllers;
 
 [AllowAnonymous]
 [ApiController]
 [Route("health")]
+[DisableRateLimiting]
 public sealed class HealthController(IMediator mediator) : ControllerBase
 {
     [HttpGet("live")]

@@ -15,6 +15,10 @@ public sealed class NotificationsOptions
     // off while smtp is a test account with a small limit; off = no email rows, so no backlog later
     public bool SendEmails { get; init; }
 
+    public int MaxEmailsPerUserPerDay { get; init; } = 50;
+
+    public int MaxEmailsPerDay { get; init; } = 300;
+
     // frontend url for the links in emails
     [Required]
     public required string AppUrl { get; init; }

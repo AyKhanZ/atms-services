@@ -15,11 +15,14 @@ builder.Services
     .AddAdminServices(builder.Configuration)
     .AddJwtSecurityServices(builder.Configuration)
     .AddAuthorizationPolicies()
+    .AddRateLimitingPolicies(builder.Configuration)
     .AddSwaggerDocumentation(SwaggerConstants.ApiAdminTitle);
 
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+
+app.UseProxyForwardedHeaders(builder.Configuration);
 
 if (app.Environment.IsDevelopment())
 {
@@ -41,6 +44,8 @@ app.UseMiddleware<ExceptionsMiddleware>();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.MapControllers();
 

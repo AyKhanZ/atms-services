@@ -3,9 +3,11 @@ using ATMS.Project.Contracts.Commands.WorkGroups;
 using ATMS.Project.Contracts.Models.WorkGroups;
 using ATMS.Project.Contracts.Requests.WorkGroups;
 using ATMS.Data.Criteria;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -81,6 +83,7 @@ public sealed class WorkGroupController(IMediator mediator) : ControllerBase
     /// <response code="409">A sibling with the same name already exists.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPost]
+    [EnableRateLimiting(RateLimitPolicies.Creates)]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]

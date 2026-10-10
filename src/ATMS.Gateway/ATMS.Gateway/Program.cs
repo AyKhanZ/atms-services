@@ -17,10 +17,21 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions
+var forwardedHeaders = new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+};
+
+var knownNetworks = builder.Configuration.GetSection("ProxyOptions:KnownNetworks").Get<string[]>();
+if (knownNetworks is { Length: > 0 })
+{
+    foreach (var network in knownNetworks)
+    {
+        forwardedHeaders.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(network));
+    }
+}
+
+app.UseForwardedHeaders(forwardedHeaders);
 
 app.MapHealthChecks("/health/live");
 

@@ -2,9 +2,11 @@ using ATMS.Admin.Contracts.Commands.Onboarding;
 using ATMS.Admin.Contracts.Models.Onboarding;
 using ATMS.Admin.Contracts.Requests.Onboarding;
 using ATMS.Application.Models;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Admin.API.Controllers.v1;
 
@@ -135,6 +137,7 @@ public sealed class OnboardingController(IMediator mediator) : ControllerBase
     /// <response code="409">The onboarding state was changed by another request.</response>
     /// <response code="500">An unexpected server error occurred.</response>
     [HttpPost("complete")]
+    [EnableRateLimiting(RateLimitPolicies.Emails)]
     [ProducesResponseType(typeof(OnboardingCompletionModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]

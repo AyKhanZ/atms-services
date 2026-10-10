@@ -1,9 +1,11 @@
 ﻿using ATMS.Admin.Contracts.Commands.Migration;
 using ATMS.Admin.Contracts.Models;
 using ATMS.Application.Models;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Admin.API.Controllers.v1;
 
@@ -26,6 +28,7 @@ public sealed class MigrationController(IMediator mediator) : ControllerBase
     /// <response code="403">Resource forbidden.</response>
     /// <response code="500">Unhandled server error.</response>
     [HttpPost("up")]
+    [EnableRateLimiting(RateLimitPolicies.Migrations)]
     [ProducesResponseType(typeof(MigrationModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
@@ -53,6 +56,7 @@ public sealed class MigrationController(IMediator mediator) : ControllerBase
     /// <response code="403">Resource forbidden.</response>
     /// <response code="500">Unhandled server error.</response>
     [HttpPost("down")]
+    [EnableRateLimiting(RateLimitPolicies.Migrations)]
     [ProducesResponseType(typeof(MigrationModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]

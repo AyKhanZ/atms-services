@@ -8,9 +8,11 @@ using ATMS.Application.Models;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Infrastructure.Options;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Admin.API.Controllers.v1;
 
@@ -36,6 +38,7 @@ public sealed class AccountController(IMediator mediator, IOptions<RedirectUrlOp
     /// <response code="500">Unhandled server error.</response>
     [Authorize]
     [HttpPost("register")]
+    [EnableRateLimiting(RateLimitPolicies.Emails)]
     [ProducesResponseType(typeof(UserModel), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
@@ -83,6 +86,7 @@ public sealed class AccountController(IMediator mediator, IOptions<RedirectUrlOp
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]
     [HttpGet("confirm")]
+    [EnableRateLimiting(RateLimitPolicies.AuthToken)]
     [ProducesResponseType(StatusCodes.Status302Found)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
@@ -130,6 +134,7 @@ public sealed class AccountController(IMediator mediator, IOptions<RedirectUrlOp
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]
     [HttpPost("email-confirmation/resend")]
+    [EnableRateLimiting(RateLimitPolicies.AuthEmail)]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
@@ -211,6 +216,7 @@ public sealed class AccountController(IMediator mediator, IOptions<RedirectUrlOp
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]
     [HttpPost("forgot-password")]
+    [EnableRateLimiting(RateLimitPolicies.AuthEmail)]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
@@ -262,6 +268,7 @@ public sealed class AccountController(IMediator mediator, IOptions<RedirectUrlOp
     /// <response code="500">Unexpected server error.</response>
     [AllowAnonymous]
     [HttpPost("reset-password")]
+    [EnableRateLimiting(RateLimitPolicies.AuthToken)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]

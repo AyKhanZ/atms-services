@@ -3,9 +3,11 @@ using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Commands.Comments;
 using ATMS.Project.Contracts.Models.Comments;
 using ATMS.Project.Contracts.Requests.Comments;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -80,6 +82,7 @@ public sealed class CommentController(IMediator mediator) : ControllerBase
     /// <response code="404">The task was not found.</response>
     /// <response code="500">Unhandled server error</response>
     [HttpPost]
+    [EnableRateLimiting(RateLimitPolicies.Creates)]
     [ProducesResponseType(typeof(CommentModel), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
