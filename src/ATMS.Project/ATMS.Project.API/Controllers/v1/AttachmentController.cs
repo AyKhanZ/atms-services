@@ -3,9 +3,11 @@ using ATMS.Project.API.Results;
 using ATMS.Project.Contracts.Commands.Attachments;
 using ATMS.Project.Contracts.Models.Attachments;
 using ATMS.Project.Contracts.Requests.Attachments;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -31,6 +33,7 @@ public sealed class AttachmentController(IMediator mediator) : ControllerBase
     /// <response code="404">The task or the file was not found.</response>
     /// <response code="413">The request is larger than the upload limit.</response>
     [HttpPost("work-tasks/{workTaskId:guid}/attachments")]
+    [EnableRateLimiting(RateLimitPolicies.Uploads)]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(MaxUploadRequestBytes)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxUploadRequestBytes)]
@@ -88,6 +91,7 @@ public sealed class AttachmentController(IMediator mediator) : ControllerBase
     /// <response code="401">The user is not authenticated.</response>
     /// <response code="403">The user cannot view this project.</response>
     [HttpGet("attachments/tree")]
+    [EnableRateLimiting(RateLimitPolicies.Heavy)]
     [ProducesResponseType(typeof(AttachmentTreeModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
@@ -110,6 +114,7 @@ public sealed class AttachmentController(IMediator mediator) : ControllerBase
     /// <response code="403">The user cannot view this project.</response>
     /// <response code="404">The file was not found or is no longer on the server.</response>
     [HttpGet("attachments/{attachmentId:guid}/content")]
+    [EnableRateLimiting(RateLimitPolicies.Downloads)]
     [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]

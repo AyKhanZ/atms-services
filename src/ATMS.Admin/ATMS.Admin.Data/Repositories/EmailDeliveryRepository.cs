@@ -87,6 +87,17 @@ public sealed class EmailDeliveryRepository(AdminDbContext context) : IEmailDeli
         context.EmailDeliveries.RemoveRange(deliveries);
     }
 
+    public Task<bool> AnySinceAsync(
+        Guid userId,
+        EmailDeliveryTypeEnum type,
+        DateTime since,
+        CancellationToken cancellationToken) =>
+        context.EmailDeliveries.AnyAsync(
+            x => x.UserId == userId &&
+                 x.Type == (int)type &&
+                 x.CreatedAt >= since,
+            cancellationToken);
+
     public async Task<List<EmailDelivery>> ClaimPendingAsync(
         int batchSize,
         CancellationToken cancellationToken)

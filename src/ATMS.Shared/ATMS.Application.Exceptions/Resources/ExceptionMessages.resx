@@ -30,4 +30,13 @@
   <data name="ProjectAccessDenied" xml:space="preserve">
         <value>You do not have access to this project.</value>
     </data>
+  <data name="TooManyRequests" xml:space="preserve">
+        <value>Too many requests. Try again in {0} s.</value>
+    </data>
+  <data name="TooManyRequestsMinutes" xml:space="preserve">
+        <value>Too many requests. Try again in {0} min.</value>
+    </data>
+  <data name="DailyLimitReached" xml:space="preserve">
+        <value>Daily limit reached. Try again tomorrow.</value>
+    </data>
 </root>

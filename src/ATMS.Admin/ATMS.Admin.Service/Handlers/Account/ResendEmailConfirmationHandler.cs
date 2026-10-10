@@ -19,6 +19,8 @@ public sealed class ResendEmailConfirmationHandler(
     EmailDeliveryRequestLock emailDeliveryRequestLock
     ) : IRequestHandler<ResendEmailConfirmationCommand>
 {
+    private static readonly TimeSpan EmailPause = TimeSpan.FromMinutes(2);
+
     public async Task Handle(ResendEmailConfirmationCommand command, CancellationToken cancellationToken)
     {
         await emailDeliveryRequestLock.ExecuteAsync(async () =>
@@ -36,6 +38,16 @@ public sealed class ResendEmailConfirmationHandler(
             {
                 throw new AuthException(AuthErrorTypeEnum.EmailAlreadyConfirmed,
                     AccountMessages.EmailAlreadyConfirmed);
+            }
+
+            // a letter a moment ago: leave the password as it is
+            if (await emailDeliveryRepository.AnySinceAsync(
+                    user.Id,
+                    EmailDeliveryTypeEnum.Confirmation,
+                    DateTime.UtcNow - EmailPause,
+                    cancellationToken))
+            {
+                return;
             }
 
             var rndPassword = passwordService.GenerateRandomPassword();

@@ -1,4 +1,5 @@
 using ATMS.Data.Criteria;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ATMS.Infrastructure.Options;
 using ATMS.Data.Enums;
@@ -6,6 +7,7 @@ using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.Notifications;
 using ATMS.Project.Data.Models.WorkProjects;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Project.Services.Infrastructure;
 using ATMS.Project.Services.Models.Notifications;
 using ATMS.Project.Services.Domain.Notifications;
 using Microsoft.Extensions.Configuration;
@@ -23,11 +25,14 @@ public class NotificationServiceTest
     private readonly Mock<IEmailDeliveryRepository> _emails = new();
     private readonly Mock<IProjectPermissionRepository> _permissions = new();
     private readonly Mock<IUserRepository> _users = new();
+    private readonly Mock<ILogger<NotificationService>> _logger = new();
+    private readonly BusinessTimeZone _time = new(TimeZoneInfo.FindSystemTimeZoneById("Asia/Baku"));
     private readonly List<Notification> _added = [];
     private readonly List<EmailDelivery> _queued = [];
 
     public NotificationServiceTest()
     {
+        _logger.Setup(logger => logger.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
         _notifications
             .Setup(repository => repository.AddRangeAsync(It.IsAny<IEnumerable<Notification>>(), It.IsAny<CancellationToken>()))
             .Callback<IEnumerable<Notification>, CancellationToken>((notifications, _) => _added.AddRange(notifications))
@@ -36,6 +41,13 @@ public class NotificationServiceTest
             .Setup(repository => repository.AddRangeAsync(It.IsAny<IEnumerable<EmailDelivery>>(), It.IsAny<CancellationToken>()))
             .Callback<IEnumerable<EmailDelivery>, CancellationToken>((deliveries, _) => _queued.AddRange(deliveries))
             .Returns(Task.CompletedTask);
+        _emails
+            .Setup(repository => repository.CountSinceAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
+        _emails
+            .Setup(repository => repository.CountByUserSinceAsync(
+                It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<Guid, int>());
         UnreadSince();
         _users
             .Setup(repository => repository.GetManyAsync(
@@ -49,7 +61,14 @@ public class NotificationServiceTest
     }
 
     private NotificationService Service(bool sendEmails = false) =>
-        new(_notifications.Object, _emails.Object, _permissions.Object, _users.Object, Options.Create(Configuration(sendEmails).GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()!));
+        new(
+            _notifications.Object,
+            _emails.Object,
+            _permissions.Object,
+            _users.Object,
+            Options.Create(Configuration(sendEmails).GetSection(nameof(NotificationsOptions)).Get<NotificationsOptions>()!),
+            _time,
+            _logger.Object);
 
     private static IConfiguration Configuration(bool sendEmails) =>
         new ConfigurationBuilder()
@@ -86,6 +105,25 @@ public class NotificationServiceTest
 
     private void ProjectViewers(params Guid[] userIds) =>
         Viewers(userIds.Select(userId => (ProjectId, userId)).ToArray());
+
+    private void SentToday(int total, params (Guid UserId, int Count)[] byUser)
+    {
+        _emails
+            .Setup(repository => repository.CountSinceAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(total);
+        _emails
+            .Setup(repository => repository.CountByUserSinceAsync(
+                It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(byUser.ToDictionary(item => item.UserId, item => item.Count));
+    }
+
+    private void Logged(LogLevel level, string fragment, Times times) =>
+        _logger.Verify(logger => logger.Log(
+            level,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains(fragment)),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()), times);
 
     private void UnreadSince(params Notification[] unread) =>
         _notifications
@@ -436,5 +474,138 @@ public class NotificationServiceTest
 
         Assert.Equal(assignee, Assert.Single(_added).UserId);
         Assert.Empty(_queued);
+    }
+
+    [Fact]
+    public async Task AddAsync_WhenTheRecipientAlreadyHasFiftyEmailsToday_KeepsTheNotificationAndSkipsTheEmail()
+    {
+        var assignee = Guid.NewGuid();
+        ProjectViewers(assignee);
+        SentToday(50, (assignee, 50));
+        var start = _time.StartOfDayUtc(_time.Today(DateTime.UtcNow));
+
+        await Service(sendEmails: true).AddAsync(Draft(NotificationTypeEnum.TaskAssigned), [assignee], CancellationToken.None);
+
+        Assert.Equal(assignee, Assert.Single(_added).UserId);
+        Assert.Empty(_queued);
+        _emails.Verify(repository => repository.AddRangeAsync(
+            It.IsAny<IEnumerable<EmailDelivery>>(), It.IsAny<CancellationToken>()), Times.Never);
+        _emails.Verify(repository => repository.CountSinceAsync(
+            It.Is<DateTime>(since => since == start || since == _time.StartOfDayUtc(_time.Today(DateTime.UtcNow))),
+            It.IsAny<CancellationToken>()), Times.Once);
+        _emails.Verify(repository => repository.CountByUserSinceAsync(
+            It.Is<IReadOnlyCollection<Guid>>(ids => ids.Count == 1 && ids.Contains(assignee)),
+            It.Is<DateTime>(since => since == start || since == _time.StartOfDayUtc(_time.Today(DateTime.UtcNow))),
+            It.IsAny<CancellationToken>()), Times.Once);
+        Logged(LogLevel.Information, "1 notification emails skipped, daily limit per recipient", Times.Once());
+        Logged(LogLevel.Warning, "Daily email limit of the service reached", Times.Never());
+    }
+
+    [Fact]
+    public async Task AddAsync_WhenTheServiceAlreadySentThreeHundredEmailsToday_QueuesNone()
+    {
+        var first = Guid.NewGuid();
+        var second = Guid.NewGuid();
+        ProjectViewers(first, second);
+        SentToday(300);
+
+        await Service(sendEmails: true).AddAsync(
+            Draft(NotificationTypeEnum.TaskAssigned),
+            [first, second],
+            CancellationToken.None);
+
+        Assert.Equal([first, second], _added.Select(notification => notification.UserId));
+        Assert.Empty(_queued);
+        _emails.Verify(repository => repository.CountSinceAsync(
+            It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
+        _emails.Verify(repository => repository.CountByUserSinceAsync(
+            It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
+        Logged(LogLevel.Warning, "Daily email limit of the service reached", Times.Never());
+        Logged(LogLevel.Information, "daily limit per recipient", Times.Never());
+    }
+
+    [Fact]
+    public async Task AddRangeAsync_WhenTwoEmailsRemainForTheRecipient_QueuesThoseTwoAndSkipsTheThird()
+    {
+        var userId = Guid.NewGuid();
+        ProjectViewers(userId);
+        // 48 already today, two of the daily 50 are still free
+        SentToday(48, (userId, 48));
+
+        await Service(sendEmails: true).AddRangeAsync(
+            [
+                new NotificationRecipients(Draft(NotificationTypeEnum.DueToday, "due:1"), [userId]),
+                new NotificationRecipients(Draft(NotificationTypeEnum.DueToday, "due:2"), [userId]),
+                new NotificationRecipients(Draft(NotificationTypeEnum.DueToday, "due:3"), [userId])
+            ],
+            CancellationToken.None);
+
+        Assert.Equal(3, _added.Count);
+        Assert.Equal(
+            _added.Take(2).Select(notification => notification.Id),
+            _queued.Select(delivery => delivery.NotificationId));
+        _emails.Verify(repository => repository.CountSinceAsync(
+            It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
+        _emails.Verify(repository => repository.CountByUserSinceAsync(
+            It.Is<IReadOnlyCollection<Guid>>(ids => ids.Count == 1 && ids.Contains(userId)),
+            It.IsAny<DateTime>(),
+            It.IsAny<CancellationToken>()), Times.Once);
+        Logged(LogLevel.Information, "1 notification emails skipped, daily limit per recipient", Times.Once());
+        Logged(LogLevel.Warning, "Daily email limit of the service reached", Times.Never());
+    }
+
+    [Fact]
+    public async Task AddRangeAsync_WarnsOnlyInTheBatchThatReachesTheServiceLimit()
+    {
+        var first = Guid.NewGuid();
+        var second = Guid.NewGuid();
+        ProjectViewers(first, second);
+        _emails
+            .SetupSequence(repository => repository.CountSinceAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(299)
+            .ReturnsAsync(300);
+
+        await Service(sendEmails: true).AddRangeAsync(
+            [
+                new NotificationRecipients(Draft(NotificationTypeEnum.TaskAssigned), [first]),
+                new NotificationRecipients(Draft(NotificationTypeEnum.Mentioned), [second])
+            ],
+            CancellationToken.None);
+
+        Assert.Equal(2, _added.Count);
+        Assert.Equal(_added[0].Id, Assert.Single(_queued).NotificationId);
+        Logged(LogLevel.Warning, "Daily email limit of the service reached", Times.Once());
+        Logged(LogLevel.Information, "daily limit per recipient", Times.Never());
+
+        await Service(sendEmails: true).AddAsync(
+            Draft(NotificationTypeEnum.DueToday, "due:later"),
+            [first],
+            CancellationToken.None);
+
+        Assert.Equal(3, _added.Count);
+        Assert.Single(_queued);
+        _emails.Verify(repository => repository.CountSinceAsync(
+            It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+        Logged(LogLevel.Warning, "Daily email limit of the service reached", Times.Once());
+    }
+
+    [Fact]
+    public async Task AddRangeAsync_WhenEmailsAreOff_DoesNotReadTheDailyCounters()
+    {
+        var assignee = Guid.NewGuid();
+        ProjectViewers(assignee);
+
+        await Service(sendEmails: false).AddRangeAsync(
+            [
+                new NotificationRecipients(Draft(NotificationTypeEnum.DueToday, "due:1"), [assignee]),
+                new NotificationRecipients(Draft(NotificationTypeEnum.TaskAssigned), [assignee])
+            ],
+            CancellationToken.None);
+
+        Assert.Equal(2, _added.Count);
+        _emails.Verify(repository => repository.CountSinceAsync(
+            It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
+        _emails.Verify(repository => repository.CountByUserSinceAsync(
+            It.IsAny<IReadOnlyCollection<Guid>>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

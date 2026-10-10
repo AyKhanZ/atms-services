@@ -1,6 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
+      <InternalsVisibleTo Include="ATMS.Swagger.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\ATMS.Application.Dispatcher\ATMS.Application.Dispatcher.csproj" />
       <ProjectReference Include="..\ATMS.Application\ATMS.Application.csproj" />
       <ProjectReference Include="..\ATMS.Infrastructure\ATMS.Infrastructure.csproj" />

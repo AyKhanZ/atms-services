@@ -27,7 +27,8 @@ public static class DependencyInjection
             options.AddDefaultPolicy(policy =>
                 policy.AllowAnyOrigin()
                     .AllowAnyHeader()
-                    .AllowAnyMethod());
+                    .AllowAnyMethod()
+                    .WithExposedHeaders("Retry-After"));
         });
         return services;
     }

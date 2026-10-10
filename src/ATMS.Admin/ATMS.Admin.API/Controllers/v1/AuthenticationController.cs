@@ -1,9 +1,11 @@
 ﻿using ATMS.Admin.Contracts.Commands.Authentication;
 using ATMS.Admin.Contracts.Models;
 using ATMS.Application.Models;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Admin.API.Controllers.v1;
 
@@ -27,6 +29,7 @@ public sealed class AuthenticationController(IMediator mediator) : ControllerBas
     /// <response code="423">Account temporary locked.</response>
     /// <response code="500">Unhandled server error</response>
     [HttpPost("login")]
+    [EnableRateLimiting(RateLimitPolicies.AuthLogin)]
     [AllowAnonymous]
     [ProducesResponseType(typeof(AccessInfoModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]
@@ -61,6 +64,7 @@ public sealed class AuthenticationController(IMediator mediator) : ControllerBas
     /// <response code="403">The user account is inactive.</response>
     /// <response code="500">Unhandled server error</response>
     [HttpPost("refresh")]
+    [EnableRateLimiting(RateLimitPolicies.AuthRefresh)]
     [AllowAnonymous]
     [ProducesResponseType(typeof(AccessInfoModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel),StatusCodes.Status400BadRequest)]

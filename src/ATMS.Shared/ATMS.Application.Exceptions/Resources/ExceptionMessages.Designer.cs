@@ -77,5 +77,23 @@ namespace ATMS.Application.Exceptions.Resources {
                 return ResourceManager.GetString("ServiceTemporarilyUnavailable", resourceCulture);
             }
         }
+
+        public static string TooManyRequests {
+            get {
+                return ResourceManager.GetString("TooManyRequests", resourceCulture);
+            }
+        }
+
+        public static string TooManyRequestsMinutes {
+            get {
+                return ResourceManager.GetString("TooManyRequestsMinutes", resourceCulture);
+            }
+        }
+
+        public static string DailyLimitReached {
+            get {
+                return ResourceManager.GetString("DailyLimitReached", resourceCulture);
+            }
+        }
     }
 }

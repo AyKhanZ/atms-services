@@ -34,7 +34,13 @@ public class ResendEmailConfirmationHandlerTest : BaseHandlerTest
         PasswordHasherServiceMock
             .Setup(p => p.Hash(FakePassword))
             .Returns(FakePasswordHash);
- 
+        EmailDeliveryRepositoryMock
+            .Setup(x => x.AnySinceAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<EmailDeliveryTypeEnum>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
     }
  
     private ResendEmailConfirmationCommand CreateCommand(string? email = null) =>
@@ -52,6 +58,13 @@ public class ResendEmailConfirmationHandlerTest : BaseHandlerTest
  
         await _handler.Handle(command, CancellationToken.None);
 
+        EmailDeliveryRepositoryMock.Verify(
+            x => x.AnySinceAsync(
+                user.Id,
+                EmailDeliveryTypeEnum.Confirmation,
+                It.IsAny<DateTime>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
         EmailDeliveryRepositoryMock.Verify(
             x => x.RemoveUnsentAsync(
                 user.Id,
@@ -94,6 +107,13 @@ public class ResendEmailConfirmationHandlerTest : BaseHandlerTest
             _handler.Handle(CreateCommand(), CancellationToken.None));
  
         Assert.Equal(EntityErrorTypeEnum.NotFound, exception.ErrorType);
+        EmailDeliveryRepositoryMock.Verify(
+            x => x.AnySinceAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<EmailDeliveryTypeEnum>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
     }
     
     [Fact]
@@ -111,5 +131,56 @@ public class ResendEmailConfirmationHandlerTest : BaseHandlerTest
             _handler.Handle(command, CancellationToken.None));
 
         Assert.Equal(AuthErrorTypeEnum.EmailAlreadyConfirmed, exception.AuthErrorType);
+        EmailDeliveryRepositoryMock.Verify(
+            x => x.AnySinceAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<EmailDeliveryTypeEnum>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WhenTheLastConfirmationIsAMinuteOld_LeavesThePasswordAndQueuesNothing()
+    {
+        var command = CreateCommand();
+        var user = new User { Id = Guid.NewGuid(), Email = command.Email, PasswordHash = "old-hash" };
+        UserRepositoryMock
+            .Setup(r => r.FindAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+        DateTime? since = null;
+        var createdAt = DateTime.UtcNow.AddMinutes(-1);
+        EmailDeliveryRepositoryMock
+            .Setup(x => x.AnySinceAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<EmailDeliveryTypeEnum>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<CancellationToken>()))
+            .Returns((Guid id, EmailDeliveryTypeEnum type, DateTime from, CancellationToken _) =>
+            {
+                since = from;
+                return Task.FromResult(
+                    id == user.Id && type == EmailDeliveryTypeEnum.Confirmation && createdAt >= from);
+            });
+
+        await _handler.Handle(command, CancellationToken.None);
+
+        Assert.NotNull(since);
+        Assert.InRange(
+            since.Value,
+            DateTime.UtcNow.AddMinutes(-2).AddSeconds(-3),
+            DateTime.UtcNow.AddMinutes(-2).AddSeconds(1));
+        Assert.Equal("old-hash", user.PasswordHash);
+        PasswordServiceMock.Verify(p => p.GenerateRandomPassword(), Times.Never);
+        EmailDeliveryRepositoryMock.Verify(
+            x => x.AddConfirmationAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+        EmailDeliveryRepositoryMock.Verify(
+            x => x.RemoveUnsentAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<EmailDeliveryTypeEnum>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+        UserRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

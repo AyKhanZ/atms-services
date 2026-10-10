@@ -5,9 +5,11 @@ using ATMS.Project.Contracts.Models.WorkProjects;
 using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Contracts.Requests.Users;
 using ATMS.Project.Contracts.Requests.WorkProjects;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -122,6 +124,7 @@ public sealed class ProjectController(IMediator mediator) : ControllerBase
     /// <response code="403">Resource forbidden, user is not a super administrator.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPost]
+    [EnableRateLimiting(RateLimitPolicies.Creates)]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
@@ -210,6 +213,7 @@ public sealed class ProjectController(IMediator mediator) : ControllerBase
     /// <response code="404">Project, user or role with the specified ID was not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPost("{id:guid}/participants")]
+    [EnableRateLimiting(RateLimitPolicies.Emails)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
@@ -247,6 +251,7 @@ public sealed class ProjectController(IMediator mediator) : ControllerBase
     /// <response code="404">Project with the specified ID was not found.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPost("{id:guid}/invitations")]
+    [EnableRateLimiting(RateLimitPolicies.Emails)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]

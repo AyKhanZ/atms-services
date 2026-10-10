@@ -26,6 +26,12 @@ public interface IEmailDeliveryRepository
         EmailDeliveryTypeEnum type,
         CancellationToken cancellationToken);
 
+    Task<bool> AnySinceAsync(
+        Guid userId,
+        EmailDeliveryTypeEnum type,
+        DateTime since,
+        CancellationToken cancellationToken);
+
     Task<List<EmailDelivery>> ClaimPendingAsync(
         int batchSize,
         CancellationToken cancellationToken);

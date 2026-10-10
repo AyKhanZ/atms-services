@@ -2,9 +2,11 @@ using ATMS.Application.Models;
 using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Models.History;
 using ATMS.Project.Contracts.Requests.History;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -27,6 +29,7 @@ public sealed class HistoryController(IMediator mediator) : ControllerBase
     /// <response code="403">The user cannot view this project.</response>
     /// <response code="404">The project, ticket or task was not found.</response>
     [HttpGet]
+    [EnableRateLimiting(RateLimitPolicies.Heavy)]
     [ProducesResponseType(typeof(KeysetPagedResult<HistoryEntryModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
@@ -57,6 +60,7 @@ public sealed class HistoryController(IMediator mediator) : ControllerBase
     /// <response code="403">The user cannot view this project.</response>
     /// <response code="404">The project, ticket or task was not found.</response>
     [HttpGet("states")]
+    [EnableRateLimiting(RateLimitPolicies.Heavy)]
     [ProducesResponseType(typeof(IReadOnlyCollection<HistoryStateModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]

@@ -7,6 +7,13 @@ public interface IEmailDeliveryRepository
 {
     Task AddRangeAsync(IEnumerable<EmailDelivery> deliveries, CancellationToken cancellationToken);
 
+    Task<int> CountSinceAsync(DateTime since, CancellationToken cancellationToken);
+
+    Task<Dictionary<Guid, int>> CountByUserSinceAsync(
+        IReadOnlyCollection<Guid> userIds,
+        DateTime since,
+        CancellationToken cancellationToken);
+
     Task<EmailDelivery[]> ClaimPendingAsync(int batchSize, CancellationToken cancellationToken);
 
     Task<EmailDeliveryRow?> GetAsync(Guid id, CancellationToken cancellationToken);

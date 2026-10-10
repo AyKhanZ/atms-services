@@ -3,9 +3,11 @@ using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Commands.Organizations;
 using ATMS.Project.Contracts.Models.Organizations;
 using ATMS.Project.Contracts.Requests.Organizations;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -84,6 +86,7 @@ public sealed class OrganizationController(IMediator mediator) : ControllerBase
     /// <response code="403">Resource forbidden.</response>
     /// <response code="500">Unexpected server error.</response>
     [HttpPost]
+    [EnableRateLimiting(RateLimitPolicies.Creates)]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]

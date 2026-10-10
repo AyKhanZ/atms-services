@@ -3,9 +3,11 @@ using ATMS.Data.Criteria;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Contracts.Models.WorkTasks;
 using ATMS.Project.Contracts.Requests.WorkTasks;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -79,6 +81,7 @@ public sealed class WorkTaskController(IMediator mediator) : ControllerBase
     /// <response code="403">The user cannot create tasks in this project.</response>
     /// <response code="404">The project, ticket or parent task was not found.</response>
     [HttpPost]
+    [EnableRateLimiting(RateLimitPolicies.Creates)]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]

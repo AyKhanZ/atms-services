@@ -1,9 +1,11 @@
 using ATMS.Application.Models;
 using ATMS.Project.Contracts.Models.Dashboard;
 using ATMS.Project.Contracts.Requests.Dashboard;
+using ATMS.Swagger.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ATMS.Project.API.Controllers.v1;
 
@@ -27,6 +29,7 @@ public sealed class DashboardController(IMediator mediator) : ControllerBase
     /// <response code="403">The user cannot view projects.</response>
     /// <response code="404">The selected project was not found among accessible projects.</response>
     [HttpGet]
+    [EnableRateLimiting(RateLimitPolicies.Heavy)]
     [ProducesResponseType(typeof(DashboardModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
