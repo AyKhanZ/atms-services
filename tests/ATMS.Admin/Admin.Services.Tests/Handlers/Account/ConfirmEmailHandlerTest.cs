@@ -15,7 +15,10 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
  
     public ConfirmEmailHandlerTest()
     {
-        _handler = new ConfirmEmailHandler(EmailConfirmationTokenServiceMock.Object, UserRepositoryMock.Object);
+        _handler = new ConfirmEmailHandler(
+            EmailConfirmationTokenServiceMock.Object,
+            UserRepositoryMock.Object,
+            CacheServiceMock.Object);
     }
  
     private ConfirmEmailCommand CreateCommand(string token = "valid-token") => new() { Token = token };
@@ -112,5 +115,6 @@ public class ConfirmEmailHandlerTest : BaseHandlerTest
         Assert.Equal(ConfirmEmailResultEnum.Confirmed, result);
         Assert.True(user.EmailConfirmed);
         UserRepositoryMock.Verify(r => r.SaveAsync(It.IsAny<CancellationToken>()), Times.Once);
+        VerifyUserCardRemoved(userId);
     }
 }

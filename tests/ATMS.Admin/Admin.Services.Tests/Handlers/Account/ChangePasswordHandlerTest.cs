@@ -26,7 +26,8 @@ public class ChangePasswordHandlerTest : BaseHandlerTest
         UserSessionRepositoryMock.Object,
         PasswordHasherServiceMock.Object,
         AccessTokenServiceMock.Object,
-        RefreshTokenServiceMock.Object);
+        RefreshTokenServiceMock.Object,
+        CacheServiceMock.Object);
 
     private static ChangePasswordCommand Command() => new()
     {
@@ -66,6 +67,7 @@ public class ChangePasswordHandlerTest : BaseHandlerTest
             // Sessions from before the change carry version 2 and stop refreshing; the new one has 3.
             It.Is<ATMS.Admin.Data.Entities.Tokens.UserSession>(session => session.UserId == user.Id && session.SessionVersion == 3), It.IsAny<CancellationToken>()), Times.Once);
         UserRepositoryMock.Verify(x => x.TrySavePasswordChangeAsync(user, 2, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
+        VerifyUserCardRemoved(user.Id);
     }
 
     [Fact]
@@ -148,6 +150,7 @@ public class ChangePasswordHandlerTest : BaseHandlerTest
 
         Assert.Equal(AuthErrorTypeEnum.AccountLocked, error.AuthErrorType);
         Assert.StartsWith(AuthMessages.AccountLocked.Split('{')[0], error.Message);
+        VerifyUserCardRemoved(user.Id);
     }
 
     [Fact]

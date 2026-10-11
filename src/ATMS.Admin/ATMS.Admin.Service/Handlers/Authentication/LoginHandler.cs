@@ -7,6 +7,9 @@ using ATMS.Admin.Service.Resources;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Enums;
+using ATMS.Application.Localization;
+using ATMS.Caching.Constants;
+using ATMS.Caching.Services.Interfaces;
 using ATMS.Data.Enums;
 using MediatR;
 
@@ -17,7 +20,8 @@ public sealed class LoginHandler(
     IUserSessionRepository userSessionRepository,
     IAccessTokenService accessTokenService,
     IRefreshTokenService refreshTokenService,
-    IPasswordHasherService passwordHasherService) : IRequestHandler<LoginCommand, AccessInfoModel>
+    IPasswordHasherService passwordHasherService,
+    ICacheService cache) : IRequestHandler<LoginCommand, AccessInfoModel>
 {
     public async Task<AccessInfoModel> Handle(LoginCommand command, CancellationToken cancellationToken)
     {
@@ -60,6 +64,7 @@ public sealed class LoginHandler(
             cancellationToken);
 
         await userRepository.SaveAsync(cancellationToken);
+        await RemoveUserCardAsync(user.Id, cancellationToken);
 
         return new AccessInfoModel
         {
@@ -124,8 +129,18 @@ public sealed class LoginHandler(
             now,
             now.AddMinutes(15),
             cancellationToken);
+        await RemoveUserCardAsync(user.Id, cancellationToken);
 
         throw new AuthException(AuthErrorTypeEnum.InvalidCredentials,
             AuthMessages.InvalidLoginCredentials);
+    }
+
+    // the admin's user card shows status, lock and last login
+    private async Task RemoveUserCardAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        foreach (var language in SupportedLanguages.All)
+        {
+            await cache.RemoveAsync(CacheKeys.Admin.UserById(userId, language), cancellationToken);
+        }
     }
 }

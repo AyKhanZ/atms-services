@@ -2,6 +2,9 @@ using ATMS.Admin.Contracts.Commands.Account;
 using ATMS.Admin.Contracts.Enums;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
+using ATMS.Application.Localization;
+using ATMS.Caching.Constants;
+using ATMS.Caching.Services.Interfaces;
 using MediatR;
 using Microsoft.IdentityModel.JsonWebTokens;
 
@@ -9,7 +12,8 @@ namespace ATMS.Admin.Service.Handlers.Account;
 
 public sealed class ConfirmEmailHandler(
     IEmailConfirmationTokenService emailConfirmationTokenService,
-    IUserRepository userRepository) : IRequestHandler<ConfirmEmailCommand, ConfirmEmailResultEnum>
+    IUserRepository userRepository,
+    ICacheService cache) : IRequestHandler<ConfirmEmailCommand, ConfirmEmailResultEnum>
 {
     public async Task<ConfirmEmailResultEnum> Handle(ConfirmEmailCommand command, CancellationToken cancellationToken)
     {
@@ -38,6 +42,11 @@ public sealed class ConfirmEmailHandler(
 
         user.EmailConfirmed = true;
         await userRepository.SaveAsync(cancellationToken);
+
+        foreach (var language in SupportedLanguages.All)
+        {
+            await cache.RemoveAsync(CacheKeys.Admin.UserById(user.Id, language), cancellationToken);
+        }
         
         return ConfirmEmailResultEnum.Confirmed;
     }

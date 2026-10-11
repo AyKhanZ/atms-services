@@ -34,7 +34,7 @@ public sealed class WorkProjectValidator : AbstractValidator<WorkProjectCommand>
 
         RuleFor(x => x.Title).Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage(ValidationMessages.TitleRequired)
-            .MaximumLength(100).WithMessage(_ => string.Format(ValidationMessages.TitleShouldBeLessThan, 100))
+            .MaximumLength(80).WithMessage(_ => string.Format(ValidationMessages.TitleShouldBeLessThan, 80))
             .MustAsync(IsTitleUniqueAsync).WithMessage(WorkProjectMessages.TitleAlreadyExists);
 
         RuleFor(x => x.Description)

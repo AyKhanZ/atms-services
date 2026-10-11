@@ -89,6 +89,7 @@ public sealed class CompleteOnboardingHandlerTest : BaseHandlerTest
         OnboardingRepositoryMock.Verify(
             x => x.TrySaveAsync(progress, 7, It.IsAny<CancellationToken>()),
             Times.Once);
+        VerifyUserCardRemoved(userId);
     }
 
     [Fact]

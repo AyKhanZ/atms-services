@@ -5,6 +5,9 @@ using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Exceptions.Enums;
+using ATMS.Application.Localization;
+using ATMS.Caching.Constants;
+using ATMS.Caching.Services.Interfaces;
 using ATMS.Data.Enums;
 using MediatR;
 
@@ -14,7 +17,8 @@ public sealed class ResetPasswordHandler(
     IPasswordResetTokenRepository passwordResetTokenRepository,
     IUserRepository userRepository,
     IPasswordHasherService passwordHasherService,
-    IUniqueTokenService uniqueTokenService
+    IUniqueTokenService uniqueTokenService,
+    ICacheService cache
     ) : IRequestHandler<ResetPasswordCommand>
 {
     public async Task Handle(ResetPasswordCommand command, CancellationToken cancellationToken)
@@ -61,6 +65,11 @@ public sealed class ResetPasswordHandler(
         if (!await userRepository.TrySavePasswordChangeAsync(user, expectedVersion, DateTime.UtcNow, cancellationToken))
         {
             throw new AuthException(AuthErrorTypeEnum.InvalidToken, AccountMessages.InvalidPasswordResetToken);
+        }
+
+        foreach (var language in SupportedLanguages.All)
+        {
+            await cache.RemoveAsync(CacheKeys.Admin.UserById(user.Id, language), cancellationToken);
         }
     }
 }
