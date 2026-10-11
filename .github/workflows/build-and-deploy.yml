@@ -1,0 +1,91 @@
+name: Build and deploy
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-demo
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Test
+        run: dotnet test atms-services.sln -c Release
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push images
+        run: |
+          # Quoted as one value: unquoted, MSBuild would split "sha-…;latest" on the ';'.
+          tags="\"sha-${GITHUB_SHA::7};latest\""
+
+          for project in \
+            src/ATMS.Gateway/ATMS.Gateway/ATMS.Gateway.csproj \
+            src/ATMS.Admin/ATMS.Admin.API/ATMS.Admin.API.csproj \
+            src/ATMS.Project/ATMS.Project.API/ATMS.Project.API.csproj
+          do
+            dotnet publish "$project" -c Release -t:PublishContainer \
+              -p:ContainerRegistry=ghcr.io -p:ContainerImageTags="$tags"
+          done
+
+  deploy-demo:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy compose and start
+        env:
+          DEMO_HOST: ${{ secrets.DEMO_HOST }}
+          DEMO_USER: ${{ secrets.DEMO_USER }}
+          DEMO_SSH_KEY: ${{ secrets.DEMO_SSH_KEY }}
+        run: |
+          umask 077
+          key_file="${RUNNER_TEMP}/demo_key"
+          known_hosts="${RUNNER_TEMP}/known_hosts"
+          # A .pem pasted on Windows keeps its CR line endings, and OpenSSH rejects it.
+          printf '%s\n' "$DEMO_SSH_KEY" | tr -d '\r' > "$key_file"
+          ssh-keyscan "$DEMO_HOST" > "$known_hosts"
+
+          ssh_opts=(
+            -i "$key_file"
+            -o IdentitiesOnly=yes
+            -o BatchMode=yes
+            -o StrictHostKeyChecking=yes
+            -o UserKnownHostsFile="$known_hosts"
+          )
+
+          scp "${ssh_opts[@]}" deploy/docker-compose.yml "${DEMO_USER}@${DEMO_HOST}:/srv/atms/docker-compose.yml"
+          # Under this name docker compose reads it on its own, so plain "docker compose up" is enough.
+          scp "${ssh_opts[@]}" deploy/docker-compose.demo.yml "${DEMO_USER}@${DEMO_HOST}:/srv/atms/docker-compose.override.yml"
+
+          ssh "${ssh_opts[@]}" "${DEMO_USER}@${DEMO_HOST}" \
+            "cd /srv/atms && docker compose pull && docker compose up -d && docker image prune -f"
