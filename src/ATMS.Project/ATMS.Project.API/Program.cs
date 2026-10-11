@@ -4,6 +4,7 @@ using ATMS.Swagger.Middlewares;
 using ATMS.Project.Services.Modules;
 using ATMS.Swagger.Constants;
 using ATMS.Application.Realtime;
+using ATMS.Project.API.Extensions;
 using ATMS.Project.API.Hubs;
 using ATMS.Project.API.Realtime;
 using Microsoft.AspNetCore.RateLimiting;
@@ -38,11 +39,6 @@ app.UseCors();
 
 app.UseLocalImageFiles(builder.Configuration);
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
 app.UseMiddleware<ExceptionsMiddleware>();
 
 app.UseAuthentication();
@@ -53,5 +49,7 @@ app.UseRateLimiter();
 
 app.MapControllers();
 app.MapHub<RealtimeHub>(RealtimeConstants.HubPath).DisableRateLimiting();
+
+await app.InitializeDataAsync();
 
 app.Run();

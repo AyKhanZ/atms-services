@@ -2,6 +2,7 @@ using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Messaging;
+using ATMS.Data.Migrations;
 using ATMS.Infrastructure.Options;
 using ATMS.Project.Data.DbContexts;
 using ATMS.Project.Data.Interceptors;
@@ -37,6 +38,7 @@ public static class DataAccessModule
                 // must be last: it commits its own transaction after the others
                 provider.GetRequiredService<NotificationLockInterceptor>()));
 
+        services.AddScoped<IMigrationRunner, MigrationRunner<ProjectDbContext>>();
         services.AddScoped<IDictionariesRepository, DictionariesRepository>();
         
         services.AddScoped<IUserRepository, UserRepository>();

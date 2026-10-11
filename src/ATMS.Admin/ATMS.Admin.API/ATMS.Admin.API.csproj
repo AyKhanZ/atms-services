@@ -3,6 +3,7 @@
     <PropertyGroup>
 		<PreserveCompilationContext>true</PreserveCompilationContext>
 		<UserSecretsId>atms-services</UserSecretsId>
+		<ContainerRepository>aykhanz/atms-admin-api</ContainerRepository>
     </PropertyGroup>
 
 	<PropertyGroup>

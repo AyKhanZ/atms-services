@@ -1,4 +1,4 @@
-using ATMS.Admin.Data.Infrastructure.Interfaces;
+using ATMS.Data.Migrations;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Interfaces;

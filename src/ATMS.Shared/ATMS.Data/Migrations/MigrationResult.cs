@@ -1,4 +1,4 @@
-﻿namespace ATMS.Admin.Data.Models;
+namespace ATMS.Data.Migrations;
 
 public sealed class MigrationResult
 {

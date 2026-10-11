@@ -15,10 +15,12 @@ public sealed class MigrationController(IMediator mediator) : ControllerBase
 {
     
     /// <summary>
-    /// Applies all pending migrations.
+    /// Applies pending migrations in Admin and then in Project.
     /// </summary>
     /// <remarks>
-    /// Executes migrations up to the latest version. Use carefully in production environments.
+    /// Admin migrations run first. Project is called only after Admin succeeds.
+    /// If Admin fails, project is null. If the call to Project fails, admin still contains its result
+    /// and project.errorMessage explains the failure.
     /// </remarks>
     /// <param name="command">Migration command containing options.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -29,12 +31,12 @@ public sealed class MigrationController(IMediator mediator) : ControllerBase
     /// <response code="500">Unhandled server error.</response>
     [HttpPost("up")]
     [EnableRateLimiting(RateLimitPolicies.Migrations)]
-    [ProducesResponseType(typeof(MigrationModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApplyMigrationsModel), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<MigrationModel>> Up([FromQuery] ApplyMigrationsCommand command,
+    public async Task<ActionResult<ApplyMigrationsModel>> Up([FromQuery] ApplyMigrationsCommand command,
         CancellationToken cancellationToken)
     {
         var result = await mediator.Send(command, cancellationToken);

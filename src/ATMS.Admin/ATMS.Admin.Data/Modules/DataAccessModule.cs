@@ -1,12 +1,11 @@
 using ATMS.Admin.Data.DbContexts;
-using ATMS.Admin.Data.Infrastructure;
-using ATMS.Admin.Data.Infrastructure.Interfaces;
 using ATMS.Admin.Data.Repositories;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Exceptions.Resources;
 using ATMS.Data.Messaging;
+using ATMS.Data.Migrations;
 using ATMS.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
