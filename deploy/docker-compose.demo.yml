@@ -1,0 +1,19 @@
+# Demo VM: 2 vCPU, 4 GB. About 2.9 GB in total, the rest is left to the OS.
+
+services:
+  admin-db:
+    deploy: { resources: { limits: { memory: 384m } } }
+  project-db:
+    deploy: { resources: { limits: { memory: 512m } } }
+  rabbitmq:
+    deploy: { resources: { limits: { memory: 384m } } }
+  redis:
+    deploy: { resources: { limits: { memory: 192m } } }
+  admin-api:
+    deploy: { resources: { limits: { memory: 512m } } }
+  project-api:
+    deploy: { resources: { limits: { memory: 640m } } }
+  gateway:
+    deploy: { resources: { limits: { memory: 256m } } }
+  web:
+    deploy: { resources: { limits: { memory: 64m } } }

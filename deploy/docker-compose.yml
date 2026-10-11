@@ -1,0 +1,177 @@
+name: atms
+
+# Shared by every server. Server-specific values and secrets come from .env next to this file,
+# memory limits from docker-compose.override.yml (CI copies docker-compose.<server>.yml under that name,
+# and docker compose reads it on its own).
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+x-queue: &queue
+  QueueOptions__Username: ${RABBITMQ_USER}
+  QueueOptions__Password: ${RABBITMQ_PASSWORD}
+  QueueOptions__VirtualHost: ${RABBITMQ_VHOST}
+
+services:
+  admin-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${ADMIN_DB_NAME}
+    volumes:
+      - admin-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging: *logging
+    networks: [atms]
+
+  project-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PROJECT_DB_NAME}
+    volumes:
+      - project-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging: *logging
+    networks: [atms]
+
+  rabbitmq:
+    image: rabbitmq:3.13-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      # "ping" passes before the AMQP port opens; the APIs would get "connection refused" on start.
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
+    logging: *logging
+    networks: [atms]
+
+  redis:
+    image: redis:7.2-alpine
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    logging: *logging
+    networks: [atms]
+
+  # New volumes belong to root; the API images run as "app" (UID 1654) and could not write there.
+  volumes-init:
+    image: busybox:1.36
+    command: chown -R 1654:1654 /images /attachments
+    volumes:
+      - images:/images
+      - attachments:/attachments
+    logging: *logging
+    networks: [atms]
+
+  admin-api:
+    image: ghcr.io/aykhanz/atms-admin-api:${ATMS_TAG}
+    environment:
+      <<: *queue
+      ASPNETCORE_ENVIRONMENT: Production
+      AdminDatabaseOptions__SqlConnection: ${ADMIN_DB_CONNECTION}
+      JwtOptions__Key: ${JWT_KEY}
+      EmailOptions__Password: ${EMAIL_PASSWORD}
+      AdminOptions__Email: ${SUPERADMIN_EMAIL}
+      AdminOptions__Password: ${SUPERADMIN_PASSWORD}
+      RedirectUrlOptions__BaseUrl: https://${PUBLIC_HOST}/admin/api/v1
+      RedirectUrlOptions__ResetPasswordPage: https://${PUBLIC_HOST}/reset-password
+      RedirectUrlOptions__EmailConfirmedPage: https://${PUBLIC_HOST}/email-confirmation?status=success
+      RedirectUrlOptions__EmailAlreadyConfirmedPage: https://${PUBLIC_HOST}/email-confirmation?status=already-confirmed
+      RedirectUrlOptions__EmailConfirmFailedPage: https://${PUBLIC_HOST}/email-confirmation?status=failed
+      ImagesOptions__BaseImageUrl: https://${PUBLIC_HOST}/app/images
+    volumes:
+      - images:/app/images
+    depends_on:
+      admin-db: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      volumes-init: { condition: service_completed_successfully }
+    restart: unless-stopped
+    logging: *logging
+    networks: [atms]
+
+  project-api:
+    image: ghcr.io/aykhanz/atms-project-api:${ATMS_TAG}
+    environment:
+      <<: *queue
+      ASPNETCORE_ENVIRONMENT: Production
+      ProjectDatabaseOptions__SqlConnection: ${PROJECT_DB_CONNECTION}
+      JwtOptions__Key: ${JWT_KEY}
+      EmailOptions__Password: ${EMAIL_PASSWORD}
+      ImagesOptions__BaseImageUrl: https://${PUBLIC_HOST}/app/images
+      NotificationsOptions__AppUrl: https://${PUBLIC_HOST}
+    volumes:
+      - images:/app/images
+      - attachments:/app/attachments
+    depends_on:
+      project-db: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      volumes-init: { condition: service_completed_successfully }
+    restart: unless-stopped
+    logging: *logging
+    networks: [atms]
+
+  gateway:
+    image: ghcr.io/aykhanz/atms-gateway:${ATMS_TAG}
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    depends_on: [admin-api, project-api]
+    restart: unless-stopped
+    logging: *logging
+    networks: [atms]
+
+  web:
+    image: ghcr.io/aykhanz/atms-web:${ATMS_TAG}
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ${CERTS_DIR:-/etc/letsencrypt}:/etc/letsencrypt:ro
+    depends_on: [gateway]
+    restart: unless-stopped
+    logging: *logging
+    networks: [atms]
+
+volumes:
+  admin-db-data:
+  project-db-data:
+  rabbitmq-data:
+  images:
+  attachments:
+
+networks:
+  atms:
+    ipam:
+      config:
+        # Fixed: ProxyOptions:KnownNetworks in appsettings.Production.json trusts exactly this range.
+        - subnet: 172.30.0.0/24
