@@ -26,12 +26,13 @@ public sealed class ProjectAccessBehavior<TRequest, TResponse>(
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        if (projectPermissionService.IsSuperAdmin)
+        // before IsSuperAdmin: it reads the role claim, and anonymous requests (health) have none
+        if (AccessRequirements.Length == 0)
         {
             return await next(cancellationToken);
         }
 
-        if (AccessRequirements.Length == 0)
+        if (projectPermissionService.IsSuperAdmin)
         {
             return await next(cancellationToken);
         }
