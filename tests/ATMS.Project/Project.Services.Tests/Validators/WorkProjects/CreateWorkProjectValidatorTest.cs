@@ -309,15 +309,21 @@ public class CreateWorkProjectValidatorTest : BaseValidatorTest
         Assert.Contains(result.Errors, x => x.PropertyName == nameof(command.Participants));
     }
 
-    [Fact]
-    public async Task Validate_WhenTitleIsLongerThanOneHundredCharacters_FailsValidation()
+    [Theory]
+    [InlineData(80, true)]
+    [InlineData(81, false)]
+    public async Task Validate_WhenTitleLengthCrossesTheFormLimit_MatchesTheForm(int length, bool isValid)
     {
         var command = CreateCommand();
-        command.Title = new string('A', 101);
+        command.Title = new string('A', length);
 
         var result = await _validator.ValidateAsync(command);
 
-        Assert.Contains(result.Errors, x => x.PropertyName == nameof(command.Title));
+        Assert.Equal(isValid, result.IsValid);
+        if (!isValid)
+        {
+            Assert.Contains(result.Errors, x => x.PropertyName == nameof(command.Title));
+        }
     }
 
     [Fact]

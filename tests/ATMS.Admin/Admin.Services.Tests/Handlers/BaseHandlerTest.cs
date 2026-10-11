@@ -2,6 +2,8 @@ using ATMS.Data.Migrations;
 using ATMS.Admin.Data.Repositories.Interfaces;
 using ATMS.Admin.Service.Security.Interfaces;
 using ATMS.Application.Interfaces;
+using ATMS.Application.Localization;
+using ATMS.Caching.Constants;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Data.Messaging;
 using ATMS.Email.Services.Interfaces;
@@ -67,4 +69,15 @@ public abstract class BaseHandlerTest
                 [$"{nameof(RedirectUrlOptions)}:{nameof(RedirectUrlOptions.ResetPasswordPage)}"] = ResetPasswordPage
             })
             .Build();
+
+    // the admin's user card is cached once per language; a stale copy hides the change for 5 minutes
+    protected void VerifyUserCardRemoved(Guid userId)
+    {
+        foreach (var language in SupportedLanguages.All)
+        {
+            CacheServiceMock.Verify(
+                x => x.RemoveAsync(CacheKeys.Admin.UserById(userId, language), It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+    }
 }

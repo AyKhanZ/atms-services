@@ -95,6 +95,11 @@ public sealed class CompleteOnboardingHandler(
             throw new ConflictException(OnboardingMessages.OnboardingConcurrencyConflict);
         }
 
+        foreach (var language in SupportedLanguages.All)
+        {
+            await cache.RemoveAsync(CacheKeys.Admin.UserById(user.Id, language), cancellationToken);
+        }
+
         await cache.RemoveAsync(CacheKeys.Admin.MeById(user.Id), cancellationToken);
         await cache.RemoveAsync(CacheKeys.Admin.ProfileById(user.Id), cancellationToken);
 

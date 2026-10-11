@@ -26,7 +26,8 @@ public class LoginHandlerTest : BaseHandlerTest
             UserSessionRepositoryMock.Object,
             AccessTokenServiceMock.Object,
             RefreshTokenServiceMock.Object,
-            PasswordHasherServiceMock.Object);
+            PasswordHasherServiceMock.Object,
+            CacheServiceMock.Object);
     }
  
     private User CreateUser(uint failedLoginCount = 0, int? statusId = null, bool isEmailConfirmed = true) =>
@@ -87,6 +88,7 @@ public class LoginHandlerTest : BaseHandlerTest
  
         Assert.Equal(FakeAccessToken, result.AccessToken);
         Assert.Equal(FakeRefreshToken, result.RefreshToken);
+        VerifyUserCardRemoved(user.Id);
     }
 
     [Fact]
@@ -140,8 +142,9 @@ public class LoginHandlerTest : BaseHandlerTest
             _handler.Handle(command, CancellationToken.None));
  
         Assert.Equal(AuthErrorTypeEnum.InvalidCredentials, exception.AuthErrorType);
+        VerifyUserCardRemoved(user.Id);
     }
- 
+
     // The count is updated in the database in one statement, so parallel wrong passwords cannot all
     // read the same number; the handler only asks for it.
     [Fact]

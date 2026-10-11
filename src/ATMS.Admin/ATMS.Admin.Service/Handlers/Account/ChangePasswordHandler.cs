@@ -9,6 +9,9 @@ using ATMS.Application.Exceptions.Conflict;
 using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Exceptions.Enums;
 using ATMS.Application.Interfaces;
+using ATMS.Application.Localization;
+using ATMS.Caching.Constants;
+using ATMS.Caching.Services.Interfaces;
 using ATMS.Data.Enums;
 using FluentValidation;
 using FluentValidation.Results;
@@ -22,7 +25,8 @@ public sealed class ChangePasswordHandler(
     IUserSessionRepository userSessionRepository,
     IPasswordHasherService passwordHasherService,
     IAccessTokenService accessTokenService,
-    IRefreshTokenService refreshTokenService) : IRequestHandler<ChangePasswordCommand, AccessInfoModel>
+    IRefreshTokenService refreshTokenService,
+    ICacheService cache) : IRequestHandler<ChangePasswordCommand, AccessInfoModel>
 {
     public async Task<AccessInfoModel> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
     {
@@ -55,6 +59,7 @@ public sealed class ChangePasswordHandler(
 
             if (lockedNow)
             {
+                await RemoveUserCardAsync(user.Id, cancellationToken);
                 throw new AuthException(AuthErrorTypeEnum.AccountLocked,
                     string.Format(AuthMessages.AccountLocked, 15));
             }
@@ -97,11 +102,22 @@ public sealed class ChangePasswordHandler(
             throw new ConflictException(AccountMessages.PasswordChangedConcurrently);
         }
 
+        await RemoveUserCardAsync(user.Id, cancellationToken);
+
         return new AccessInfoModel
         {
             AccessToken = accessToken.Token,
             AccessTokenExpireTime = accessToken.ExpiresInMinutes,
             RefreshToken = refreshToken.Token
         };
+    }
+
+    // the admin's user card shows status and lock
+    private async Task RemoveUserCardAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        foreach (var language in SupportedLanguages.All)
+        {
+            await cache.RemoveAsync(CacheKeys.Admin.UserById(userId, language), cancellationToken);
+        }
     }
 }

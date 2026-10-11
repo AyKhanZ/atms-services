@@ -32,7 +32,7 @@ public sealed class WorkProjectConfiguration : IEntityTypeConfiguration<WorkProj
             
         builder.Property(e => e.Title)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(80);
             
         builder.Property(e => e.Code)
             .IsRequired()

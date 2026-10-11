@@ -23,7 +23,8 @@ public class ResetPasswordHandlerTest : BaseHandlerTest
             PasswordResetTokenRepositoryMock.Object,
             UserRepositoryMock.Object,
             PasswordHasherServiceMock.Object,
-            UniqueTokenServiceMock.Object);
+            UniqueTokenServiceMock.Object,
+            CacheServiceMock.Object);
 
         PasswordHasherServiceMock
             .Setup(p => p.Hash(It.IsAny<string>()))
@@ -77,6 +78,7 @@ public class ResetPasswordHandlerTest : BaseHandlerTest
                 It.IsAny<CancellationToken>()),
             Times.Once);
         UserRepositoryMock.Verify(r => r.TrySavePasswordChangeAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
+        VerifyUserCardRemoved(userId);
     }
 
     [Fact]
