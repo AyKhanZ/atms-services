@@ -92,7 +92,8 @@ public sealed class ProjectController(IMediator mediator) : ControllerBase
     /// Returns users from the internal team who can participate in projects.
     /// </summary>
     /// <remarks>
-    /// Client organization users are intentionally excluded. They are loaded from the selected organization instead.
+    /// Client organization users are intentionally excluded. Add participant loads them from the project.
+    /// The project form still loads the selected organization.
     /// </remarks>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <response code="200">Returns internal project participant candidates.</response>
@@ -107,6 +108,33 @@ public sealed class ProjectController(IMediator mediator) : ControllerBase
     public async Task<ActionResult<UserModel[]>> GetTeamMembers(CancellationToken cancellationToken)
     {
         return Ok(await mediator.Send(new GetProjectTeamMembersRequest(), cancellationToken));
+    }
+
+    /// <summary>
+    /// Returns clients of the project's organization who can be added as participants.
+    /// </summary>
+    /// <remarks>
+    /// Available to project members with the right to invite clients — the project manager and the client manager.
+    /// The same fields as an organization user: name, surname, email, avatar and position.
+    /// A project without an organization, including an internal project, returns an empty list.
+    /// Inactive clients are left out: they cannot be added to a project.
+    /// </remarks>
+    /// <param name="id">Project ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <response code="200">Returns client participant candidates of the project's organization.</response>
+    /// <response code="401">Unauthorized, user is not authenticated.</response>
+    /// <response code="403">Resource forbidden, user has no right to invite clients into this project.</response>
+    /// <response code="404">Project with the specified ID was not found.</response>
+    /// <response code="500">Unexpected server error.</response>
+    [HttpGet("{id:guid}/client-candidates")]
+    [ProducesResponseType(typeof(UserModel[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<UserModel[]>> GetClientCandidates(Guid id, CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(new GetProjectClientCandidatesRequest { ProjectId = id }, cancellationToken));
     }
 
     /// <summary>
