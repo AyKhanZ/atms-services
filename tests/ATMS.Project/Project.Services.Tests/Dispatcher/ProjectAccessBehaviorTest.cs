@@ -26,7 +26,19 @@ public class ProjectAccessBehaviorTest
         var result = await behavior.Handle(new PublicRequest(), Next, CancellationToken.None);
 
         Assert.Equal("handled", result);
-        _projectPermissions.VerifyGet(service => service.IsSuperAdmin, Times.Once);
+        _projectPermissions.VerifyGet(service => service.IsSuperAdmin, Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_AnonymousRequestWithoutProjectAccessRequirement_ContinuesPipeline()
+    {
+        _projectPermissions.SetupGet(service => service.IsSuperAdmin)
+            .Throws(new AuthException(AuthErrorTypeEnum.InvalidCredentials, "No role claim."));
+        var behavior = CreateBehavior<PublicRequest>();
+
+        var result = await behavior.Handle(new PublicRequest(), Next, CancellationToken.None);
+
+        Assert.Equal("handled", result);
     }
 
     [Fact]
