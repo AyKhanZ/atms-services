@@ -1,6 +1,7 @@
 # Deploy checklist
 
-Nothing is deployed yet. This is what has to happen before the first production run.
+How the services get their settings, and what to check before a server goes live. Running the stack on a server
+is described in `deploy/README.md`.
 
 ## How settings are split
 
@@ -8,41 +9,26 @@ Nothing is deployed yet. This is what has to happen before the first production 
 |---|---|---|
 | `appsettings.json` | the same everywhere: token lifetimes, limits, time zone, SMTP server | yes |
 | `appsettings.Development.json` | local addresses: localhost, ports | yes |
-| `appsettings.Production.json` | server addresses, **empty until there is a server** | yes |
-| user-secrets (local) / Key Vault (server) | the 7 secrets: both `SqlConnection`, `JwtOptions:Key`, `EmailOptions:Password`, `QueueOptions:Password`, `AdminOptions:Email`, `AdminOptions:Password` | no |
+| `appsettings.Production.json` | addresses inside the docker network (`rabbitmq`, `redis`, `admin-api:8080`), the same on every server | yes |
+| user-secrets (local) / `.env` on the server | the secrets and everything that differs per server (public host, passwords, JWT key) | no |
 
-The app picks the file by `ASPNETCORE_ENVIRONMENT`: `launchSettings.json` sets `Development` locally, on a server
-nothing is set, so it is `Production`. User-secrets are read only in `Development`. Any empty or missing value
-stops the app at start and names it.
+The app picks the file by `ASPNETCORE_ENVIRONMENT`: `launchSettings.json` sets `Development` locally, compose sets
+`Production`. User-secrets are read only in `Development`. On a server `deploy/docker-compose.yml` turns `.env` into
+environment variables, `:` becomes `__` (`JwtOptions__Key=...`). Any empty or missing value stops the app at start
+and names it.
+
+Key Vault is not used: one of the servers is not in Azure, and both servers take their values the same way.
+`push-secrets.ps1` is kept from that plan and is not part of the deploy.
 
 ## Steps
 
-1. **Fill `appsettings.Production.json`** in both APIs with the server addresses (frontend URL, gateway URL,
-   RabbitMQ and Redis host).
-2. **Key Vault.** Create it, give the server access, then push the secrets:
-   ```powershell
-   az login
-   .\tools\deploy\push-secrets.ps1 -VaultName <vault> -SecretsFile <file with production values>
-   ```
-   The file has the shape of the local user-secrets file (right click `ATMS.Admin.API` → Manage User Secrets),
-   with production values. Keep it outside the repo and delete it afterwards.
-   Run in PowerShell 7 (`pwsh`).
-3. **Read Key Vault in the APIs.** Packages `Azure.Extensions.AspNetCore.Configuration.Secrets` and
-   `Azure.Identity`, and in both `Program.cs`:
-   ```csharp
-   if (builder.Environment.IsProduction())
-       builder.Configuration.AddAzureKeyVault(new Uri(vaultUrl), new DefaultAzureCredential());
-   ```
-   Until then the same keys work as environment variables, `:` becomes `__` (`JwtOptions__Key=...`).
-4. **docker compose on the server** reads its values from a `.env` next to `docker-compose.yml`. Create it on the
-   server by hand with the same keys as the local `.env` (it never goes to git). The values must match the connection strings and
-   `QueueOptions` in Key Vault.
-5. **Close the ports.** `docker-compose.yml` publishes the database, RabbitMQ and Redis ports for local work. On the
-   server only nginx should be reachable from outside; the gateway sits behind it.
-6. **Frontend.** `atms-application/src/environments/environment.prod.ts` still points at `http://localhost:5000`.
-   Set the real gateway address before `npm run build`, otherwise the browser calls the user's own machine.
-7. **nginx** in front: serves the built frontend, does HTTPS, proxies the API to the gateway.
-8. **Rate limiting** (`Specs/20-rate-limiting.md`). The APIs limit per user and per action; nginx cuts plain
+1. **`.env` on the server** — a copy of the local `atms-services/.env` (it holds the server keys too), never in git.
+2. **Ports.** Only `web` publishes ports (80, 443). Databases, RabbitMQ, Redis and the gateway stay inside the
+   docker network. The root `docker-compose.yml` with open ports is for local work only.
+3. **Frontend.** `environment.prod.ts` has an empty `apiUrl`: the browser calls `/admin/...` and `/project/...` on the
+   host the page came from, and nginx in the `atms-web` image proxies them to the gateway.
+4. **nginx** (`atms-application/nginx/default.conf.template`): HTTPS, the Angular app, proxy to the gateway.
+5. **Rate limiting** (`Specs/20-rate-limiting.md`). The APIs limit per user and per action; nginx cuts plain
    floods per IP before they reach .NET.
    - nginx, in front of the gateway:
      ```nginx
@@ -62,11 +48,11 @@ stops the app at start and names it.
      }
      ```
      `429`, not the default `503`: the frontend treats `503` as "server is down" and opens that page.
-   - **`ProxyOptions:KnownNetworks`** in `appsettings.Production.json`: the nginx address in the Gateway, the docker
-     network of the gateway in both APIs (CIDR, e.g. `"172.18.0.0/16"`). Empty means only localhost is trusted, so
+   - **`ProxyOptions:KnownNetworks`** in `appsettings.Production.json` of the Gateway and both APIs is
+     `"172.30.0.0/24"`, the subnet fixed in `deploy/docker-compose.yml`; change both together. Empty means only localhost is trusted, so
      every user gets the proxy's IP and the whole site shares one login limit. Never trust everyone: anyone could
      then send a fake `X-Forwarded-For` and get around every IP limit.
-   - Only nginx is reachable from outside, not the gateway (step 5) — otherwise its IP limit is skipped.
+   - Only nginx is reachable from outside, not the gateway (step 2) — otherwise its IP limit is skipped.
    - With Cloudflare in front, nginx takes the visitor's IP from Cloudflare, and only from Cloudflare addresses:
      ```nginx
      real_ip_header CF-Connecting-IP;
@@ -76,5 +62,5 @@ stops the app at start and names it.
      `appsettings.json` (`RateLimitOptions:Creates:DailyLimit` …) without a rebuild, a restart is enough.
    - `NotificationsOptions:MaxEmailsPerDay = 300` is sized for Gmail (about 500 a day). With SendGrid, SES or
      Mailgun raise it.
-9. **Rotate the old secrets.** The values that used to be in `appsettings.json` are in the git history: new Gmail
+6. **Rotate the old secrets.** The values that used to be in `appsettings.json` are in the git history: new Gmail
    app password, new JWT key, new database and RabbitMQ passwords.
