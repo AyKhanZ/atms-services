@@ -34,11 +34,6 @@ app.UseCors();
 
 app.UseLocalImageFiles(builder.Configuration);
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
 app.UseMiddleware<ExceptionsMiddleware>();
 
 app.UseAuthentication();

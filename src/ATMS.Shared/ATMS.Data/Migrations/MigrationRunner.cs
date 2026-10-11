@@ -1,8 +1,6 @@
-using ATMS.Admin.Data.Infrastructure.Interfaces;
-using ATMS.Admin.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ATMS.Admin.Data.Infrastructure;
+namespace ATMS.Data.Migrations;
 
 public sealed class MigrationRunner<TDbContext>(TDbContext context) : IMigrationRunner
     where TDbContext : DbContext
@@ -47,5 +45,17 @@ public sealed class MigrationRunner<TDbContext>(TDbContext context) : IMigration
                 ErrorMessage = ex.Message
             };
         }
+    }
+
+    public async Task MigrateIfEmptyAsync(CancellationToken cancellationToken)
+    {
+        var applied = await context.Database.GetAppliedMigrationsAsync(cancellationToken);
+
+        if (applied.Any())
+        {
+            return;
+        }
+
+        await context.Database.MigrateAsync(cancellationToken);
     }
 }

@@ -20,7 +20,10 @@ public class MigrationControllerTest : BaseControllerTest
     {
         // Arrange
         var command = new ApplyMigrationsCommand();
-        var expected = new MigrationModel();
+        var expected = new ApplyMigrationsModel
+        {
+            Admin = new MigrationModel()
+        };
 
         MediatorMock
             .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
