@@ -24,7 +24,8 @@ app.MapDefaultEndpoints();
 
 app.UseProxyForwardedHeaders(builder.Configuration);
 
-if (app.Environment.IsDevelopment())
+// off on a client server; the demo turns it on with SwaggerOptions:Enabled to try the API by hand
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("SwaggerOptions:Enabled"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();

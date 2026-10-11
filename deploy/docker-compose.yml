@@ -94,6 +94,8 @@ services:
     image: ghcr.io/aykhanz/atms-admin-api:${ATMS_TAG}
     environment:
       <<: *queue
+      # on only where .env says SWAGGER_ENABLED=true (the demo)
+      SwaggerOptions__Enabled: ${SWAGGER_ENABLED:-false}
       ASPNETCORE_ENVIRONMENT: Production
       AdminDatabaseOptions__SqlConnection: ${ADMIN_DB_CONNECTION}
       JwtOptions__Key: ${JWT_KEY}
@@ -121,6 +123,8 @@ services:
     image: ghcr.io/aykhanz/atms-project-api:${ATMS_TAG}
     environment:
       <<: *queue
+      # on only where .env says SWAGGER_ENABLED=true (the demo)
+      SwaggerOptions__Enabled: ${SWAGGER_ENABLED:-false}
       ASPNETCORE_ENVIRONMENT: Production
       ProjectDatabaseOptions__SqlConnection: ${PROJECT_DB_CONNECTION}
       JwtOptions__Key: ${JWT_KEY}
