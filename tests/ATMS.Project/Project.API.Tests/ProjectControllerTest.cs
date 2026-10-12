@@ -73,6 +73,23 @@ public class ProjectControllerTest : BaseControllerTest
     }
 
     [Fact]
+    public async Task GetClientCandidates_Returns200WithTheProjectsClients()
+    {
+        var id = Guid.NewGuid();
+        var expected = new[] { new UserModel { Id = Guid.NewGuid() } };
+        MediatorMock
+            .Setup(x => x.Send(
+                It.Is<GetProjectClientCandidatesRequest>(request => request.ProjectId == id),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expected);
+
+        var result = await _controller.GetClientCandidates(id, CancellationToken.None);
+
+        var response = Assert.IsType<OkObjectResult>(result.Result);
+        Assert.Equal(expected, response.Value);
+    }
+
+    [Fact]
     public async Task Create_Returns201WithGeneratedId()
     {
         var id = Guid.NewGuid();
