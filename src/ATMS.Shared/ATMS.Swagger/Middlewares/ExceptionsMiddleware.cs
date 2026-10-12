@@ -2,6 +2,7 @@ using ATMS.Application.Exceptions.Entity;
 using ATMS.Application.Exceptions.Configuration;
 using ATMS.Application.Exceptions.Enums;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.Net;
 using ATMS.Application.Exceptions.Auth;
 using ATMS.Application.Exceptions.Conflict;
@@ -19,6 +20,14 @@ namespace ATMS.Swagger.Middlewares;
 
 public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) : IMiddleware
 {
+    // controllers answer in camelCase; Newtonsoft defaults to PascalCase and the client missed every Errors/Field/Error
+    private static readonly JsonSerializerSettings CamelCase = new()
+    {
+        ContractResolver = new CamelCasePropertyNamesContractResolver(),
+    };
+
+    private static string Json(object value) => JsonConvert.SerializeObject(value, CamelCase);
+
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
@@ -100,7 +109,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
             ? ExceptionMessages.InternalServerError
             : exception.Message;
 
-        var result = JsonConvert.SerializeObject(new { error = errorMessage });
+        var result = Json(new { error = errorMessage });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)code;
 
@@ -125,7 +134,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
             ? ExceptionMessages.InternalServerError
             : exception.Message;
 
-        var result = JsonConvert.SerializeObject(new { error = errorMessage });
+        var result = Json(new { error = errorMessage });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)code;
 
@@ -137,7 +146,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
         logger.LogCritical(exception, "Configuration error on {Path} {Method}: {Message}",
             context.Request.Path, context.Request.Method, exception.Message);
 
-        var result = JsonConvert.SerializeObject(new { error = ExceptionMessages.InternalServerError });
+        var result = Json(new { error = ExceptionMessages.InternalServerError });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
@@ -158,7 +167,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
             ]
         };
 
-        var result = JsonConvert.SerializeObject(response);
+        var result = Json(response);
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
@@ -175,7 +184,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
                 context.Request.Path,
                 exception.Message);
 
-            var result = JsonConvert.SerializeObject(new
+            var result = Json(new
             {
                 error = ExceptionMessages.ServiceTemporarilyUnavailable,
                 requestId = context.TraceIdentifier
@@ -192,7 +201,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
             context.Request.Method,
             exception.Message);
 
-        var errorResult = JsonConvert.SerializeObject(new
+        var errorResult = Json(new
         {
             error = ExceptionMessages.InternalServerError,
             requestId = context.TraceIdentifier
@@ -213,7 +222,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
                 Error = f.ErrorMessage
             }).ToList()
         };
-        var result = JsonConvert.SerializeObject(response);
+        var result = Json(response);
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
@@ -234,7 +243,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
             ]
         };
 
-        var result = JsonConvert.SerializeObject(response);
+        var result = Json(response);
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
@@ -249,7 +258,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
             context.Request.Path,
             exception.Message);
 
-        var result = JsonConvert.SerializeObject(new { error = exception.Message });
+        var result = Json(new { error = exception.Message });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = StatusCodes.Status409Conflict;
         return context.Response.WriteAsync(result);
@@ -265,7 +274,7 @@ public sealed class ExceptionsMiddleware(ILogger<ExceptionsMiddleware> logger) :
             context.TraceIdentifier,
             context.Request.Path);
 
-        var result = JsonConvert.SerializeObject(new
+        var result = Json(new
         {
             error = ExceptionMessages.NameAlreadyInUse
         });
