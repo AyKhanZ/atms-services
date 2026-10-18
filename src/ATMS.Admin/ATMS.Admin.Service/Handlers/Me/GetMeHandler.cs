@@ -21,21 +21,12 @@ public sealed class GetMeHandler(
 {
     public async Task<MeModel> Handle(GetMeRequest request, CancellationToken cancellationToken)
     {
-        var key = CacheKeys.Admin.MeById(currentUser.Id);
-        var model = await cache.GetOrSetAsync(
-                   key: key,
+        return await cache.GetOrSetAsync(
+                   key: CacheKeys.Admin.MeById(currentUser.Id),
                    factory: () => GetFromDb(cancellationToken),
                    ttl: CacheTtl.Entity,
-                   cancellationToken);
-
-        if (model?.Language is not null)
-        {
-            return model;
-        }
-
-        await cache.RemoveAsync(key, cancellationToken);
-
-        return await GetFromDb(cancellationToken);
+                   cancellationToken)
+               ?? await GetFromDb(cancellationToken);
     }
 
     private async Task<MeModel> GetFromDb(CancellationToken cancellationToken)

@@ -8,6 +8,7 @@ using ATMS.Admin.Data.Entities.Dictionaries;
 using ATMS.Admin.Data.Entities.Onboarding;
 using ATMS.Admin.Service.Mappers.Actions;
 using ATMS.Application.Models;
+using ATMS.Data.Constants;
 using ATMS.Data.Enums;
 using AutoMapper;
 
@@ -95,9 +96,12 @@ public sealed class EntityToModelProfile : Profile
             .AfterMap<OnboardingModelMappingAction>();
         
         
+        // super admin keeps the language on the device, the column is only the seed default
         CreateMap<User, MeModel>()
             .ForMember(destination => destination.Language,
-                options => options.MapFrom(source => source.Language.Code));
+                options => options.MapFrom(source => source.UserRoles.Any(x => x.RoleId == RoleIds.SuperAdmin)
+                    ? null
+                    : source.Language.Code));
 
         CreateMap<User, ProfileModel>()
             .ForMember(destination => destination.BirthDate,
