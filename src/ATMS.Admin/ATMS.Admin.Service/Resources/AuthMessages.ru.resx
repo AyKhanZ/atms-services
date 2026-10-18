@@ -31,6 +31,6 @@
         <value>Электронная почта не подтверждена.</value>
     </data>
     <data name="InvalidLoginCredentials" xml:space="preserve">
-        <value>Неверный email или пароль.</value>
+        <value>Неверная эл. почта или пароль.</value>
     </data>
 </root>

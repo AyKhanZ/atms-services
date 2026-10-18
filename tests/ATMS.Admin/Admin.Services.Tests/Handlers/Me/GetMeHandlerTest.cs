@@ -164,54 +164,36 @@ public class GetMeHandlerTest : BaseHandlerTest
     }
 
     [Fact]
-    public async Task Handle_WhenCachedLanguageIsMissing_RemovesCacheAndLoadsFromDb()
+    public async Task Handle_WhenCachedModelHasNoLanguage_ReturnsItWithoutReloading()
     {
         // Arrange
         var request = new GetMeRequest();
         var userId = Guid.NewGuid();
-        var user = new User { Id = userId };
-        var key = $"user:me:{userId}";
-        var cacheCalls = 0;
+        var cached = new MeModel { Language = null };
 
         CacheServiceMock
             .Setup(c => c.GetOrSetAsync(
-                key,
+                $"user:me:{userId}",
                 It.IsAny<Func<Task<MeModel>>>(),
                 It.IsAny<TimeSpan>(),
                 It.IsAny<CancellationToken>()))
-            .Returns<string, Func<Task<MeModel>>, TimeSpan, CancellationToken>(
-                async (_, factory, _, _) =>
-                {
-                    cacheCalls++;
-                    if (cacheCalls == 1)
-                    {
-                        return new MeModel();
-                    }
-
-                    return await factory();
-                });
+            .ReturnsAsync(cached);
 
         CurrentUserMock
             .Setup(c => c.Id)
             .Returns(userId);
 
-        UserRepositoryMock
-            .Setup(r => r.GetMeAsync(userId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        MapperMock
-            .Setup(m => m.Map<MeModel>(user))
-            .Returns(new MeModel { Language = "AZ" });
-
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.Equal("AZ", result.Language);
+        Assert.Same(cached, result);
 
+        UserRepositoryMock.Verify(r =>
+                r.GetMeAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
+            Times.Never);
         CacheServiceMock.Verify(c =>
-                c.RemoveAsync(key, It.IsAny<CancellationToken>()),
-            Times.Once);
+                c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Never);
     }
 }

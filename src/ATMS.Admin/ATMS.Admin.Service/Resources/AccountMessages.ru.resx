@@ -38,7 +38,7 @@
     </data>
 
     <data name="EmailAlreadyConfirmed" xml:space="preserve">
-        <value>Email уже подтверждён.</value>
+        <value>Эл. почта уже подтверждена.</value>
     </data>
 
     <data name="InvalidPasswordResetToken" xml:space="preserve">
@@ -54,7 +54,7 @@
     </data>
 
     <data name="UserAlreadyExists" xml:space="preserve">
-        <value>Пользователь с таким email уже существует.</value>
+        <value>Пользователь с такой эл. почтой уже существует.</value>
     </data>
 
 

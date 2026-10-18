@@ -41,7 +41,6 @@ public class FileSignatureServiceTest
         { "xlsx", Zip },
         { "pptx", Zip },
         { "odt", Zip },
-        { "zip", Zip },
         { "doc", Ole },
         { "xls", Ole },
         { "ppt", Ole },
@@ -76,6 +75,7 @@ public class FileSignatureServiceTest
         { "txt", Exe },
         { "csv", Zip },
         { "exe", Exe },
+        { "zip", Zip },
         { "pdf", [] }
     };
 
@@ -92,11 +92,13 @@ public class FileSignatureServiceTest
     [InlineData("pdf", true)]
     [InlineData("PDF", true)]
     [InlineData("docx", true)]
-    [InlineData("zip", true)]
     [InlineData("exe", false)]
     [InlineData("svg", false)]
     [InlineData("html", false)]
+    [InlineData("zip", false)]
+    [InlineData("ZIP", false)]
     [InlineData("rar", false)]
+    [InlineData("7z", false)]
     [InlineData("", false)]
     [InlineData(null, false)]
     public void IsAllowedExtension_WithDefaultList_AcceptsOnlyListedTypes(string? extension, bool allowed)
@@ -112,6 +114,14 @@ public class FileSignatureServiceTest
         Assert.True(service.IsAllowedExtension("pdf"));
         Assert.False(service.IsAllowedExtension("exe"));
         Assert.False(service.IsAllowedExtension("docx"));
+    }
+
+    [Fact]
+    public void IsAllowedExtension_WhenConfiguredListNamesZip_StillRejectsIt()
+    {
+        var service = Service("pdf", "zip");
+
+        Assert.False(service.IsAllowedExtension("zip"));
     }
 
     [Theory]

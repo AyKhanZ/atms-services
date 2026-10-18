@@ -59,6 +59,7 @@ public sealed class UserRepository(AdminDbContext context) : IUserRepository
         return context.Users
             .AsNoTracking()
             .Include(x => x.Language)
+            .Include(x => x.UserRoles)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

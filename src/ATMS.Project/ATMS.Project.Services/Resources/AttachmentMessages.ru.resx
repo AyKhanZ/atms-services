@@ -11,7 +11,7 @@
   <data name="FileRequired" xml:space="preserve"><value>Выберите файл для загрузки.</value></data>
   <data name="FileEmpty" xml:space="preserve"><value>Этот файл пустой. Выберите другой файл.</value></data>
   <data name="FileTooLarge" xml:space="preserve"><value>Этот файл больше {0} МБ. Выберите файл поменьше.</value></data>
-  <data name="FileTypeUnsupported" xml:space="preserve"><value>Такой тип файла не поддерживается. Используйте PDF, Word, Excel, PowerPoint, изображения, текст или ZIP.</value></data>
+  <data name="FileTypeUnsupported" xml:space="preserve"><value>Такой тип файла не поддерживается. Используйте PDF, Word, Excel, PowerPoint, изображения или текст.</value></data>
   <data name="FileContentMismatch" xml:space="preserve"><value>Содержимое файла не совпадает с его расширением. Проверьте файл и попробуйте снова.</value></data>
   <data name="TooManyFiles" xml:space="preserve"><value>У этой задачи уже {0} файлов. Удалите лишние, чтобы добавить новые.</value></data>
   <data name="NameRequired" xml:space="preserve"><value>Введите имя файла.</value></data>

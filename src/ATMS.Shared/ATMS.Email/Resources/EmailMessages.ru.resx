@@ -27,12 +27,12 @@
   <data name="InviteSubject" xml:space="preserve"><value>Подтвердите аккаунт</value></data>
   <data name="InviteHeading" xml:space="preserve"><value>Добро пожаловать!</value></data>
   <data name="InviteReadyTitle" xml:space="preserve"><value>Аккаунт готов</value></data>
-  <data name="InviteReadyText" xml:space="preserve"><value>Подтвердите email, чтобы открыть доступ и начать работу в BAIM.</value></data>
+  <data name="InviteReadyText" xml:space="preserve"><value>Подтвердите эл. почту, чтобы открыть доступ и начать работу в BAIM.</value></data>
   <data name="InvitedToBaim" xml:space="preserve"><value>пригласил(а) вас в BAIM.</value></data>
   <data name="InvitedToProjectBefore" xml:space="preserve"><value>пригласил(а) вас в проект «</value></data>
   <data name="InvitedToProjectAfter" xml:space="preserve"><value>».</value></data>
-  <data name="InviteCredentials" xml:space="preserve"><value>После подтверждения email войдите с этими данными.</value></data>
-  <data name="InviteButton" xml:space="preserve"><value>Подтвердить email</value></data>
+  <data name="InviteCredentials" xml:space="preserve"><value>После подтверждения эл. почты войдите с этими данными.</value></data>
+  <data name="InviteButton" xml:space="preserve"><value>Подтвердить эл. почту</value></data>
   <data name="ForgotPasswordSubject" xml:space="preserve"><value>Сброс пароля</value></data>
   <data name="ForgotPasswordHeading" xml:space="preserve"><value>Сбросить пароль</value></data>
   <data name="ForgotPasswordCardTitle" xml:space="preserve"><value>Нужен новый пароль?</value></data>
