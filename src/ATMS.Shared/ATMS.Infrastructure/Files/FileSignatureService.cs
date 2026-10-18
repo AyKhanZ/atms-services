@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace ATMS.Infrastructure.Files;
 
 // the content type comes from the client, so trust the first bytes, not the header
-// docx/odt/zip share one signature, a renamed zip is still harmless to download
+// docx/odt share the zip signature; a plain archive is refused, nobody can see what is inside
 public sealed class FileSignatureService(IOptions<AttachmentsOptions> options) : IFileSignatureService
 {
     private const int TextProbeLength = 8 * 1024;
@@ -31,7 +31,6 @@ public sealed class FileSignatureService(IOptions<AttachmentsOptions> options) :
         ["odt"] = new("application/vnd.oasis.opendocument.text", Signature.Zip),
         ["ods"] = new("application/vnd.oasis.opendocument.spreadsheet", Signature.Zip),
         ["odp"] = new("application/vnd.oasis.opendocument.presentation", Signature.Zip),
-        ["zip"] = new("application/zip", Signature.Zip),
         ["jpg"] = new("image/jpeg", Signature.Jpeg),
         ["jpeg"] = new("image/jpeg", Signature.Jpeg),
         ["png"] = new("image/png", Signature.Png),

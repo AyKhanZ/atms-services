@@ -11,7 +11,7 @@
   <data name="FileRequired" xml:space="preserve"><value>Yükləmək üçün fayl seçin.</value></data>
   <data name="FileEmpty" xml:space="preserve"><value>Bu fayl boşdur. Başqa fayl seçin.</value></data>
   <data name="FileTooLarge" xml:space="preserve"><value>Bu fayl {0} MB-dan böyükdür. Daha kiçik fayl seçin.</value></data>
-  <data name="FileTypeUnsupported" xml:space="preserve"><value>Bu fayl növü dəstəklənmir. PDF, Word, Excel, PowerPoint, şəkillər, mətn və ya ZIP istifadə edin.</value></data>
+  <data name="FileTypeUnsupported" xml:space="preserve"><value>Bu fayl növü dəstəklənmir. PDF, Word, Excel, PowerPoint, şəkillər və ya mətn istifadə edin.</value></data>
   <data name="FileContentMismatch" xml:space="preserve"><value>Faylın məzmunu onun uzantısına uyğun gəlmir. Faylı yoxlayıb bir daha cəhd edin.</value></data>
   <data name="TooManyFiles" xml:space="preserve"><value>Bu tapşırıqda artıq {0} fayl var. Yenilərini əlavə etmək üçün bəzilərini silin.</value></data>
   <data name="NameRequired" xml:space="preserve"><value>Faylın adını daxil edin.</value></data>

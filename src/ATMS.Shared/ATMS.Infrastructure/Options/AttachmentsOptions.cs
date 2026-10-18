@@ -21,7 +21,6 @@ public sealed class AttachmentsOptions
         "ppt", "pptx",
         "odt", "ods", "odp",
         "jpg", "jpeg", "png", "webp", "gif",
-        "txt", "csv",
-        "zip"
+        "txt", "csv"
     ];
 }

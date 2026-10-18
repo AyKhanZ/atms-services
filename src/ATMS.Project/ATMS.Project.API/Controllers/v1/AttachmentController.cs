@@ -23,7 +23,7 @@ public sealed class AttachmentController(IMediator mediator) : ControllerBase
     /// </summary>
     /// <remarks>
     /// Send one file per request in the multipart field "file". Files are accepted up to 25 MB, only
-    /// PDF, Office, OpenDocument, JPG, PNG, WEBP, GIF, TXT, CSV and ZIP, and only when the content
+    /// PDF, Office, OpenDocument, JPG, PNG, WEBP, GIF, TXT and CSV, and only when the content
     /// matches the extension. A task or subtask holds up to 100 files.
     /// </remarks>
     /// <response code="201">The file was uploaded.</response>
