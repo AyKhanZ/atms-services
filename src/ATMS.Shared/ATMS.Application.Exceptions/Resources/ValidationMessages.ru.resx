@@ -19,7 +19,7 @@
         <value>Идентификатор роли обязателен.</value>
     </data>
   <data name="InvalidEmailFormat" xml:space="preserve">
-        <value>Введите корректный email (например: user@example.com).</value>
+        <value>Введите корректную эл. почту (например: user@example.com).</value>
     </data>
   <data name="TitleAlreadyExists" xml:space="preserve">
         <value>Название уже существует.</value>
@@ -49,8 +49,8 @@
   <data name="DateOutOfRange" xml:space="preserve"><value>Дата должна быть в диапазоне от {0} до {1}.</value></data>
   <data name="NameShouldBeLessThan" xml:space="preserve"><value>Имя должно содержать не более {0} символов.</value></data>
   <data name="SurnameShouldBeLessThan" xml:space="preserve"><value>Фамилия должна содержать не более {0} символов.</value></data>
-  <data name="EmailRequired" xml:space="preserve"><value>Email обязателен.</value></data>
+  <data name="EmailRequired" xml:space="preserve"><value>Введите эл. почту.</value></data>
   <data name="NameRequired" xml:space="preserve"><value>Имя обязательно.</value></data>
   <data name="SurnameRequired" xml:space="preserve"><value>Фамилия обязательна.</value></data>
-  <data name="EmailShouldBeLessThan" xml:space="preserve"><value>Email должен содержать не более {0} символов.</value></data>
+  <data name="EmailShouldBeLessThan" xml:space="preserve"><value>Эл. почта должна содержать не более {0} символов.</value></data>
 </root>

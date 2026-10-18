@@ -7,8 +7,8 @@
   <resheader name="version"><value>1.3</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <data name="DuplicateInvitationEmail" xml:space="preserve"><value>Каждый email можно добавить только один раз.</value></data>
-  <data name="InvalidEmail" xml:space="preserve"><value>Укажите корректный email.</value></data>
+  <data name="DuplicateInvitationEmail" xml:space="preserve"><value>Каждую эл. почту можно добавить только один раз.</value></data>
+  <data name="InvalidEmail" xml:space="preserve"><value>Укажите корректную эл. почту.</value></data>
   <data name="InvitationEmailInUse" xml:space="preserve"><value>{0} уже зарегистрирован или приглашён.</value></data>
   <data name="InvitationLimit" xml:space="preserve"><value>Можно пригласить не более 6 коллег.</value></data>
   <data name="InvitationsIncomplete" xml:space="preserve"><value>Пригласите коллег или пропустите этот шаг перед завершением онбординга.</value></data>
