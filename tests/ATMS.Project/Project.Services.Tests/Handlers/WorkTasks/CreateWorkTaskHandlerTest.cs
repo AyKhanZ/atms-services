@@ -3,6 +3,7 @@ using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Services.Handlers.WorkTasks;
+using Project.Services.Tests.Domain.Board;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.WorkTasks;
@@ -48,6 +49,7 @@ public class CreateWorkTaskHandlerTest : BaseHandlerTest
             WorkTaskRepositoryMock.Object,
             EntityCodeGeneratorMock.Object,
             new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()),
+            TestBoardColumns.Service(),
             WorkTaskNotificationServiceMock.Object);
 
         var id = await handler.Handle(command, CancellationToken.None);
@@ -55,6 +57,7 @@ public class CreateWorkTaskHandlerTest : BaseHandlerTest
         Assert.Equal(id, entity.Id);
         Assert.Equal("42", entity.Code);
         Assert.Equal((int)WorkTaskStatusEnum.New, entity.StatusId);
+        Assert.Equal((int)WorkTaskStatusEnum.New, entity.BoardColumnId);
         Assert.Equal(hasParent ? parentTicketId : command.WorkTicketId, entity.WorkTicketId);
         Assert.False(string.IsNullOrEmpty(entity.Rank));
         WorkTaskRepositoryMock.Verify(repository => repository.AddAsync(entity, It.IsAny<CancellationToken>()), Times.Once);
@@ -89,6 +92,7 @@ public class CreateWorkTaskHandlerTest : BaseHandlerTest
             WorkTaskRepositoryMock.Object,
             EntityCodeGeneratorMock.Object,
             new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()),
+            TestBoardColumns.Service(),
             WorkTaskNotificationServiceMock.Object);
 
         await handler.Handle(command, CancellationToken.None);

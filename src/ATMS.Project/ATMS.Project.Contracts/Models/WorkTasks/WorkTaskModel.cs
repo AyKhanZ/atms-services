@@ -19,6 +19,7 @@ public sealed class WorkTaskModel
     public DictionaryModel<Guid>? ParentWorkTask { get; set; }
     public bool IsSubtask => ParentWorkTask is not null;
     public DictionaryModel Status { get; set; }
+    public DictionaryModel BoardColumn { get; set; }
     public DictionaryModel Priority { get; set; }
     public DateTime? Deadline { get; set; }
     public DateTime? DoneAt { get; set; }

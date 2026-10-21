@@ -23,6 +23,9 @@ public sealed class WorkTaskBoardRepository(ProjectDbContext context, IWorkTaskR
             .Include(task => task.Status)
                 .ThenInclude(status => status.Translations
                     .Where(translation => languages.Contains(translation.Language)))
+            .Include(task => task.BoardColumn)
+                .ThenInclude(column => column.Translations
+                    .Where(translation => languages.Contains(translation.Language)))
             .Include(task => task.Priority)
                 .ThenInclude(priority => priority.Translations
                     .Where(translation => languages.Contains(translation.Language)))
@@ -42,14 +45,14 @@ public sealed class WorkTaskBoardRepository(ProjectDbContext context, IWorkTaskR
         return new WorkTasksQueryResult(page, progress);
     }
 
-    public Task<Dictionary<int, int>> GetCountsByStatusAsync(
+    public Task<Dictionary<int, int>> GetCountsByColumnAsync(
         ICriteria<WorkTask> criteria,
         CancellationToken cancellationToken)
     {
         return criteria.Apply(context.WorkTasks.AsNoTracking())
-            .GroupBy(task => task.StatusId)
-            .Select(group => new { StatusId = group.Key, Count = group.Count() })
-            .ToDictionaryAsync(row => row.StatusId, row => row.Count, cancellationToken);
+            .GroupBy(task => task.BoardColumnId)
+            .Select(group => new { BoardColumnId = group.Key, Count = group.Count() })
+            .ToDictionaryAsync(row => row.BoardColumnId, row => row.Count, cancellationToken);
     }
 
     public async Task<WorkTaskBoardAssignee[]> GetAssigneesAsync(

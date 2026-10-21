@@ -12,7 +12,7 @@ public interface IWorkTaskBoardRepository
         IReadOnlyCollection<string> languages,
         CancellationToken cancellationToken);
 
-    Task<Dictionary<int, int>> GetCountsByStatusAsync(ICriteria<WorkTask> criteria, CancellationToken cancellationToken);
+    Task<Dictionary<int, int>> GetCountsByColumnAsync(ICriteria<WorkTask> criteria, CancellationToken cancellationToken);
 
     Task<WorkTaskBoardAssignee[]> GetAssigneesAsync(
         ICriteria<WorkProjectParticipant> criteria,

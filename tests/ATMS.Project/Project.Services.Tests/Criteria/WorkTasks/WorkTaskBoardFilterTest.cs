@@ -69,6 +69,24 @@ public class WorkTaskBoardFilterTest
         Assert.Contains("\"StatusId\" = 3", sql);
     }
 
+    [Fact]
+    public void Apply_WithBoardColumnIds_KeepsTasksOfThoseColumns()
+    {
+        var result = new WorkTaskBoardFilter { BoardColumnIds = [(int)WorkTaskStatusEnum.New] }
+            .Apply(Tasks.AsQueryable())
+            .Select(task => task.Title)
+            .ToArray();
+
+        Assert.Equal(["New, overdue", "Due today", "No deadline"], result);
+    }
+
     private static WorkTask Task(string title, WorkTaskStatusEnum status, DateTime? deadline)
-        => new() { Id = Guid.NewGuid(), Title = title, StatusId = (int)status, Deadline = deadline };
+        => new()
+        {
+            Id = Guid.NewGuid(),
+            Title = title,
+            StatusId = (int)status,
+            BoardColumnId = (int)status,
+            Deadline = deadline
+        };
 }

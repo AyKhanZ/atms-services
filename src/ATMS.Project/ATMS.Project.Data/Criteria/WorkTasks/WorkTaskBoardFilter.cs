@@ -21,6 +21,8 @@ public sealed class WorkTaskBoardFilter : ACriteria<WorkTask>
 
     public IReadOnlyCollection<int> StatusIds { get; init; } = [];
 
+    public IReadOnlyCollection<int> BoardColumnIds { get; init; } = [];
+
     public IReadOnlyCollection<int> PriorityIds { get; init; } = [];
 
     public DateTime? DeadlineFrom { get; init; }
@@ -69,6 +71,12 @@ public sealed class WorkTaskBoardFilter : ACriteria<WorkTask>
         {
             var statusIds = StatusIds;
             query = query.Where(task => statusIds.Contains(task.StatusId));
+        }
+
+        if (BoardColumnIds.Count > 0)
+        {
+            var boardColumnIds = BoardColumnIds;
+            query = query.Where(task => boardColumnIds.Contains(task.BoardColumnId));
         }
 
         if (PriorityIds.Count > 0)

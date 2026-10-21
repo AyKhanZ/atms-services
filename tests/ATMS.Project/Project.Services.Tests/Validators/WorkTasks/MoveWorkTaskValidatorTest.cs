@@ -8,13 +8,15 @@ namespace Project.Services.Tests.Validators.WorkTasks;
 
 public class MoveWorkTaskValidatorTest: BaseValidatorTest
 {
+    private readonly Mock<ATMS.Project.Data.Repositories.Interfaces.IBoardColumnRepository> BoardColumns = new();
+
     private readonly Guid _projectId = Guid.NewGuid();
     private readonly Guid _workTaskId = Guid.NewGuid();
 
     public MoveWorkTaskValidatorTest()
     {
-        DictionariesRepositoryMock
-            .Setup(repository => repository.IsWorkTaskStatusExistAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        BoardColumns
+            .Setup(repository => repository.ExistsAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
         WorkProjectsRepositoryMock
             .Setup(repository => repository.IsExistAsync(
@@ -33,7 +35,7 @@ public class MoveWorkTaskValidatorTest: BaseValidatorTest
     }
 
     private MoveWorkTaskValidator Validator() =>
-        new(WorkProjectsRepositoryMock.Object, WorkTasksRepositoryMock.Object, DictionariesRepositoryMock.Object);
+        new(WorkProjectsRepositoryMock.Object, WorkTasksRepositoryMock.Object, BoardColumns.Object);
 
     private void Missing(Guid workTaskId) => WorkTasksRepositoryMock
         .Setup(repository => repository.IsWorkTaskExistAsync(_projectId, workTaskId, It.IsAny<CancellationToken>()))
@@ -43,7 +45,7 @@ public class MoveWorkTaskValidatorTest: BaseValidatorTest
     {
         ProjectId = _projectId,
         WorkTaskId = _workTaskId,
-        StatusId = 2
+        BoardColumnId = 2
     };
 
     [Fact]
@@ -135,6 +137,6 @@ public class MoveWorkTaskValidatorTest: BaseValidatorTest
 
         Assert.Contains(result.Errors, error => error.PropertyName == nameof(MoveWorkTaskCommand.ProjectId));
         Assert.Contains(result.Errors, error => error.PropertyName == nameof(MoveWorkTaskCommand.WorkTaskId));
-        Assert.Contains(result.Errors, error => error.PropertyName == nameof(MoveWorkTaskCommand.StatusId));
+        Assert.Contains(result.Errors, error => error.PropertyName == nameof(MoveWorkTaskCommand.BoardColumnId));
     }
 }

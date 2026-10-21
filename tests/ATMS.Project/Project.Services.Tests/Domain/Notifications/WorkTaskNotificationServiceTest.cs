@@ -153,6 +153,22 @@ public class WorkTaskNotificationServiceTest
     }
 
     [Fact]
+    // Doing to Done inside In Progress is the board's business, the bell stays quiet
+    public async Task NotifyChangedAsync_WhenOnlyTheColumnChanges_SendsNothing()
+    {
+        var task = NewTask(AssigneeParticipantId, (int)WorkTaskStatusEnum.InProgress);
+        task.BoardColumnId = 4;
+
+        await Service().NotifyChangedAsync(
+            task,
+            AssigneeParticipantId,
+            (int)WorkTaskStatusEnum.InProgress,
+            CancellationToken.None);
+
+        Assert.Empty(_sent);
+    }
+
+    [Fact]
     public async Task NotifyChangedAsync_WhenTheProjectIsGone_SendsNothing()
     {
         _repository

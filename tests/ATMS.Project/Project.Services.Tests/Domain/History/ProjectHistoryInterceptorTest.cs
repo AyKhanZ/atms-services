@@ -33,7 +33,13 @@ public sealed class ProjectHistoryInterceptorTest
         Assert.Equal(ProjectId, entry.WorkProjectId);
         Assert.Equal(ActorId, entry.CreatedById);
         Assert.Equal(
-            [HistoryFieldEnum.Title, HistoryFieldEnum.Status, HistoryFieldEnum.Priority, HistoryFieldEnum.WorkTicket],
+            [
+                HistoryFieldEnum.Title,
+                HistoryFieldEnum.Status,
+                HistoryFieldEnum.Priority,
+                HistoryFieldEnum.WorkTicket,
+                HistoryFieldEnum.BoardColumn
+            ],
             entry.Changes.Select(change => (HistoryFieldEnum)change.Field).Order());
         Assert.All(entry.Changes, change => Assert.Null(change.OldValue));
         Assert.Equal("Payment gateway", entry.Changes.Single(change => change.Field == (int)HistoryFieldEnum.Title).NewValue);
@@ -355,6 +361,7 @@ public sealed class ProjectHistoryInterceptorTest
             Code = "34",
             Title = "Payment gateway",
             StatusId = (int)WorkTaskStatusEnum.New,
+            BoardColumnId = (int)WorkTaskStatusEnum.New,
             PriorityId = 2,
             Rank = "n000000001000v",
             ParentWorkTaskId = parentId,

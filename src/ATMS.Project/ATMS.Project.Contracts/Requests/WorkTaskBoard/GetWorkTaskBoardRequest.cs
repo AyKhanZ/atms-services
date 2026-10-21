@@ -32,6 +32,9 @@ public sealed class GetWorkTaskBoardRequest : GetKeysetPaginationRequest, IReque
     /// <summary>Filter by task status.</summary>
     public int[] StatusIds { get; init; } = [];
 
+    /// <summary>Filter by board column.</summary>
+    public int[] BoardColumnIds { get; init; } = [];
+
     /// <summary>Filter by priority.</summary>
     public int[] PriorityIds { get; init; } = [];
 

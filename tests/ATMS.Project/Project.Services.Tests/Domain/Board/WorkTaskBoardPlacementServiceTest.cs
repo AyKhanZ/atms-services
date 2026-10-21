@@ -17,7 +17,13 @@ public class WorkTaskBoardPlacementServiceTest
     private WorkTaskBoardPlacementService Service() => new(_repository.Object, _positions);
 
     private static WorkTask Card(string rank = "m5") =>
-        new() { Id = Guid.NewGuid(), StatusId = (int)WorkTaskStatusEnum.New, Rank = rank };
+        new()
+        {
+            Id = Guid.NewGuid(),
+            StatusId = (int)WorkTaskStatusEnum.New,
+            BoardColumnId = (int)WorkTaskStatusEnum.New,
+            Rank = rank
+        };
 
     [Fact]
     public async Task SaveAsync_WhenAnotherCardTookThePlaceMeanwhile_GoesRightBelowIt()
@@ -124,7 +130,12 @@ public class WorkTaskBoardPlacementServiceTest
     [Fact]
     public async Task PlaceOnTopAsync_InAnEmptyColumn_GivesTheCardAPlace()
     {
-        var card = new WorkTask { Id = Guid.NewGuid(), StatusId = (int)WorkTaskStatusEnum.New };
+        var card = new WorkTask
+        {
+            Id = Guid.NewGuid(),
+            StatusId = (int)WorkTaskStatusEnum.New,
+            BoardColumnId = (int)WorkTaskStatusEnum.New
+        };
         _repository.Setup(repository => repository.GetTopPlaceAsync(card.StatusId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((WorkTaskBoardPlace?)null);
 

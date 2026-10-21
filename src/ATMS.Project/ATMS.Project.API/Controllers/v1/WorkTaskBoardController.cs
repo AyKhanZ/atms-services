@@ -40,10 +40,10 @@ public sealed class WorkTaskBoardController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>
-    /// Returns how many tasks each status holds under the same filters.
+    /// Returns how many tasks each board column holds under the same filters.
     /// </summary>
     /// <remarks>
-    /// Keys are status ids; statuses with no tasks are absent. Used for the board's column headers.
+    /// Keys are board column ids; columns with no tasks are absent. Used for the board's column headers.
     /// </remarks>
     /// <response code="200">Returns the counts.</response>
     /// <response code="400">A filter is invalid.</response>

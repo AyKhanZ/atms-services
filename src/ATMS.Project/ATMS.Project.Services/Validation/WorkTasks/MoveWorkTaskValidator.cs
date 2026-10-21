@@ -13,7 +13,7 @@ public sealed class MoveWorkTaskValidator : AbstractValidator<MoveWorkTaskComman
     public MoveWorkTaskValidator(
         IWorkProjectRepository workProjectRepository,
         IWorkTaskRepository workTaskRepository,
-        IDictionariesRepository dictionariesRepository)
+        IBoardColumnRepository boardColumns)
     {
         _workProjectRepository = workProjectRepository;
         _workTaskRepository = workTaskRepository;
@@ -27,10 +27,10 @@ public sealed class MoveWorkTaskValidator : AbstractValidator<MoveWorkTaskComman
             .MustAsync(IsWorkTaskExistsAsync).WithMessage(WorkTaskMessages.NotFound)
             .When(command => command.ProjectId != Guid.Empty, ApplyConditionTo.CurrentValidator);
 
-        RuleFor(command => command.StatusId).Cascade(CascadeMode.Stop)
-            .GreaterThan(0).WithMessage(WorkTaskMessages.StatusRequired)
-            .MustAsync(dictionariesRepository.IsWorkTaskStatusExistAsync)
-            .WithMessage(WorkTaskMessages.StatusUnsupported);
+        RuleFor(command => command.BoardColumnId).Cascade(CascadeMode.Stop)
+            .GreaterThan(0).WithMessage(WorkTaskMessages.ColumnRequired)
+            .MustAsync(boardColumns.ExistsAsync)
+            .WithMessage(WorkTaskMessages.ColumnUnsupported);
 
         RuleFor(command => command.PreviousWorkTaskId)
             .MustAsync(IsNeighbourExistsAsync).WithMessage(WorkTaskMessages.BoardPositionChanged)

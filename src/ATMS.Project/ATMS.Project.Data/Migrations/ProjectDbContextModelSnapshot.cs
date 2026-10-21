@@ -168,6 +168,181 @@ namespace ATMS.Project.Data.Migrations
                     b.ToTable("Attachments");
                 });
 
+            modelBuilder.Entity("ATMS.Project.Data.Entities.BoardColumn", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Order")
+                        .IsUnique();
+
+                    b.ToTable("BoardColumns", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = 1,
+                            Code = "New",
+                            Order = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = 2,
+                            Code = "InProgressDoing",
+                            Order = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Category = 2,
+                            Code = "InProgressDone",
+                            Order = 3
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = 3,
+                            Code = "Done",
+                            Order = 4
+                        });
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.BoardColumnTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BoardColumnId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoardColumnId", "Language")
+                        .IsUnique();
+
+                    b.ToTable("BoardColumnTranslations", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BoardColumnId = 1,
+                            Language = "en",
+                            Name = "New"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BoardColumnId = 1,
+                            Language = "ru",
+                            Name = "Новый"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BoardColumnId = 1,
+                            Language = "az",
+                            Name = "Yeni"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BoardColumnId = 2,
+                            Language = "en",
+                            Name = "Doing"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BoardColumnId = 2,
+                            Language = "ru",
+                            Name = "В процессе"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BoardColumnId = 2,
+                            Language = "az",
+                            Name = "İcrada"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BoardColumnId = 4,
+                            Language = "en",
+                            Name = "Done"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BoardColumnId = 4,
+                            Language = "ru",
+                            Name = "Готово"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BoardColumnId = 4,
+                            Language = "az",
+                            Name = "Bitib"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BoardColumnId = 3,
+                            Language = "en",
+                            Name = "Done"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BoardColumnId = 3,
+                            Language = "ru",
+                            Name = "Выполнено"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            BoardColumnId = 3,
+                            Language = "az",
+                            Name = "Hazır"
+                        });
+                });
+
             modelBuilder.Entity("ATMS.Project.Data.Entities.Comment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2933,6 +3108,9 @@ namespace ATMS.Project.Data.Migrations
                     b.Property<Guid?>("AssigneeId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("BoardColumnId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -3003,6 +3181,8 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("AssigneeId");
 
+                    b.HasIndex("BoardColumnId");
+
                     b.HasIndex("Code")
                         .IsUnique();
 
@@ -3031,14 +3211,14 @@ namespace ATMS.Project.Data.Migrations
 
                     b.HasIndex("WorkTicketId", "ParentWorkTaskId", "CreatedAt", "Id");
 
+                    b.HasIndex(new[] { "BoardColumnId", "Rank" }, "IX_Tasks_BoardColumnId_Rank")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false AND \"StatusId\" <> 3");
+
                     b.HasIndex(new[] { "Code" }, "IX_Tasks_Code_Trigram");
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex(new[] { "Code" }, "IX_Tasks_Code_Trigram"), "gin");
                     NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex(new[] { "Code" }, "IX_Tasks_Code_Trigram"), new[] { "gin_trgm_ops" });
-
-                    b.HasIndex(new[] { "StatusId", "Rank" }, "IX_Tasks_StatusId_Rank")
-                        .IsUnique()
-                        .HasFilter("\"IsDeleted\" = false AND \"StatusId\" <> 3");
 
                     b.ToTable("Tasks", (string)null);
                 });
@@ -3175,6 +3355,17 @@ namespace ATMS.Project.Data.Migrations
                     b.Navigation("DeletedBy");
 
                     b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.BoardColumnTranslation", b =>
+                {
+                    b.HasOne("ATMS.Project.Data.Entities.BoardColumn", "BoardColumn")
+                        .WithMany("Translations")
+                        .HasForeignKey("BoardColumnId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BoardColumn");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Comment", b =>
@@ -3686,6 +3877,12 @@ namespace ATMS.Project.Data.Migrations
                         .HasForeignKey("AssigneeId")
                         .OnDelete(DeleteBehavior.NoAction);
 
+                    b.HasOne("ATMS.Project.Data.Entities.BoardColumn", "BoardColumn")
+                        .WithMany()
+                        .HasForeignKey("BoardColumnId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ATMS.Project.Data.Entities.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
@@ -3732,6 +3929,8 @@ namespace ATMS.Project.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Assignee");
+
+                    b.Navigation("BoardColumn");
 
                     b.Navigation("CreatedBy");
 
@@ -3828,6 +4027,11 @@ namespace ATMS.Project.Data.Migrations
                     b.Navigation("WorkTicketStatus");
 
                     b.Navigation("WorkTicketType");
+                });
+
+            modelBuilder.Entity("ATMS.Project.Data.Entities.BoardColumn", b =>
+                {
+                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("ATMS.Project.Data.Entities.Comment", b =>

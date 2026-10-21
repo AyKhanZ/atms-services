@@ -18,6 +18,7 @@ public sealed class UpdateWorkTaskHandler(
     IWorkTaskRepository workTaskRepository,
     ICacheService cache,
     IWorkTaskBoardPlacementService placement,
+    IWorkTaskColumnService columns,
     IWorkTaskNotificationService notifications) : IRequestHandler<UpdateWorkTaskCommand>
 {
     public async Task Handle(UpdateWorkTaskCommand command, CancellationToken cancellationToken)
@@ -38,14 +39,15 @@ public sealed class UpdateWorkTaskHandler(
 
         mapper.Map(command, workTask);
         var now = DateTime.UtcNow;
-
+        // the form picks a status, the board picks the column: while the status stays the task keeps its
+        // column (Doing or Done), a new status takes it to that status's default column
         if (workTask.StatusId != command.StatusId)
         {
-            workTask.StatusId = command.StatusId;
-            workTask.DoneAt = command.StatusId == (int)WorkTaskStatusEnum.Done ? now : null;
+            var column = await columns.GetDefaultAsync(command.StatusId, cancellationToken);
+            columns.Assign(workTask, column, now);
 
-            // new column: the card goes on top, same as Move on the board
-            if (command.StatusId != (int)WorkTaskStatusEnum.Done)
+            // new column: the card goes on top, same as Move on the board. Done is ordered by close date
+            if (column.Category != (int)WorkTaskStatusEnum.Done)
             {
                 await placement.PlaceOnTopAsync(workTask, cancellationToken);
             }
@@ -66,11 +68,7 @@ public sealed class UpdateWorkTaskHandler(
 
         if (command.CompleteSubtasks && workTask.StatusId == (int)WorkTaskStatusEnum.Done)
         {
-            foreach (var child in children.Where(child => child.StatusId != (int)WorkTaskStatusEnum.Done))
-            {
-                child.StatusId = (int)WorkTaskStatusEnum.Done;
-                child.DoneAt = now;
-            }
+            await columns.CloseOpenAsync(children, now, cancellationToken);
         }
 
         await notifications.NotifyChangedAsync(workTask, previousAssigneeId, previousStatusId, cancellationToken);

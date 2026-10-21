@@ -4,6 +4,7 @@ using ATMS.Project.Services.Domain.Board;
 using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Services.Handlers.WorkTasks;
+using Project.Services.Tests.Domain.Board;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.WorkTasks;
@@ -26,6 +27,7 @@ public class UpdateWorkTaskHandlerTest : BaseHandlerTest
             WorkTaskRepositoryMock.Object,
             CacheServiceMock.Object,
             new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()),
+            TestBoardColumns.Service(),
             WorkTaskNotificationServiceMock.Object);
 
     private WorkTask Existing(Guid? parentId = null) =>
@@ -163,6 +165,7 @@ public class UpdateWorkTaskHandlerTest : BaseHandlerTest
         var task = Existing();
         task.AssigneeId = previousAssigneeId;
         task.StatusId = (int)WorkTaskStatusEnum.New;
+        task.BoardColumnId = (int)WorkTaskStatusEnum.New;
         SetupTask(task);
         var command = new UpdateWorkTaskCommand
         {
@@ -185,7 +188,8 @@ public class UpdateWorkTaskHandlerTest : BaseHandlerTest
             It.Is<WorkTask>(changed =>
                 changed == task &&
                 changed.AssigneeId == command.AssigneeId &&
-                changed.StatusId == (int)WorkTaskStatusEnum.Done),
+                changed.StatusId == (int)WorkTaskStatusEnum.Done &&
+                changed.BoardColumnId == (int)WorkTaskStatusEnum.Done),
             previousAssigneeId,
             (int)WorkTaskStatusEnum.New,
             It.IsAny<CancellationToken>()), Times.Once);
@@ -196,6 +200,7 @@ public class UpdateWorkTaskHandlerTest : BaseHandlerTest
     {
         var task = Existing();
         task.StatusId = (int)WorkTaskStatusEnum.InProgress;
+        task.BoardColumnId = (int)WorkTaskStatusEnum.InProgress;
         var children = new[] { Existing(task.Id), Existing(task.Id) };
         SetupTask(task, children);
 
@@ -217,4 +222,43 @@ public class UpdateWorkTaskHandlerTest : BaseHandlerTest
             task, It.IsAny<Guid?>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()), Times.Once);
         WorkTaskNotificationServiceMock.VerifyNoOtherCalls();
     }
+
+    // the form knows statuses only: In Progress · Done stays put while the status is still In Progress
+    [Fact]
+    public async Task Handle_WhenTheStatusStays_KeepsTheTaskInItsColumn()
+    {
+        var task = Existing();
+        task.StatusId = (int)WorkTaskStatusEnum.InProgress;
+        task.BoardColumnId = 4;
+        SetupTask(task);
+
+        await Handler().Handle(Command(task, WorkTaskStatusEnum.InProgress), CancellationToken.None);
+
+        Assert.Equal(4, task.BoardColumnId);
+    }
+
+    [Fact]
+    public async Task Handle_WhenTheStatusChanges_PutsTheTaskIntoTheDefaultColumnOfTheNewStatus()
+    {
+        var task = Existing();
+        task.StatusId = (int)WorkTaskStatusEnum.InProgress;
+        task.BoardColumnId = 4;
+        SetupTask(task);
+
+        await Handler().Handle(Command(task, WorkTaskStatusEnum.New), CancellationToken.None);
+
+        Assert.Equal((int)WorkTaskStatusEnum.New, task.StatusId);
+        Assert.Equal((int)WorkTaskStatusEnum.New, task.BoardColumnId);
+    }
+
+    private UpdateWorkTaskCommand Command(WorkTask task, WorkTaskStatusEnum status) =>
+        new()
+        {
+            ProjectId = _projectId,
+            WorkTaskId = task.Id,
+            WorkTicketId = _ticketId,
+            Title = "Updated",
+            PriorityId = 1,
+            StatusId = (int)status,
+        };
 }

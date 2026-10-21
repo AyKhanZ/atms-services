@@ -23,6 +23,6 @@ public sealed class GetWorkTaskBoardCountsHandler(
                 currentUser.RoleId,
                 new WorkTasksOfMyProjectsCriteria(currentUser.Id)));
 
-        return workTaskBoardRepository.GetCountsByStatusAsync(criteria, cancellationToken);
+        return workTaskBoardRepository.GetCountsByColumnAsync(criteria, cancellationToken);
     }
 }

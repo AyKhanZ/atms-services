@@ -51,6 +51,8 @@ public sealed class ProjectDbContext : DbContext
     
     public DbSet<WorkTask> WorkTasks { get; set; }
 
+    public DbSet<BoardColumn> BoardColumns { get; set; }
+
     public DbSet<Comment> Comments { get; set; }
 
     public DbSet<Attachment> Attachments { get; set; }

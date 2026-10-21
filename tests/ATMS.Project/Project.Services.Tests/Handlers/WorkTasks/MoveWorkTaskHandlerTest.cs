@@ -7,6 +7,7 @@ using ATMS.Project.Contracts.Commands.WorkTasks;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.WorkTasks;
 using ATMS.Project.Services.Handlers.WorkTasks;
+using Project.Services.Tests.Domain.Board;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.WorkTasks;
@@ -16,7 +17,14 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
     private readonly Guid _projectId = Guid.NewGuid();
 
     private WorkTask NewTask(int status = (int)WorkTaskStatusEnum.New, string rank = "m5") =>
-        new() { Id = Guid.NewGuid(), WorkProjectId = _projectId, StatusId = status, Rank = rank };
+        new()
+        {
+            Id = Guid.NewGuid(),
+            WorkProjectId = _projectId,
+            StatusId = status,
+            BoardColumnId = status,
+            Rank = rank
+        };
 
     public MoveWorkTaskHandlerTest()
     {
@@ -30,6 +38,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
         CacheServiceMock.Object,
         CurrentUserMock.Object,
         new WorkTaskBoardPlacementService(WorkTaskRepositoryMock.Object, new WorkTaskBoardPositionService()),
+        TestBoardColumns.Service(),
         WorkTaskNotificationServiceMock.Object);
 
     private void Found(WorkTask task) => WorkTaskRepositoryMock
@@ -51,7 +60,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
         {
             ProjectId = _projectId,
             WorkTaskId = task.Id,
-            StatusId = (int)WorkTaskStatusEnum.InProgress,
+            BoardColumnId = (int)WorkTaskStatusEnum.InProgress,
             PreviousWorkTaskId = above,
             NextWorkTaskId = below
         }, CancellationToken.None);
@@ -75,7 +84,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
         {
             ProjectId = _projectId,
             WorkTaskId = task.Id,
-            StatusId = (int)WorkTaskStatusEnum.InProgress
+            BoardColumnId = (int)WorkTaskStatusEnum.InProgress
         }, CancellationToken.None);
 
         Assert.NotEqual("m5", task.Rank);
@@ -90,13 +99,13 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
 
         await Handler().Handle(new MoveWorkTaskCommand
         {
-            ProjectId = _projectId, WorkTaskId = task.Id, StatusId = (int)WorkTaskStatusEnum.Done
+            ProjectId = _projectId, WorkTaskId = task.Id, BoardColumnId = (int)WorkTaskStatusEnum.Done
         }, CancellationToken.None);
         Assert.NotNull(task.DoneAt);
 
         await Handler().Handle(new MoveWorkTaskCommand
         {
-            ProjectId = _projectId, WorkTaskId = task.Id, StatusId = (int)WorkTaskStatusEnum.New
+            ProjectId = _projectId, WorkTaskId = task.Id, BoardColumnId = (int)WorkTaskStatusEnum.New
         }, CancellationToken.None);
         Assert.Null(task.DoneAt);
     }
@@ -118,7 +127,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
         {
             ProjectId = _projectId,
             WorkTaskId = task.Id,
-            StatusId = (int)WorkTaskStatusEnum.Done,
+            BoardColumnId = (int)WorkTaskStatusEnum.Done,
             CompleteSubtasks = true
         }, CancellationToken.None);
 
@@ -141,7 +150,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
             .ReturnsAsync(new Dictionary<Guid, string>());
 
         await Assert.ThrowsAsync<ConflictException>(() => Handler().Handle(
-            new MoveWorkTaskCommand { ProjectId = _projectId, WorkTaskId = task.Id, StatusId = 2, NextWorkTaskId = Guid.NewGuid() },
+            new MoveWorkTaskCommand { ProjectId = _projectId, WorkTaskId = task.Id, BoardColumnId = 2, NextWorkTaskId = Guid.NewGuid() },
             CancellationToken.None));
 
         WorkTaskRepositoryMock.Verify(repository => repository.TrySaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -155,7 +164,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
         Found(task);
         await Handler().Handle(new MoveWorkTaskCommand
         {
-            ProjectId = _projectId, WorkTaskId = task.Id, StatusId = 3, NextWorkTaskId = Guid.NewGuid()
+            ProjectId = _projectId, WorkTaskId = task.Id, BoardColumnId = 3, NextWorkTaskId = Guid.NewGuid()
         }, CancellationToken.None);
         Assert.Equal("m5", task.Rank);
         Assert.NotNull(task.DoneAt);
@@ -187,7 +196,7 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
             {
                 ProjectId = _projectId,
                 WorkTaskId = task.Id,
-                StatusId = (int)WorkTaskStatusEnum.InProgress,
+                BoardColumnId = (int)WorkTaskStatusEnum.InProgress,
                 PreviousWorkTaskId = previous,
                 NextWorkTaskId = next
             }, CancellationToken.None));
@@ -211,13 +220,18 @@ public class MoveWorkTaskHandlerTest : BaseHandlerTest
         Found(task);
         WorkTaskRepositoryMock
             .Setup(repository => repository.FindChildrenAsync(_projectId, task.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync([new WorkTask { Id = Guid.NewGuid(), StatusId = (int)WorkTaskStatusEnum.New }]);
+            .ReturnsAsync([new WorkTask
+            {
+                Id = Guid.NewGuid(),
+                StatusId = (int)WorkTaskStatusEnum.New,
+                BoardColumnId = (int)WorkTaskStatusEnum.New
+            }]);
 
         await Handler().Handle(new MoveWorkTaskCommand
         {
             ProjectId = _projectId,
             WorkTaskId = task.Id,
-            StatusId = (int)WorkTaskStatusEnum.Done,
+            BoardColumnId = (int)WorkTaskStatusEnum.Done,
             CompleteSubtasks = true
         }, CancellationToken.None);
 

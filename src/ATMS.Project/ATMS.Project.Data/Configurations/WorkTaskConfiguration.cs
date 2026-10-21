@@ -8,7 +8,7 @@ namespace ATMS.Project.Data.Configurations;
 
 public sealed class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 {
-    public const string UniqueRankIndex = "IX_Tasks_StatusId_Rank";
+    public const string UniqueRankIndex = "IX_Tasks_BoardColumnId_Rank";
 
     public void Configure(EntityTypeBuilder<WorkTask> builder)
     {
@@ -32,10 +32,12 @@ public sealed class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
 
         builder.HasIndex(e => new { e.WorkProjectId, e.CreatedAt, e.Id });
 
-        // one card per place in New / In Progress, two moves to the same spot can't save the same rank
-        builder.HasIndex(e => new { e.StatusId, e.Rank }, UniqueRankIndex)
+        // one card per place in a column that is not Done; Done is ordered by close date
+        builder.HasIndex(e => new { e.BoardColumnId, e.Rank }, UniqueRankIndex)
             .IsUnique()
             .HasFilter($"\"IsDeleted\" = false AND \"StatusId\" <> {(int)WorkTaskStatusEnum.Done}");
+
+        builder.HasIndex(e => e.BoardColumnId);
 
         builder.HasIndex(e => new { e.StatusId, e.DoneAt, e.Id });
 
@@ -78,6 +80,11 @@ public sealed class WorkTaskConfiguration : IEntityTypeConfiguration<WorkTask>
         builder.Property(e => e.CreatedById)
             .IsRequired();
 
+
+        builder.HasOne(t => t.BoardColumn)
+            .WithMany()
+            .HasForeignKey(t => t.BoardColumnId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(t => t.ParentWorkTask)
             .WithMany(t => t.Children)

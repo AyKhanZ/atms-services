@@ -1,6 +1,7 @@
 using ATMS.Project.Contracts.Commands.WorkTickets;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Services.Handlers.WorkTickets;
+using Project.Services.Tests.Domain.Board;
 using ATMS.Caching.Constants;
 using Moq;
 
@@ -55,6 +56,7 @@ public class UpdateWorkTicketHandlerTest : BaseHandlerTest
             MapperMock.Object,
             WorkTicketRepositoryMock.Object,
             WorkTaskRepositoryMock.Object,
+            TestBoardColumns.Service(),
             CacheServiceMock.Object);
 
         await handler.Handle(command, CancellationToken.None);
@@ -86,6 +88,7 @@ public class UpdateWorkTicketHandlerTest : BaseHandlerTest
             MapperMock.Object,
             WorkTicketRepositoryMock.Object,
             WorkTaskRepositoryMock.Object,
+            TestBoardColumns.Service(),
             CacheServiceMock.Object);
 
         await Assert.ThrowsAsync<ATMS.Application.Exceptions.Entity.EntityException>(() => handler.Handle(

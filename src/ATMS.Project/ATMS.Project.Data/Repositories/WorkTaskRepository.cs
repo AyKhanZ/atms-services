@@ -24,6 +24,8 @@ public sealed class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepo
             .AsNoTracking()
             .Include(task => task.Status)
                 .ThenInclude(status => status.Translations)
+            .Include(task => task.BoardColumn)
+                .ThenInclude(column => column.Translations)
             .Include(task => task.Priority)
                 .ThenInclude(priority => priority.Translations)
             .Include(task => task.Assignee)
@@ -50,6 +52,8 @@ public sealed class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepo
             .AsNoTracking()
             .Include(task => task.Status)
                 .ThenInclude(status => status.Translations)
+            .Include(task => task.BoardColumn)
+                .ThenInclude(column => column.Translations)
             .Include(task => task.Priority)
                 .ThenInclude(priority => priority.Translations)
             .Include(task => task.Assignee)
@@ -197,32 +201,32 @@ public sealed class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepo
             .ToDictionaryAsync(row => row.Id, row => new WorkTaskProgress(row.Total, row.Done), cancellationToken);
     }
 
-    public Task<WorkTaskBoardPlace?> GetTopPlaceAsync(int statusId, CancellationToken cancellationToken)
+    public Task<WorkTaskBoardPlace?> GetTopPlaceAsync(int boardColumnId, CancellationToken cancellationToken)
     {
         return context.WorkTasks
-            .Where(task => task.StatusId == statusId)
+            .Where(task => task.BoardColumnId == boardColumnId)
             .OrderBy(task => task.Rank)
             .Select(task => new WorkTaskBoardPlace(task.Id, task.Rank))
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<string?> GetNextRankAsync(int statusId, string rank, CancellationToken cancellationToken)
+    public Task<string?> GetNextRankAsync(int boardColumnId, string rank, CancellationToken cancellationToken)
     {
         return context.WorkTasks
-            .Where(task => task.StatusId == statusId && string.Compare(task.Rank, rank) > 0)
+            .Where(task => task.BoardColumnId == boardColumnId && string.Compare(task.Rank, rank) > 0)
             .OrderBy(task => task.Rank)
             .Select(task => task.Rank)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
     public Task<string?> GetRankBelowAsync(
-        int statusId,
+        int boardColumnId,
         string? above,
         Guid exceptWorkTaskId,
         CancellationToken cancellationToken)
     {
         var column = context.WorkTasks
-            .Where(task => task.StatusId == statusId && task.Id != exceptWorkTaskId);
+            .Where(task => task.BoardColumnId == boardColumnId && task.Id != exceptWorkTaskId);
 
         if (above is not null)
         {
@@ -235,10 +239,11 @@ public sealed class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepo
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task RenumberColumnAsync(int statusId, CancellationToken cancellationToken)
+    public async Task RenumberColumnAsync(int boardColumnId, CancellationToken cancellationToken)
     {
         // spread all keys evenly in 2 steps in one transaction: rank is unique per column, so one UPDATE could collide
         // '~' is never a key digit, so step 1 is safe; deleted cards are outside the unique index
+        // Rank is ignored by history on purpose, the same reason this bypasses the change tracker
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
         await context.Database.ExecuteSqlInterpolatedAsync($"""
@@ -247,7 +252,7 @@ public sealed class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepo
             FROM (
                 SELECT "Id", row_number() OVER (ORDER BY "Rank", "Id") AS n
                 FROM "Tasks"
-                WHERE "StatusId" = {statusId} AND NOT "IsDeleted"
+                WHERE "BoardColumnId" = {boardColumnId} AND NOT "IsDeleted"
             ) AS ordered
             WHERE ordered."Id" = t."Id";
             """, cancellationToken);
@@ -255,7 +260,7 @@ public sealed class WorkTaskRepository(ProjectDbContext context) : IWorkTaskRepo
         await context.Database.ExecuteSqlInterpolatedAsync($"""
             UPDATE "Tasks"
             SET "Rank" = 'm' || lpad((substr("Rank", 2)::bigint * 1000)::text, 12, '0') || 'v'
-            WHERE "StatusId" = {statusId} AND NOT "IsDeleted" AND "Rank" LIKE '~%';
+            WHERE "BoardColumnId" = {boardColumnId} AND NOT "IsDeleted" AND "Rank" LIKE '~%';
             """, cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);

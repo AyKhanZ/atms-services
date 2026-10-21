@@ -53,6 +53,7 @@ public sealed class HistoryFieldMap : IHistoryFieldMap
             [nameof(WorkTask.Title)] = HistoryFieldEnum.Title,
             [nameof(WorkTask.Description)] = HistoryFieldEnum.Description,
             [nameof(WorkTask.StatusId)] = HistoryFieldEnum.Status,
+            [nameof(WorkTask.BoardColumnId)] = HistoryFieldEnum.BoardColumn,
             [nameof(WorkTask.PriorityId)] = HistoryFieldEnum.Priority,
             [nameof(WorkTask.AssigneeId)] = HistoryFieldEnum.Assignee,
             [nameof(WorkTask.Deadline)] = HistoryFieldEnum.Deadline,

@@ -11,6 +11,8 @@ public static class BoardModule
     {
         services.AddScoped<IWorkTaskBoardPositionService, WorkTaskBoardPositionService>();
         services.AddScoped<IWorkTaskBoardPlacementService, WorkTaskBoardPlacementService>();
+        services.AddScoped<IBoardColumnCacheService, BoardColumnCacheService>();
+        services.AddScoped<IWorkTaskColumnService, WorkTaskColumnService>();
 
         return services;
     }

@@ -18,6 +18,7 @@ public sealed class CreateWorkTaskHandler(
     IWorkTaskRepository workTaskRepository,
     IEntityCodeGenerator codeGenerator,
     IWorkTaskBoardPlacementService placement,
+    IWorkTaskColumnService columns,
     IWorkTaskNotificationService notifications) : IRequestHandler<CreateWorkTaskCommand, Guid>
 {
     public async Task<Guid> Handle(CreateWorkTaskCommand command, CancellationToken cancellationToken)
@@ -32,7 +33,8 @@ public sealed class CreateWorkTaskHandler(
         var workTask = mapper.Map<WorkTask>(command);
         workTask.Id = Guid.NewGuid();
         workTask.Code = await codeGenerator.GetNextAsync(cancellationToken);
-        workTask.StatusId = (int)WorkTaskStatusEnum.New;
+        var column = await columns.GetDefaultAsync((int)WorkTaskStatusEnum.New, cancellationToken);
+        columns.Assign(workTask, column, DateTime.UtcNow);
         workTask.WorkTicketId = parent is null ? command.WorkTicketId : parent.WorkTicketId;
         await placement.PlaceOnTopAsync(workTask, cancellationToken);
 

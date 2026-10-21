@@ -17,6 +17,8 @@
   <data name="DescriptionTooLong" xml:space="preserve"><value>Use no more than {0} characters for the task description.</value></data>
   <data name="StatusRequired" xml:space="preserve"><value>Select a task status.</value></data>
   <data name="StatusUnsupported" xml:space="preserve"><value>The selected task status is no longer available. Choose another status.</value></data>
+  <data name="ColumnRequired" xml:space="preserve"><value>Select a column.</value></data>
+  <data name="ColumnUnsupported" xml:space="preserve"><value>This board column doesn't exist.</value></data>
   <data name="PriorityRequired" xml:space="preserve"><value>Select a task priority.</value></data>
   <data name="PriorityUnsupported" xml:space="preserve"><value>The selected priority is no longer available. Choose another priority.</value></data>
   <data name="AssigneeNotFound" xml:space="preserve"><value>The selected assignee is not a participant of this project. Choose a project participant.</value></data>

@@ -34,6 +34,7 @@ public sealed class CommandToEntityProfile : Profile
         CreateMap<UpdateWorkTaskCommand, WorkTask>()
             .ForMember(destination => destination.WorkTicketId, options => options.Ignore())
             .ForMember(destination => destination.ParentWorkTaskId, options => options.Ignore())
-            .ForMember(destination => destination.StatusId, options => options.Ignore());
+            .ForMember(destination => destination.StatusId, options => options.Ignore())
+            .ForMember(destination => destination.BoardColumnId, options => options.Ignore());
     }
 }

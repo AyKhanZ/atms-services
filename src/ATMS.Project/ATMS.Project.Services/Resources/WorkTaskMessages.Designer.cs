@@ -27,6 +27,8 @@ internal static class WorkTaskMessages
     internal static string DescriptionTooLong => Get(nameof(DescriptionTooLong));
     internal static string StatusRequired => Get(nameof(StatusRequired));
     internal static string StatusUnsupported => Get(nameof(StatusUnsupported));
+    internal static string ColumnRequired => Get(nameof(ColumnRequired));
+    internal static string ColumnUnsupported => Get(nameof(ColumnUnsupported));
     internal static string PriorityRequired => Get(nameof(PriorityRequired));
     internal static string PriorityUnsupported => Get(nameof(PriorityUnsupported));
     internal static string AssigneeNotFound => Get(nameof(AssigneeNotFound));
