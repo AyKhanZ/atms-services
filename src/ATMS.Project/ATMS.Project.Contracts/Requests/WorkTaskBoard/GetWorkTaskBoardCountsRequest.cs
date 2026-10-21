@@ -4,7 +4,7 @@ using MediatR;
 
 namespace ATMS.Project.Contracts.Requests.WorkTaskBoard;
 
-/// <summary>How many tasks each status holds under the filters: status id to count.</summary>
+/// <summary>How many tasks each board column holds under the filters: column id to count.</summary>
 [Access(PermissionEnum.ProjectView)]
 public sealed class GetWorkTaskBoardCountsRequest : IRequest<Dictionary<int, int>>
 {

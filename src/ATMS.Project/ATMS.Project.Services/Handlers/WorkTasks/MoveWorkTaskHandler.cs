@@ -21,6 +21,7 @@ public sealed class MoveWorkTaskHandler(
     ICacheService cache,
     ICurrentUser currentUser,
     IWorkTaskBoardPlacementService placement,
+    IWorkTaskColumnService columns,
     IWorkTaskNotificationService notifications) : IRequestHandler<MoveWorkTaskCommand>
 {
     public async Task Handle(MoveWorkTaskCommand command, CancellationToken cancellationToken)
@@ -30,15 +31,12 @@ public sealed class MoveWorkTaskHandler(
 
         var now = DateTime.UtcNow;
         var previousStatusId = workTask.StatusId;
-        var statusChanged = workTask.StatusId != command.StatusId;
-        if (statusChanged)
-        {
-            workTask.StatusId = command.StatusId;
-            workTask.DoneAt = command.StatusId == (int)WorkTaskStatusEnum.Done ? now : null;
-        }
+        var column = await columns.GetRequiredAsync(command.BoardColumnId, cancellationToken);
+        var columnChanged = workTask.BoardColumnId != column.Id;
+        columns.Assign(workTask, column, now);
 
         // Done is ordered by close date, no rank needed
-        if (command.StatusId != (int)WorkTaskStatusEnum.Done)
+        if (column.Category != (int)WorkTaskStatusEnum.Done)
         {
             var hasNeighbours = new[] { command.PreviousWorkTaskId, command.NextWorkTaskId }
                 .Any(id => id.HasValue && id.Value != workTask.Id);
@@ -46,7 +44,7 @@ public sealed class MoveWorkTaskHandler(
             if (hasNeighbours)
             {
                 // neighbours only among the cards of that column the caller can see
-                var neighbourCriteria = new WorkTaskBoardFilter { StatusIds = [command.StatusId] }
+                var neighbourCriteria = new WorkTaskBoardFilter { BoardColumnIds = [column.Id] }
                     .And(new ExceptSuperAdminCriteria<WorkTask>(
                         currentUser.RoleId,
                         new WorkTasksOfMyProjectsCriteria(currentUser.Id)));
@@ -58,24 +56,18 @@ public sealed class MoveWorkTaskHandler(
                     neighbourCriteria,
                     cancellationToken);
             }
-            else if (statusChanged)
+            else if (columnChanged)
             {
                 await placement.PlaceOnTopAsync(workTask, cancellationToken);
             }
         }
 
         var closedSubtasks = Array.Empty<Guid>();
-        if (command.CompleteSubtasks && command.StatusId == (int)WorkTaskStatusEnum.Done)
+        if (command.CompleteSubtasks && column.Category == (int)WorkTaskStatusEnum.Done)
         {
             var subtasks = await workTaskRepository.FindChildrenAsync(command.ProjectId, workTask.Id, cancellationToken);
             var open = subtasks.Where(subtask => subtask.StatusId != (int)WorkTaskStatusEnum.Done).ToArray();
-
-            foreach (var subtask in open)
-            {
-                subtask.StatusId = (int)WorkTaskStatusEnum.Done;
-                subtask.DoneAt = now;
-            }
-
+            await columns.CloseOpenAsync(open, now, cancellationToken);
             closedSubtasks = open.Select(subtask => subtask.Id).ToArray();
         }
 

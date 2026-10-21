@@ -6,7 +6,7 @@ using ATMS.Project.Contracts.Commands.WorkTickets;
 using ATMS.Project.Data.Repositories.Interfaces;
 using ATMS.Project.Services.Resources;
 using ATMS.Project.Services.Infrastructure;
-using ATMS.Project.Services.Handlers.WorkTasks;
+using ATMS.Project.Services.Domain.Board.Interfaces;
 using AutoMapper;
 using MediatR;
 
@@ -16,6 +16,7 @@ public sealed class UpdateWorkTicketHandler(
     IMapper mapper,
     IWorkTicketRepository workTicketRepository,
     IWorkTaskRepository workTaskRepository,
+    IWorkTaskColumnService columns,
     ICacheService cache) : IRequestHandler<UpdateWorkTicketCommand>
 {
     public async Task Handle(UpdateWorkTicketCommand command, CancellationToken cancellationToken)
@@ -33,11 +34,7 @@ public sealed class UpdateWorkTicketHandler(
             var tasks = await workTaskRepository.FindByTicketAsync(command.ProjectId, workTicket.Id, cancellationToken);
             var now = DateTime.UtcNow;
 
-            foreach (var task in tasks.Where(task => task.StatusId != (int)WorkTaskStatusEnum.Done))
-            {
-                task.StatusId = (int)WorkTaskStatusEnum.Done;
-                task.DoneAt = now;
-            }
+            await columns.CloseOpenAsync(tasks, now, cancellationToken);
         }
 
         await workTicketRepository.SaveChangesAsync(cancellationToken);

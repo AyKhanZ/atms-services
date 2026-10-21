@@ -148,6 +148,11 @@ public sealed class EntityToModelProfile : Profile
                 expression => expression.MapFrom(x =>
                     x.WorkGroup.ParentWorkGroup == null ? null : x.WorkGroup.ParentWorkGroup.Title));
 
+        CreateMap<BoardColumn, DictionaryModel>()
+            .ForMember(
+                x => x.Name,
+                expression => expression.MapFrom(x => x.Translations.Resolve(CultureHelper.CurrentLanguage, x.Code)));
+
         CreateMap<WorkTaskStatus, DictionaryModel>()
             .ForMember(
                 x => x.Name,

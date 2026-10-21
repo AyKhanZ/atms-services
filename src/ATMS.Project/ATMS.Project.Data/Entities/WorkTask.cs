@@ -15,6 +15,10 @@ public class WorkTask : WorkItemEntity
     public WorkTicket WorkTicket { get; set; }
 
     public string Rank { get; set; }
+
+    public int BoardColumnId { get; set; }
+
+    public BoardColumn BoardColumn { get; set; }
     
     public DateTime? DoneAt { get; set; }
 }

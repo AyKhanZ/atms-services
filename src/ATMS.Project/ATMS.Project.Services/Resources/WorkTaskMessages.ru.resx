@@ -14,6 +14,8 @@
   <data name="DescriptionTooLong" xml:space="preserve"><value>Описание задачи должно содержать не более {0} символов.</value></data>
   <data name="StatusRequired" xml:space="preserve"><value>Выберите статус задачи.</value></data>
   <data name="StatusUnsupported" xml:space="preserve"><value>Выбранный статус задачи больше недоступен. Выберите другой статус.</value></data>
+  <data name="ColumnRequired" xml:space="preserve"><value>Выберите колонку.</value></data>
+  <data name="ColumnUnsupported" xml:space="preserve"><value>Такой колонки доски нет.</value></data>
   <data name="PriorityRequired" xml:space="preserve"><value>Выберите приоритет задачи.</value></data>
   <data name="PriorityUnsupported" xml:space="preserve"><value>Выбранный приоритет больше недоступен. Выберите другой приоритет.</value></data>
   <data name="AssigneeNotFound" xml:space="preserve"><value>Выбранный исполнитель не участвует в этом проекте. Выберите участника проекта.</value></data>

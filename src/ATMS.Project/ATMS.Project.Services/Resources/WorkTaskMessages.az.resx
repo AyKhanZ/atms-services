@@ -14,6 +14,8 @@
   <data name="DescriptionTooLong" xml:space="preserve"><value>Tapşırığın təsviri ən çox {0} simvoldan ibarət ola bilər.</value></data>
   <data name="StatusRequired" xml:space="preserve"><value>Tapşırığın statusunu seçin.</value></data>
   <data name="StatusUnsupported" xml:space="preserve"><value>Seçilmiş tapşırıq statusu artıq mövcud deyil. Başqa status seçin.</value></data>
+  <data name="ColumnRequired" xml:space="preserve"><value>Sütun seçin.</value></data>
+  <data name="ColumnUnsupported" xml:space="preserve"><value>Belə lövhə sütunu yoxdur.</value></data>
   <data name="PriorityRequired" xml:space="preserve"><value>Tapşırığın prioritetini seçin.</value></data>
   <data name="PriorityUnsupported" xml:space="preserve"><value>Seçilmiş prioritet artıq mövcud deyil. Başqa prioritet seçin.</value></data>
   <data name="AssigneeNotFound" xml:space="preserve"><value>Seçilmiş icraçı bu layihənin iştirakçısı deyil. Layihə iştirakçısı seçin.</value></data>

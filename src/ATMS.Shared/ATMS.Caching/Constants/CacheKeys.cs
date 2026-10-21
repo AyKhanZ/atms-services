@@ -54,6 +54,8 @@ public static class CacheKeys
         public static string AllWorkItemPriorities(string language) => $"dict:work-item-priorities:{language}";
         
         public static string AllWorkTaskStatuses(string language) => $"dict:work-task-statuses:{language}";
+
+        public static string AllBoardColumns(string language) => $"dict:board-columns:{language}";
         
         public static string AllWorkTicketStatuses(string language) => $"dict:work-ticket-statuses:{language}";
         

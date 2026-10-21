@@ -2,6 +2,7 @@ using ATMS.Data.Enums;
 using ATMS.Project.Contracts.Commands.WorkTickets;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Services.Handlers.WorkTickets;
+using Project.Services.Tests.Domain.Board;
 using Moq;
 
 namespace Project.Services.Tests.Handlers.WorkTickets;
@@ -37,6 +38,7 @@ public class CloseWorkTicketWithTasksTest : BaseHandlerTest
                 MapperMock.Object,
                 WorkTicketRepositoryMock.Object,
                 WorkTaskRepositoryMock.Object,
+                TestBoardColumns.Service(),
                 CacheServiceMock.Object)
             .Handle(new UpdateWorkTicketCommand
             {
@@ -58,6 +60,7 @@ public class CloseWorkTicketWithTasksTest : BaseHandlerTest
         Assert.All(tasks, task =>
         {
             Assert.Equal((int)WorkTaskStatusEnum.Done, task.StatusId);
+            Assert.Equal((int)WorkTaskStatusEnum.Done, task.BoardColumnId);
             Assert.NotNull(task.DoneAt);
         });
     }

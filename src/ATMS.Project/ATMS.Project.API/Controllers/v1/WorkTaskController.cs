@@ -72,7 +72,7 @@ public sealed class WorkTaskController(IMediator mediator) : ControllerBase
     /// Creates a task/subtask.
     /// </summary>
     /// <remarks>
-    /// New items always start in New status. parentWorkTaskId creates a subtask; its ticket is taken from the parent
+    /// New items always start in the default New column. parentWorkTaskId creates a subtask; its ticket is taken from the parent
     /// and workTicketId is ignored. A subtask cannot contain another subtask. Assignees must be staff participants.
     /// </remarks>
     /// <response code="201">The task was created.</response>
@@ -156,15 +156,16 @@ public sealed class WorkTaskController(IMediator mediator) : ControllerBase
 
 
     /// <summary>
-    /// Moves a task on the board: its status and its place between two neighbours.
+    /// Moves a task on the board: its column and its place between two neighbours.
     /// </summary>
     /// <remarks>
-    /// Changes only the status and the board order, never the rest of the task. previousWorkTaskId
-    /// and nextWorkTaskId are the cards right above and below the drop; both may be omitted.
-    /// completeSubtasks closes the task's open subtasks when it moves to Done.
+    /// Changes the column and the board order. The status follows the column's category and changes
+    /// only when the category changes. previousWorkTaskId and nextWorkTaskId are the cards right
+    /// above and below the drop; both may be omitted. completeSubtasks closes the task's open
+    /// subtasks when it moves into a Done column.
     /// </remarks>
     /// <response code="204">The task was moved.</response>
-    /// <response code="400">The status is invalid.</response>
+    /// <response code="400">The column is invalid.</response>
     /// <response code="401">The user is not authenticated.</response>
     /// <response code="403">The user cannot edit tasks in this project.</response>
     /// <response code="404">The task was not found.</response>

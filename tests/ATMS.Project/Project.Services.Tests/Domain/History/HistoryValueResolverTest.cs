@@ -1,3 +1,5 @@
+using ATMS.Project.Contracts.Models.BoardColumns;
+using ATMS.Project.Services.Domain.Board.Interfaces;
 using ATMS.Application.Models;
 using ATMS.Caching.Services.Interfaces;
 using ATMS.Project.Services.Domain.Dictionaries;
@@ -35,7 +37,82 @@ public sealed class HistoryValueResolverTest
             ]);
     }
 
-    private HistoryValueResolver Resolver()
+    [Fact]
+    // a bare "Готово" would not say which status it belongs to
+    public async Task ResolveEntriesAsync_BoardColumn_ShowsTheColumnWithItsStatus()
+    {
+        var column = new BoardColumnModel
+        {
+            Id = 4,
+            Code = "InProgressDone",
+            Name = "Готово",
+            Label = "В работе · Готово",
+            Category = (int)WorkTaskStatusEnum.InProgress
+        };
+
+        var entry = Entry(HistoryEntityTypeEnum.WorkTask, Change(HistoryFieldEnum.BoardColumn, "2", "4"));
+
+        var model = await Resolver([column]).ResolveEntriesAsync([entry], CancellationToken.None);
+
+        var change = Assert.Single(Assert.Single(model).Changes);
+        Assert.Equal("В работе · Готово", change.NewValue!.Name);
+        Assert.Equal("InProgressDone", change.NewValue.Code);
+    }
+
+    private static readonly BoardColumnModel[] Columns =
+    [
+        new() { Id = 1, Code = "New", Name = "Новый", Label = "Новый", Category = (int)WorkTaskStatusEnum.New },
+        new() { Id = 2, Code = "InProgressDoing", Name = "В процессе", Label = "В работе · В процессе", Category = (int)WorkTaskStatusEnum.InProgress },
+        new() { Id = 4, Code = "InProgressDone", Name = "Готово", Label = "В работе · Готово", Category = (int)WorkTaskStatusEnum.InProgress },
+        new() { Id = 3, Code = "Done", Name = "Выполнено", Label = "Выполнено", Category = (int)WorkTaskStatusEnum.Done }
+    ];
+
+    // "Статус: В работе → Выполнено" says it all, a column row next to it only confused
+    [Theory]
+    [InlineData("2", "3", "2", "3")]
+    [InlineData("1", "2", "1", "2")]
+    public async Task ResolveEntriesAsync_StatusIntoItsDefaultColumn_ShowsOnlyTheStatus(
+        string fromStatus, string toStatus, string fromColumn, string toColumn)
+    {
+        var entry = Entry(
+            HistoryEntityTypeEnum.WorkTask,
+            Change(HistoryFieldEnum.Status, fromStatus, toStatus),
+            Change(HistoryFieldEnum.BoardColumn, fromColumn, toColumn));
+
+        var model = await Resolver(Columns).ResolveEntriesAsync([entry], CancellationToken.None);
+
+        var change = Assert.Single(Assert.Single(model).Changes);
+        Assert.Equal((int)HistoryFieldEnum.Status, change.Field);
+    }
+
+    // Doing to Done changes no status: the column row is the only news
+    [Fact]
+    public async Task ResolveEntriesAsync_MoveInsideInProgress_KeepsTheColumnRow()
+    {
+        var entry = Entry(HistoryEntityTypeEnum.WorkTask, Change(HistoryFieldEnum.BoardColumn, "2", "4"));
+
+        var model = await Resolver(Columns).ResolveEntriesAsync([entry], CancellationToken.None);
+
+        var change = Assert.Single(Assert.Single(model).Changes);
+        Assert.Equal("В работе · В процессе", change.OldValue!.Name);
+        Assert.Equal("В работе · Готово", change.NewValue!.Name);
+    }
+
+    // New to In Progress · Done: the status says In Progress, the column adds that the part is done
+    [Fact]
+    public async Task ResolveEntriesAsync_StatusAndPartOfAStatus_KeepsTheColumnRow()
+    {
+        var entry = Entry(
+            HistoryEntityTypeEnum.WorkTask,
+            Change(HistoryFieldEnum.Status, "1", "2"),
+            Change(HistoryFieldEnum.BoardColumn, "1", "4"));
+
+        var model = await Resolver(Columns).ResolveEntriesAsync([entry], CancellationToken.None);
+
+        Assert.Equal(2, Assert.Single(model).Changes.Count);
+    }
+
+    private HistoryValueResolver Resolver(BoardColumnModel[]? columns = null)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -53,8 +130,12 @@ public sealed class HistoryValueResolverTest
             .Returns<string, Func<Task<DictionaryModel[]>>, TimeSpan, CancellationToken>(
                 async (_, factory, _, _) => await factory());
         var dictionaries = new DictionaryCacheService(_dictionariesRepository.Object, cache.Object);
+        var boardColumns = new Mock<IBoardColumnCacheService>();
+        boardColumns
+            .Setup(service => service.GetAllAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(columns ?? []);
 
-        return new HistoryValueResolver(_historyRepository.Object, dictionaries, mapper);
+        return new HistoryValueResolver(_historyRepository.Object, dictionaries, boardColumns.Object, mapper);
     }
 
     [Fact]

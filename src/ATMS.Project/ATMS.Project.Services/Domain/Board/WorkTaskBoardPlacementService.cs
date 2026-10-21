@@ -15,7 +15,7 @@ public sealed class WorkTaskBoardPlacementService(
 
     public async Task PlaceOnTopAsync(WorkTask workTask, CancellationToken cancellationToken)
     {
-        var top = await workTaskRepository.GetTopPlaceAsync(workTask.StatusId, cancellationToken);
+        var top = await workTaskRepository.GetTopPlaceAsync(workTask.BoardColumnId, cancellationToken);
         // already first in this column; compare ids, a card from another column can have the same key
         if (top is not null && top.Id == workTask.Id)
         {
@@ -55,7 +55,7 @@ public sealed class WorkTaskBoardPlacementService(
 
             // the column holds cards of all projects, so a hidden card can sit right below; take the nearest key below
             var nearest = await workTaskRepository.GetRankBelowAsync(
-                workTask.StatusId,
+                workTask.BoardColumnId,
                 above,
                 workTask.Id,
                 cancellationToken);
@@ -72,7 +72,7 @@ public sealed class WorkTaskBoardPlacementService(
             catch (InvalidOperationException) when (!renumbered)
             {
                 // the gap is used up after many drops into one spot, renumber the column once
-                await workTaskRepository.RenumberColumnAsync(workTask.StatusId, cancellationToken);
+                await workTaskRepository.RenumberColumnAsync(workTask.BoardColumnId, cancellationToken);
             }
             catch (InvalidOperationException)
             {
@@ -91,7 +91,7 @@ public sealed class WorkTaskBoardPlacementService(
             }
 
             // another card took this key between read and save, go right below it
-            var next = await workTaskRepository.GetNextRankAsync(workTask.StatusId, workTask.Rank, cancellationToken);
+            var next = await workTaskRepository.GetNextRankAsync(workTask.BoardColumnId, workTask.Rank, cancellationToken);
             try
             {
                 workTask.Rank = positions.Between(workTask.Rank, next);

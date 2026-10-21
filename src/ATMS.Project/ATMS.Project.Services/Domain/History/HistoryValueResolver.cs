@@ -5,6 +5,7 @@ using ATMS.Project.Contracts.Models.Users;
 using ATMS.Project.Data.Entities;
 using ATMS.Project.Data.Models.History;
 using ATMS.Project.Data.Repositories.Interfaces;
+using ATMS.Project.Services.Domain.Board.Interfaces;
 using ATMS.Project.Services.Domain.Dictionaries.Interfaces;
 using ATMS.Project.Services.Domain.History.Interfaces;
 using AutoMapper;
@@ -14,6 +15,7 @@ namespace ATMS.Project.Services.Domain.History;
 public sealed class HistoryValueResolver(
     IHistoryRepository historyRepository,
     IDictionaryCacheService dictionaries,
+    IBoardColumnCacheService boardColumns,
     IMapper mapper) : IHistoryValueResolver
 {
     public async Task<IReadOnlyCollection<HistoryEntryModel>> ResolveEntriesAsync(
@@ -52,6 +54,7 @@ public sealed class HistoryValueResolver(
                     ? lookup.Reference(lookup.WorkGroups, entry.EntityId.ToString())
                     : null,
                 Changes = entry.Changes
+                    .Where(change => !RepeatsStatus(entry, change))
                     .OrderBy(change => change.Field)
                     .Select(change => new HistoryChangeModel
                     {
@@ -140,6 +143,10 @@ public sealed class HistoryValueResolver(
             present.Any(value => value.Field == field && entityTypes.Contains(value.EntityType));
 
         var people = userIds.Distinct().ToArray();
+        // "In Progress · Done": a bare "Done" in history would not say which status
+        var columns = Has(HistoryFieldEnum.BoardColumn, HistoryEntityTypeEnum.WorkTask)
+            ? await boardColumns.GetAllAsync(cancellationToken)
+            : [];
         var workGroupIds = Ids(HistoryFieldEnum.Milestone).Concat(groupIds).Distinct().ToArray();
 
         return new Lookup
@@ -163,6 +170,9 @@ public sealed class HistoryValueResolver(
             WorkTaskStatuses = Has(HistoryFieldEnum.Status, HistoryEntityTypeEnum.WorkTask)
                 ? ById(await dictionaries.GetWorkTaskStatusesAsync(cancellationToken))
                 : [],
+            BoardColumns = columns.ToDictionary(
+                column => column.Id,
+                column => new DictionaryModel { Id = column.Id, Code = column.Code, Name = column.Label }),
             Priorities = Has(HistoryFieldEnum.Priority, HistoryEntityTypeEnum.WorkTicket, HistoryEntityTypeEnum.WorkTask)
                 ? ById(await dictionaries.GetWorkItemPrioritiesAsync(cancellationToken))
                 : [],
@@ -187,6 +197,12 @@ public sealed class HistoryValueResolver(
 
     private static Dictionary<int, DictionaryModel> ById(IEnumerable<DictionaryModel> items) =>
         items.ToDictionary(item => item.Id);
+
+    // a status change that lands in the status's default column (it carries the status's id): the status
+    // row says it all; In Progress · Done, or a move inside In Progress (no status change), keeps its row
+    private static bool RepeatsStatus(HistoryEntry entry, HistoryChange change) =>
+        change.Field == (int)HistoryFieldEnum.BoardColumn &&
+        entry.Changes.Any(other => other.Field == (int)HistoryFieldEnum.Status && other.NewValue == change.NewValue);
 
     private static bool IsGroup(HistoryEntityTypeEnum entityType) =>
         entityType is HistoryEntityTypeEnum.WorkGroup or HistoryEntityTypeEnum.Milestone;
@@ -217,6 +233,8 @@ public sealed class HistoryValueResolver(
 
         public required Dictionary<int, DictionaryModel> WorkTaskStatuses { get; init; }
 
+        public required Dictionary<int, DictionaryModel> BoardColumns { get; init; }
+
         public required Dictionary<int, DictionaryModel> Priorities { get; init; }
 
         public required Dictionary<int, DictionaryModel> ProjectTypes { get; init; }
@@ -240,6 +258,7 @@ public sealed class HistoryValueResolver(
             return field switch
             {
                 HistoryFieldEnum.Status => Dictionary(StatusesOf(entityType), raw),
+                HistoryFieldEnum.BoardColumn => Dictionary(BoardColumns, raw),
                 HistoryFieldEnum.Priority => Dictionary(Priorities, raw),
                 HistoryFieldEnum.Type => Dictionary(
                     entityType == HistoryEntityTypeEnum.Project ? ProjectTypes : WorkTicketTypes,

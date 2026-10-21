@@ -15,7 +15,7 @@ public sealed class MoveWorkTaskCommand : IRequest, IProjectScopedRequest
     [JsonIgnore]
     public Guid WorkTaskId { get; set; }
 
-    public int StatusId { get; set; }
+    public int BoardColumnId { get; set; }
 
     public Guid? PreviousWorkTaskId { get; set; }
 

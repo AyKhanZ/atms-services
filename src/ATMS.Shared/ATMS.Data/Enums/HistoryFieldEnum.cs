@@ -17,5 +17,6 @@ public enum HistoryFieldEnum
     StartDate = 13,
     EndDate = 14,
     Stakeholder = 15,
-    Attachment = 16
+    Attachment = 16,
+    BoardColumn = 17
 }
