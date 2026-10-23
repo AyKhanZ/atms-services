@@ -93,7 +93,8 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
             window,
             cancellationToken);
 
-        // no "started at" column, a move to In progress is known only from history (every move counts)
+        // no "started at" column, a move to In progress is known only from history;
+        // a task taken back and forth counts once, at its last move in the period
         var inProgress = ((int)WorkTaskStatusEnum.InProgress).ToString();
         var liveTaskIds = tasks.Select(task => task.Id);
         var startedByBucket = await CountByBucketAsync(
@@ -104,20 +105,16 @@ public sealed class DashboardRepository(ProjectDbContext context) : IDashboardRe
                                 liveTaskIds.Contains(entry.EntityId) &&
                                 entry.Changes.Any(change => change.Field == (int)HistoryFieldEnum.Status &&
                                                             change.NewValue == inProgress))
-                .Select(entry => entry.CreatedAt),
+                .GroupBy(entry => entry.EntityId)
+                .Select(group => group.Max(entry => entry.CreatedAt)),
             window,
             cancellationToken);
 
-        var done = ((int)WorkTaskStatusEnum.Done).ToString();
+        // by DoneAt like the Done KPI: reopened and closed again is one task, on its last closing day
         var doneByBucket = await CountByBucketAsync(
-            context.HistoryEntries
-                .AsNoTracking()
-                .Where(entry => entry.EntityType == (int)HistoryEntityTypeEnum.WorkTask &&
-                                entry.CreatedAt >= periodStartUtc && entry.CreatedAt < periodEndUtc &&
-                                liveTaskIds.Contains(entry.EntityId) &&
-                                entry.Changes.Any(change => change.Field == (int)HistoryFieldEnum.Status &&
-                                                            change.NewValue == done))
-                .Select(entry => entry.CreatedAt),
+            tasks.Where(task => task.StatusId == (int)WorkTaskStatusEnum.Done &&
+                                task.DoneAt >= periodStartUtc && task.DoneAt < periodEndUtc)
+                .Select(task => task.DoneAt!.Value),
             window,
             cancellationToken);
 
