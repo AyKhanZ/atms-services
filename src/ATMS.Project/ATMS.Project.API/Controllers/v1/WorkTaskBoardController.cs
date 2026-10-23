@@ -61,6 +61,31 @@ public sealed class WorkTaskBoardController(IMediator mediator) : ControllerBase
     }
 
     /// <summary>
+    /// Returns the calendar's range at a glance: every deadline in it, how many tasks have it and the first six.
+    /// </summary>
+    /// <remarks>
+    /// One group per deadline moment, earliest first. A deadline is the user's local midnight, so the client
+    /// puts each group on its own day; two moments landing on one day are added together there. Cards go
+    /// New, In Progress, Done, then by id — the order of sort=6 in the list, so the rest of a day is read from
+    /// GET work-tasks with deadlineFrom/deadlineTo of that day and sort=6. The range is at most 6 weeks; the
+    /// other filters are the list's.
+    /// </remarks>
+    /// <response code="200">Returns the groups; empty when no task in the range has a deadline.</response>
+    /// <response code="400">The range is missing, empty or longer than 6 weeks, or a filter is invalid.</response>
+    /// <response code="401">The user is not authenticated.</response>
+    /// <response code="403">The user does not have permission to view projects.</response>
+    [HttpGet("calendar")]
+    [ProducesResponseType(typeof(WorkTaskDeadlineGroupModel[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationErrorModel), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorModel), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<WorkTaskDeadlineGroupModel[]>> GetCalendar([FromQuery] GetWorkTaskCalendarRequest request, CancellationToken cancellationToken)
+    {
+        return Ok(await mediator.Send(request, cancellationToken));
+    }
+
+    /// <summary>
     /// Returns the people the "Assigned to" filter offers.
     /// </summary>
     /// <remarks>

@@ -38,4 +38,5 @@ internal static class WorkTaskMessages
     internal static string HierarchyFilterConflict => Get(nameof(HierarchyFilterConflict));
     internal static string BoardPositionChanged => Get(nameof(BoardPositionChanged));
     internal static string BoardPositionUnavailable => Get(nameof(BoardPositionUnavailable));
+    internal static string CalendarRangeInvalid => Get(nameof(CalendarRangeInvalid));
 }
