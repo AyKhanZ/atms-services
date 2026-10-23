@@ -23,6 +23,8 @@ public sealed class RequestToFilterProfile : Profile
 
         CreateMap<GetWorkTaskBoardCountsRequest, WorkTaskBoardFilter>();
 
+        CreateMap<GetWorkTaskCalendarRequest, WorkTaskBoardFilter>();
+
         CreateMap<GetWorkTaskBoardAssigneesRequest, WorkTaskBoardAssigneesFilter>();
 
         CreateMap<GetOrganizationsRequest, OrganizationFilter>();

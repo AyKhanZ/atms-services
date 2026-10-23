@@ -12,6 +12,12 @@ public interface IWorkTaskBoardRepository
         IReadOnlyCollection<string> languages,
         CancellationToken cancellationToken);
 
+    Task<WorkTaskCalendarResult> GetCalendarAsync(
+        ICriteria<WorkTask> criteria,
+        int cardsPerDeadline,
+        IReadOnlyCollection<string> languages,
+        CancellationToken cancellationToken);
+
     Task<Dictionary<int, int>> GetCountsByColumnAsync(ICriteria<WorkTask> criteria, CancellationToken cancellationToken);
 
     Task<WorkTaskBoardAssignee[]> GetAssigneesAsync(
